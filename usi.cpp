@@ -1,11 +1,19 @@
 #include <iostream>
 #include <string>
+#include <map>
 
 using namespace std;
 
-#include "uci.h"
+#include "gtest\gtest.h"
+#include "usi.h"
 
-void uci_main_loop(void)
+typedef struct position{
+    void set_posiition();
+    unsigned char board[16*13];
+}position_t;
+
+
+void usi_main_loop(void)
 {
     while(true){
         wait_for_command();
@@ -25,9 +33,8 @@ void wait_for_command(void)
 
 void handle_command(const string &command)
 {
-    UCIInputParser uip(command);
+    USIInputParser uip(command);
     string cmd = uip.get_next_token();
-    //cout << cmd << endl;
     if(cmd == "quit"){
         //後始末
         exit(0);
@@ -36,6 +43,8 @@ void handle_command(const string &command)
         cout << "id name " << "joshua" << endl;
         cout << "id author takemori masami" << endl;
         //optionがあったらここで送信
+        cout << "option name BookFile value public.bin" << endl;
+        cout << "option name UseBook type default true" << endl;
         cout << "usiok" << endl;
     }
     else if(cmd == "usinewgame"){
@@ -46,9 +55,11 @@ void handle_command(const string &command)
     }
     else if(cmd == "position"){
         //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
+        set_position();
     }
     else if(cmd == "setoption"){
         //エンジンに対する値を設定するとき送信
+        set_option(uip);
     }
     else if(cmd == "go"){
         //思考開始
@@ -61,20 +72,20 @@ void handle_command(const string &command)
     }
 }
 
-UCIInputParser::UCIInputParser(const string &line) : input_line(line)
+USIInputParser::USIInputParser(const string &line) : input_line(line)
 {
     this->current_index = 0;
     this->length = line.length();
 }
 
-void UCIInputParser::skip_whitespace(void)
+void USIInputParser::skip_whitespace(void)
 {
     while(isspace((int)(unsigned char)this->input_line[this->current_index])){
         this->current_index++;
     }
 }
 
-string UCIInputParser::get_next_token(void)
+string USIInputParser::get_next_token(void)
 {
     int i,j;
 
@@ -88,13 +99,31 @@ string UCIInputParser::get_next_token(void)
     return str;
 }
 
-string UCIInputParser::get_rest_of_line(void)
+string USIInputParser::get_rest_of_line(void)
 {
     this->skip_whitespace();
     return this->input_line.substr(this->current_index,this->length);
 }
 
-bool UCIInputParser::at_end_of_line(void)
+bool USIInputParser::at_end_of_line(void)
 {
     return this->current_index == this->length;
 }
+
+void position_t::set_posiition(void)
+{
+    this->board[0] = 128;
+}
+
+unsigned char set_position(void)
+{
+    position_t pos;
+    pos.set_posiition();
+    return pos.board[0];
+}
+
+TEST(TestCaseName2,TestCase2)
+{
+    EXPECT_EQ(128,set_position());
+}
+
