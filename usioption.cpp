@@ -37,7 +37,6 @@ void set_option(USIInputParser &uip)
         }
     }
 }
-
 TEST(usoption,set_option)
 {
     init_usi_options();

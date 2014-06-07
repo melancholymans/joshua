@@ -19,7 +19,6 @@ private:
 void usi_main_loop(void);
 void wait_for_command();
 void handle_command(const string &command);
-unsigned char set_position(void);
-void set_option(USIInputParser &uip);
+void set_position(USIInputParser &uip);
 
 #endif

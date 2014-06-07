@@ -6,13 +6,13 @@ Shogidokoro shogi playing engin
 #include <iostream>
 
 #include "gtest\gtest.h"
+#include "types.h"
 #include "usi.h"
 #include "usioption.h"
 
 using namespace std;
 
 int main_test(int argc,char *argv[]);
-
 
 int main(int argc,char *argv[])
 {
