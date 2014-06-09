@@ -5,6 +5,7 @@ using namespace std;
 
 #include "gtest\gtest.h"
 #include "usi.h"
+#include "usioption.h"
 #include "position.h"
 
 //駒コード（GPSを参考にした）
@@ -63,10 +64,13 @@ int turn;
 
 //先手大文字、後手小文字、数字は空白、/は行区切り
 string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+string begin_poition;   //どんな局面を受け付けたのか保持
 position_t root_position;
 
 void from_sfen(string &sfen)
 {
+    //from_sfenに制約をもうける、受け付けるのは初期局面（駒落ち初期局面可）のみで途中図は受け付けない、従って駒台の処理もない
+    begin_poition = sfen;
     USIInputParser uip(sfen);
     string token = uip.get_next_token();
     int index;
@@ -90,6 +94,7 @@ void from_sfen(string &sfen)
             case 'r': put_piece(W_ROOK,sq,0); col++; break;
             case 'b': put_piece(W_BISHOP,sq,0); col++; break;
             case 'p': put_piece(W_PAWN,sq,0); col++; break;
+            
             case 'K': put_piece(B_KING,sq,0); col++; break;
             case 'G': put_piece(B_GOLD,sq,0); col++; break;
             case 'S': put_piece(B_SILVER,sq,0); col++; break; 
@@ -102,7 +107,7 @@ void from_sfen(string &sfen)
             case ' ': break;
             default: 
                 cout << "Error in SFEN charracter" << endl;
-                ASSERT_TRUE(false);
+                EXPECT_TRUE(false);
                 return;
             }
         }
@@ -162,7 +167,7 @@ void from_sfen(string &sfen)
         case 'P': put_piece(W_PAWN,208,num); break;
         }
     }
-    //このあとに指し手の処理があるが一旦テスト
+    //持ち駒の次は手数が入っているが無視してよい
 }
 TEST(position,make_square)
 {
@@ -179,16 +184,51 @@ TEST(position,make_square)
     EXPECT_EQ(68,make_square(4,3));
 }
 
-string to_sfen(void)
+
+string to_sfen(const Position &pos)
 {
-    return "gtk";
+    string result;
+    int skip;
+    char p;
+
+    for(int row = 1;row < 10;row++){
+        skip = 0;
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            p = pos.board[sq];
+            if(p != EMPTY){
+                if(skip > 0){
+                    result += (char)skip + '0';
+                }
+                result += piece_letters[p];
+                skip = 0;
+            }
+            else{
+                skip++;
+            }
+        }
+        if(skip > 0){ 
+            result += (char)skip + '0';
+        }
+        result += row < 10 ? '/' : ' ';
+    }
+    result += (turn == WHITE) ? 'w'  : 'b';
+    result += ' ';
+    //ここに駒台の処理
+    return result;
+}
+TEST(position,to_sfen)
+{
+    from_sfen(start_position);
+    //printf("%s",to_sfen(root_position).c_str());
+    EXPECT_STREQ("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",to_sfen(root_position).c_str());
 }
 
 //sfen文字列からpositionを設定
 void put_piece(char p,int sq,int num)
 {
     char pt = type_of_piece(p);
-    color c = color_of_piece(p);
+    Color c = color_of_piece(p);
     if(sq < BOARD_UPPER){
         //MAIN boardに駒コードを入れる
         root_position.board[sq] = p;
@@ -441,4 +481,5 @@ TEST(position,from_sfen)
     EXPECT_EQ(EMPTY,root_position.board[SQ_I9]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_A1]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_I1]);
+    
 }

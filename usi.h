@@ -1,7 +1,12 @@
 #if !defined(USI_H_INCLUDE)
 #define USI_H_INCLUDE
 
+#include <map>
+
 using namespace std;
+
+#include "types.h"
+#include "position.h"
 
 //将棋所からのコマンドをパース
 class USIInputParser{
@@ -16,9 +21,13 @@ private:
     void skip_whitespace(void);
 };
 
+//extern map <char,char> usi2piece;
+
 void usi_main_loop(void);
 void wait_for_command();
 void handle_command(const string &command);
 void set_position(USIInputParser &uip);
+Move move_from_string(const Position &pos, const string &cmd);
+int square_from_string(const string sq);
 
 #endif

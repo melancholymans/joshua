@@ -8,6 +8,7 @@
 using namespace std;
 
 map<string,string> options;
+map<char,string> piece_letters;
 
 void init_usi_options()
 {
@@ -15,6 +16,36 @@ void init_usi_options()
     options["USI_Hash"] = "";
     options["BookFile"] = "";
     options["UseBook"] = "";
+    
+    piece_letters[BP_PAWN] = "+P";
+    piece_letters[BP_LANCE] = "+L";
+    piece_letters[BP_KNIGHT] = "+N";
+    piece_letters[BP_SILVER] = "+S";
+    piece_letters[BP_BISHOP] = "+B";
+    piece_letters[BP_ROOK] = "+R";
+    piece_letters[B_KING] = "K";
+    piece_letters[B_GOLD] = "G";
+    piece_letters[B_PAWN] = "P";
+    piece_letters[B_LANCE] = "L";
+    piece_letters[B_KNIGHT] = "N";
+    piece_letters[B_SILVER] = "S";
+    piece_letters[B_BISHOP] = "B";
+    piece_letters[B_ROOK] = "R";
+
+    piece_letters[WP_PAWN] = "+p";
+    piece_letters[WP_LANCE] = "+l";
+    piece_letters[WP_KNIGHT] = "+n";
+    piece_letters[WP_SILVER] = "+s";
+    piece_letters[WP_BISHOP] = "+b";
+    piece_letters[WP_ROOK] = "+r";
+    piece_letters[W_KING] = "k";
+    piece_letters[W_GOLD] = "g";
+    piece_letters[W_PAWN] = "p";
+    piece_letters[W_LANCE] = "l";
+    piece_letters[W_KNIGHT] = "n";
+    piece_letters[W_SILVER] = "s";
+    piece_letters[W_BISHOP] = "b";
+    piece_letters[W_ROOK] = "r";
     return;
 }
 

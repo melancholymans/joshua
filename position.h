@@ -18,40 +18,56 @@ const int LIMIT = 16*13 + 7*2;
 
 extern string start_position;
 extern position_t root_position;
+extern int turn;
 
 const extern char EMPTY;
 const extern char EDGE;
 const extern char NOT_PMOTO;
 
-const extern char BP_PAWN;
-const extern char BP_LANCE;
-const extern char BP_KNIGHT;
-const extern char BP_SILVER;
-const extern char BP_BISHOP;
-const extern char BP_ROOK;
-const extern char B_KING;
-const extern char B_GOLD;
-const extern char B_PAWN;
-const extern char B_LANCE;
-const extern char B_KNIGHT;
-const extern char B_SILVER;
-const extern char B_BISHOP;
-const extern char B_ROOK;
+const extern char PPAWN;    //2
+const extern char PLANCE;   //3
+const extern char PKNIGHT;  //4
+const extern char PSILVER;  //5
+const extern char PBISHOP;  //6
+const extern char PROOK;    //7
+const extern char KING;     //8
+const extern char GOLD;     //9
+const extern char PAWN;     //10
+const extern char LANCE;    //11
+const extern char KNIGHT;   //12
+const extern char SILVER;   //13
+const extern char BISHOP;   //14
+const extern char ROOK;     //15
 
-const extern char WP_PAWN;
-const extern char WP_LANCE;
-const extern char WP_KNIGHT;
-const extern char WP_SILVER;
-const extern char WP_BISHOP;
-const extern char WP_ROOK;
-const extern char W_KING;
-const extern char W_GOLD;
-const extern char W_PAWN;
-const extern char W_LANCE;
-const extern char W_KNIGHT;
-const extern char W_SILVER;
-const extern char W_BISHOP;
-const extern char W_ROOK;
+const extern char BP_PAWN;      //2
+const extern char BP_LANCE;     //3
+const extern char BP_KNIGHT;    //4   
+const extern char BP_SILVER;    //5
+const extern char BP_BISHOP;    //6
+const extern char BP_ROOK;      //7
+const extern char B_KING;       //8
+const extern char B_GOLD;       //9
+const extern char B_PAWN;       //10
+const extern char B_LANCE;      //11
+const extern char B_KNIGHT;     //12
+const extern char B_SILVER;     //13
+const extern char B_BISHOP;     //14
+const extern char B_ROOK;       //15
+
+const extern char WP_PAWN;      //2-16=-14
+const extern char WP_LANCE;     //3-16=-13
+const extern char WP_KNIGHT;    //4-16=-12
+const extern char WP_SILVER;    //5-16=-11
+const extern char WP_BISHOP;    //6-16=-10
+const extern char WP_ROOK;      //7-16=-9
+const extern char W_KING;       //8-16=-8
+const extern char W_GOLD;       //9-16=-7
+const extern char W_PAWN;       //10-16=-6
+const extern char W_LANCE;      //11-16=-5
+const extern char W_KNIGHT;     //12-16=-4
+const extern char W_SILVER;     //13-16=-3
+const extern char W_BISHOP;     //14-16=-2
+const extern char W_ROOK;       //15-16=-1
 
 //座標記号
 enum{
@@ -77,12 +93,28 @@ inline char type_of_piece(char p)
     return p & 0x0F;
 }
 
-inline color color_of_piece(int p)
+inline Color color_of_piece(int p)
 {
     //符号ありchar型を右シフトしているのでANSI Cでは挙動が定義されていない
     //VC++2010で算術シフトを採用しているようなのでこのままとするが処理系が
-    //変更になったらテストでエラーが」でるようにしておく
+    //変更になったらテストでエラーがでるようにしておく
     return p >> 4;
+}
+/*
+Move
+31-30-29-28-27-26-25-24-23-22-21-20-19-18-17-16-15-14-13-12-11-10-09-08-07-06-05-04-03-02-01-00
+                     | cap piece |src piece |pm |       from square      |       to square    |
+
+cap piece 取った駒（colorはつかない駒種のみ　メモリ節約のため）     21-24bit
+from piece 動いた駒（colorはつかない駒種のみ　メモリ節約のため）    17-20bit
+pm->pmotoのフラグ１なら成り動作    1bit 16bit
+from square 移動元の座標 8bit 8-15bit
+to square 移動先の座標 8bit 0-7bit
+25-31bitは空き
+*/
+inline Move make_move(int from,int to,bool pmoto,char piece,char cap_piece)
+{
+    return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece) << 17 | unsigned int(cap_piece) << 21);
 }
 
 void from_sfen(string &sfen);

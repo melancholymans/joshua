@@ -4,7 +4,8 @@
 
 using namespace std;
 
-extern map<string,string> options;     //外部宣言
+extern map<string,string> options;      //将棋所から設定された設定を保持
+extern map<char,string> piece_letters;    //駒コードと駒文字(P,+P,r,Rなど)を関係づけている
 
 void init_usi_options(void);
 void set_option(USIInputParser &uip);

@@ -13,18 +13,22 @@ Shogidokoro shogi playing engin
 using namespace std;
 
 int main_test(int argc,char *argv[]);
+void init(void);
 
 int main(int argc,char *argv[])
 {
     //標準入出力とリンクさせて、将棋所と通信ができる
     setvbuf(stdin,NULL,_IONBF,0);
     setvbuf(stdout,NULL,_IONBF,0);
-
+    init_usi_options();
     main_test(argc,argv);
 
-    init_usi_options();
     usi_main_loop();
     return 0;
+}
+
+void init(void)
+{
 }
 
 int main_test(int argc,char *argv[])
