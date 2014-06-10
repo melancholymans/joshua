@@ -88,21 +88,21 @@ void from_sfen(string &sfen)
             switch(token[index]){
             case 'k': put_piece(W_KING,sq,0); col++; break;
             case 'g': put_piece(W_GOLD,sq,0); col++; break;
-            case 's': put_piece(W_SILVER,sq,0); col++; break; 
-            case 'n': put_piece(W_KNIGHT,sq,0); col++; break;
-            case 'l': put_piece(W_LANCE,sq,0); col++; break;
-            case 'r': put_piece(W_ROOK,sq,0); col++; break;
-            case 'b': put_piece(W_BISHOP,sq,0); col++; break;
             case 'p': put_piece(W_PAWN,sq,0); col++; break;
+            case 'l': put_piece(W_LANCE,sq,0); col++; break;
+            case 'n': put_piece(W_KNIGHT,sq,0); col++; break;
+            case 's': put_piece(W_SILVER,sq,0); col++; break; 
+            case 'b': put_piece(W_BISHOP,sq,0); col++; break;
+            case 'r': put_piece(W_ROOK,sq,0); col++; break;
             
             case 'K': put_piece(B_KING,sq,0); col++; break;
             case 'G': put_piece(B_GOLD,sq,0); col++; break;
-            case 'S': put_piece(B_SILVER,sq,0); col++; break; 
-            case 'N': put_piece(B_KNIGHT,sq,0); col++; break;
-            case 'L': put_piece(B_LANCE,sq,0); col++; break;
-            case 'R': put_piece(B_ROOK,sq,0); col++; break;
-            case 'B': put_piece(B_BISHOP,sq,0); col++; break;
             case 'P': put_piece(B_PAWN,sq,0); col++; break;
+            case 'L': put_piece(B_LANCE,sq,0); col++; break;
+            case 'N': put_piece(B_KNIGHT,sq,0); col++; break;
+            case 'S': put_piece(B_SILVER,sq,0); col++; break; 
+            case 'B': put_piece(B_BISHOP,sq,0); col++; break;
+            case 'R': put_piece(B_ROOK,sq,0); col++; break;
             case '/': col = 1; row++; break;
             case ' ': break;
             default: 
@@ -126,48 +126,7 @@ void from_sfen(string &sfen)
         ASSERT_TRUE(false);
         return; 
     }
-    //éùÇøãÓ(ÉTÉìÉvÉã S2Pb3pÅj
-    token = uip.get_next_token();
-    for(index = 0;token.size() > index;index++){
-        char num;
-        if(isalpha(token[index]) && isdigit(token[index+1])){
-            if(isdigit(token[index+2])){
-                num = atoi(token.substr(index,2).c_str());
-            }
-            else{
-                num = atoi(token.substr(index,1).c_str());
-            }
-        }
-        else if(isalpha(token[index]) && isalpha(token[index+1])){
-            num = 1;
-        }
-        else if(token[index] == '-'){
-            //éùÇøãÓÇ™Ç»Ç©Ç¡ÇΩÇÁî≤ÇØÇÈ
-            break;
-        }
-        else{
-            cout << "Error in SFEN charracter" << endl;
-            ASSERT_TRUE(false);
-            return; 
-        }
-        switch(token[index]){
-        case 'g': put_piece(W_GOLD,219,num); break;
-        case 's': put_piece(W_SILVER,218,num); break;
-        case 'n': put_piece(W_KNIGHT,217,num); break;
-        case 'l': put_piece(W_LANCE,216,num); break;
-        case 'r': put_piece(W_ROOK,221,num); break;
-        case 'b': put_piece(W_BISHOP,220,num); break;
-        case 'p': put_piece(W_PAWN,215,num); break;
-        case 'G': put_piece(W_GOLD,212,num); break;
-        case 'S': put_piece(W_SILVER,211,num); break; 
-        case 'N': put_piece(W_KNIGHT,210,num); break;
-        case 'L': put_piece(W_LANCE,209,num); break;
-        case 'R': put_piece(W_ROOK,214,num); break;
-        case 'B': put_piece(W_BISHOP,213,num); break;
-        case 'P': put_piece(W_PAWN,208,num); break;
-        }
-    }
-    //éùÇøãÓÇÃéüÇÕéËêîÇ™ì¸Ç¡ÇƒÇ¢ÇÈÇ™ñ≥éãÇµÇƒÇÊÇ¢
+    //éùÇøãÓ(-),éËêîÇ™ì¸Ç¡ÇƒÇ¢ÇÈÇ™ñ≥éãÇµÇƒÇÊÇ¢
 }
 TEST(position,make_square)
 {
@@ -183,7 +142,6 @@ TEST(position,make_square)
     EXPECT_EQ(120,make_square(8,6));
     EXPECT_EQ(68,make_square(4,3));
 }
-
 
 string to_sfen(const Position &pos)
 {
@@ -210,19 +168,96 @@ string to_sfen(const Position &pos)
         if(skip > 0){ 
             result += (char)skip + '0';
         }
-        result += row < 10 ? '/' : ' ';
+        result += row < 9 ? '/' : ' ';
     }
     result += (turn == WHITE) ? 'w'  : 'b';
     result += ' ';
-    //Ç±Ç±Ç…ãÓë‰ÇÃèàóù
+    //Ç±Ç±ÇÕãÓë‰ÇÃèàóù
+    bool is_stand = false;
+    for(int sq = 208;sq < 215;sq++){
+        int num = pos.board[sq];
+        if(num > 0){
+            is_stand = true;
+            if(num >1){
+                result += (char)num + '0';
+            }
+            result += piece_letters[sq - 199];
+        }
+    }
+    for(int sq = 215;sq < 222;sq++){
+        int num = pos.board[sq];
+        if(num > 0){
+            is_stand = true;
+            if(num >1){
+                result += (char)num + '0';
+            }
+            result += piece_letters[sq - 222];
+        }
+    }
+    if(!is_stand){
+        //éùÇøãÓÇ™Ç»Ç©Ç¡ÇΩèÍçá
+        result += '-';
+    }
+    result += ' ';
+    result += '1';
     return result;
 }
 TEST(position,to_sfen)
 {
     from_sfen(start_position);
-    //printf("%s",to_sfen(root_position).c_str());
     EXPECT_STREQ("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",to_sfen(root_position).c_str());
+
+    for(int sq = 0;sq < 222;sq++){
+        root_position.board[sq] = EMPTY;
+    }
+    root_position.board[SQ_F9] = W_GOLD;
+    root_position.board[SQ_G9] = W_KING;
+
+    root_position.board[SQ_A8] = BP_PAWN;
+    root_position.board[SQ_B8] = BP_LANCE;
+    root_position.board[SQ_C8] = BP_KNIGHT;
+    root_position.board[SQ_D8] = BP_SILVER;
+
+    root_position.board[SQ_A7] = W_PAWN;
+    root_position.board[SQ_B7] = W_PAWN;
+    root_position.board[SQ_C7] = W_PAWN;
+    root_position.board[SQ_D7] = W_PAWN;
+    root_position.board[SQ_E7] = W_PAWN;
+    root_position.board[SQ_F7] = W_PAWN;
+    root_position.board[SQ_G7] = W_PAWN;
+
+    root_position.board[SQ_A3] = B_PAWN;
+    root_position.board[SQ_B3] = B_PAWN;
+    root_position.board[SQ_C3] = B_PAWN;
+    root_position.board[SQ_D3] = B_PAWN;
+
+    root_position.board[SQ_F2] = WP_SILVER;
+    root_position.board[SQ_G2] = WP_KNIGHT;
+    root_position.board[SQ_H2] = WP_LANCE;
+    root_position.board[SQ_I2] = WP_PAWN;
+
+    root_position.board[SQ_C1] = B_KING;
+    root_position.board[SQ_D1] = B_GOLD;
+
+    root_position.board[208] = 0;   //B_GOLD
+    root_position.board[209] = 1;   //B_PAWN
+    root_position.board[210] = 1;   //B_LANCE
+    root_position.board[211] = 0;   //B_KNIGHT
+    root_position.board[212] = 2;   //B_SILVER
+    root_position.board[213] = 1;   //B_BISHOP
+    root_position.board[214] = 1;   //B_ROOK
+
+    root_position.board[215] = 2;   //W_GOLD
+    root_position.board[216] = 4;   //W_PAWN
+    root_position.board[217] = 1;   //W_LANCE
+    root_position.board[218] = 2;   //W_KNIGHT
+    root_position.board[219] = 0;   //W_SILVER
+    root_position.board[220] = 1;   //W_BISHOP
+    root_position.board[221] = 1;   //W_ROOK
+
+    EXPECT_STREQ("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1",to_sfen(root_position).c_str());
 }
+
 
 //sfenï∂éöóÒÇ©ÇÁpositionÇê›íË
 void put_piece(char p,int sq,int num)
@@ -242,6 +277,10 @@ void put_piece(char p,int sq,int num)
     }
 }
 
+void print_board(void)
+{
+
+}
 TEST(position,color_of_piece)
 {
     char p = W_LANCE;
