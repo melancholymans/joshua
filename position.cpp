@@ -256,6 +256,7 @@ TEST(position,to_sfen)
     root_position.board[221] = 1;   //W_ROOK
 
     EXPECT_STREQ("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1",to_sfen(root_position).c_str());
+    print_board(root_position);
 }
 
 
@@ -277,10 +278,40 @@ void put_piece(char p,int sq,int num)
     }
 }
 
-void print_board(void)
+void print_board(const Position &pos)
 {
-
+    for(int sq = 215;sq < 222;sq++){
+        int num = pos.board[sq];
+        if(num > 0){
+            cout << piece_letters[sq - 222] << ":" << num << " ";
+        }
+    }
+    cout << endl;
+    for(int row = 1;row <10;row++){
+        cout << "+--+--+--+--+--+--+--+--+--+" << endl;
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            char p = pos.board[sq];
+            if(p != EMPTY){
+                cout << "|" << setw(2) << piece_letters[p];
+            }
+            else{
+                cout << "|  ";
+            }
+        }
+        cout << "|" << endl;
+    }
+    cout << "+--+--+--+--+--+--+--+--+--+" << endl;
+    for(int sq = 208;sq < 215;sq++){
+        int num = pos.board[sq];
+        if(num > 0){
+            cout << piece_letters[sq - 199] << ":" << num << " ";
+        }
+    }
+    cout << endl;
+    cout << to_sfen(pos) << endl;
 }
+
 TEST(position,color_of_piece)
 {
     char p = W_LANCE;

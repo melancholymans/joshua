@@ -64,6 +64,9 @@ void handle_command(const string &command)
     else if(cmd == "go"){
         //思考開始
     }
+    else if(cmd == "d"){
+        print_board(root_position);
+    }
     else if(cmd == "gameover"){
         //GUI側からの終局の通知
     }
