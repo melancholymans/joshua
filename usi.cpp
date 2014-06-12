@@ -346,6 +346,22 @@ TEST(usi,set_position)
     EXPECT_EQ(EMPTY,root_position.board[SQ_G1]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_H1]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_I1]);
+    //持ち駒のチエック
+    EXPECT_EQ(4,root_position.board[208]);  //black pawn
+    EXPECT_EQ(0,root_position.board[209]);  //black lance
+    EXPECT_EQ(0,root_position.board[210]);  //black knight
+    EXPECT_EQ(0,root_position.board[211]);  //black silver
+    EXPECT_EQ(0,root_position.board[212]);  //black gold
+    EXPECT_EQ(0,root_position.board[213]);  //black bishop
+    EXPECT_EQ(0,root_position.board[214]);  //black rook
+
+    EXPECT_EQ(0,root_position.board[215]);  //white pawn
+    EXPECT_EQ(0,root_position.board[216]);  //white lance
+    EXPECT_EQ(0,root_position.board[217]);  //white knight
+    EXPECT_EQ(0,root_position.board[218]);  //white silver
+    EXPECT_EQ(2,root_position.board[219]);  //white gold
+    EXPECT_EQ(0,root_position.board[220]);  //white bishop
+    EXPECT_EQ(0,root_position.board[221]);  //white rook
 }
 
 

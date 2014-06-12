@@ -67,6 +67,9 @@ string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGS
 string begin_poition;   //どんな局面を受け付けたのか保持
 position_t root_position;
 
+void func()
+{
+}
 void from_sfen(string &sfen)
 {
     //from_sfenに制約をもうける、受け付けるのは初期局面（駒落ち初期局面可）のみで途中図は受け付けない、従って駒台の処理もない
@@ -74,6 +77,7 @@ void from_sfen(string &sfen)
     USIInputParser uip(sfen);
     string token = uip.get_next_token();
     int index;
+    char pmoto = 0;
 
     for(index = 0;index < LIMIT;index++){
         root_position.board[index] = EMPTY;
@@ -84,27 +88,27 @@ void from_sfen(string &sfen)
             col += (token[index] - '1' + 1);
         }
         else{
-            char pmoto = 0;
+            //char pmoto = 0;
             int sq = make_square(col,row);
             switch(token[index]){
-            case '+': pmoto = -8; index++;  //+pのような文字列は最初の+で成りを判定して次の
+            case '+': pmoto = -8; break; 
             case 'k': put_piece(W_KING,sq,0); col++; break;
             case 'g': put_piece(W_GOLD,sq,0); col++; break;
-            case 'p': put_piece(W_PAWN+pmoto,sq,0); col++; break;
-            case 'l': put_piece(W_LANCE+pmoto,sq,0); col++; break;
-            case 'n': put_piece(W_KNIGHT+pmoto,sq,0); col++; break;
-            case 's': put_piece(W_SILVER+pmoto,sq,0); col++; break; 
-            case 'b': put_piece(W_BISHOP+pmoto,sq,0); col++; break;
-            case 'r': put_piece(W_ROOK+pmoto,sq,0); col++; break;
+            case 'p': put_piece(W_PAWN+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'l': put_piece(W_LANCE+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'n': put_piece(W_KNIGHT+pmoto,sq,0); col++; pmoto = 0;break;
+            case 's': put_piece(W_SILVER+pmoto,sq,0); col++; pmoto = 0;break; 
+            case 'b': put_piece(W_BISHOP+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'r': put_piece(W_ROOK+pmoto,sq,0); col++; pmoto = 0;break;
             
             case 'K': put_piece(B_KING,sq,0); col++; break;
             case 'G': put_piece(B_GOLD,sq,0); col++; break;
-            case 'P': put_piece(B_PAWN+pmoto,sq,0); col++; break;
-            case 'L': put_piece(B_LANCE+pmoto,sq,0); col++; break;
-            case 'N': put_piece(B_KNIGHT+pmoto,sq,0); col++; break;
-            case 'S': put_piece(B_SILVER+pmoto,sq,0); col++; break; 
-            case 'B': put_piece(B_BISHOP+pmoto,sq,0); col++; break;
-            case 'R': put_piece(B_ROOK+pmoto,sq,0); col++; break;
+            case 'P': put_piece(B_PAWN+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'L': put_piece(B_LANCE+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'N': put_piece(B_KNIGHT+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'S': put_piece(B_SILVER+pmoto,sq,0); col++; pmoto = 0;break; 
+            case 'B': put_piece(B_BISHOP+pmoto,sq,0); col++; pmoto = 0;break;
+            case 'R': put_piece(B_ROOK+pmoto,sq,0); col++; pmoto = 0;break;
             case '/': col = 1; row++; break;
             case ' ': break;
             default: 
@@ -128,7 +132,48 @@ void from_sfen(string &sfen)
         ASSERT_TRUE(false);
         return; 
     }
-    //持ち駒(-),手数が入っているが無視してよい
+    //持ち駒(サンプル S2Pb18p）
+    token = uip.get_next_token();
+    for(index = 0;token.size() > index;index++){
+        char num;
+        if(isdigit(token[index]) && isalpha(token[index+1])){
+            if(isdigit(token[index+2])){
+                num = atoi(token.substr(index,2).c_str());
+            }
+            else{
+                num = atoi(token.substr(index,1).c_str());
+            }
+        }
+        else if(isalpha(token[index]) && isalpha(token[index+1])){
+            num = 1;
+        }
+        else if(token[index] == '-'){
+            //持ち駒がなかったら抜ける
+            break;
+        }
+        else{
+            cout << "Error in SFEN charracter" << endl;
+            ASSERT_TRUE(false);
+            return; 
+        }
+        switch(token[index]){
+        case 'g': put_piece(W_GOLD,219,num); break;
+        case 's': put_piece(W_SILVER,218,num); break;
+        case 'n': put_piece(W_KNIGHT,217,num); break;
+        case 'l': put_piece(W_LANCE,216,num); break;
+        case 'r': put_piece(W_ROOK,221,num); break;
+        case 'b': put_piece(W_BISHOP,220,num); break;
+        case 'p': put_piece(W_PAWN,215,num); break;
+        case 'G': put_piece(W_GOLD,212,num); break;
+        case 'S': put_piece(W_SILVER,211,num); break; 
+        case 'N': put_piece(W_KNIGHT,210,num); break;
+        case 'L': put_piece(W_LANCE,209,num); break;
+        case 'R': put_piece(W_ROOK,214,num); break;
+        case 'B': put_piece(W_BISHOP,213,num); break;
+        case 'P': put_piece(W_PAWN,208,num); break;
+        }
+    }
+    //持ち駒の次は手数が入っているが無視してよい
 }
 TEST(position,make_square)
 {
@@ -583,4 +628,111 @@ TEST(position,from_sfen)
     EXPECT_EQ(B_LANCE,root_position.board[SQ_A1]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_I1]);
     
+    //拡張したfrom_sfen用のテスト
+    from_sfen(string("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1"));
+    EXPECT_EQ(EMPTY,root_position.board[SQ_A9]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_B9]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_C9]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_D9]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E9]);
+    EXPECT_EQ(W_GOLD,root_position.board[SQ_F9]);
+    EXPECT_EQ(W_KING,root_position.board[SQ_G9]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H9]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I9]);
+
+    EXPECT_EQ(BP_PAWN,root_position.board[SQ_A8]);
+    EXPECT_EQ(BP_LANCE,root_position.board[SQ_B8]);
+    EXPECT_EQ(BP_KNIGHT,root_position.board[SQ_C8]);
+    EXPECT_EQ(BP_SILVER,root_position.board[SQ_D8]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E8]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_F8]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_G8]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H8]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I8]);
+
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_A7]);
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_B7]);
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_C7]);
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_D7]);
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_E7]);
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_F7]);
+    EXPECT_EQ(W_PAWN,root_position.board[SQ_G7]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H7]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I7]);
+
+    EXPECT_EQ(EMPTY,root_position.board[SQ_A6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_B6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_C6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_D6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_F6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_G6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H6]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I6]);
+
+    EXPECT_EQ(EMPTY,root_position.board[SQ_A5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_B5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_C5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_D5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_F5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_G5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H5]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I5]);
+
+    EXPECT_EQ(EMPTY,root_position.board[SQ_A4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_B4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_C4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_D4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_F4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_G4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H4]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I4]);
+
+    EXPECT_EQ(B_PAWN,root_position.board[SQ_A3]);
+    EXPECT_EQ(B_PAWN,root_position.board[SQ_B3]);
+    EXPECT_EQ(B_PAWN,root_position.board[SQ_C3]);
+    EXPECT_EQ(B_PAWN,root_position.board[SQ_D3]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E3]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_F3]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_G3]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H3]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I3]);
+
+    EXPECT_EQ(EMPTY,root_position.board[SQ_A2]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_B2]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_C2]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_D2]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E2]);
+    EXPECT_EQ(WP_SILVER,root_position.board[SQ_F2]);
+    EXPECT_EQ(WP_KNIGHT,root_position.board[SQ_G2]);
+    EXPECT_EQ(WP_LANCE,root_position.board[SQ_H2]);
+    EXPECT_EQ(WP_PAWN,root_position.board[SQ_I2]);
+
+    EXPECT_EQ(EMPTY,root_position.board[SQ_A1]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_B1]);
+    EXPECT_EQ(B_KING,root_position.board[SQ_C1]);
+    EXPECT_EQ(B_GOLD,root_position.board[SQ_D1]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_E1]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_F1]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_G1]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_H1]);
+    EXPECT_EQ(EMPTY,root_position.board[SQ_I1]);
+    //持ち駒のチエック
+    EXPECT_EQ(1,root_position.board[208]);  //black pawn
+    EXPECT_EQ(1,root_position.board[209]);  //black lance
+    EXPECT_EQ(0,root_position.board[210]);  //black knight
+    EXPECT_EQ(2,root_position.board[211]);  //black silver
+    EXPECT_EQ(0,root_position.board[212]);  //black gold
+    EXPECT_EQ(1,root_position.board[213]);  //black bishop
+    EXPECT_EQ(1,root_position.board[214]);  //black rook
+
+    EXPECT_EQ(4,root_position.board[215]);  //white pawn
+    EXPECT_EQ(1,root_position.board[216]);  //white lance
+    EXPECT_EQ(2,root_position.board[217]);  //white knight
+    EXPECT_EQ(0,root_position.board[218]);  //white silver
+    EXPECT_EQ(2,root_position.board[219]);  //white gold
+    EXPECT_EQ(1,root_position.board[220]);  //white bishop
+    EXPECT_EQ(1,root_position.board[221]);  //white rook
 }
