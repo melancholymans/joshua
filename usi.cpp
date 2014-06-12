@@ -21,6 +21,7 @@ void wait_for_command(void)
 {
     string command;
 
+    cout << ">"; 
     if(!getline(cin,command)){
         //改行のみ場合はquit扱い
         command = "quit";
@@ -106,7 +107,7 @@ void set_position(USIInputParser &uip)
             while(!uip.at_end_of_line()){
                 cmd = uip.get_next_token(); //cmdには指し手ごと分割されて渡す
                 Move m = move_from_string(root_position,cmd);
-                //局面の更新 do_move(move)/////////////////////////////////////////////////////////////////////////////
+                do_move(root_position,m);
             }
         }
     }
@@ -163,7 +164,6 @@ TEST(usi,move_from_string)
     m = move_from_string(root_position,cmd);
     EXPECT_EQ(1058100,m);
     //取る手,成るテスト
-    /////////////////////////////////////////////////////////sai テスト
     cmd = "9g9c+";
     m = move_from_string(root_position,cmd);
     EXPECT_EQ(22380865,m);

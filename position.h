@@ -121,6 +121,7 @@ void from_sfen(string &sfen);
 string to_sfen(const Position &pos);
 void print_board(const Position &pos);
 void put_piece(char p,int sq,int num);
+void do_move(Position &pos,Move m);
 
 #endif
 

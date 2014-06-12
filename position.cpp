@@ -84,25 +84,27 @@ void from_sfen(string &sfen)
             col += (token[index] - '1' + 1);
         }
         else{
+            char pmoto = 0;
             int sq = make_square(col,row);
             switch(token[index]){
+            case '+': pmoto = -8; index++;  //+pÇÃÇÊÇ§Ç»ï∂éöóÒÇÕç≈èâÇÃ+Ç≈ê¨ÇËÇîªíËÇµÇƒéüÇÃ
             case 'k': put_piece(W_KING,sq,0); col++; break;
             case 'g': put_piece(W_GOLD,sq,0); col++; break;
-            case 'p': put_piece(W_PAWN,sq,0); col++; break;
-            case 'l': put_piece(W_LANCE,sq,0); col++; break;
-            case 'n': put_piece(W_KNIGHT,sq,0); col++; break;
-            case 's': put_piece(W_SILVER,sq,0); col++; break; 
-            case 'b': put_piece(W_BISHOP,sq,0); col++; break;
-            case 'r': put_piece(W_ROOK,sq,0); col++; break;
+            case 'p': put_piece(W_PAWN+pmoto,sq,0); col++; break;
+            case 'l': put_piece(W_LANCE+pmoto,sq,0); col++; break;
+            case 'n': put_piece(W_KNIGHT+pmoto,sq,0); col++; break;
+            case 's': put_piece(W_SILVER+pmoto,sq,0); col++; break; 
+            case 'b': put_piece(W_BISHOP+pmoto,sq,0); col++; break;
+            case 'r': put_piece(W_ROOK+pmoto,sq,0); col++; break;
             
             case 'K': put_piece(B_KING,sq,0); col++; break;
             case 'G': put_piece(B_GOLD,sq,0); col++; break;
-            case 'P': put_piece(B_PAWN,sq,0); col++; break;
-            case 'L': put_piece(B_LANCE,sq,0); col++; break;
-            case 'N': put_piece(B_KNIGHT,sq,0); col++; break;
-            case 'S': put_piece(B_SILVER,sq,0); col++; break; 
-            case 'B': put_piece(B_BISHOP,sq,0); col++; break;
-            case 'R': put_piece(B_ROOK,sq,0); col++; break;
+            case 'P': put_piece(B_PAWN+pmoto,sq,0); col++; break;
+            case 'L': put_piece(B_LANCE+pmoto,sq,0); col++; break;
+            case 'N': put_piece(B_KNIGHT+pmoto,sq,0); col++; break;
+            case 'S': put_piece(B_SILVER+pmoto,sq,0); col++; break; 
+            case 'B': put_piece(B_BISHOP+pmoto,sq,0); col++; break;
+            case 'R': put_piece(B_ROOK+pmoto,sq,0); col++; break;
             case '/': col = 1; row++; break;
             case ' ': break;
             default: 
@@ -310,6 +312,35 @@ void print_board(const Position &pos)
     }
     cout << endl;
     cout << to_sfen(pos) << endl;
+}
+
+void do_move(Position &pos,Move m)
+{
+    int from = (m >> 8) & 0xFF;
+    int to = m & 0xFF;
+    char cp;
+    char p;
+    char *base_address;
+
+    if(from != 0){
+        //î’è„ÇÃéË
+        p = pos.board[from];
+        if(pos.board[to] != EMPTY){
+            cp = pos.board[to];
+            base_address = turn ? &pos.board[215] : &pos.board[208];
+            *(base_address+(cp & 0x0F)) += 1;
+        }
+        pos.board[to] = m & 0x10000 ? p-8:p;
+        pos.board[from] = EMPTY;
+    }
+    else{
+        //ë≈Ç¬éË
+        p = (m >> 17) & 0x0F;
+        pos.board[to] = turn ? 0xF0 | p : p;
+        base_address = turn ? &pos.board[215] : &pos.board[208];
+        *(base_address+p) -= 1;
+    }
+    turn = ~turn;
 }
 
 TEST(position,color_of_piece)
