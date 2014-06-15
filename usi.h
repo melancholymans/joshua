@@ -21,13 +21,13 @@ private:
     void skip_whitespace(void);
 };
 
-//extern map <char,char> usi2piece;
 
 void usi_main_loop(void);
-void wait_for_command();
-void handle_command(const string &command);
+void game_init(void);
+bool handle_command(const string &command);
 void set_position(USIInputParser &uip);
 Move move_from_string(const Position &pos, const string &cmd);
 int square_from_string(const string sq);
+void go(void);
 
 #endif

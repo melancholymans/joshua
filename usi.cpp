@@ -9,37 +9,37 @@ using namespace std;
 #include "usioption.h"
 #include "csa.h"
 #include "position.h"
-
+#include "search.h"
+#include "movegen.h"
 
 void usi_main_loop(void)
 {
-    while(true){
-        wait_for_command();
-    }
-}
-
-void wait_for_command(void)
-{
     string command;
 
-    cout << ">"; 
-    if(!getline(cin,command)){
-        //改行のみ場合はquit扱い
-        command = "quit";
-    }
-    handle_command(command);
+    do{
+        if(!getline(cin,command)){
+            //改行のみ場合はquit扱い
+            command = "quit";
+        }
+    }while(handle_command(command));
 }
+
+void game_init(void)
+{
+    //対局ごと初期化する必要がある変数
+}
+
 
 //usi->isready->usinewgameで対局開始
 //positionで思考局面の付与->goで思考
 //bestmoveで思考結果を返信,gameoverで終局
-void handle_command(const string &command)
+bool handle_command(const string &command)
 {
     USIInputParser uip(command);
     string cmd = uip.get_next_token();
     if(cmd == "quit"){
         //後始末
-        exit(0);
+        return false;
     }
     else if(cmd == "usi"){
         cout << "id name " << "joshua" << endl;
@@ -53,7 +53,9 @@ void handle_command(const string &command)
         cout << "readyok" << endl;
     }
     else if(cmd == "usinewgame"){
-        //色々初期など準備
+        //色々初期など準備,このコマンドに対して将棋所に返すものはない
+        game_init();
+        from_sfen(start_position);
     }
     else if(cmd == "position"){
         //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
@@ -65,6 +67,7 @@ void handle_command(const string &command)
     }
     else if(cmd == "go"){
         //思考開始
+        go();
     }
     else if(cmd == "d"){
         print_board(root_position);
@@ -74,6 +77,7 @@ void handle_command(const string &command)
     }
     else if(cmd == "gameover"){
         //GUI側からの終局の通知
+
     }
     else{
         cout << "Unknow command" << endl;
@@ -81,6 +85,7 @@ void handle_command(const string &command)
             cout << uip.get_next_token() << endl;
         }
     }
+    return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
 }
 
 void set_position(USIInputParser &uip)
@@ -115,6 +120,12 @@ void set_position(USIInputParser &uip)
             }
         }
     }
+}
+
+void go(void)
+{
+    next_move[0].last_move = mlist;
+    think(root_position,mlist);
 }
 
 Move move_from_string(const Position &pos, const string &cmd)

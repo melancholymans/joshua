@@ -13,21 +13,6 @@ const char EMPTY = 0;
 const char EDGE = 1;
 const char NOT_PMOTO = 8;
 
-const char PPAWN = 2;
-const char PLANCE = 3;
-const char PKNIGHT = 4;
-const char PSILVER = 5;
-const char PBISHOP = 6;
-const char PROOK = 7;
-const char KING = 8;
-const char GOLD = 9;
-const char PAWN = 10;
-const char LANCE = 11;
-const char KNIGHT = 12;
-const char SILVER = 13;
-const char BISHOP = 14;
-const char ROOK = 15;
-
 const char BP_PAWN = 2;
 const char BP_LANCE = 3;
 const char BP_KNIGHT = 4;

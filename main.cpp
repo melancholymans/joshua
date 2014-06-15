@@ -21,16 +21,19 @@ int main(int argc,char *argv[])
     setvbuf(stdin,NULL,_IONBF,0);
     setvbuf(stdout,NULL,_IONBF,0);
     init_usi_options();
-    main_test(argc,argv);
-
+#if !defined(NDEBUG)
+    main_test(argc,argv); 
+#endif
     usi_main_loop();
     return 0;
 }
 
+//アプリケーション全体の初期化
 void init(void)
 {
 }
 
+//テスト起動
 int main_test(int argc,char *argv[])
 {
     ::testing::InitGoogleTest(&argc,argv);

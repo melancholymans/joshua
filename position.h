@@ -15,7 +15,6 @@ const int STAND_BLACK_START = 16*13;
 const int STAND_WHITE_START = 16*13 + 7;
 const int LIMIT = 16*13 + 7*2;
 
-
 extern string start_position;
 extern position_t root_position;
 extern const int BLACK;
@@ -25,21 +24,14 @@ extern int turn;
 const extern char EMPTY;
 const extern char EDGE;
 const extern char NOT_PMOTO;
-
-const extern char PPAWN;    //2
-const extern char PLANCE;   //3
-const extern char PKNIGHT;  //4
-const extern char PSILVER;  //5
-const extern char PBISHOP;  //6
-const extern char PROOK;    //7
-const extern char KING;     //8
-const extern char GOLD;     //9
-const extern char PAWN;     //10
-const extern char LANCE;    //11
-const extern char KNIGHT;   //12
-const extern char SILVER;   //13
-const extern char BISHOP;   //14
-const extern char ROOK;     //15
+enum{
+    PPAWN=2,PLANCE,PKNIGHT,PSILVER,PBISHOP,PROOK,
+    KING=8,GOLD,PAWN,LANCE,KNIGHT,SILVER,BISHOP,ROOK
+};
+enum{
+    UUL = -33,UUR = -31,UL = -17,U = -16,UR = -15,L = -1,
+    R = 1,DL = 15,D = 16,DR = 17,DDL = 31,DDR = 33
+};
 
 const extern char BP_PAWN;      //2
 const extern char BP_LANCE;     //3
@@ -82,6 +74,7 @@ enum{
     SQ_A3=129,SQ_B3,SQ_C3,SQ_D3,SQ_E3,SQ_F3,SQ_G3,SQ_H3,SQ_I3,
     SQ_A2=145,SQ_B2,SQ_C2,SQ_D2,SQ_E2,SQ_F2,SQ_G2,SQ_H2,SQ_I2,
     SQ_A1=161,SQ_B1,SQ_C1,SQ_D1,SQ_E1,SQ_F1,SQ_G1,SQ_H1,SQ_I1,
+    SQ_LIMIT
 };
 //列、行番号から座標を計算
 inline int make_square(int col,int row)
@@ -97,6 +90,7 @@ inline char type_of_piece(char p)
 
 inline Color color_of_piece(int p)
 {
+    //駒コードからカラーを判定している
     //符号ありchar型を右シフトしているのでANSI Cでは挙動が定義されていない
     //VC++2010で算術シフトを採用しているようなのでこのままとするが処理系が
     //変更になったらテストでエラーがでるようにしておく
