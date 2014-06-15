@@ -18,6 +18,8 @@ const int LIMIT = 16*13 + 7*2;
 
 extern string start_position;
 extern position_t root_position;
+extern const int BLACK;
+extern const int WHITE;
 extern int turn;
 
 const extern char EMPTY;

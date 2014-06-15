@@ -62,17 +62,13 @@ const int BLACK = 0;
 const int WHITE = -1;
 int turn;
 
-//先手大文字、後手小文字、数字は空白、/は行区切り
+//先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
 string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 string begin_poition;   //どんな局面を受け付けたのか保持
 position_t root_position;
 
-void func()
-{
-}
 void from_sfen(string &sfen)
 {
-    //from_sfenに制約をもうける、受け付けるのは初期局面（駒落ち初期局面可）のみで途中図は受け付けない、従って駒台の処理もない
     begin_poition = sfen;
     USIInputParser uip(sfen);
     string token = uip.get_next_token();
@@ -88,7 +84,6 @@ void from_sfen(string &sfen)
             col += (token[index] - '1' + 1);
         }
         else{
-            //char pmoto = 0;
             int sq = make_square(col,row);
             switch(token[index]){
             case '+': pmoto = -8; break; 
@@ -113,7 +108,7 @@ void from_sfen(string &sfen)
             case ' ': break;
             default: 
                 cout << "Error in SFEN charracter" << endl;
-                EXPECT_TRUE(false);
+                assert(false);
                 return;
             }
         }
@@ -129,31 +124,32 @@ void from_sfen(string &sfen)
     }
     else{
         cout << "Error in SFEN charracter" << endl;
-        ASSERT_TRUE(false);
-        return; 
+        assert(false);
+        return;
     }
     //持ち駒(サンプル S2Pb18p）
     token = uip.get_next_token();
     for(index = 0;token.size() > index;index++){
         char num;
-        if(isdigit(token[index]) && isalpha(token[index+1])){
-            if(isdigit(token[index+2])){
+        if(isdigit(token[index]) && isalnum(token[index+1])){   //最初に数字が来るパターンに対応
+            if(isdigit(token[index+1])){    //２桁の数字に対応
                 num = atoi(token.substr(index,2).c_str());
+                index += 2;
             }
-            else{
+            else{                           //１桁の数字に対応
                 num = atoi(token.substr(index,1).c_str());
+                index +=1;
             }
         }
-        else if(isalpha(token[index]) && isalpha(token[index+1])){
+        else if(isalpha(token[index])){  //数字がないパターンに対応
             num = 1;
         }
-        else if(token[index] == '-'){
-            //持ち駒がなかったら抜ける
+        else if(token[index] == '-'){   //持ち駒がないパターンに対応
             break;
         }
-        else{
+        else{       //どれでもない
             cout << "Error in SFEN charracter" << endl;
-            ASSERT_TRUE(false);
+            assert(false);
             return; 
         }
         switch(token[index]){
@@ -303,7 +299,6 @@ TEST(position,to_sfen)
     root_position.board[221] = 1;   //W_ROOK
 
     EXPECT_STREQ("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1",to_sfen(root_position).c_str());
-    print_board(root_position);
 }
 
 
@@ -371,19 +366,19 @@ void do_move(Position &pos,Move m)
         //盤上の手
         p = pos.board[from];
         if(pos.board[to] != EMPTY){
-            cp = pos.board[to];
+            cp = pos.board[to] & 0x0F;
             base_address = turn ? &pos.board[215] : &pos.board[208];
-            *(base_address+(cp & 0x0F)) += 1;
+            *(base_address + ((cp | 0x08) - 9)) += 1;
         }
         pos.board[to] = m & 0x10000 ? p-8:p;
         pos.board[from] = EMPTY;
     }
     else{
         //打つ手
-        p = (m >> 17) & 0x0F;
-        pos.board[to] = turn ? 0xF0 | p : p;
+        p = (m >> 17) & 0x0F;   //打つ駒種を取り出す
+        pos.board[to] = turn ? 0xF0 | p : p;    //駒コードに変換
         base_address = turn ? &pos.board[215] : &pos.board[208];
-        *(base_address+p) -= 1;
+        *(base_address + ((p | 0x08) - 9)) -= 1;
     }
     turn = ~turn;
 }
