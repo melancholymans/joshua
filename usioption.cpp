@@ -9,6 +9,7 @@ using namespace std;
 
 map<string,string> options;
 map<char,string> piece_letters;
+map<string,char> csa_letters;
 
 void init_usi_options()
 {
@@ -46,6 +47,23 @@ void init_usi_options()
     piece_letters[W_SILVER] = "s";
     piece_letters[W_BISHOP] = "b";
     piece_letters[W_ROOK] = "r";
+
+    csa_letters["FU"] = 10;
+    csa_letters["KY"] = 11;
+    csa_letters["KE"] = 12;
+    csa_letters["GI"] = 13;
+    csa_letters["KI"] = 9;
+    csa_letters["KA"] = 14;
+    csa_letters["HI"] = 15;
+    csa_letters["OU"] = 8;
+    csa_letters["TO"] = 2;
+    csa_letters["NY"] = 3;
+    csa_letters["NK"] = 4;
+    csa_letters["NG"] = 5;
+    csa_letters["UM"] = 6;
+    csa_letters["RY"] = 7;
+    csa_letters["* "] = 0;   //‹î•¶Žš‚Å‚Í‚È‚¢‚ª
+
     return;
 }
 
