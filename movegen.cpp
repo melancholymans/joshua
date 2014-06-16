@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include "gtest\gtest.h"
 #include "position.h"
 #include "movegen.h"
 
@@ -46,14 +47,16 @@ int DIRECT_BLACK[16][8] = {
 
 Move *generate_moves(const Position &pos,Move *ml)
 {
-    Move *m = NULL;
-    char p,cp;
+    char p;
     Color c;
 
     for(int sq = SQ_A9;sq < SQ_LIMIT;sq++){
         p = pos.board[sq];
         c = color_of_piece(p);
-        if(turn == WHITE){
+        if(c != turn){
+            continue;
+        }
+        if(WHITE == turn){
             switch(type_of_piece(p)){
             case PAWN:ml=generate_pawn_moves_w(pos,ml,sq); break;
             case GOLD:ml=generate_gold_moves_w(pos,ml,sq); break;
@@ -62,7 +65,7 @@ Move *generate_moves(const Position &pos,Move *ml)
             case KING:ml=generate_king_moves_w(pos,ml,sq); break;
             }
         }
-        else{
+        else if(BLACK == turn){
             switch(type_of_piece(p)){
             case PAWN:ml=generate_pawn_moves_b(pos,ml,sq); break;
             case GOLD:ml=generate_gold_moves_b(pos,ml,sq); break;
@@ -72,7 +75,7 @@ Move *generate_moves(const Position &pos,Move *ml)
             }
         }
     }
-    return m;
+    return ml;
 }
 
 Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from)
@@ -82,7 +85,7 @@ Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from)
     
     to = from + DIRECT_WHITE[PAWN][0];
     cp = pos.board[to];
-    if(cp >= 0){
+    if(cp > 1 || cp == 0){
         p = pos.board[from];
         pmoto = to > SQ_I4 ? 1 : 0;
         *(ml++) = make_move(from,to,pmoto,p,cp);
@@ -98,8 +101,8 @@ Move *generate_gold_moves_w(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 6;i++){
         to = from + DIRECT_WHITE[GOLD][i];
         cp = pos.board[to];
-        p = pos.board[from];
-        if(cp >= 0){
+        if(cp > 1 || cp == 0){
+            p = pos.board[from];
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -114,9 +117,9 @@ Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 5;i++){
         to = from + DIRECT_WHITE[SILVER][i];
         cp = pos.board[to];
-        p = pos.board[from];
-        if(cp >= 0){
+        if(cp > 1 || cp == 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢
+            p = pos.board[from];
             pmoto = to > SQ_I4 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -132,9 +135,9 @@ Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 2;i++){
         to = from + DIRECT_WHITE[KNIGHT][i];
         cp = pos.board[to];
-        p = pos.board[from];
-        if(cp >= 0){
+        if(cp > 1 || cp == 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢,‚³‚ç‚ÉŒj”n‚Í¬‚é•K{‚Ìƒ‰ƒCƒ“‚ª‚ ‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
+            p = pos.board[from];
             pmoto = to > SQ_I4 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -150,15 +153,14 @@ Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
         cp = pos.board[to];
-        p = pos.board[from];
         //KING‚È‚Ì‚Å“G‚Ì—˜‚«‚Ì‚ ‚é‚Æ‚±‚ë‚É‚Í‚¢‚¯‚È‚¢‚ª‚Ü‚¾‚»‚±‚Ü‚Å‚Ìƒf[ƒ^‚ª‘µ‚Á‚Ä‚È‚¢‚Ì‚ÅPASS
-        if(cp >= 0){
+        if(cp > 1 || cp == 0){
+            p = pos.board[from];
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
     return ml;
 }
-
 
 Move *generate_pawn_moves_b(const Position &pos,Move *ml,int from)
 {
@@ -183,8 +185,8 @@ Move *generate_gold_moves_b(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 6;i++){
         to = from + DIRECT_BLACK[GOLD][i];
         cp = pos.board[to];
-        p = pos.board[from];
         if(cp <= 0){
+            p = pos.board[from];
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -199,9 +201,9 @@ Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 5;i++){
         to = from + DIRECT_BLACK[SILVER][i];
         cp = pos.board[to];
-        p = pos.board[from];
         if(cp <= 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢
+            p = pos.board[from];
             pmoto = to > SQ_I4 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -217,9 +219,9 @@ Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 2;i++){
         to = from + DIRECT_BLACK[KNIGHT][i];
         cp = pos.board[to];
-        p = pos.board[from];
         if(cp <= 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢,‚³‚ç‚ÉŒj”n‚Í¬‚é•K{‚Ìƒ‰ƒCƒ“‚ª‚ ‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
+            p = pos.board[from];
             pmoto = to > SQ_I4 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -233,11 +235,11 @@ Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
     char p,cp;
 
     for(int i = 0;i < 8;i++){
-        to = from + DIRECT_WHITE[KING][i];
+        to = from + DIRECT_BLACK[KING][i];
         cp = pos.board[to];
-        p = pos.board[from];
         //KING‚È‚Ì‚Å“G‚Ì—˜‚«‚Ì‚ ‚é‚Æ‚±‚ë‚É‚Í‚¢‚¯‚È‚¢‚ª‚Ü‚¾‚»‚±‚Ü‚Å‚Ìƒf[ƒ^‚ª‘µ‚Á‚Ä‚È‚¢‚Ì‚ÅPASS
         if(cp <= 0){
+            p = pos.board[from];
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -268,3 +270,11 @@ Move *generate_drop(const Position &pos,Move *ml)
     return m;
 }
 */
+
+TEST(movegen,generate_moves)
+{
+    from_sfen(start_position);
+    next_move[0].last_move = mlist;
+    Move *m = generate_moves(root_position,mlist);
+    cout << m - next_move[0].last_move << endl;
+}

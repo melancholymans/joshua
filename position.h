@@ -108,7 +108,7 @@ from square ˆÚ“®Œ³‚ÌÀ•W 8bit 8-15bit
 to square ˆÚ“®æ‚ÌÀ•W 8bit 0-7bit
 25-31bit‚Í‹ó‚«
 */
-inline Move make_move(int from,int to,bool pmoto,char piece,char cap_piece)
+inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 {
     return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece) << 17 | unsigned int(cap_piece) << 21);
 }

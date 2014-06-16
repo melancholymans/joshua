@@ -61,7 +61,12 @@ void from_sfen(string &sfen)
     char pmoto = 0;
 
     for(index = 0;index < LIMIT;index++){
-        root_position.board[index] = EMPTY;
+        root_position.board[index] = EDGE;
+    }
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            root_position.board[row**********] = EMPTY;
+        }
     }
     int col = 1,row = 1;
     for(index = 0;token.size() > index;index++){
