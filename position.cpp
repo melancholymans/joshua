@@ -60,14 +60,22 @@ void from_sfen(string &sfen)
     int index;
     char pmoto = 0;
 
+    //全体を盤外に設定
     for(index = 0;index < LIMIT;index++){
         root_position.board[index] = EDGE;
     }
+    //盤上はEMPTYに設定
     for(int row = 1;row < 10;row++){
         for(int col = 1;col < 10;col++){
-            root_position.board[row**********] = EMPTY;
+            int sq = (row << 4) + col + 16; 
+            root_position.board[sq] = EMPTY;
         }
     }
+    //駒台もEMPTYに設定
+    for(int sq = 208;sq < 222;sq++){
+        root_position.board[sq] = EMPTY;
+    }
+    //盤上設定
     int col = 1,row = 1;
     for(index = 0;token.size() > index;index++){
         if(isdigit(token[index])){
@@ -117,7 +125,7 @@ void from_sfen(string &sfen)
         assert(false);
         return;
     }
-    //持ち駒(サンプル S2Pb18p）
+    //持ち駒設定(サンプル S2Pb18p）
     token = uip.get_next_token();
     for(index = 0;token.size() > index;index++){
         char num;

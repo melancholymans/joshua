@@ -45,6 +45,8 @@ int DIRECT_BLACK[16][8] = {
     {U,L,R,D,0,0,0,0},  //B_ROOK
 };
 
+bool test_helper(Move anser,Move *m,int n);
+
 Move *generate_moves(const Position &pos,Move *ml)
 {
     char p;
@@ -273,8 +275,57 @@ Move *generate_drop(const Position &pos,Move *ml)
 
 TEST(movegen,generate_moves)
 {
+    //指し手のテストは生成される手の数と生成された手そのものを比較する
     from_sfen(start_position);
     next_move[0].last_move = mlist;
     Move *m = generate_moves(root_position,mlist);
-    cout << m - next_move[0].last_move << endl;
+    int n = m - next_move[0].last_move;
+    cout << n << endl;
+    
+    m = mlist;
+    //pawn
+    Move anser = make_move(SQ_A3,SQ_A4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_B3,SQ_B4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_C3,SQ_C4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_D3,SQ_D4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_E3,SQ_E4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_F3,SQ_F4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_G3,SQ_G4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_H3,SQ_H4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+
+    anser = make_move(SQ_I3,SQ_I4,0,B_PAWN,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+    //lance
+    anser = make_move(SQ_A1,SQ_A2,0,B_LANCE,EMPTY);
+    EXPECT_TRUE(test_helper(anser,m,n));
+    //silver
+    anser = make_move(SQ_B3,SQ_B4,0,B_PAWN,EMPTY);****************
+    EXPECT_TRUE(test_helper(anser,m,n));
+}
+
+bool test_helper(Move anser,Move *m,int n)
+{
+    bool flag = false;
+
+    for(int i = 0;i < n;i++){
+        if(anser == *(m++)){
+            flag = true;
+        }
+    }
+    return flag;
 }

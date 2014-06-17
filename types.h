@@ -40,6 +40,10 @@ p >> 4;
 これはインライン関数として登録してある
 inline Color color_of_piece(int p)
 
+row,col座標からsq座標に変換
+sq = (row << 4) + col + 16
+(row 1..9,col 1..9)
+
 汎用性があるものはここに書く、煩雑に書くようになったら
 inline関数へすること
 */
