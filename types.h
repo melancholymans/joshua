@@ -41,8 +41,8 @@ p >> 4;
 inline Color color_of_piece(int p)
 
 row,col座標からsq座標に変換
-sq = (row << 4) + col + 16
-(row 1..9,col 1..9)
+postion.hにあるmake_square　inline関数を
+利用のこと
 
 汎用性があるものはここに書く、煩雑に書くようになったら
 inline関数へすること

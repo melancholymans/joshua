@@ -45,7 +45,7 @@ int DIRECT_BLACK[16][8] = {
     {U,L,R,D,0,0,0,0},  //B_ROOK
 };
 
-bool test_helper(Move anser,Move *m,int n);
+bool array_check(Move anser,Move *m,int n);
 
 Move *generate_moves(const Position &pos,Move *ml)
 {
@@ -60,21 +60,58 @@ Move *generate_moves(const Position &pos,Move *ml)
         }
         if(WHITE == turn){
             switch(type_of_piece(p)){
-            case PAWN:ml=generate_pawn_moves_w(pos,ml,sq); break;
-            case GOLD:ml=generate_gold_moves_w(pos,ml,sq); break;
-            case SILVER:ml=generate_silver_moves_w(pos,ml,sq); break;
-            case KNIGHT:ml=generate_knight_moves_w(pos,ml,sq); break;
             case KING:ml=generate_king_moves_w(pos,ml,sq); break;
+            case GOLD:ml=generate_gold_moves_w(pos,ml,sq); break;
+            case PAWN:ml=generate_pawn_moves_w(pos,ml,sq); break;
+            case LANCE:ml=generate_lance_moves_w(pos,ml,sq); break;
+            case KNIGHT:ml=generate_knight_moves_w(pos,ml,sq); break;
+            case SILVER:ml=generate_silver_moves_w(pos,ml,sq); break;
+            case ROOK:ml=generate_rook_moves_w(pos,ml,sq); break;
             }
         }
         else if(BLACK == turn){
             switch(type_of_piece(p)){
-            case PAWN:ml=generate_pawn_moves_b(pos,ml,sq); break;
-            case GOLD:ml=generate_gold_moves_b(pos,ml,sq); break;
-            case SILVER:ml=generate_silver_moves_b(pos,ml,sq); break;
-            case KNIGHT:ml=generate_knight_moves_b(pos,ml,sq); break;
             case KING:ml=generate_king_moves_b(pos,ml,sq); break;
+            case GOLD:ml=generate_gold_moves_b(pos,ml,sq); break;
+            case PAWN:ml=generate_pawn_moves_b(pos,ml,sq); break;
+            case LANCE:ml=generate_lance_moves_b(pos,ml,sq); break;
+            case KNIGHT:ml=generate_knight_moves_b(pos,ml,sq); break;
+            case SILVER:ml=generate_silver_moves_b(pos,ml,sq); break;
+            case ROOK:ml=generate_rook_moves_b(pos,ml,sq); break;
             }
+        }
+    }
+    return ml;
+}
+
+Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
+{
+    int to,pmoto = 0;
+    char p,cp;
+
+    for(int i = 0;i < 8;i++){
+        to = from + DIRECT_WHITE[KING][i];
+        cp = pos.board[to];
+        //KINGÇ»ÇÃÇ≈ìGÇÃóòÇ´ÇÃÇ†ÇÈÇ∆Ç±ÇÎÇ…ÇÕÇ¢ÇØÇ»Ç¢Ç™Ç‹ÇæÇªÇ±Ç‹Ç≈ÇÃÉfÅ[É^Ç™ëµÇ¡ÇƒÇ»Ç¢ÇÃÇ≈PASS
+        if(cp > 1 || cp == 0){
+            p = pos.board[from];
+            *(ml++) = make_move(from,to,pmoto,p,cp);
+        }
+    }
+    return ml;
+}
+
+Move *generate_gold_moves_w(const Position &pos,Move *ml,int from)
+{
+    int to,pmoto = 0;
+    char p,cp;
+
+    for(int i = 0;i < 6;i++){
+        to = from + DIRECT_WHITE[GOLD][i];
+        cp = pos.board[to];
+        if(cp > 1 || cp == 0){
+            p = pos.board[from];
+            *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
     return ml;
@@ -95,16 +132,38 @@ Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from)
     return ml;
 }
 
-Move *generate_gold_moves_w(const Position &pos,Move *ml,int from)
+Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
 {
-    int to,pmoto = 0;
+    int to,pmoto,i;
     char p,cp;
 
-    for(int i = 0;i < 6;i++){
-        to = from + DIRECT_WHITE[GOLD][i];
+    for(to = from,i = 0;i < 1;i++){
+        //loopÇâÒÇ∑ïKóvÇ™Ç»Ç¢Ç™ëºÇÃÇ±Ç‹ÇÃÇΩÇﬂÇ…Ç±Ç§ÇµÇƒÇ¢ÇÈ
+        p = pos.board[from];
+        do{
+            to = to + DIRECT_WHITE[LANCE][i];
+            cp = pos.board[to];
+            pmoto = to > SQ_I4 ? 1 : 0;
+            if(cp == 0 || cp > 1){ 
+                *(ml++) = make_move(from,to,pmoto,p,cp);
+            }
+        }while(cp == EMPTY);
+    }
+    return ml;
+}
+
+Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
+{
+    int to,pmoto;
+    char p,cp;
+
+    for(int i = 0;i < 2;i++){
+        to = from + DIRECT_WHITE[KNIGHT][i];
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
+            //ñ{óàÇÕê¨ÇÈÇ≈ÇPéËÅAê¨ÇÁÇ»Ç¢Ç≈ÇPéËÇ»ÇÃÇ≈ÅAÇ±ÇÃåàÇﬂë≈ÇøÇÕÇÊÇ≠Ç»Ç¢,Ç≥ÇÁÇ…åjînÇÕê¨ÇÈïKê{ÇÃÉâÉCÉìÇ™Ç†ÇÈÇ±Ç∆ÇñYÇÍÇ»Ç¢ÇÊÇ§Ç…
             p = pos.board[from];
+            pmoto = to > SQ_I4 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -129,34 +188,32 @@ Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
     return ml;
 }
 
-Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
+Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
 {
-    int to,pmoto;
+    int to,pmoto = 0;
     char p,cp;
 
-    for(int i = 0;i < 2;i++){
-        to = from + DIRECT_WHITE[KNIGHT][i];
+    for(int i = 0;i < 8;i++){
+        to = from + DIRECT_BLACK[KING][i];
         cp = pos.board[to];
-        if(cp > 1 || cp == 0){
-            //ñ{óàÇÕê¨ÇÈÇ≈ÇPéËÅAê¨ÇÁÇ»Ç¢Ç≈ÇPéËÇ»ÇÃÇ≈ÅAÇ±ÇÃåàÇﬂë≈ÇøÇÕÇÊÇ≠Ç»Ç¢,Ç≥ÇÁÇ…åjînÇÕê¨ÇÈïKê{ÇÃÉâÉCÉìÇ™Ç†ÇÈÇ±Ç∆ÇñYÇÍÇ»Ç¢ÇÊÇ§Ç…
+        //KINGÇ»ÇÃÇ≈ìGÇÃóòÇ´ÇÃÇ†ÇÈÇ∆Ç±ÇÎÇ…ÇÕÇ¢ÇØÇ»Ç¢Ç™Ç‹ÇæÇªÇ±Ç‹Ç≈ÇÃÉfÅ[É^Ç™ëµÇ¡ÇƒÇ»Ç¢ÇÃÇ≈PASS
+        if(cp <= 0){
             p = pos.board[from];
-            pmoto = to > SQ_I4 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
     return ml;
 }
 
-Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
+Move *generate_gold_moves_b(const Position &pos,Move *ml,int from)
 {
     int to,pmoto = 0;
     char p,cp;
 
-    for(int i = 0;i < 8;i++){
-        to = from + DIRECT_WHITE[KING][i];
+    for(int i = 0;i < 6;i++){
+        to = from + DIRECT_BLACK[GOLD][i];
         cp = pos.board[to];
-        //KINGÇ»ÇÃÇ≈ìGÇÃóòÇ´ÇÃÇ†ÇÈÇ∆Ç±ÇÎÇ…ÇÕÇ¢ÇØÇ»Ç¢Ç™Ç‹ÇæÇªÇ±Ç‹Ç≈ÇÃÉfÅ[É^Ç™ëµÇ¡ÇƒÇ»Ç¢ÇÃÇ≈PASS
-        if(cp > 1 || cp == 0){
+        if(cp <= 0){
             p = pos.board[from];
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -179,36 +236,21 @@ Move *generate_pawn_moves_b(const Position &pos,Move *ml,int from)
     return ml;
 }
 
-Move *generate_gold_moves_b(const Position &pos,Move *ml,int from)
+Move *generate_lance_moves_b(const Position &pos,Move *ml,int from)
 {
-    int to,pmoto = 0;
+    int to,pmoto,i;
     char p,cp;
 
-    for(int i = 0;i < 6;i++){
-        to = from + DIRECT_BLACK[GOLD][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            p = pos.board[from];
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-
-    for(int i = 0;i < 5;i++){
-        to = from + DIRECT_BLACK[SILVER][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            //ñ{óàÇÕê¨ÇÈÇ≈ÇPéËÅAê¨ÇÁÇ»Ç¢Ç≈ÇPéËÇ»ÇÃÇ≈ÅAÇ±ÇÃåàÇﬂë≈ÇøÇÕÇÊÇ≠Ç»Ç¢
-            p = pos.board[from];
-            pmoto = to > SQ_I4 ? 1 : 0;
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
+    for(to = from,i = 0;i < 1;i++){
+        p = pos.board[from];
+        do{
+            to = to + DIRECT_BLACK[LANCE][i];
+            cp = pos.board[to];
+            pmoto = to < SQ_A6 ? 1 : 0;
+            if(cp <= 0){ 
+                *(ml++) = make_move(from,to,pmoto,p,cp);
+            }
+        }while(cp == EMPTY);
     }
     return ml;
 }
@@ -231,22 +273,62 @@ Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
     return ml;
 }
 
-Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
+Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
 {
-    int to,pmoto = 0;
+    int to,pmoto;
     char p,cp;
 
-    for(int i = 0;i < 8;i++){
-        to = from + DIRECT_BLACK[KING][i];
+    for(int i = 0;i < 5;i++){
+        to = from + DIRECT_BLACK[SILVER][i];
         cp = pos.board[to];
-        //KINGÇ»ÇÃÇ≈ìGÇÃóòÇ´ÇÃÇ†ÇÈÇ∆Ç±ÇÎÇ…ÇÕÇ¢ÇØÇ»Ç¢Ç™Ç‹ÇæÇªÇ±Ç‹Ç≈ÇÃÉfÅ[É^Ç™ëµÇ¡ÇƒÇ»Ç¢ÇÃÇ≈PASS
         if(cp <= 0){
+            //ñ{óàÇÕê¨ÇÈÇ≈ÇPéËÅAê¨ÇÁÇ»Ç¢Ç≈ÇPéËÇ»ÇÃÇ≈ÅAÇ±ÇÃåàÇﬂë≈ÇøÇÕÇÊÇ≠Ç»Ç¢
             p = pos.board[from];
+            pmoto = to < SQ_A6 ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
     return ml;
 }
+
+Move *generate_rook_moves_w(const Position &pos,Move *ml,int from)
+{
+    int to,pmoto,i;
+    char p,cp;
+
+    for(to = from,i = 0;i < 4;i++){
+        p = pos.board[from];
+        do{
+            to = to + DIRECT_WHITE[ROOK][i];
+            cp = pos.board[to];
+            pmoto = to > SQ_I4 ? 1 : 0;
+            if(cp == 0 || cp > 1){
+                *(ml++) = make_move(from,to,pmoto,p,cp);
+            }
+        }while(cp == EMPTY);
+    }
+    return ml;
+}
+
+Move *generate_rook_moves_b(const Position &pos,Move *ml,int from)
+{
+    int to,pmoto,i;
+    char p,cp;
+
+    p = pos.board[from];
+    for(to = from,i = 0;i < 4;i++,to = from){
+        do{
+            to = to + DIRECT_BLACK[ROOK][i];
+            cp = pos.board[to];
+            pmoto = to < SQ_A6 ? 1 : 0;
+            if(cp <= 0){ 
+                *(ml++) = make_move(from,to,pmoto,p,cp);
+            }
+        }while(cp == EMPTY);
+    }
+    return ml;
+}
+
 /*
 Move *generate_evasions(const Position &pos,Move *ml)
 {
@@ -280,45 +362,77 @@ TEST(movegen,generate_moves)
     next_move[0].last_move = mlist;
     Move *m = generate_moves(root_position,mlist);
     int n = m - next_move[0].last_move;
-    cout << n << endl;
-    
+    EXPECT_EQ(30,n);
     m = mlist;
     //pawn
     Move anser = make_move(SQ_A3,SQ_A4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_B3,SQ_B4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_C3,SQ_C4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_D3,SQ_D4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_E3,SQ_E4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_F3,SQ_F4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_G3,SQ_G4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_H3,SQ_H4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
-
+    EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_I3,SQ_I4,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
+    EXPECT_TRUE(array_check(anser,m,n));
     //lance
     anser = make_move(SQ_A1,SQ_A2,0,B_LANCE,EMPTY);
-    EXPECT_TRUE(test_helper(anser,m,n));
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_I1,SQ_I2,0,B_LANCE,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
     //silver
-    anser = make_move(SQ_B3,SQ_B4,0,B_PAWN,EMPTY);****************
-    EXPECT_TRUE(test_helper(anser,m,n));
+    anser = make_move(SQ_C1,SQ_C2,0,B_SILVER,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_C1,SQ_D2,0,B_SILVER,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_G1,SQ_F2,0,B_SILVER,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_G1,SQ_G2,0,B_SILVER,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    //gold
+    anser = make_move(SQ_D1,SQ_C2,0,B_GOLD,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_D1,SQ_D2,0,B_GOLD,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_D1,SQ_E2,0,B_GOLD,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_F1,SQ_E2,0,B_GOLD,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_F1,SQ_F2,0,B_GOLD,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_F1,SQ_G2,0,B_GOLD,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    //king
+    anser = make_move(SQ_E1,SQ_D2,0,B_KING,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_E1,SQ_E2,0,B_KING,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_E1,SQ_F2,0,B_KING,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    //rook
+    anser = make_move(SQ_H2,SQ_I2,0,B_ROOK,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_H2,SQ_G2,0,B_ROOK,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_H2,SQ_F2,0,B_ROOK,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_H2,SQ_E2,0,B_ROOK,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_H2,SQ_D2,0,B_ROOK,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
+    anser = make_move(SQ_H2,SQ_C2,0,B_ROOK,EMPTY);
+    EXPECT_TRUE(array_check(anser,m,n));
 }
 
-bool test_helper(Move anser,Move *m,int n)
+bool array_check(Move anser,Move *m,int n)
 {
     bool flag = false;
 

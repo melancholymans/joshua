@@ -67,7 +67,7 @@ void from_sfen(string &sfen)
     //î’è„ÇÕEMPTYÇ…ê›íË
     for(int row = 1;row < 10;row++){
         for(int col = 1;col < 10;col++){
-            int sq = (row << 4) + col + 16; 
+            int sq = make_square(col,row); 
             root_position.board[sq] = EMPTY;
         }
     }
