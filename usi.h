@@ -28,6 +28,8 @@ bool handle_command(const string &command);
 void set_position(USIInputParser &uip);
 Move move_from_string(const Position &pos, const string &cmd);
 int square_from_string(const string sq);
+string string_from_move(const Move m);
+string string_from_square(int sq);
 void go(void);
 
 #endif

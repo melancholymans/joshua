@@ -52,7 +52,7 @@ Move *generate_moves(const Position &pos,Move *ml)
     char p;
     Color c;
 
-    for(int sq = SQ_A9;sq < SQ_LIMIT;sq++){
+    for(int sq = SQ_9A;sq < SQ_LIMIT;sq++){
         p = pos.board[sq];
         c = color_of_piece(p);
         if(c != turn){
@@ -88,7 +88,36 @@ Move *generate_moves(const Position &pos,Move *ml)
         }
     }
     //‘Å‚ÂŽè
-
+    if(WHITE == turn){
+        for(int sq = 215;sq < 222;sq++){
+            if(pos.board[sq] > 0){
+                switch(sq){
+                case 215:ml=generate_gold_drop_w(pos,ml); break;
+                case 216:ml=generate_pawn_drop_w(pos,ml); break;
+                case 217:ml=generate_lance_drop_w(pos,ml); break;
+                case 218:ml=generate_knight_drop_w(pos,ml); break;
+                case 219:ml=generate_silver_drop_w(pos,ml); break;
+                case 220:ml=generate_bishop_drop_w(pos,ml); break;
+                case 221:ml=generate_rook_drop_w(pos,ml); break;
+                }
+            }
+        }
+    }
+    else if(BLACK == turn){
+        for(int sq = 208;sq < 215;sq++){
+            if(pos.board[sq] > 0){
+                switch(sq){
+                case 208:ml=generate_gold_drop_b(pos,ml); break;
+                case 209:ml=generate_pawn_drop_b(pos,ml); break;
+                case 210:ml=generate_lance_drop_b(pos,ml); break;
+                case 211:ml=generate_knight_drop_b(pos,ml); break;
+                case 212:ml=generate_silver_drop_b(pos,ml); break;
+                case 213:ml=generate_bishop_drop_b(pos,ml); break;
+                case 214:ml=generate_rook_drop_b(pos,ml); break;
+                }
+            }
+        }
+    }
     return ml;
 }
 
@@ -134,7 +163,7 @@ Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from)
     to = from + DIRECT_WHITE[PAWN][0];
     cp = pos.board[to];
     if(cp > 1 || cp == 0){
-        pmoto = to > SQ_I4 ? 1 : 0;
+        pmoto = to > SQ_1F ? 1 : 0;
         *(ml++) = make_move(from,to,pmoto,p,cp);
     }
     return ml;
@@ -151,7 +180,7 @@ Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_WHITE[LANCE][i];
             cp = pos.board[to];
-            pmoto = to > SQ_I4 ? 1 : 0;
+            pmoto = to > SQ_1F ? 1 : 0;
             if(cp == 0 || cp > 1){ 
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
@@ -171,7 +200,7 @@ Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢,‚³‚ç‚ÉŒj”n‚Í¬‚é•K{‚Ìƒ‰ƒCƒ“‚ª‚ ‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
-            pmoto = to > SQ_I4 ? 1 : 0;
+            pmoto = to > SQ_1F ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -189,7 +218,7 @@ Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢
-            pmoto = to > SQ_I4 ? 1 : 0;
+            pmoto = to > SQ_1F ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -206,7 +235,7 @@ Move *generate_bishop_moves_w(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_WHITE[BISHOP][i];
             cp = pos.board[to];
-            pmoto = to > SQ_I4 ? 1 : 0;
+            pmoto = to > SQ_1F ? 1 : 0;
             if(cp == 0 || cp > 1){
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
@@ -225,7 +254,7 @@ Move *generate_rook_moves_w(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_WHITE[ROOK][i];
             cp = pos.board[to];
-            pmoto = to > SQ_I4 ? 1 : 0;
+            pmoto = to > SQ_1F ? 1 : 0;
             if(cp == 0 || cp > 1){
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
@@ -284,6 +313,98 @@ Move *generate_prook_moves_w(const Position &pos,Move *ml,int from)
     return ml;
 }
 
+Move *generate_gold_drop_w(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_GOLD,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_pawn_drop_w(const Position &pos,Move *ml)
+{
+    //‚Q•à”»’è‚ª‚Å‚«‚Ä‚¢‚È‚¢A
+    for(int row = 1;row < 9;row++){ //Ž€‹î‘Îô
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_PAWN,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_lance_drop_w(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 9;row++){ //Ž€‹î‘Îô
+        for(int col = 1;col < 10;col++){ 
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_LANCE,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_knight_drop_w(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 8;row++){ //Ž€‹î‘Îô
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_KNIGHT,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_silver_drop_w(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_SILVER,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_bishop_drop_w(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_BISHOP,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_rook_drop_w(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,W_ROOK,0);
+            }
+        }
+    }
+    return ml;
+}
+
 Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
 {
     int to;
@@ -326,7 +447,7 @@ Move *generate_pawn_moves_b(const Position &pos,Move *ml,int from)
     to = from + DIRECT_BLACK[PAWN][0];
     cp = pos.board[to];
     if(cp <= 0){
-        pmoto = to < SQ_A6 ? 1 : 0;
+        pmoto = to < SQ_9D ? 1 : 0;
         *(ml++) = make_move(from,to,pmoto,p,cp);
     }
     return ml;
@@ -342,7 +463,7 @@ Move *generate_lance_moves_b(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_BLACK[LANCE][i];
             cp = pos.board[to];
-            pmoto = to < SQ_A6 ? 1 : 0;
+            pmoto = to < SQ_9D ? 1 : 0;
             if(cp <= 0){ 
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
@@ -362,7 +483,7 @@ Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp <= 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢,‚³‚ç‚ÉŒj”n‚Í¬‚é•K{‚Ìƒ‰ƒCƒ“‚ª‚ ‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
-            pmoto = to > SQ_I4 ? 1 : 0;
+            pmoto = to < SQ_9D ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -380,7 +501,7 @@ Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp <= 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢
-            pmoto = to < SQ_A6 ? 1 : 0;
+            pmoto = to < SQ_9D ? 1 : 0;
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -398,7 +519,7 @@ Move *generate_bishop_moves_b(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_BLACK[BISHOP][i];
             cp = pos.board[to];
-            pmoto = to < SQ_A6 ? 1 : 0;
+            pmoto = to < SQ_9D ? 1 : 0;
             if(cp <= 0){ 
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
@@ -418,7 +539,7 @@ Move *generate_rook_moves_b(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_BLACK[ROOK][i];
             cp = pos.board[to];
-            pmoto = to < SQ_A6 ? 1 : 0;
+            pmoto = to < SQ_9D ? 1 : 0;
             if(cp <= 0){ 
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
@@ -476,6 +597,100 @@ Move *generate_prook_moves_b(const Position &pos,Move *ml,int from)
     }
     return ml;
 }
+
+Move *generate_gold_drop_b(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_GOLD,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_pawn_drop_b(const Position &pos,Move *ml)
+{
+    //‚Q•à”»’è‚ª‚Å‚«‚Ä‚¢‚È‚¢A
+    for(int row = 2;row < 10;row++){ //Ž€‹î‘Îô
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_PAWN,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_lance_drop_b(const Position &pos,Move *ml)
+{
+    for(int row = 2;row < 10;row++){ //Ž€‹î‘Îô
+        for(int col = 1;col < 10;col++){ 
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_LANCE,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_knight_drop_b(const Position &pos,Move *ml)
+{
+    for(int row = 3;row < 10;row++){ //Ž€‹î‘Îô
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_KNIGHT,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_silver_drop_b(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_SILVER,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_bishop_drop_b(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_BISHOP,0);
+            }
+        }
+    }
+    return ml;
+}
+
+Move *generate_rook_drop_b(const Position &pos,Move *ml)
+{
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == EMPTY){
+                *(ml++) = make_move(0,sq,0,B_ROOK,0);
+            }
+        }
+    }
+    return ml;
+}
+
+
 /*
 Move *generate_evasions(const Position &pos,Move *ml)
 {
@@ -512,70 +727,70 @@ TEST(movegen,generate_moves)
     EXPECT_EQ(30,n);
     m = mlist;
     //pawn
-    Move anser = make_move(SQ_A3,SQ_A4,0,B_PAWN,EMPTY);
+    Move anser = make_move(SQ_9G,SQ_9F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B3,SQ_B4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_8G,SQ_8F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C3,SQ_C4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_7G,SQ_7F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_D3,SQ_D4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_6G,SQ_6F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E3,SQ_E4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_5G,SQ_5F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F3,SQ_F4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_4G,SQ_4F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_G3,SQ_G4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_3G,SQ_3F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H3,SQ_H4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_2G,SQ_2F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_I3,SQ_I4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_1G,SQ_1F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //lance
-    anser = make_move(SQ_A1,SQ_A2,0,B_LANCE,EMPTY);
+    anser = make_move(SQ_9I,SQ_9H,0,B_LANCE,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_I1,SQ_I2,0,B_LANCE,EMPTY);
+    anser = make_move(SQ_1I,SQ_1H,0,B_LANCE,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //silver
-    anser = make_move(SQ_C1,SQ_C2,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_7I,SQ_7H,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C1,SQ_D2,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_7I,SQ_6H,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_G1,SQ_F2,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_3I,SQ_4H,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_G1,SQ_G2,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_3I,SQ_3H,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //gold
-    anser = make_move(SQ_D1,SQ_C2,0,B_GOLD,EMPTY);
+    anser = make_move(SQ_6I,SQ_7H,0,B_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_D1,SQ_D2,0,B_GOLD,EMPTY);
+    anser = make_move(SQ_6I,SQ_6H,0,B_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_D1,SQ_E2,0,B_GOLD,EMPTY);
+    anser = make_move(SQ_6I,SQ_5H,0,B_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F1,SQ_E2,0,B_GOLD,EMPTY);
+    anser = make_move(SQ_4I,SQ_5H,0,B_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F1,SQ_F2,0,B_GOLD,EMPTY);
+    anser = make_move(SQ_4I,SQ_4H,0,B_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F1,SQ_G2,0,B_GOLD,EMPTY);
+    anser = make_move(SQ_4I,SQ_3H,0,B_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //king
-    anser = make_move(SQ_E1,SQ_D2,0,B_KING,EMPTY);
+    anser = make_move(SQ_5I,SQ_6H,0,B_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E1,SQ_E2,0,B_KING,EMPTY);
+    anser = make_move(SQ_5I,SQ_5H,0,B_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E1,SQ_F2,0,B_KING,EMPTY);
+    anser = make_move(SQ_5I,SQ_4H,0,B_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //rook
-    anser = make_move(SQ_H2,SQ_I2,0,B_ROOK,EMPTY);
+    anser = make_move(SQ_2H,SQ_1H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H2,SQ_G2,0,B_ROOK,EMPTY);
+    anser = make_move(SQ_2H,SQ_3H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H2,SQ_F2,0,B_ROOK,EMPTY);
+    anser = make_move(SQ_2H,SQ_4H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H2,SQ_E2,0,B_ROOK,EMPTY);
+    anser = make_move(SQ_2H,SQ_5H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H2,SQ_D2,0,B_ROOK,EMPTY);
+    anser = make_move(SQ_2H,SQ_6H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H2,SQ_C2,0,B_ROOK,EMPTY);
+    anser = make_move(SQ_2H,SQ_7H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
 
     //Q1‚Ì‹Ç–Ê‚ÅƒeƒXƒg,BLACK‘¤
@@ -587,135 +802,135 @@ TEST(movegen,generate_moves)
     EXPECT_EQ(57,n);
     m = mlist;
     //pawn  5
-    anser = make_move(SQ_A3,SQ_A4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_9G,SQ_9F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B4,SQ_B5,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_8F,SQ_8E,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_G3,SQ_G4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_3G,SQ_3F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_I3,SQ_I4,0,B_PAWN,EMPTY);
+    anser = make_move(SQ_1G,SQ_1F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H7,SQ_H8,1,B_PAWN,EMPTY);
+    anser = make_move(SQ_2C,SQ_2B,1,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //lance 1
-    anser = make_move(SQ_B1,SQ_C3,0,B_LANCE,EMPTY);
+    anser = make_move(SQ_1I,SQ_1H,0,B_LANCE,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //knight    1
-    anser = make_move(SQ_B1,SQ_C3,0,B_KNIGHT,EMPTY);
+    anser = make_move(SQ_8I,SQ_7G,0,B_KNIGHT,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //silver    5
-    anser = make_move(SQ_F5,SQ_E6,0,B_SILVER,W_PAWN);
+    anser = make_move(SQ_4E,SQ_5D,0,B_SILVER,W_PAWN);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F5,SQ_F6,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_4E,SQ_4D,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F5,SQ_G6,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_4E,SQ_3D,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F5,SQ_E4,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_4E,SQ_5F,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F5,SQ_G4,0,B_SILVER,EMPTY);
+    anser = make_move(SQ_4E,SQ_3F,0,B_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //gold  7
-    anser = make_move(SQ_B2,SQ_B3,0,B_GOLD,0);
+    anser = make_move(SQ_8H,SQ_8G,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B2,SQ_C3,0,B_GOLD,0);
+    anser = make_move(SQ_8H,SQ_7G,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C2,SQ_B3,0,B_GOLD,0);
+    anser = make_move(SQ_7H,SQ_8G,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C2,SQ_C3,0,B_GOLD,0);
+    anser = make_move(SQ_7H,SQ_7G,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C2,SQ_D3,0,B_GOLD,0);
+    anser = make_move(SQ_7H,SQ_6G,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C2,SQ_D2,0,B_GOLD,0);
+    anser = make_move(SQ_7H,SQ_6H,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C2,SQ_C1,0,B_GOLD,0);
+    anser = make_move(SQ_7H,SQ_7I,0,B_GOLD,0);
     EXPECT_TRUE(array_check(anser,m,n));
     //bishop
-    anser = make_move(SQ_D9,SQ_C8,1,B_BISHOP,W_GOLD);
+    anser = make_move(SQ_6A,SQ_7B,1,B_BISHOP,W_GOLD);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_D9,SQ_E8,1,B_BISHOP,EMPTY);
+    anser = make_move(SQ_6A,SQ_5B,1,B_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_D9,SQ_F7,1,B_BISHOP,W_SILVER);
+    anser = make_move(SQ_6A,SQ_4C,1,B_BISHOP,W_SILVER);
     EXPECT_TRUE(array_check(anser,m,n));
     //pbishop
-    anser = make_move(SQ_E7,SQ_D8,0,BP_BISHOP,W_PAWN);
+    anser = make_move(SQ_5C,SQ_6B,0,BP_BISHOP,W_PAWN);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_F8,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_4B,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_G9,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_3A,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_D6,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_6D,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_C5,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_7E,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_F6,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_4D,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_G5,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_3E,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_H4,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_2F,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_E8,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_5B,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_D7,0,BP_BISHOP,EMPTY);
+    anser = make_move(SQ_5C,SQ_6C,0,BP_BISHOP,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_F7,0,BP_BISHOP,W_SILVER);
+    anser = make_move(SQ_5C,SQ_4C,0,BP_BISHOP,W_SILVER);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E7,SQ_E6,0,BP_BISHOP,W_PAWN);
+    anser = make_move(SQ_5C,SQ_5D,0,BP_BISHOP,W_PAWN);
     EXPECT_TRUE(array_check(anser,m,n));
     //rook  4
-    anser = make_move(SQ_B9,SQ_C9,1,B_ROOK,EMPTY);
+    anser = make_move(SQ_8A,SQ_7A,1,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B9,SQ_B8,1,B_ROOK,EMPTY);
+    anser = make_move(SQ_8A,SQ_8B,1,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B9,SQ_B7,1,B_ROOK,W_GOLD);
+    anser = make_move(SQ_8A,SQ_8C,1,B_ROOK,W_GOLD);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B9,SQ_A9,1,B_ROOK,W_LANCE);
+    anser = make_move(SQ_8A,SQ_9A,1,B_ROOK,W_LANCE);
     EXPECT_TRUE(array_check(anser,m,n));
     //drop pawn
-    anser = make_move(0,SQ_C6,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_7D,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C5,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_7E,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C3,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_7G,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C1,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_7I,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D7,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6C,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D6,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6D,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D5,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6E,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D4,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D3,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6G,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D2,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6H,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D1,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_6I,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E8,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_5B,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E5,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_5E,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E4,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_5F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E3,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_5G,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E2,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_5H,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E1,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_5I,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F8,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_4B,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F6,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_4D,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F4,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_4F,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F3,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_4G,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F2,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_4H,0,B_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F1,0,B_PAWN,EMPTY);
+    anser = make_move(0,SQ_4I,0,B_PAWN,EMPTY);
     ASSERT_TRUE(array_check(anser,m,n));
 
     //Q1‚Ì‹Ç–Ê‚ÅƒeƒXƒg,WHITE‘¤
@@ -727,279 +942,279 @@ TEST(movegen,generate_moves)
     EXPECT_EQ(133,n);
     m = mlist;
     //pawn  7
-    anser = make_move(SQ_A5,SQ_A4,0,W_PAWN,EMPTY);
+    anser = make_move(SQ_9E,SQ_9F,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C4,SQ_C3,1,W_PAWN,EMPTY);
+    anser = make_move(SQ_7F,SQ_7G,1,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_D8,SQ_D7,0,W_PAWN,EMPTY);
+    anser = make_move(SQ_6B,SQ_6C,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_E6,SQ_E5,0,W_PAWN,EMPTY);
+    anser = make_move(SQ_5D,SQ_5E,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_G7,SQ_G6,0,W_PAWN,EMPTY);
+    anser = make_move(SQ_3C,SQ_3D,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_H6,SQ_H5,0,W_PAWN,EMPTY);
+    anser = make_move(SQ_2D,SQ_2E,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_I7,SQ_I6,0,W_PAWN,EMPTY);
+    anser = make_move(SQ_1C,SQ_1D,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //lance 2
-    anser = make_move(SQ_A9,SQ_A8,0,W_LANCE,EMPTY);
+    anser = make_move(SQ_9A,SQ_9B,0,W_LANCE,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_I9,SQ_I8,0,W_LANCE,EMPTY);
+    anser = make_move(SQ_1A,SQ_1B,0,W_LANCE,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //knight
-    anser = make_move(SQ_A7,SQ_B5,0,W_KNIGHT,EMPTY);
+    anser = make_move(SQ_9C,SQ_8E,0,W_KNIGHT,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //silver    6
-    anser = make_move(SQ_B6,SQ_B5,0,W_SILVER,EMPTY);
+    anser = make_move(SQ_8D,SQ_8E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B6,SQ_C5,0,W_SILVER,EMPTY);
+    anser = make_move(SQ_8D,SQ_7E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F7,SQ_F6,0,W_SILVER,EMPTY);
+    anser = make_move(SQ_4C,SQ_4D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F7,SQ_G6,0,W_SILVER,EMPTY);
+    anser = make_move(SQ_4C,SQ_3D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F7,SQ_E8,0,W_SILVER,EMPTY);
+    anser = make_move(SQ_4C,SQ_5B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_F7,SQ_G8,0,W_SILVER,EMPTY);
+    anser = make_move(SQ_4C,SQ_3B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //gold
-    anser = make_move(SQ_B7,SQ_A6,0,W_GOLD,EMPTY);
+    anser = make_move(SQ_8C,SQ_9D,0,W_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B7,SQ_C6,0,W_GOLD,EMPTY);
+    anser = make_move(SQ_8C,SQ_7D,0,W_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_B7,SQ_B8,0,W_GOLD,EMPTY);
+    anser = make_move(SQ_8C,SQ_8B,0,W_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C8,SQ_D7,0,W_GOLD,EMPTY);
+    anser = make_move(SQ_7B,SQ_6C,0,W_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C8,SQ_B8,0,W_GOLD,EMPTY);
+    anser = make_move(SQ_7B,SQ_8B,0,W_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C8,SQ_C9,0,W_GOLD,EMPTY);
+    anser = make_move(SQ_7B,SQ_7A,0,W_GOLD,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //king
-    anser = make_move(SQ_C7,SQ_C6,0,W_KING,EMPTY);
+    anser = make_move(SQ_7C,SQ_7D,0,W_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C7,SQ_D6,0,W_KING,EMPTY);
+    anser = make_move(SQ_7C,SQ_6D,0,W_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C7,SQ_D7,0,W_KING,EMPTY);
+    anser = make_move(SQ_7C,SQ_6C,0,W_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_C7,SQ_B8,0,W_KING,EMPTY);
+    anser = make_move(SQ_7C,SQ_8B,0,W_KING,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //drop pawn 9
-    anser = make_move(0,SQ_B8,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_8B,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B5,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_8E,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B3,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_8G,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F9,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_4A,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F8,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_4B,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F6,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_4D,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F4,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_4F,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F3,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_4G,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F2,0,W_PAWN,EMPTY);
+    anser = make_move(0,SQ_4H,0,W_PAWN,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //drop silver
-    anser = make_move(0,SQ_A8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_9B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_A6,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_9D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_A4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_9F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_8B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_8E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B3,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_8G,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C9,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_7A,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C6,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_7D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_7E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C3,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_7G,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C1,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_7I,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D7,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6C,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D6,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D3,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6G,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D2,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6H,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D1,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_6I,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E9,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5A,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E3,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5G,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E2,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5H,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E1,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_5I,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F9,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4A,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F6,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F3,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4G,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F2,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4H,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F1,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_4I,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G9,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3A,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G6,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G2,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3H,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G1,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_3I,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_2B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_2E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_2F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H3,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_2G,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H2,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_2H,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I8,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_1B,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I6,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_1D,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I5,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_1E,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I4,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_1F,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I2,0,W_SILVER,EMPTY);
+    anser = make_move(0,SQ_1H,0,W_SILVER,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     //drop rook
-    anser = make_move(0,SQ_A8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_9B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_A6,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_9D,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_A4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_9F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_8B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_8E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_B3,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_8G,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C9,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_7A,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C6,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_7D,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_7E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C3,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_7G,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_C1,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_7I,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D7,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6C,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D6,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6D,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D3,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6G,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D2,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_D1,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_6I,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E9,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5A,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E3,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5G,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E2,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_E1,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_5I,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F9,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4A,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F6,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4D,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F3,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4G,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F2,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_F1,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_4I,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G9,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3A,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G6,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3D,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G2,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_G1,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_3I,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_2B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_2E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_2F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H3,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_2G,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_H2,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_2H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I8,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_1B,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I6,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_1D,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I5,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_1E,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I4,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_1F,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(0,SQ_I2,0,W_ROOK,EMPTY);
+    anser = make_move(0,SQ_1H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
 }
 

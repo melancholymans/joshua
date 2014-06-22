@@ -17,6 +17,7 @@ void init(void);
 
 int main(int argc,char *argv[])
 {
+    init();
     //標準入出力とリンクさせて、将棋所と通信ができる
     setvbuf(stdin,NULL,_IONBF,0);
     setvbuf(stdout,NULL,_IONBF,0);
