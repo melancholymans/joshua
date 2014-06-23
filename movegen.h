@@ -24,6 +24,7 @@ Move *generate_knight_drop_w(const Position &pos,Move *ml);
 Move *generate_silver_drop_w(const Position &pos,Move *ml);
 Move *generate_bishop_drop_w(const Position &pos,Move *ml);
 Move *generate_rook_drop_w(const Position &pos,Move *ml);
+bool is_checkmate_w(const Position &pos);
 
 Move *generate_king_moves_b(const Position &pos,Move *ml,int from);
 Move *generate_gold_moves_b(const Position &pos,Move *ml,int from);
@@ -42,5 +43,8 @@ Move *generate_knight_drop_b(const Position &pos,Move *ml);
 Move *generate_silver_drop_b(const Position &pos,Move *ml);
 Move *generate_bishop_drop_b(const Position &pos,Move *ml);
 Move *generate_rook_drop_b(const Position &pos,Move *ml);
+bool is_checkmate_b(const Position &pos);
+
+Move *generate_evasions(const Position &pos,Move *ml);
 
 #endif

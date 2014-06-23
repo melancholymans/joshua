@@ -170,20 +170,6 @@ void from_sfen(string &sfen)
     }
     //持ち駒の次は手数が入っているが無視してよい
 }
-TEST(position,make_square)
-{
-    //make_square(col,row)で指定
-    EXPECT_EQ(166,make_square(6,9));
-    EXPECT_EQ(72,make_square(8,3));
-    EXPECT_EQ(116,make_square(4,6));
-    EXPECT_EQ(41,make_square(9,1));
-    EXPECT_EQ(33,make_square(1,1));
-    EXPECT_EQ(169,make_square(9,9));
-    EXPECT_EQ(161,make_square(1,9));
-    EXPECT_EQ(101,make_square(5,5));
-    EXPECT_EQ(120,make_square(8,6));
-    EXPECT_EQ(68,make_square(4,3));
-}
 
 string to_sfen(const Position &pos)
 {
@@ -244,62 +230,6 @@ string to_sfen(const Position &pos)
     result += '1';
     return result;
 }
-TEST(position,to_sfen)
-{
-    from_sfen(start_position);
-    EXPECT_STREQ("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",to_sfen(root_position).c_str());
-
-    for(int sq = 0;sq < 222;sq++){
-        root_position.board[sq] = EMPTY;
-    }
-    root_position.board[SQ_4A] = W_GOLD;
-    root_position.board[SQ_3A] = W_KING;
-
-    root_position.board[SQ_9B] = BP_PAWN;
-    root_position.board[SQ_8B] = BP_LANCE;
-    root_position.board[SQ_7B] = BP_KNIGHT;
-    root_position.board[SQ_6B] = BP_SILVER;
-
-    root_position.board[SQ_9C] = W_PAWN;
-    root_position.board[SQ_8C] = W_PAWN;
-    root_position.board[SQ_7C] = W_PAWN;
-    root_position.board[SQ_6C] = W_PAWN;
-    root_position.board[SQ_5C] = W_PAWN;
-    root_position.board[SQ_4C] = W_PAWN;
-    root_position.board[SQ_3C] = W_PAWN;
-
-    root_position.board[SQ_9G] = B_PAWN;
-    root_position.board[SQ_8G] = B_PAWN;
-    root_position.board[SQ_7G] = B_PAWN;
-    root_position.board[SQ_6G] = B_PAWN;
-
-    root_position.board[SQ_4H] = WP_SILVER;
-    root_position.board[SQ_3H] = WP_KNIGHT;
-    root_position.board[SQ_2H] = WP_LANCE;
-    root_position.board[SQ_1H] = WP_PAWN;
-
-    root_position.board[SQ_7I] = B_KING;
-    root_position.board[SQ_6I] = B_GOLD;
-
-    root_position.board[208] = 0;   //B_GOLD
-    root_position.board[209] = 1;   //B_PAWN
-    root_position.board[210] = 1;   //B_LANCE
-    root_position.board[211] = 0;   //B_KNIGHT
-    root_position.board[212] = 2;   //B_SILVER
-    root_position.board[213] = 1;   //B_BISHOP
-    root_position.board[214] = 1;   //B_ROOK
-
-    root_position.board[215] = 2;   //W_GOLD
-    root_position.board[216] = 4;   //W_PAWN
-    root_position.board[217] = 1;   //W_LANCE
-    root_position.board[218] = 2;   //W_KNIGHT
-    root_position.board[219] = 0;   //W_SILVER
-    root_position.board[220] = 1;   //W_BISHOP
-    root_position.board[221] = 1;   //W_ROOK
-
-    EXPECT_STREQ("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1",to_sfen(root_position).c_str());
-}
-
 
 //sfen文字列からpositionを設定
 void put_piece(char p,int sq,int num)
@@ -310,7 +240,8 @@ void put_piece(char p,int sq,int num)
         //MAIN boardに駒コードを入れる
         root_position.board[sq] = p;
         if(pt == KING){
-            root_position.king_square[c] = sq;
+            //ColorはWHITE=-1,BLACK=0で配列に収まらないので+1にしてWHITE=0,BLACK=1にしている
+            root_position.king_square[c+1] = sq;
         }
     }
     else{
@@ -364,6 +295,11 @@ void do_move(Position &pos,Move m)
     if(from != 0){
         //盤上の手
         p = pos.board[from];
+        char pt = type_of_piece(p);
+        if(pt == KING){
+            Color c = color_of_piece(p);
+            root_position.king_square[c+1] = to;
+        }
         if(pos.board[to] != EMPTY){
             cp = pos.board[to] & 0x0F;
             base_address = turn ? &pos.board[215] : &pos.board[208];
@@ -615,7 +551,9 @@ TEST(position,from_sfen)
     EXPECT_EQ(B_SILVER,root_position.board[SQ_3I]);
     EXPECT_EQ(B_KNIGHT,root_position.board[SQ_2I]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    
+    EXPECT_EQ(SQ_5A,root_position.king_square[WHITE+1]);
+    EXPECT_EQ(SQ_5I,root_position.king_square[BLACK+1]);
+
     from_sfen(string("lnsgkgsn1/1r5b1/pppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"));
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_1A]);
@@ -729,4 +667,79 @@ TEST(position,from_sfen)
     EXPECT_EQ(0,root_position.board[219]);  //white silver
     EXPECT_EQ(1,root_position.board[220]);  //white bishop
     EXPECT_EQ(1,root_position.board[221]);  //white rook
+
+    EXPECT_EQ(SQ_3A,root_position.king_square[WHITE+1]);
+    EXPECT_EQ(SQ_7I,root_position.king_square[BLACK+1]);
 }
+
+TEST(position,to_sfen)
+{
+    from_sfen(start_position);
+    EXPECT_STREQ("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",to_sfen(root_position).c_str());
+
+    for(int sq = 0;sq < 222;sq++){
+        root_position.board[sq] = EMPTY;
+    }
+    root_position.board[SQ_4A] = W_GOLD;
+    root_position.board[SQ_3A] = W_KING;
+
+    root_position.board[SQ_9B] = BP_PAWN;
+    root_position.board[SQ_8B] = BP_LANCE;
+    root_position.board[SQ_7B] = BP_KNIGHT;
+    root_position.board[SQ_6B] = BP_SILVER;
+
+    root_position.board[SQ_9C] = W_PAWN;
+    root_position.board[SQ_8C] = W_PAWN;
+    root_position.board[SQ_7C] = W_PAWN;
+    root_position.board[SQ_6C] = W_PAWN;
+    root_position.board[SQ_5C] = W_PAWN;
+    root_position.board[SQ_4C] = W_PAWN;
+    root_position.board[SQ_3C] = W_PAWN;
+
+    root_position.board[SQ_9G] = B_PAWN;
+    root_position.board[SQ_8G] = B_PAWN;
+    root_position.board[SQ_7G] = B_PAWN;
+    root_position.board[SQ_6G] = B_PAWN;
+
+    root_position.board[SQ_4H] = WP_SILVER;
+    root_position.board[SQ_3H] = WP_KNIGHT;
+    root_position.board[SQ_2H] = WP_LANCE;
+    root_position.board[SQ_1H] = WP_PAWN;
+
+    root_position.board[SQ_7I] = B_KING;
+    root_position.board[SQ_6I] = B_GOLD;
+
+    root_position.board[208] = 0;   //B_GOLD
+    root_position.board[209] = 1;   //B_PAWN
+    root_position.board[210] = 1;   //B_LANCE
+    root_position.board[211] = 0;   //B_KNIGHT
+    root_position.board[212] = 2;   //B_SILVER
+    root_position.board[213] = 1;   //B_BISHOP
+    root_position.board[214] = 1;   //B_ROOK
+
+    root_position.board[215] = 2;   //W_GOLD
+    root_position.board[216] = 4;   //W_PAWN
+    root_position.board[217] = 1;   //W_LANCE
+    root_position.board[218] = 2;   //W_KNIGHT
+    root_position.board[219] = 0;   //W_SILVER
+    root_position.board[220] = 1;   //W_BISHOP
+    root_position.board[221] = 1;   //W_ROOK
+
+    EXPECT_STREQ("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1",to_sfen(root_position).c_str());
+}
+
+TEST(position,make_square)
+{
+    //make_square(col,row)で指定
+    EXPECT_EQ(166,make_square(6,9));
+    EXPECT_EQ(72,make_square(8,3));
+    EXPECT_EQ(116,make_square(4,6));
+    EXPECT_EQ(41,make_square(9,1));
+    EXPECT_EQ(33,make_square(1,1));
+    EXPECT_EQ(169,make_square(9,9));
+    EXPECT_EQ(161,make_square(1,9));
+    EXPECT_EQ(101,make_square(5,5));
+    EXPECT_EQ(120,make_square(8,6));
+    EXPECT_EQ(68,make_square(4,3));
+}
+

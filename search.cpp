@@ -17,7 +17,7 @@ bool think(Position &pos,Move *ml)
     ml = generate_moves(pos,ml);
     int u = ml - next_move[0].last_move;
     double r = rand();
-    int n = u*(r/RAND_MAX);
+    int n = u*(r/RAND_MAX)-1;
     Move m = *(next_move[0].last_move+n);
     if(u == 0){
         //çáñ@éËÇ™Ç»ÇØÇÍÇŒìäóπ

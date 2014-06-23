@@ -52,6 +52,11 @@ Move *generate_moves(const Position &pos,Move *ml)
     char p;
     Color c;
 
+    if(turn ? is_checkmate_w(pos):is_checkmate_b(pos)){
+        //©‰¤‚É‰¤è‚ª‚©‚©‚Á‚Ä‚¢‚é‚È‚ç‰¤è‰ñ”ğè‚ğ¶¬‚µ‚Ä•Ô‚·
+        generate_evasions(pos,ml);
+        return ml;
+    }
     for(int sq = SQ_9A;sq < SQ_LIMIT;sq++){
         p = pos.board[sq];
         c = color_of_piece(p);
@@ -690,14 +695,73 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
     return ml;
 }
 
-
-/*
-Move *generate_evasions(const Position &pos,Move *ml)
+bool is_checkmate_w(const Position &pos)
 {
-    Move *m = NULL;
-    return m;
+    //—˜‚«ƒf[ƒ^‚ğ‚à‚Á‚Ä‚¢‚È‚¢‚Ì‚Å’€ˆê’²‚×‚é‚µ‚©‚È‚¢
+    //‚Ü‚¸©‚W‹ß–T‚É“G‹î‚ª‚¢‚é‚©’²‚×‚é,‚¢‚½‚çtrue‚ğ•Ô‚·
+    int from,to,i;
+    Color c;
+    char p,cp;
+    
+    from = pos.king_square[turn+1];
+    for(i = 0;i < 8;i++){
+        to = from + DIRECT_WHITE[KING][i];
+        p = pos.board[to];
+        c = color_of_piece(p);
+        if((p != EMPTY) && (c != turn)){
+            return true;
+        }
+    }
+    //‚W•ûŒü‚É“G”ò‚Ñ‹î‚ª‚¢‚é‚©’²‚×‚é
+    for(to = from,i = 0;i < 8;i++,to = from){
+        do{
+            to = to + DIRECT_WHITE[KING][i];
+            cp = pos.board[to];
+            if((cp != EMPTY) && (color_of_piece(cp) != turn)){
+                return true;
+            }
+        }while(cp == EMPTY);
+    }
+    return false;
 }
 
+bool is_checkmate_b(const Position &pos)
+{
+    //—˜‚«ƒf[ƒ^‚ğ‚à‚Á‚Ä‚¢‚È‚¢‚Ì‚Å’€ˆê’²‚×‚é‚µ‚©‚È‚¢
+    //‚Ü‚¸©‚W‹ß–T‚É“G‹î‚ª‚¢‚é‚©’²‚×‚é,‚¢‚½‚çtrue‚ğ•Ô‚·
+    int from,to,i;
+    Color c;
+    char p,cp;
+    
+    from = pos.king_square[turn+1];
+    for(i = 0;i < 8;i++){
+        to = from + DIRECT_BLACK[KING][i];
+        p = pos.board[to];
+        c = color_of_piece(p);
+        if(c != turn){
+            return true;
+        }
+    }
+    //‚W•ûŒü‚É“G”ò‚Ñ‹î‚ª‚¢‚é‚©’²‚×‚é
+    for(to = from,i = 0;i < 8;i++,to = from){
+        do{
+            to = to + DIRECT_BLACK[KING][i];
+            cp = pos.board[to];
+            if((cp != EMPTY) && (color_of_piece(cp) != turn)){
+                return true;
+            }
+        }while(cp == EMPTY);
+    }
+    return false;
+}
+
+Move *generate_evasions(const Position &pos,Move *ml)
+{
+    //¡‚Í‚È‚É‚à‚µ‚È‚¢
+    return ml;
+}
+
+/*
 Move *generate_captures(const Position &pos,Move *ml)
 {
     Move *m = NULL;
