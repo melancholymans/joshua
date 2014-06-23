@@ -717,7 +717,24 @@ bool is_checkmate_w(const Position &pos)
         do{
             to = to + DIRECT_WHITE[KING][i];
             cp = pos.board[to];
-            if((cp != EMPTY) && (color_of_piece(cp) != turn)){
+            if((cp==B_LANCE) &&
+                (DIRECT_WHITE[KING][i]==D)){
+                return true;
+            }
+            if(((cp==B_ROOK || cp==BP_ROOK) &&
+                DIRECT_WHITE[KING][i]==U || 
+                DIRECT_WHITE[KING][i]==D || 
+                DIRECT_WHITE[KING][i]==L || 
+                DIRECT_WHITE[KING][i]==R) 
+                ){
+                return true;
+            }
+            if(((cp==B_BISHOP || cp==BP_BISHOP) &&
+                DIRECT_WHITE[KING][i]==UL ||
+                DIRECT_WHITE[KING][i]==UR ||
+                DIRECT_WHITE[KING][i]==DL || 
+                DIRECT_WHITE[KING][i]==DR)
+                ){
                 return true;
             }
         }while(cp == EMPTY);
@@ -747,7 +764,23 @@ bool is_checkmate_b(const Position &pos)
         do{
             to = to + DIRECT_BLACK[KING][i];
             cp = pos.board[to];
-            if((cp != EMPTY) && (color_of_piece(cp) != turn)){
+            if((cp==W_LANCE) &&(DIRECT_BLACK[KING][i]==U)){
+                return true;
+            }
+            if(((cp==W_ROOK || cp==WP_ROOK) &&
+                DIRECT_BLACK[KING][i]==U || 
+                DIRECT_BLACK[KING][i]==D || 
+                DIRECT_BLACK[KING][i]==L || 
+                DIRECT_BLACK[KING][i]==R) 
+                ){
+                return true;
+            }
+            if(((cp==W_BISHOP || cp==WP_BISHOP) &&
+                DIRECT_BLACK[KING][i]==UL ||
+                DIRECT_BLACK[KING][i]==UR ||
+                DIRECT_BLACK[KING][i]==DL || 
+                DIRECT_BLACK[KING][i]==DR)
+                ){
                 return true;
             }
         }while(cp == EMPTY);
