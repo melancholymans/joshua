@@ -708,7 +708,7 @@ bool is_checkmate_w(const Position &pos)
         to = from + DIRECT_WHITE[KING][i];
         p = pos.board[to];
         c = color_of_piece(p);
-        if((p != EMPTY) && (c != turn)){
+        if(c == ~turn){
             return true;
         }
     }
@@ -755,7 +755,7 @@ bool is_checkmate_b(const Position &pos)
         to = from + DIRECT_BLACK[KING][i];
         p = pos.board[to];
         c = color_of_piece(p);
-        if(c != turn){
+        if(c == ~turn){
             return true;
         }
     }

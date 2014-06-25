@@ -36,7 +36,7 @@ p &= 0x0F;
 inline char type_of_piece(char p)
 
 駒コードからカラーを判定している
-p >> 4;
+p >> 4;これはボツ
 これはインライン関数として登録してある
 inline Color color_of_piece(int p)
 
