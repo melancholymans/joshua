@@ -697,18 +697,26 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
 
 bool is_checkmate_w(const Position &pos)
 {
-    //利きデータをもっていないので逐一調べるしかない
-    //まず自８近傍に敵駒がいるか調べる,いたらtrueを返す
+    //利きデータをもっていないので逐一調べる
     int from,to,i;
     Color c;
     char p,cp;
     
     from = pos.king_square[turn+1];
+    //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
         p = pos.board[to];
         c = color_of_piece(p);
         if(c == ~turn){
+            return true;
+        }
+    }
+    for(i = 0;i < 2;i++){
+        to = from + DIRECT_WHITE[KNIGHT][i];
+        p = pos.board[to];
+        c = color_of_piece(p);
+        if(c == ~turn && p==B_KNIGHT){
             return true;
         }
     }
@@ -744,18 +752,27 @@ bool is_checkmate_w(const Position &pos)
 
 bool is_checkmate_b(const Position &pos)
 {
-    //利きデータをもっていないので逐一調べるしかない
-    //まず自８近傍に敵駒がいるか調べる,いたらtrueを返す
+    //利きデータをもっていないので逐一調べる
     int from,to,i;
     Color c;
     char p,cp;
     
     from = pos.king_square[turn+1];
+    //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_BLACK[KING][i];
         p = pos.board[to];
         c = color_of_piece(p);
         if(c == ~turn){
+            return true;
+        }
+    }
+    //桂馬の方向
+    for(i = 0;i < 2;i++){
+        to = from + DIRECT_BLACK[KNIGHT][i];
+        p = pos.board[to];
+        c = color_of_piece(p);
+        if(c == ~turn && p==W_KNIGHT){
             return true;
         }
     }

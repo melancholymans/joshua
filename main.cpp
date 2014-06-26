@@ -11,7 +11,10 @@ Shogidokoro shogi playing engin
 #include "usioption.h"
 
 using namespace std;
-
+/*
+https://github.com/sunfish-shogi/sunfish
+https://github.com/sunfish-shogi/sunfish3
+*/
 int main_test(int argc,char *argv[]);
 void init(void);
 
