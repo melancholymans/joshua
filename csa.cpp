@@ -17,7 +17,16 @@ void csa(USIInputParser &uip)
     fstream file;
 
     for(int index = 0;index < LIMIT;index++){
-        root_position.board[index] = EMPTY;
+        root_position.board[index] = EDGE;
+    }
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            int sq = make_square(col,row);
+            root_position.board[sq] = EMPTY;
+        }
+    }
+    for(int sq = 208;sq < 222;sq++){
+        root_position.board[sq] = EMPTY;
     }
     token = uip.get_next_token();
     if(token == ""){
@@ -31,7 +40,6 @@ void csa(USIInputParser &uip)
     do{
         getline(file,token);
         csa_parser(token);
-        //cout << token << endl;    debug
     }while(!file.eof());
 }
 
@@ -83,7 +91,7 @@ void csa_position(string token)
         else if(token[index] == ' ' || token[index] == '+' || token[index] == '-'){
             p = csa_letters[token.substr(index+1,2)];
             if(token[index] == '-'){
-                p = p | 0xF0;
+                p = do_white(p);
             }
             int sq = make_square(col,row);
             root_position.board[sq] = p;

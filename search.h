@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-bool think(Position &pos,Move *ml);
+bool think(Position &pos);
 
 #endif

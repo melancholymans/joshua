@@ -168,7 +168,7 @@ Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from)
     to = from + DIRECT_WHITE[PAWN][0];
     cp = pos.board[to];
     if(cp > 1 || cp == 0){
-        pmoto = to > SQ_1F ? 1 : 0;
+        pmoto = is_pmoto_w(to);
         *(ml++) = make_move(from,to,pmoto,p,cp);
     }
     return ml;
@@ -185,8 +185,8 @@ Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_WHITE[LANCE][i];
             cp = pos.board[to];
-            pmoto = to > SQ_1F ? 1 : 0;
             if(cp == 0 || cp > 1){ 
+                pmoto = is_pmoto_w(to);
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
         }while(cp == EMPTY);
@@ -205,7 +205,7 @@ Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢,‚³‚ç‚ÉŒj”n‚Í¬‚é•K{‚Ìƒ‰ƒCƒ“‚ª‚ ‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
-            pmoto = to > SQ_1F ? 1 : 0;
+            pmoto = is_pmoto_w(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -223,7 +223,7 @@ Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢
-            pmoto = to > SQ_1F ? 1 : 0;
+            pmoto = is_pmoto_w(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -240,8 +240,8 @@ Move *generate_bishop_moves_w(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_WHITE[BISHOP][i];
             cp = pos.board[to];
-            pmoto = to > SQ_1F ? 1 : 0;
             if(cp == 0 || cp > 1){
+                pmoto = is_pmoto_w(to);
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
         }while(cp == EMPTY);
@@ -259,8 +259,8 @@ Move *generate_rook_moves_w(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_WHITE[ROOK][i];
             cp = pos.board[to];
-            pmoto = to > SQ_1F ? 1 : 0;
             if(cp == 0 || cp > 1){
+                pmoto = is_pmoto_w(to);
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
         }while(cp == EMPTY);
@@ -452,7 +452,7 @@ Move *generate_pawn_moves_b(const Position &pos,Move *ml,int from)
     to = from + DIRECT_BLACK[PAWN][0];
     cp = pos.board[to];
     if(cp <= 0){
-        pmoto = to < SQ_9D ? 1 : 0;
+        pmoto = is_pmoto_b(to);
         *(ml++) = make_move(from,to,pmoto,p,cp);
     }
     return ml;
@@ -468,8 +468,8 @@ Move *generate_lance_moves_b(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_BLACK[LANCE][i];
             cp = pos.board[to];
-            pmoto = to < SQ_9D ? 1 : 0;
             if(cp <= 0){ 
+                pmoto = is_pmoto_b(to);
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
         }while(cp == EMPTY);
@@ -488,7 +488,7 @@ Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp <= 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢,‚³‚ç‚ÉŒj”n‚Í¬‚é•K{‚Ìƒ‰ƒCƒ“‚ª‚ ‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
-            pmoto = to < SQ_9D ? 1 : 0;
+            pmoto = is_pmoto_b(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -506,7 +506,7 @@ Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
         cp = pos.board[to];
         if(cp <= 0){
             //–{—ˆ‚Í¬‚é‚Å‚PŽèA¬‚ç‚È‚¢‚Å‚PŽè‚È‚Ì‚ÅA‚±‚ÌŒˆ‚ß‘Å‚¿‚Í‚æ‚­‚È‚¢
-            pmoto = to < SQ_9D ? 1 : 0;
+            pmoto = is_pmoto_b(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
     }
@@ -524,8 +524,8 @@ Move *generate_bishop_moves_b(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_BLACK[BISHOP][i];
             cp = pos.board[to];
-            pmoto = to < SQ_9D ? 1 : 0;
             if(cp <= 0){ 
+                pmoto = is_pmoto_b(to);
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
         }while(cp == EMPTY);
@@ -544,8 +544,8 @@ Move *generate_rook_moves_b(const Position &pos,Move *ml,int from)
         do{
             to = to + DIRECT_BLACK[ROOK][i];
             cp = pos.board[to];
-            pmoto = to < SQ_9D ? 1 : 0;
             if(cp <= 0){ 
+                pmoto = is_pmoto_b(to);
                 *(ml++) = make_move(from,to,pmoto,p,cp);
             }
         }while(cp == EMPTY);
@@ -808,6 +808,8 @@ bool is_checkmate_b(const Position &pos)
 Move *generate_evasions(const Position &pos,Move *ml)
 {
     //¡‚Í‚È‚É‚à‚µ‚È‚¢
+    for(int i = 0;i < 8;i++){
+    }
     return ml;
 }
 

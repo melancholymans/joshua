@@ -1,11 +1,12 @@
 #include <string>
 #include <map>
 
+using namespace std;
+
 #include "gtest\gtest.h"
+#include "position.h"
 #include "usi.h"
 #include "usioption.h"
-
-using namespace std;
 
 map<string,string> options;
 map<char,string> piece_letters;
@@ -63,7 +64,6 @@ void init_usi_options()
     csa_letters["UM"] = 6;
     csa_letters["RY"] = 7;
     csa_letters["* "] = 0;   //駒文字ではないが
-
     return;
 }
 
@@ -86,6 +86,15 @@ void set_option(USIInputParser &uip)
         }
     }
 }
+
+void set_option_value(const string &option_name,const string &new_value)
+{
+    //初期登録しているオプションしか設定できない
+    if(options.find(option_name) != options.end()){
+        options[option_name] = new_value;
+    }
+}
+
 TEST(usoption,set_option)
 {
     init_usi_options();
@@ -109,13 +118,6 @@ TEST(usoption,set_option)
     ASSERT_EQ("",options["USI_Option"]);
 }
 
-void set_option_value(const string &option_name,const string &new_value)
-{
-    //初期登録しているオプションしか設定できない
-    if(options.find(option_name) != options.end()){
-        options[option_name] = new_value;
-    }
-}
 TEST(usoption,set_option_value)
 {
     string cmd;

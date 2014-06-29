@@ -4,14 +4,13 @@
 using namespace std;
 
 #include "gtest\gtest.h"
-#include "usi.h"
 #include "usioption.h"
 #include "position.h"
+#include "move.h"
 
 //駒コード（GPSを参考にした）
 const char EMPTY = 0;
 const char EDGE = 1;
-const char NOT_PMOTO = 8;
 
 const char BP_PAWN = 2;
 const char BP_LANCE = 3;
@@ -28,23 +27,24 @@ const char B_SILVER = 13;
 const char B_BISHOP = 14;
 const char B_ROOK = 15;
 
-const char WP_PAWN = BP_PAWN - 16;
-const char WP_LANCE = BP_LANCE - 16;
-const char WP_KNIGHT = BP_KNIGHT - 16;
-const char WP_SILVER = BP_SILVER - 16;
-const char WP_BISHOP = BP_BISHOP - 16;
-const char WP_ROOK = BP_ROOK - 16;
-const char W_KING = B_KING - 16;
-const char W_GOLD = B_GOLD - 16;
-const char W_PAWN = B_PAWN - 16;
-const char W_LANCE = B_LANCE - 16;
-const char W_KNIGHT = B_KNIGHT - 16;
-const char W_SILVER = B_SILVER - 16;
-const char W_BISHOP = B_BISHOP - 16;
-const char W_ROOK = B_ROOK - 16;
+const char WP_PAWN = BP_PAWN - 16;      //-14
+const char WP_LANCE = BP_LANCE - 16;    //-13
+const char WP_KNIGHT = BP_KNIGHT - 16;  //-12
+const char WP_SILVER = BP_SILVER - 16;  //-11
+const char WP_BISHOP = BP_BISHOP - 16;  //-10   
+const char WP_ROOK = BP_ROOK - 16;      //-9
+const char W_KING = B_KING - 16;        //-8
+const char W_GOLD = B_GOLD - 16;        //-7
+const char W_PAWN = B_PAWN - 16;        //-6
+const char W_LANCE = B_LANCE - 16;      //-5
+const char W_KNIGHT = B_KNIGHT - 16;    //-4
+const char W_SILVER = B_SILVER - 16;    //-3
+const char W_BISHOP = B_BISHOP - 16;    //-2
+const char W_ROOK = B_ROOK - 16;        //-1
 //player(手番） BLACKが先手、WHITEが後手
 const int BLACK = 0;
 const int WHITE = -1;
+const int NO_COLOR = 16;
 int turn;
 
 //先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
@@ -286,7 +286,7 @@ void print_board(const Position &pos)
 
 void do_move(Position &pos,Move m)
 {
-    int from = (m >> 8) & 0xFF;
+    int from = move_from(m);    //(m >> 8) & 0xFF;
     int to = m & 0xFF;
     char cp;
     char p;
@@ -310,7 +310,7 @@ void do_move(Position &pos,Move m)
     }
     else{
         //打つ手
-        p = (m >> 17) & 0x0F;   //打つ駒種を取り出す
+        p = move_piece(m);  //(m >> 17) & 0x0F;   //打つ駒種を取り出す
         pos.board[to] = turn ? 0xF0 | p : p;    //駒コードに変換
         base_address = turn ? &pos.board[215] : &pos.board[208];
         *(base_address + ((p | 0x08) - 9)) -= 1;
@@ -354,31 +354,31 @@ TEST(position,color_of_piece)
 TEST(position,piece_type)
 {
     //不成り、成り判定
-    EXPECT_FALSE(BP_PAWN & NOT_PMOTO);  //BP_PAWNは成っていないよね->成っているのでFALSE
-    EXPECT_FALSE(BP_LANCE & NOT_PMOTO);
-    EXPECT_FALSE(BP_KNIGHT & NOT_PMOTO);
-    EXPECT_FALSE(BP_SILVER & NOT_PMOTO);
-    EXPECT_FALSE(BP_BISHOP & NOT_PMOTO);
-    EXPECT_FALSE(BP_ROOK & NOT_PMOTO);
-    EXPECT_TRUE(B_PAWN & NOT_PMOTO);    //B_PAWNは成っていないよね->成っていないのでTRUE
-    EXPECT_TRUE(B_LANCE & NOT_PMOTO);
-    EXPECT_TRUE(B_KNIGHT & NOT_PMOTO);
-    EXPECT_TRUE(B_SILVER & NOT_PMOTO);
-    EXPECT_TRUE(B_BISHOP & NOT_PMOTO);
-    EXPECT_TRUE(B_ROOK & NOT_PMOTO);
+    EXPECT_FALSE(is_not_pmoto(BP_PAWN));  //BP_PAWNは成っていないよね->成っているのでFALSE
+    EXPECT_FALSE(is_not_pmoto(BP_LANCE));
+    EXPECT_FALSE(is_not_pmoto(BP_KNIGHT));
+    EXPECT_FALSE(is_not_pmoto(BP_SILVER));
+    EXPECT_FALSE(is_not_pmoto(BP_BISHOP));
+    EXPECT_FALSE(is_not_pmoto(BP_ROOK));
+    EXPECT_TRUE(is_not_pmoto(B_PAWN));    //B_PAWNは成っていないよね->成っていないのでTRUE
+    EXPECT_TRUE(is_not_pmoto(B_LANCE));
+    EXPECT_TRUE(is_not_pmoto(B_KNIGHT));
+    EXPECT_TRUE(is_not_pmoto(B_SILVER));
+    EXPECT_TRUE(is_not_pmoto(B_BISHOP));
+    EXPECT_TRUE(is_not_pmoto(B_ROOK));
     
-    EXPECT_FALSE(WP_PAWN & NOT_PMOTO);
-    EXPECT_FALSE(WP_LANCE & NOT_PMOTO);
-    EXPECT_FALSE(WP_KNIGHT & NOT_PMOTO);
-    EXPECT_FALSE(WP_SILVER & NOT_PMOTO);
-    EXPECT_FALSE(WP_BISHOP & NOT_PMOTO);
-    EXPECT_FALSE(WP_ROOK & NOT_PMOTO);
-    EXPECT_TRUE(W_PAWN & NOT_PMOTO);
-    EXPECT_TRUE(W_LANCE & NOT_PMOTO);
-    EXPECT_TRUE(W_KNIGHT & NOT_PMOTO);
-    EXPECT_TRUE(W_SILVER & NOT_PMOTO);
-    EXPECT_TRUE(W_BISHOP & NOT_PMOTO);
-    EXPECT_TRUE(W_ROOK & NOT_PMOTO);
+    EXPECT_FALSE(is_not_pmoto(WP_PAWN));
+    EXPECT_FALSE(is_not_pmoto(WP_LANCE));
+    EXPECT_FALSE(is_not_pmoto(WP_KNIGHT));
+    EXPECT_FALSE(is_not_pmoto(WP_SILVER));
+    EXPECT_FALSE(is_not_pmoto(WP_BISHOP));
+    EXPECT_FALSE(is_not_pmoto(WP_ROOK));
+    EXPECT_TRUE(is_not_pmoto(W_PAWN));
+    EXPECT_TRUE(is_not_pmoto(W_LANCE));
+    EXPECT_TRUE(is_not_pmoto(W_KNIGHT));
+    EXPECT_TRUE(is_not_pmoto(W_SILVER));
+    EXPECT_TRUE(is_not_pmoto(W_BISHOP));
+    EXPECT_TRUE(is_not_pmoto(W_ROOK));
     //先手、後手判別
     char p;
     p = BP_PAWN;
@@ -396,67 +396,38 @@ TEST(position,piece_type)
     EXPECT_EQ(true,p <= 0);  //後手＆空白判定
 
     //先手->後手
-    p = BP_PAWN;
-    EXPECT_EQ(WP_PAWN,p |= 0xF0);
-    p = BP_LANCE;
-    EXPECT_EQ(WP_LANCE,p |= 0xF0);
-    p = BP_KNIGHT;
-    EXPECT_EQ(WP_KNIGHT,p |= 0xF0);
-    p = BP_SILVER;
-    EXPECT_EQ(WP_SILVER,p |= 0xF0);
-    p = BP_SILVER;
-    EXPECT_EQ(WP_SILVER,p |= 0xF0);
-    p = BP_BISHOP;
-    EXPECT_EQ(WP_BISHOP,p |= 0xF0);
-    p = BP_ROOK;
-    EXPECT_EQ(WP_ROOK,p |= 0xF0);
-    p = B_KING;
-    EXPECT_EQ(W_KING,p |= 0xF0);
-    p = B_GOLD;
-    EXPECT_EQ(W_GOLD,p |= 0xF0);
-    p = B_PAWN;
-    EXPECT_EQ(W_PAWN,p |= 0xF0);
-    p = B_LANCE;
-    EXPECT_EQ(W_LANCE,p |= 0xF0);
-    p = B_KNIGHT;
-    EXPECT_EQ(W_KNIGHT,p |= 0xF0);
-    p = B_SILVER;
-    EXPECT_EQ(W_SILVER,p |= 0xF0);
-    p = B_BISHOP;
-    EXPECT_EQ(W_BISHOP,p |= 0xF0);
-    p = B_ROOK;
-    EXPECT_EQ(W_ROOK,p |= 0xF0);
+    EXPECT_EQ(WP_PAWN,do_white(BP_PAWN));
+    EXPECT_EQ(WP_LANCE,do_white(BP_LANCE));
+    EXPECT_EQ(WP_KNIGHT,do_white(BP_KNIGHT));
+    EXPECT_EQ(WP_SILVER,do_white(BP_SILVER));
+    EXPECT_EQ(WP_SILVER,do_white(BP_SILVER));
+    EXPECT_EQ(WP_BISHOP,do_white(BP_BISHOP));
+    EXPECT_EQ(WP_ROOK,do_white(BP_ROOK));
+    EXPECT_EQ(W_KING,do_white(B_KING));
+    EXPECT_EQ(W_GOLD,do_white(B_GOLD));
+    EXPECT_EQ(W_PAWN,do_white(B_PAWN));
+    EXPECT_EQ(W_LANCE,do_white(B_LANCE));
+    EXPECT_EQ(W_KNIGHT,do_white(B_KNIGHT));
+    EXPECT_EQ(W_SILVER,do_white(B_SILVER));
+    EXPECT_EQ(W_BISHOP,do_white(B_BISHOP));
+    EXPECT_EQ(W_ROOK,do_white(B_ROOK));
     //後手->先手
     p = WP_PAWN;
-    EXPECT_EQ(BP_PAWN,p &= 0x0F);
-    p = WP_LANCE;
-    EXPECT_EQ(BP_LANCE,p &= 0x0F);
-    p = WP_KNIGHT;
-    EXPECT_EQ(BP_KNIGHT,p &= 0x0F);
-    p = WP_SILVER;
-    EXPECT_EQ(BP_SILVER,p &= 0x0F);
-    p = WP_SILVER;
-    EXPECT_EQ(BP_SILVER,p &= 0x0F);
-    p = WP_BISHOP;
-    EXPECT_EQ(BP_BISHOP,p &= 0x0F);
-    p = WP_ROOK;
-    EXPECT_EQ(BP_ROOK,p &= 0x0F);
-    p = W_KING;
-    EXPECT_EQ(B_KING,p &= 0x0F);
-    p = W_GOLD;
-    EXPECT_EQ(B_GOLD,p &= 0x0F);
-    p = W_PAWN;
-    EXPECT_EQ(B_PAWN,p &= 0x0F);
-    p = W_LANCE;
-    EXPECT_EQ(B_LANCE,p &= 0x0F);
-    p = W_KNIGHT;
-    EXPECT_EQ(B_KNIGHT,p &= 0x0F);
-    p = W_SILVER;
-    EXPECT_EQ(B_SILVER,p &= 0x0F);
-    p = W_BISHOP;
-    EXPECT_EQ(B_BISHOP,p &= 0x0F);
-    p = W_ROOK;
-    EXPECT_EQ(B_ROOK,p &= 0x0F);
+    EXPECT_EQ(BP_PAWN,do_black(WP_PAWN));
+    EXPECT_EQ(BP_LANCE,do_black(WP_LANCE));
+    EXPECT_EQ(BP_KNIGHT,do_black(WP_KNIGHT));
+    EXPECT_EQ(BP_SILVER,do_black(WP_SILVER));
+    EXPECT_EQ(BP_SILVER,do_black(WP_SILVER));
+    EXPECT_EQ(BP_BISHOP,do_black(WP_BISHOP));
+    EXPECT_EQ(BP_ROOK,do_black(WP_ROOK));
+    EXPECT_EQ(B_KING,do_black(W_KING));
+    EXPECT_EQ(B_GOLD,do_black(W_GOLD));
+    EXPECT_EQ(B_PAWN,do_black(W_PAWN));
+    EXPECT_EQ(B_LANCE,do_black(W_LANCE));
+    EXPECT_EQ(B_KNIGHT,do_black(W_KNIGHT));
+    EXPECT_EQ(B_SILVER,do_black(W_SILVER));
+    EXPECT_EQ(B_BISHOP,do_black(W_BISHOP));
+    EXPECT_EQ(B_ROOK,do_black(W_ROOK));
 }
 
 TEST(position,from_sfen)
@@ -743,3 +714,43 @@ TEST(position,make_square)
     EXPECT_EQ(68,make_square(4,3));
 }
 
+TEST(position,make_col_row)
+{
+    int col,row;
+
+    make_col_row(SQ_9A,&col,&row);
+    EXPECT_EQ(1,col);
+    EXPECT_EQ(1,row);
+
+    make_col_row(SQ_8B,&col,&row);
+    EXPECT_EQ(2,col);
+    EXPECT_EQ(2,row);
+
+    make_col_row(SQ_7C,&col,&row);
+    EXPECT_EQ(3,col);
+    EXPECT_EQ(3,row);
+
+    make_col_row(SQ_6D,&col,&row);
+    EXPECT_EQ(4,col);
+    EXPECT_EQ(4,row);
+
+    make_col_row(SQ_5E,&col,&row);
+    EXPECT_EQ(5,col);
+    EXPECT_EQ(5,row);
+
+    make_col_row(SQ_4F,&col,&row);
+    EXPECT_EQ(6,col);
+    EXPECT_EQ(6,row);
+
+    make_col_row(SQ_3G,&col,&row);
+    EXPECT_EQ(7,col);
+    EXPECT_EQ(7,row);
+
+    make_col_row(SQ_2H,&col,&row);
+    EXPECT_EQ(8,col);
+    EXPECT_EQ(8,row);
+
+    make_col_row(SQ_1I,&col,&row);
+    EXPECT_EQ(9,col);
+    EXPECT_EQ(9,row);
+}

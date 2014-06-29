@@ -6,6 +6,16 @@
 extern Move mlist[16384];
 extern next_move_t next_move[PLY_MAX];
 
+inline int is_pmoto_w(int to)
+{
+    return to > SQ_1F ? 1 : 0;
+}
+
+inline int is_pmoto_b(int to)
+{
+    return to < SQ_9D ? 1 : 0;
+}
+
 Move *generate_moves(const Position &pos,Move *ml);
 Move *generate_king_moves_w(const Position &pos,Move *ml,int from);
 Move *generate_gold_moves_w(const Position &pos,Move *ml,int from);

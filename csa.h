@@ -1,7 +1,7 @@
 #if !defined(CSA_H_INCLUDE)
 #define CSA_H_INCLUDE
 
-#include "usi.h"
+//#include "usi.h"
 
 void csa(USIInputParser &uip);
 void csa_parser(string token);

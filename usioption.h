@@ -2,9 +2,10 @@
 #define USIOPTION_H_INCLUDE
 
 #include <map>
-#include "usi.h"
 
 using namespace std;
+
+#include "types.h"
 
 extern map<string,string> options;      //«ŠûŠ‚©‚çİ’è‚³‚ê‚½İ’è‚ğ•Û
 extern map<char,string> piece_letters;    //‹îƒR[ƒh‚Æ‹î•¶š(P,+P,r,R‚È‚Ç)‚ğŠÖŒW‚Ã‚¯‚Ä‚¢‚é

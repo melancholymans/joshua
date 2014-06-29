@@ -8,6 +8,19 @@ const int PLY_MAX = 48; //bonanzaから
 typedef int Color;
 typedef unsigned int Move;
 
+//将棋所からのコマンドをパース
+class USIInputParser{
+public:
+    USIInputParser(const string &line);
+    string get_next_token(void);
+    string get_rest_of_line(void);
+    bool at_end_of_line(void);
+private:
+    const string &input_line;
+    int length,current_index;
+    void skip_whitespace(void);
+};
+
 typedef struct{
     Move *next_move;
     Move *last_move;
@@ -17,6 +30,7 @@ typedef struct{
 駒の判定方法一覧
 char p;
 
+inline is_not_pmoto(char p)に登録
 p & NOT_PMOTO       trueとでたら不成
 p & NOT_PMOTO       falseとでたら成
 
@@ -25,7 +39,9 @@ p > 1 || p == 0     trueなら先手または空白
 p < 0               trueなら後手
 p <= 0              trueなら後手または空白
 
+inline do_white(char p)
 先手を強制的に後手に
+inline do_black(char p)
 p |= 0xF0
 後手を強制的に先手に
 p &= 0x0F

@@ -5,12 +5,13 @@ Shogidokoro shogi playing engin
 #include <cstdlib>
 #include <iostream>
 
+using namespace std;
+
 #include "gtest\gtest.h"
 #include "types.h"
 #include "usi.h"
 #include "usioption.h"
 
-using namespace std;
 /*
 https://github.com/sunfish-shogi/sunfish
 https://github.com/sunfish-shogi/sunfish3

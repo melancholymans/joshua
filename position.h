@@ -19,11 +19,12 @@ extern string start_position;
 extern position_t root_position;
 extern const int BLACK;
 extern const int WHITE;
+extern const int NO_COLOR;
 extern int turn;
 
 const extern char EMPTY;
 const extern char EDGE;
-const extern char NOT_PMOTO;
+//const extern char NOT_PMOTO;
 enum{
     PPAWN=2,PLANCE,PKNIGHT,PSILVER,PBISHOP,PROOK,
     KING=8,GOLD,PAWN,LANCE,KNIGHT,SILVER,BISHOP,ROOK
@@ -76,10 +77,20 @@ enum{
     SQ_9I=161,SQ_8I,SQ_7I,SQ_6I,SQ_5I,SQ_4I,SQ_3I,SQ_2I,SQ_1I,
     SQ_LIMIT
 };
-//列、行番号から座標を計算
+//col,row座標からsq座標を計算
 inline int make_square(int col,int row)
 {
     return ((row+1) << 4) | col;
+}
+
+/*
+sq盤座標からcol,row座標に変換
+*/
+inline void make_col_row(int sq,int *col,int *row)
+{
+    *row = sq/16;   //整数の割り算は小数点は切り捨て
+    *col = sq - *row*16;
+    *row = *row - 1;
 }
 
 //駒コードから駒タイプを計算
@@ -104,8 +115,34 @@ inline Color color_of_piece(int p)
     else if(p > 1){
         return 0;
     }
-    return 16;
+    return NO_COLOR;
 }
+
+/*
+駒コードを与えて成っていないか判定する
+成っていなかったらtrue,成駒ならfalse
+*/
+inline int is_not_pmoto(char p)
+{
+    return p & 8;
+}
+
+/*
+先手駒コードを強制的に後手駒コードにする
+*/
+inline char do_white(char p)
+{
+    return p | 0xF0;
+}
+
+/*
+後手駒コードを強制的に先手駒コードにする
+*/
+inline char do_black(char p)
+{
+    return p & 0x0F;
+}
+
 /*
 Move
 31-30-29-28-27-26-25-24-23-22-21-20-19-18-17-16-15-14-13-12-11-10-09-08-07-06-05-04-03-02-01-00
@@ -120,8 +157,9 @@ to square 移動先の座標 8bit 0-7bit
 */
 inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 {
-    return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece) << 17 | unsigned int(cap_piece) << 21);
+    return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece & 0x0F) << 17 | unsigned int(cap_piece & 0x0F) << 21);
 }
+
 
 void from_sfen(string &sfen);
 string to_sfen(const Position &pos);
