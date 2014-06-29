@@ -57,10 +57,10 @@ void csa_parser(string token)
     }
     if(token[0] == '+' || token[0] == '-'){
         if(token[0] == '+'){
-            turn = BLACK;
+            root_position.turn = BLACK;
         }
         else if(token[0] == '-'){
-            turn = WHITE;
+            root_position.turn = WHITE;
         }
     }
 }

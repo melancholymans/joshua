@@ -52,7 +52,7 @@ Move *generate_moves(const Position &pos,Move *ml)
     char p;
     Color c;
 
-    if(turn ? is_checkmate_w(pos):is_checkmate_b(pos)){
+    if(pos.turn ? is_checkmate_w(pos):is_checkmate_b(pos)){
         //自王に王手がかかっているなら王手回避手を生成して返す
         generate_evasions(pos,ml);
         return ml;
@@ -60,10 +60,10 @@ Move *generate_moves(const Position &pos,Move *ml)
     for(int sq = SQ_9A;sq < SQ_LIMIT;sq++){
         p = pos.board[sq];
         c = color_of_piece(p);
-        if(c != turn){
+        if(c != pos.turn){
             continue;
         }
-        if(WHITE == turn){
+        if(WHITE == pos.turn){
             switch(type_of_piece(p)){
             case KING:ml=generate_king_moves_w(pos,ml,sq); break;
             case GOLD:case PPAWN:case PLANCE:case PKNIGHT:case PSILVER:ml=generate_gold_moves_w(pos,ml,sq); break;
@@ -77,7 +77,7 @@ Move *generate_moves(const Position &pos,Move *ml)
             case PROOK:ml=generate_prook_moves_w(pos,ml,sq); break;
             }
         }
-        else if(BLACK == turn){
+        else if(BLACK == pos.turn){
             switch(type_of_piece(p)){
             case KING:ml=generate_king_moves_b(pos,ml,sq); break;
             case GOLD:ml=generate_gold_moves_b(pos,ml,sq); break;
@@ -93,7 +93,7 @@ Move *generate_moves(const Position &pos,Move *ml)
         }
     }
     //打つ手
-    if(WHITE == turn){
+    if(WHITE == pos.turn){
         for(int sq = 215;sq < 222;sq++){
             if(pos.board[sq] > 0){
                 switch(sq){
@@ -108,7 +108,7 @@ Move *generate_moves(const Position &pos,Move *ml)
             }
         }
     }
-    else if(BLACK == turn){
+    else if(BLACK == pos.turn){
         for(int sq = 208;sq < 215;sq++){
             if(pos.board[sq] > 0){
                 switch(sq){
@@ -702,13 +702,13 @@ bool is_checkmate_w(const Position &pos)
     Color c;
     char p,cp;
     
-    from = pos.king_square[turn+1];
+    from = pos.king_square[pos.turn+1];
     //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
         p = pos.board[to];
         c = color_of_piece(p);
-        if(c == ~turn){
+        if(c == ~pos.turn){
             return true;
         }
     }
@@ -716,7 +716,7 @@ bool is_checkmate_w(const Position &pos)
         to = from + DIRECT_WHITE[KNIGHT][i];
         p = pos.board[to];
         c = color_of_piece(p);
-        if(c == ~turn && p==B_KNIGHT){
+        if(c == ~pos.turn && p==B_KNIGHT){
             return true;
         }
     }
@@ -757,13 +757,13 @@ bool is_checkmate_b(const Position &pos)
     Color c;
     char p,cp;
     
-    from = pos.king_square[turn+1];
+    from = pos.king_square[pos.turn+1];
     //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_BLACK[KING][i];
         p = pos.board[to];
         c = color_of_piece(p);
-        if(c == ~turn){
+        if(c == ~pos.turn){
             return true;
         }
     }
@@ -772,7 +772,7 @@ bool is_checkmate_b(const Position &pos)
         to = from + DIRECT_BLACK[KNIGHT][i];
         p = pos.board[to];
         c = color_of_piece(p);
-        if(c == ~turn && p==W_KNIGHT){
+        if(c == ~pos.turn && p==W_KNIGHT){
             return true;
         }
     }
@@ -1051,7 +1051,7 @@ TEST(movegen,generate_moves)
 
     //Q1の局面でテスト,WHITE側
     from_sfen(expect);
-    turn = WHITE;
+    root_position.turn = WHITE;
     next_move[0].last_move = mlist;
     m = generate_moves(root_position,mlist);
     n = m - next_move[0].last_move;

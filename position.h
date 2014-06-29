@@ -7,6 +7,7 @@ typedef struct Position{
     void set_posiition();
     char board[16*13+38*2];
     int king_square[2];
+    int turn;
 }position_t;
 
 //position�̒萔

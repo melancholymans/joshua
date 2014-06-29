@@ -45,7 +45,6 @@ const char W_ROOK = B_ROOK - 16;        //-1
 const int BLACK = 0;
 const int WHITE = -1;
 const int NO_COLOR = 16;
-int turn;
 
 //先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
 string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
@@ -115,10 +114,10 @@ void from_sfen(string &sfen)
     token = uip.get_next_token();
 
     if(token[0] == 'b'){
-        turn = BLACK;
+        root_position.turn = BLACK;
     }
     else if(token[0] == 'w'){
-        turn = WHITE;
+        root_position.turn = WHITE;
     }
     else{
         cout << "Error in SFEN charracter" << endl;
@@ -198,7 +197,7 @@ string to_sfen(const Position &pos)
         }
         result += row < 9 ? '/' : ' ';
     }
-    result += (turn == WHITE) ? 'w'  : 'b';
+    result += (pos.turn == WHITE) ? 'w'  : 'b';
     result += ' ';
     //ここは駒台の処理
     bool is_stand = false;
@@ -302,7 +301,7 @@ void do_move(Position &pos,Move m)
         }
         if(pos.board[to] != EMPTY){
             cp = pos.board[to] & 0x0F;
-            base_address = turn ? &pos.board[215] : &pos.board[208];
+            base_address = pos.turn ? &pos.board[215] : &pos.board[208];
             *(base_address + ((cp | 0x08) - 9)) += 1;
         }
         pos.board[to] = m & 0x10000 ? p-8:p;
@@ -311,11 +310,11 @@ void do_move(Position &pos,Move m)
     else{
         //打つ手
         p = move_piece(m);  //(m >> 17) & 0x0F;   //打つ駒種を取り出す
-        pos.board[to] = turn ? 0xF0 | p : p;    //駒コードに変換
-        base_address = turn ? &pos.board[215] : &pos.board[208];
+        pos.board[to] = pos.turn ? 0xF0 | p : p;    //駒コードに変換
+        base_address = pos.turn ? &pos.board[215] : &pos.board[208];
         *(base_address + ((p | 0x08) - 9)) -= 1;
     }
-    turn = ~turn;
+    pos.turn = ~pos.turn;
 }
 
 TEST(position,color_of_piece)
