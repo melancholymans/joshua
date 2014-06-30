@@ -5,6 +5,8 @@
 
 extern Move mlist[16384];
 extern next_move_t next_move[PLY_MAX];
+extern char dlist[256];
+extern next_dirty_t next_dirty[PLY_MAX];
 
 inline int is_pmoto_w(int to)
 {

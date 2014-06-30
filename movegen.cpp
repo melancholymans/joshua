@@ -8,6 +8,9 @@ using namespace std;
 
 Move mlist[16384];  //bonanzaもこれくらい取っている2^14
 next_move_t next_move[PLY_MAX];
+char dlist[256];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
+next_dirty_t next_dirty[PLY_MAX]; //dlistの管理
+
 int DIRECT_WHITE[16][8] = {
     {0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0},

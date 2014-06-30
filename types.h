@@ -26,6 +26,11 @@ typedef struct{
     Move *last_move;
 }next_move_t;
 
+typedef struct{
+    char *next_dirty;
+    char *last_dirty;
+}next_dirty_t;
+
 /*
 ‹î‚Ì”»’è•û–@ˆê——
 char p;
