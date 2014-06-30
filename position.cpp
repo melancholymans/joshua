@@ -285,7 +285,7 @@ void print_board(const Position &pos)
 
 void do_move(Position &pos,Move m)
 {
-    int from = move_from(m);    //(m >> 8) & 0xFF;
+    int from = move_from(m);
     int to = m & 0xFF;
     char cp;
     char p;
@@ -309,7 +309,7 @@ void do_move(Position &pos,Move m)
     }
     else{
         //打つ手
-        p = move_piece(m);  //(m >> 17) & 0x0F;   //打つ駒種を取り出す
+        p = move_piece(m);  //打つ駒種を取り出す
         pos.board[to] = pos.turn ? 0xF0 | p : p;    //駒コードに変換
         base_address = pos.turn ? &pos.board[215] : &pos.board[208];
         *(base_address + ((p | 0x08) - 9)) -= 1;
