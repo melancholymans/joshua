@@ -11,12 +11,14 @@ using namespace std;
 
 bool think(Position &pos)
 {
-    Move *ml = next_move[0].last_move = mlist;
-    ml = generate_moves(pos,ml);
-    int u = ml - next_move[0].last_move;
+    int ply = 0;
+
+    Move *ml = next_move[ply].next_move = next_move[ply].last_move;
+    next_move[ply].last_move = generate_moves(pos,ml);
+    int u = next_move[ply].last_move - ml;
     int r = rand();
     int n = (u*r)/(RAND_MAX+1);
-    Move m = *(next_move[0].last_move+n);
+    Move m = *(ml+n);
     if(u == 0){
         //çáñ@éËÇ™Ç»ÇØÇÍÇŒìäóπ
         print_board(pos);

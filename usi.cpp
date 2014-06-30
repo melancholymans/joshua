@@ -28,6 +28,8 @@ void usi_main_loop(void)
 void game_init(void)
 {
     //‘Î‹Ç‚²‚Æ‰Šú‰»‚·‚é•K—v‚ª‚ ‚é•Ï”
+    next_move[0].last_move = mlist;
+    next_dirty[0].last_dirty = dlist;
 }
 
 
