@@ -705,7 +705,8 @@ bool is_checkmate_w(const Position &pos)
     Color c;
     char p,cp;
     
-    from = pos.king_square[pos.turn+1];
+    //from = pos.king_square[pos.turn+1];
+    from = pos.board[223+pos.turn];
     //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
@@ -760,7 +761,8 @@ bool is_checkmate_b(const Position &pos)
     Color c;
     char p,cp;
     
-    from = pos.king_square[pos.turn+1];
+    //from = pos.king_square[pos.turn+1];
+    from = pos.board[223+pos.turn];
     //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_BLACK[KING][i];

@@ -5,8 +5,8 @@
 
 typedef struct Position{
     void set_posiition();
-    char board[16*13+38*2];
-    int king_square[2];
+    char board[16*13 + 7*2 + 2 + 32];  //最後の３２は配列の大きさを256にするためのもの意味はない
+    //int king_square[2];
     int turn;
 }position_t;
 
@@ -14,7 +14,7 @@ typedef struct Position{
 const int BOARD_UPPER = 16*13;
 const int STAND_BLACK_START = 16*13;
 const int STAND_WHITE_START = 16*13 + 7;
-const int LIMIT = 16*13 + 7*2;
+const int LIMIT = 16*13 + 7*2 + 2;  //16*13は盤上7*2は駒台、最後の２はKING用の座標
 
 extern string start_position;
 extern position_t root_position;

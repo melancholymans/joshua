@@ -240,7 +240,8 @@ void put_piece(char p,int sq,int num)
         root_position.board[sq] = p;
         if(pt == KING){
             //Color‚ÍWHITE=-1,BLACK=0‚Å”z—ñ‚ÉŽû‚Ü‚ç‚È‚¢‚Ì‚Å+1‚É‚µ‚ÄWHITE=0,BLACK=1‚É‚µ‚Ä‚¢‚é
-            root_position.king_square[c+1] = sq;
+            //root_position.king_square[c+1] = sq;
+            root_position.board[223+c] = sq;
         }
     }
     else{
@@ -297,7 +298,8 @@ void do_move(Position &pos,Move m,char *mf)
         char pt = type_of_piece(p);
         if(pt == KING){
             Color c = color_of_piece(p);
-            root_position.king_square[c+1] = to;
+            //root_position.king_square[c+1] = to;
+            root_position.board[223+c] = to;
         }
         if(pos.board[to] != EMPTY){
             *(mf++) = pos.turn ? 215:208;
@@ -542,8 +544,8 @@ TEST(position,from_sfen)
     EXPECT_EQ(B_SILVER,root_position.board[SQ_3I]);
     EXPECT_EQ(B_KNIGHT,root_position.board[SQ_2I]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    EXPECT_EQ(SQ_5A,root_position.king_square[WHITE+1]);
-    EXPECT_EQ(SQ_5I,root_position.king_square[BLACK+1]);
+    EXPECT_EQ(SQ_5A,root_position.board[222]);
+    EXPECT_EQ(SQ_5I,root_position.board[223]);
 
     from_sfen(string("lnsgkgsn1/1r5b1/pppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"));
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
@@ -659,8 +661,8 @@ TEST(position,from_sfen)
     EXPECT_EQ(1,root_position.board[220]);  //white bishop
     EXPECT_EQ(1,root_position.board[221]);  //white rook
 
-    EXPECT_EQ(SQ_3A,root_position.king_square[WHITE+1]);
-    EXPECT_EQ(SQ_7I,root_position.king_square[BLACK+1]);
+    EXPECT_EQ(SQ_3A,root_position.board[223+WHITE] /*king_square[WHITE+1]*/);
+    EXPECT_EQ(SQ_7I,root_position.board[223+BLACK] /*king_square[BLACK+1]*/);
 }
 
 TEST(position,to_sfen)
