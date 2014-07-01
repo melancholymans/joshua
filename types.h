@@ -29,7 +29,7 @@ typedef struct{
 typedef struct{
     char *next_dirty;
     char *last_dirty;
-}next_dirty_t;
+}next_modify_t;
 
 /*
 ‹î‚Ì”»’è•û–@ˆê——
