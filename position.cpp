@@ -283,7 +283,7 @@ void print_board(const Position &pos)
     cout << to_sfen(pos) << endl;
 }
 
-void do_move(Position &pos,Move m)
+void do_move(Position &pos,Move m,char *mf)
 {
     int from = move_from(m);
     int to = m & 0xFF;
@@ -300,21 +300,42 @@ void do_move(Position &pos,Move m)
             root_position.king_square[c+1] = to;
         }
         if(pos.board[to] != EMPTY){
+            *(mf++) = pos.turn ? 215:208;
+            *(mf++) = pos.board[*mf];   //ここは微妙かも、mfが歩進する前に直前に代入されたboardの座標を利用しているつもり
+
             cp = pos.board[to] & 0x0F;
             base_address = pos.turn ? &pos.board[215] : &pos.board[208];
             *(base_address + ((cp | 0x08) - 9)) += 1;
         }
+
+        *(mf++) = to; *(mf++) = pos.board[to];    //変更を場所、内容の順に登録しておく
+
         pos.board[to] = m & 0x10000 ? p-8:p;
+
+        *(mf++) = from; *(mf++) = p;    //変更を場所、内容の順に登録しておく
+
         pos.board[from] = EMPTY;
     }
     else{
         //打つ手
         p = move_piece(m);  //打つ駒種を取り出す
+
+        *(mf++) = to; *(mf++) = EMPTY;    //変更を場所、内容の順に登録しておく
+
         pos.board[to] = pos.turn ? 0xF0 | p : p;    //駒コードに変換
+
+        *(mf++) = pos.turn ? 215:208;
+        *(mf++) = pos.board[*mf];   //ここは微妙かも、mfが歩進する前に直前に代入されたboardの座標を利用しているつもり
+
         base_address = pos.turn ? &pos.board[215] : &pos.board[208];
         *(base_address + ((p | 0x08) - 9)) -= 1;
     }
     pos.turn = ~pos.turn;
+}
+
+void undo_move(Position &pos,char *mf)
+{
+
 }
 
 TEST(position,color_of_piece)

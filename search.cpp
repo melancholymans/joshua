@@ -15,10 +15,22 @@ bool think(Position &pos)
 
     Move *ml = next_move[ply].next_move = next_move[ply].last_move;
     next_move[ply].last_move = generate_moves(pos,ml);
+    char *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
     int u = next_move[ply].last_move - ml;
+    /*
+    ã«ñ çXêVÇÃå¥å^
+    */
+    for(Move *m = ml;ml != next_move[ply].last_move;m++){
+        do_move(pos,*m,mf);
+        print_board(pos);
+        undo_move(pos,mf);
+    }
+
+    /*
     int r = rand();
     int n = (u*r)/(RAND_MAX+1);
     Move m = *(ml+n);
+    */
     if(u == 0){
         //çáñ@éËÇ™Ç»ÇØÇÍÇŒìäóπ
         print_board(pos);
