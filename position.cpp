@@ -284,7 +284,7 @@ void print_board(const Position &pos)
     cout << to_sfen(pos) << endl;
 }
 
-void do_move(Position &pos,Move m,char *mf)
+char *do_move(Position &pos,Move m,char *mf)
 {
     int from = move_from(m);
     int to = m & 0xFF;
@@ -299,7 +299,8 @@ void do_move(Position &pos,Move m,char *mf)
         if(pt == KING){
             Color c = color_of_piece(p);
             //root_position.king_square[c+1] = to;
-            root_position.board[223+c] = to;
+            *(mf++) = pos.board[223+c];
+            pos.board[223+c] = to;
         }
         if(pos.board[to] != EMPTY){
             *(mf++) = pos.turn ? 215:208;
@@ -333,6 +334,7 @@ void do_move(Position &pos,Move m,char *mf)
         *(base_address + ((p | 0x08) - 9)) -= 1;
     }
     pos.turn = ~pos.turn;
+    return mf;
 }
 
 void undo_move(Position &pos,char *mf)
@@ -544,8 +546,8 @@ TEST(position,from_sfen)
     EXPECT_EQ(B_SILVER,root_position.board[SQ_3I]);
     EXPECT_EQ(B_KNIGHT,root_position.board[SQ_2I]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    EXPECT_EQ(SQ_5A,root_position.board[222]);
-    EXPECT_EQ(SQ_5I,root_position.board[223]);
+    EXPECT_EQ(SQ_5A,(short)root_position.board[222]);
+    EXPECT_EQ(SQ_5I,(short)root_position.board[223]);
 
     from_sfen(string("lnsgkgsn1/1r5b1/pppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"));
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);

@@ -21,16 +21,16 @@ bool think(Position &pos)
     局面更新の原型
     */
     for(Move *m = ml;ml != next_move[ply].last_move;m++){
-        do_move(pos,*m,mf);
+        next_modify[ply].last_dirty = do_move(pos,*m,mf);
         print_board(pos);
         undo_move(pos,mf);
     }
 
-    /*
+    /**/
     int r = rand();
     int n = (u*r)/(RAND_MAX+1);
     Move m = *(ml+n);
-    */
+    /**/
     if(u == 0){
         //合法手がなければ投了
         print_board(pos);
@@ -39,7 +39,7 @@ bool think(Position &pos)
     }
     else{
         //指し手を実行して、その手を将棋所に送信
-        do_move(pos,m);
+        do_move(pos,m,mf);
         print_board(pos);
         cout << "bestmove " << string_from_move(m) << endl;
     }

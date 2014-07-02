@@ -94,6 +94,7 @@ bool handle_command(const string &command)
 void set_position(USIInputParser &uip)
 {
     string cmd;
+    char dummy[8];
 
     cmd = uip.get_next_token();
     //•½è‰Šú‹Ç–Ê
@@ -119,7 +120,7 @@ void set_position(USIInputParser &uip)
             while(!uip.at_end_of_line()){
                 cmd = uip.get_next_token(); //cmd‚É‚Íw‚µè‚²‚Æ•ªŠ„‚³‚ê‚Ä“n‚·
                 Move m = move_from_string(root_position,cmd);
-                do_move(root_position,m);
+                do_move(root_position,m,dummy);
             }
         }
     }
