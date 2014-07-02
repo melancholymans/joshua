@@ -107,7 +107,6 @@ inline Color color_of_piece(int p)
     //VC++2010で算術シフトを採用しているようなのでこのままとするが処理系が
     //変更になったらテストでエラーがでるようにしておく
     //BLACK側駒は0をWHITE側駒は-1を返す
-    //return p >> 4;
     //return p >> 4;だとWHITE PIECE,BLACK PIECEは-1、0を返すが
     //EMPTY,EDGEをBLACK PIECEと判別する
     if(p < 0){
