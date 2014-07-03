@@ -94,7 +94,7 @@ bool handle_command(const string &command)
 void set_position(USIInputParser &uip)
 {
     string cmd;
-    char dummy[8];
+    short dummy[8];
 
     cmd = uip.get_next_token();
     //•½è‰Šú‹Ç–Ê

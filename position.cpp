@@ -6,6 +6,7 @@ using namespace std;
 #include "gtest\gtest.h"
 #include "usioption.h"
 #include "position.h"
+#include "movegen.h"
 #include "move.h"
 
 //駒コード（GPSを参考にした）
@@ -241,7 +242,7 @@ void put_piece(char p,int sq,int num)
         if(pt == KING){
             //ColorはWHITE=-1,BLACK=0で配列に収まらないので+1にしてWHITE=0,BLACK=1にしている
             //root_position.king_square[c+1] = sq;
-            root_position.board[223+c] = sq;
+            root_position.board[223+c] = sq;    //強制的にintからcharに入れている
         }
     }
     else{
@@ -284,10 +285,10 @@ void print_board(const Position &pos)
     cout << to_sfen(pos) << endl;
 }
 
-char *do_move(Position &pos,Move m,char *mf)
+short *do_move(Position &pos,Move m,short *mf)
 {
     int from = move_from(m);
-    int to = m & 0xFF;
+    int to = move_to(m);
     char cp;
     char p;
     char *base_address;
@@ -300,7 +301,7 @@ char *do_move(Position &pos,Move m,char *mf)
             Color c = color_of_piece(p);
             //root_position.king_square[c+1] = to;
             *(mf++) = pos.board[223+c];
-            pos.board[223+c] = to;
+            pos.board[223+c] = to;  //強制的にintからcharに入れている
         }
         if(pos.board[to] != EMPTY){
             *(mf++) = pos.turn ? 215:208;
@@ -337,9 +338,15 @@ char *do_move(Position &pos,Move m,char *mf)
     return mf;
 }
 
-void undo_move(Position &pos,char *mf)
+void undo_move(Position &pos,short *mf,int ply)
 {
+    int sq;
+    //char item;
 
+    for(short *mf = next_modify[ply].next_dirty;mf != next_modify[ply].last_dirty;){
+        sq = *(mf++);
+        pos.board[sq] = *(mf++);
+    }
 }
 
 TEST(position,color_of_piece)
@@ -546,8 +553,8 @@ TEST(position,from_sfen)
     EXPECT_EQ(B_SILVER,root_position.board[SQ_3I]);
     EXPECT_EQ(B_KNIGHT,root_position.board[SQ_2I]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    EXPECT_EQ(SQ_5A,(short)root_position.board[222]);
-    EXPECT_EQ(SQ_5I,(short)root_position.board[223]);
+    EXPECT_EQ(SQ_5A,(unsigned char)root_position.board[222]);
+    EXPECT_EQ(SQ_5I,(unsigned char)root_position.board[223]);
 
     from_sfen(string("lnsgkgsn1/1r5b1/pppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"));
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
@@ -663,8 +670,8 @@ TEST(position,from_sfen)
     EXPECT_EQ(1,root_position.board[220]);  //white bishop
     EXPECT_EQ(1,root_position.board[221]);  //white rook
 
-    EXPECT_EQ(SQ_3A,root_position.board[223+WHITE] /*king_square[WHITE+1]*/);
-    EXPECT_EQ(SQ_7I,root_position.board[223+BLACK] /*king_square[BLACK+1]*/);
+    EXPECT_EQ(SQ_3A,(unsigned char)root_position.board[223+WHITE] /*king_square[WHITE+1]*/);
+    EXPECT_EQ(SQ_7I,(unsigned char)root_position.board[223+BLACK] /*king_square[BLACK+1]*/);
 }
 
 TEST(position,to_sfen)

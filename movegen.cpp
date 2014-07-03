@@ -8,7 +8,7 @@ using namespace std;
 
 Move mlist[16384];  //bonanzaもこれくらい取っている2^14
 next_move_t next_move[PLY_MAX];
-char modifylist[256];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
+short modifylist[256];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
 next_modify_t next_modify[PLY_MAX]; //modifylistの管理
 
 int DIRECT_WHITE[16][8] = {
@@ -706,7 +706,7 @@ bool is_checkmate_w(const Position &pos)
     char p,cp;
     
     //from = pos.king_square[pos.turn+1];
-    from = pos.board[223+pos.turn];
+    from = (unsigned char)pos.board[223+pos.turn];  //boardはcharデータなので127までの数しか扱えない、board[222],[223]をkingの座標をいれることにしたのでunsigned charでキャストすることで255までの数を扱えるようにした。
     //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
@@ -762,7 +762,7 @@ bool is_checkmate_b(const Position &pos)
     char p,cp;
     
     //from = pos.king_square[pos.turn+1];
-    from = pos.board[223+pos.turn];
+    from = (unsigned char)pos.board[223+pos.turn];
     //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_BLACK[KING][i];

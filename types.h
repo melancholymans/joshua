@@ -27,8 +27,8 @@ typedef struct{
 }next_move_t;
 
 typedef struct{
-    char *next_dirty;
-    char *last_dirty;
+    short *next_dirty;
+    short *last_dirty;
 }next_modify_t;
 
 /*
