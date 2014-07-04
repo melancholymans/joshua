@@ -341,7 +341,6 @@ short *do_move(Position &pos,Move m,short *mf)
 void undo_move(Position &pos,short *mf,int ply)
 {
     int sq;
-    //char item;
 
     for(short *mf = next_modify[ply].next_dirty;mf != next_modify[ply].last_dirty;){
         sq = *(mf++);
