@@ -30,11 +30,11 @@ void csa(USIInputParser &uip)
     }
     token = uip.get_next_token();
     if(token == ""){
-        assert(false);
+        _ASSERT(false);
     }
     file.open(token,ios::in);
     if(!file.is_open()){
-        assert(false);
+        _ASSERT(false);
         return;
     }
     do{

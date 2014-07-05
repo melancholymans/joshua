@@ -1,5 +1,6 @@
 #include <string>
 #include <ctype.h>
+#include <crtdbg.h>
 
 using namespace std;
 
@@ -106,7 +107,7 @@ void from_sfen(string &sfen)
             case ' ': break;
             default: 
                 cout << "Error in SFEN charracter" << endl;
-                assert(false);
+                _ASSERT(false);
                 return;
             }
         }
@@ -122,7 +123,7 @@ void from_sfen(string &sfen)
     }
     else{
         cout << "Error in SFEN charracter" << endl;
-        assert(false);
+        _ASSERT(false);
         return;
     }
     //持ち駒設定(サンプル S2Pb18p）
@@ -147,7 +148,7 @@ void from_sfen(string &sfen)
         }
         else{       //どれでもない
             cout << "Error in SFEN charracter" << endl;
-            assert(false);
+            _ASSERT(false);
             return; 
         }
         switch(token[index]){
@@ -291,7 +292,6 @@ short *do_move(Position &pos,Move m,short *mf)
     int to = move_to(m);
     char cp;
     char p;
-    char *base_address;
 
     if(from != 0){
         //盤上の手
@@ -339,6 +339,73 @@ void undo_move(Position &pos,int ply)
     for(short *mf = next_modify[ply].next_dirty;mf != next_modify[ply].last_dirty;){
         sq = *(mf++);
         pos.board[sq] = *(mf++);
+    }
+}
+
+void is_ok(Position &pos)
+{
+    char p;
+    int sq;
+    int piece_count[16];
+
+    for(int i = 0;i < 16;i++){
+        piece_count[i] = 0;
+    }
+    for(int row = 1;row < 10;row++){
+        for(int col = 1;col < 10;col++){
+            sq = make_square(col,row);
+            p = pos.board[sq];
+            if(p == EMPTY){
+                continue;
+            }
+            piece_count[type_of_piece(p)]++;
+        }
+    }
+    for(int sq = 208;sq < 215;sq++){
+        piece_count[sq-208+9] += pos.board[sq];
+    }
+    for(int sq = 215;sq < 222;sq++){
+        piece_count[sq-215+9] += pos.board[sq];
+    }
+
+    int sum = 0;
+    for(int i = 0;i < 16;i++){
+        sum += piece_count[i];
+    }
+    _ASSERT(sum == 40);
+    _ASSERT((piece_count[PAWN] + piece_count[PPAWN]) == 18);
+    _ASSERT((piece_count[LANCE] + piece_count[PLANCE]) == 4);
+    _ASSERT((piece_count[KNIGHT] + piece_count[PKNIGHT]) == 4);
+    _ASSERT((piece_count[SILVER] + piece_count[PSILVER]) == 4);
+    _ASSERT(piece_count[GOLD] == 4);
+    _ASSERT((piece_count[BISHOP] + piece_count[PBISHOP]) == 2);
+    _ASSERT((piece_count[ROOK] + piece_count[PROOK]) == 2);
+    _ASSERT(piece_count[KING] == 2);
+    //BLACK側死に駒の有無
+    for(int sq = SQ_9A;sq <= SQ_1A;sq++){
+        char p = pos.board[sq];
+        if((p == B_PAWN) || (p == B_LANCE) || (p == B_KNIGHT)){
+            _ASSERT(false);
+        }
+    }
+    for(int sq = SQ_9B;sq <= SQ_1B;sq++){
+        char p = pos.board[sq];
+        if(p == B_KNIGHT){
+            _ASSERT(false);
+        }
+    }
+    //WHITE側死に駒の有無
+    for(int sq = SQ_9I;sq <= SQ_1I;sq++){
+        char p = pos.board[sq];
+        if((p == W_PAWN) || (p == W_LANCE) || (p == W_KNIGHT)){
+            _ASSERT(false);
+        }
+    }
+    for(int sq = SQ_9H;sq <= SQ_1H;sq++){
+        char p = pos.board[sq];
+        if(p == W_KNIGHT){
+            _ASSERT(false);
+        }
     }
 }
 
@@ -803,6 +870,7 @@ TEST(position,undo_move)
         ply = update_board(uip);    //do_moveで局面を更新
         for(int i = ply-1;i >= 0;i--){
             undo_move(root_position,i); //undo_moveで局面を復元
+            is_ok(root_position);
         }
         is_eq_board();
         print_board(root_position);

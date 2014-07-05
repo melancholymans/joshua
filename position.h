@@ -167,6 +167,7 @@ void print_board(const Position &pos);
 void put_piece(char p,int sq,int num);
 short *do_move(Position &pos,Move m,short *mf);
 void undo_move(Position &pos,int ply);
+void is_ok(Position &pos);
 
 #endif
 
