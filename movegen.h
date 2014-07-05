@@ -4,9 +4,9 @@
 #include "types.h"
 
 extern Move mlist[16384];
-extern next_move_t next_move[PLY_MAX];
-extern short modifylist[256];
-extern next_modify_t next_modify[PLY_MAX];
+extern next_move_t next_move[256];
+extern short modifylist[1024];
+extern next_modify_t next_modify[256];
 
 inline int is_pmoto_w(int to)
 {

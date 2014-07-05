@@ -23,7 +23,7 @@ bool think(Position &pos)
     for(Move *m = ml;ml != next_move[ply].last_move;m++){
         next_modify[ply].last_dirty = do_move(pos,*m,mf);
         print_board(pos);
-        undo_move(pos,mf,ply);
+        undo_move(pos,ply);
     }
 
     /**/

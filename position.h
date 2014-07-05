@@ -166,7 +166,7 @@ string to_sfen(const Position &pos);
 void print_board(const Position &pos);
 void put_piece(char p,int sq,int num);
 short *do_move(Position &pos,Move m,short *mf);
-void undo_move(Position &pos,short *mf,int ply);
+void undo_move(Position &pos,int ply);
 
 #endif
 

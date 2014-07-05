@@ -7,9 +7,9 @@ using namespace std;
 #include "movegen.h"
 
 Move mlist[16384];  //bonanzaもこれくらい取っている2^14
-next_move_t next_move[PLY_MAX];
-short modifylist[256];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
-next_modify_t next_modify[PLY_MAX]; //modifylistの管理
+next_move_t next_move[256];
+short modifylist[1024];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
+next_modify_t next_modify[256]; //modifylistの管理
 
 int DIRECT_WHITE[16][8] = {
     {0,0,0,0,0,0,0,0},
@@ -47,8 +47,6 @@ int DIRECT_BLACK[16][8] = {
     {UL,UR,DL,DR,0,0,0,0},  //B_BISHOP
     {U,L,R,D,0,0,0,0},  //B_ROOK
 };
-
-bool array_check(Move anser,Move *m,int n);
 
 Move *generate_moves(const Position &pos,Move *ml)
 {
@@ -837,6 +835,8 @@ Move *generate_drop(const Position &pos,Move *ml)
     return m;
 }
 */
+
+bool array_check(Move anser,Move *m,int n);
 
 TEST(movegen,generate_moves)
 {

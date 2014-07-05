@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-const int PLY_MAX = 48; //bonanza‚©‚ç 
+const int PLY_MAX = 128; //bonanza‚©‚ç 
 
 typedef int Color;
 typedef unsigned int Move;
