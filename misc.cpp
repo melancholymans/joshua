@@ -14,6 +14,7 @@ double ptime_now(const ptime_t *iPT)
     //経過時間をsecで返す
     return (double)(clock() - *iPT)/(double)(CLOCKS_PER_SEC);
 }
+
 TEST(misc,ptime_init_ptime_now)
 {
     ptime_t aPT;
@@ -23,7 +24,7 @@ TEST(misc,ptime_init_ptime_now)
     
     //計測対象
     Sleep(1234);    //単位はmsec
-    //計測終了
 
+    //計測終了
     printf("%f msec \n",ptime_now(&aPT));
 }
