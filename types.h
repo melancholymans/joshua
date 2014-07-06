@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-const int PLY_MAX = 128; //bonanzaから 
+const int PLY_MAX = 3;//48; //bonanzaから 
 
 typedef int Color;
 typedef unsigned int Move;
@@ -16,7 +16,7 @@ public:
     string get_rest_of_line(void);
     bool at_end_of_line(void);
 private:
-    const string &input_line;
+    const string &input_line;   
     int length,current_index;
     void skip_whitespace(void);
 };
@@ -31,6 +31,9 @@ typedef struct{
     short *last_dirty;
 }next_modify_t;
 
+typedef struct{
+    long long search_node;    //展開された探索ノード数、21億までカウントできる   
+}status_t;
 /*
 駒の判定方法一覧
 char p;

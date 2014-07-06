@@ -873,7 +873,6 @@ TEST(position,undo_move)
             is_ok(root_position);
         }
         is_eq_board();
-        print_board(root_position);
     }
 }
 

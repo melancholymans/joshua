@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+extern status_t stats;
+
 bool think(Position &pos);
+Move search(Position &pos,int ply);
 
 #endif
