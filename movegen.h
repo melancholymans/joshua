@@ -59,4 +59,10 @@ bool is_checkmate_b(const Position &pos);
 
 Move *generate_evasions(const Position &pos,Move *ml);
 
+/*
+2014/7/7時点での問題点
+KINGが敵の利き領域に進む
+is_checkmate_XXで手生成時点で王手がかかっている判断しているが
+KING自身が動く時敵の利き領域に入るかどうかはまったくチエックしていない
+*/
 #endif

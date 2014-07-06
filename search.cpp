@@ -34,6 +34,7 @@ bool think(Position &pos)
         print_board(pos);
         cout << "bestmove " << string_from_move(m) << endl;
     }
+    //局面データを表示
     double eapsed_time = ptime_now(&aPT);  //sec
     printf("eapsed_time=%.2f(sec) \n",eapsed_time);
     printf("search node=%dk \n",stats.search_node/1000);

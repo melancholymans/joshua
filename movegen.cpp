@@ -334,6 +334,21 @@ Move *generate_gold_drop_w(const Position &pos,Move *ml)
 
 Move *generate_pawn_drop_w(const Position &pos,Move *ml)
 {
+    //colごとに歩がいるかチエックしている、本当は常時局面を
+    //点検しているのいいのかもしれないがとても大変そうなので
+    //必要な時（drop_pawnの時）だけチエックする方法にする
+    int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
+
+    for(int col = 1;col < 10;col++){
+        for(int row = 1;row < 9;row++){
+            int sq = make_square(col,row);
+            if(pos.board[sq] == W_PAWN){
+                dpc[col] = 1;
+                break;
+            }
+        }
+    }
+    ***********************************************kokokara
     //２歩判定ができていない、
     for(int row = 1;row < 9;row++){ //死駒対策
         for(int col = 1;col < 10;col++){
@@ -619,10 +634,28 @@ Move *generate_gold_drop_b(const Position &pos,Move *ml)
 
 Move *generate_pawn_drop_b(const Position &pos,Move *ml)
 {
-    //２歩判定ができていない、
-    for(int row = 2;row < 10;row++){ //死駒対策
-        for(int col = 1;col < 10;col++){
+    //colごとに歩がいるかチエックしている、本当は常時局面を
+    //点検しているのいいのかもしれないがとても大変そうなので
+    //必要な時（drop_pawnの時）だけチエックする方法にする
+    int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
+
+    for(int col = 1;col < 10;col++){
+        for(int row = 2;row < 10;row++){
             int sq = make_square(col,row);
+            if(pos.board[sq] == B_PAWN){
+                dpc[col] = 1;
+                break;
+            }
+        }
+    }
+    //筋に歩がすでにいるか判断する処理と、手を生成する
+    //処理は同時にはできない
+    for(int col = 1;col < 10;col++){ //死駒対策
+        for(int row = 2;row < 10;row++){
+            int sq = make_square(col,row);
+            if(dpc[col]){
+                break;
+            }
             if(pos.board[sq] == EMPTY){
                 *(ml++) = make_move(0,sq,0,B_PAWN,0);
             }
