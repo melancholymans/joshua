@@ -348,11 +348,15 @@ Move *generate_pawn_drop_w(const Position &pos,Move *ml)
             }
         }
     }
-    ***********************************************kokokara
+    //‹Ø‚É•à‚ª‚·‚Å‚É‚¢‚é‚©”»’f‚·‚éˆ—‚ÆAŽè‚ð¶¬‚·‚é
+    //ˆ—‚Í“¯Žž‚É‚Í‚Å‚«‚È‚¢
     //‚Q•à”»’è‚ª‚Å‚«‚Ä‚¢‚È‚¢A
-    for(int row = 1;row < 9;row++){ //Ž€‹î‘Îô
-        for(int col = 1;col < 10;col++){
+    for(int col = 1;col < 10;col++){ 
+        for(int row = 1;row < 9;row++){    //Ž€‹î‘Îô
             int sq = make_square(col,row);
+            if(dpc[col]){
+                break;
+            }
             if(pos.board[sq] == EMPTY){
                 *(ml++) = make_move(0,sq,0,W_PAWN,0);
             }
@@ -650,8 +654,8 @@ Move *generate_pawn_drop_b(const Position &pos,Move *ml)
     }
     //‹Ø‚É•à‚ª‚·‚Å‚É‚¢‚é‚©”»’f‚·‚éˆ—‚ÆAŽè‚ð¶¬‚·‚é
     //ˆ—‚Í“¯Žž‚É‚Í‚Å‚«‚È‚¢
-    for(int col = 1;col < 10;col++){ //Ž€‹î‘Îô
-        for(int row = 2;row < 10;row++){
+    for(int col = 1;col < 10;col++){ 
+        for(int row = 2;row < 10;row++){    //Ž€‹î‘Îô
             int sq = make_square(col,row);
             if(dpc[col]){
                 break;
@@ -953,7 +957,7 @@ TEST(movegen,generate_moves)
     next_move[0].last_move = mlist;
     m = generate_moves(root_position,mlist);
     n = m - next_move[0].last_move;
-    EXPECT_EQ(57,n);
+    EXPECT_EQ(61,n);
     m = mlist;
     //pawn  5
     anser = make_move(SQ_9G,SQ_9F,0,B_PAWN,EMPTY);
