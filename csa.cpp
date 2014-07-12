@@ -137,6 +137,69 @@ TEST(csa,csa)
     sfen = to_sfen(root_position);
     expect ="lR6l/1s1g5/1k1s1+P2p/1+bpp1+Bs2/1n1n2Pp1/2P6/S2R4P/K1GG5/9 b P2Ng9p2l 1";
     EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q4.csa";
+    USIInputParser uip4(cmd);
+    csa(uip4);
+    sfen = to_sfen(root_position);
+    expect ="l4g1nl/4g1k2/2n1sp1p1/p5pPp/5Ps2/1P1p2s2/P1G1+p1N1P/6K2/LN5RL b G3PBR3psb 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q5.csa";
+    USIInputParser uip5(cmd);
+    csa(uip5);
+    sfen = to_sfen(root_position);
+    expect ="1n4g1k/6r2/1+P1psg1p+L/2p1pp3/3P5/p1P1PPPP1/3SGS3/1+p1K1G2r/9 b PLN2B3p2l2ns 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q6.csa";
+    USIInputParser uip6(cmd);
+    csa(uip6);
+    sfen = to_sfen(root_position);
+    expect ="+B2+R3n1/3+L2gk1/5gss1/p1p1p1ppl/5P2p/PPPnP1PP1/3+p2N2/6K2/L4S1RL b G3PSBgpn 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q7.csa";
+    USIInputParser uip7(cmd);
+    csa(uip7);
+    sfen = to_sfen(root_position);
+    expect ="3R4l/1kg6/2ns5/spppp2+Bb/p7p/1PPPP1g2/nSNSNP2P/KG1G5/5r2L b 4PL2pl 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q8.csa";
+    USIInputParser uip8(cmd);
+    csa(uip8);
+    sfen = to_sfen(root_position);
+    expect ="ln5nl/2r2gk2/1p2sgbpp/pRspppp2/L1p4PP/3PP1G2/N4PP2/3BS1SK1/5G1NL b 3P 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q9.csa";
+    USIInputParser uip9(cmd);
+    csa(uip9);
+    sfen = to_sfen(root_position);
+    expect ="ln7/1r2k1+P2/p3gs3/1b1g1p+B2/1p5R1/2pPP4/PP1S1P3/2G2G3/LN1K5 b 3PLNS5plns 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q10.csa";
+    USIInputParser uip10(cmd);
+    csa(uip10);
+    sfen = to_sfen(root_position);
+    expect ="3+P3+Rl/2+P2kg2/+B2psp1p1/4p1p1p/9/2+p1P+bnKP/P6P1/4G1S2/L4G2L b GL2N2S5pnr 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q11.csa";
+    USIInputParser uip11(cmd);
+    csa(uip11);
+    sfen = to_sfen(root_position);
+    expect ="ln1gb2nl/1ks4r1/1p1g4p/p1pppspB1/5p3/PPPPP1P2/1KNG1PS1P/2S4R1/L2G3NL b Pp 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
+
+    cmd = "Q12.csa";
+    USIInputParser uip12(cmd);
+    csa(uip12);
+    sfen = to_sfen(root_position);
+    expect ="lr6l/4g1k1p/1s1p1pgp1/p3P1N1P/2Pl5/PPbBSP3/6PP1/4S1SK1/1+r3G1NL b 3PNg2pn 1";
+    EXPECT_STREQ(expect.c_str(),sfen.c_str()); 
 }
 /*
 CSA標準棋譜ファイル形式
