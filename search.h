@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+extern search_t sech;
 extern status_t stats;
 
 bool think(Position &pos);

@@ -10,6 +10,7 @@ using namespace std;
 #include "move.h"
 #include "misc.h"
 
+search_t sech;
 status_t stats;
 
 bool think(Position &pos)
