@@ -22,18 +22,27 @@ private:
     void skip_whitespace(void);
 };
 
-typedef struct{
+typedef struct Position{
+    char board[16*13 + 7*2 + 2 + 32];  //最後の３２は配列の大きさを256にするためのもの意味はない
+    int turn;
+}position_t;
+
+typedef struct Search{
+    int material;
+}search_t;
+
+typedef struct next_move{
     Move *next_move;
     Move *last_move;
 }next_move_t;
 
-typedef struct{
+typedef struct next_modify{
     short *next_dirty;
     short *last_dirty;
 }next_modify_t;
 
-typedef struct{
-    long long search_node;    //展開された探索ノード数、21億までカウントできる   
+typedef struct status{
+    long long search_node;    //展開された探索ノード数、922京までカウントできる   
 }status_t;
 /*
 駒の判定方法一覧

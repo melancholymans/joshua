@@ -3,13 +3,6 @@
 
 #include "types.h"
 
-typedef struct Position{
-    void set_posiition();
-    char board[16*13 + 7*2 + 2 + 32];  //ÅŒã‚Ì‚R‚Q‚Í”z—ñ‚Ì‘å‚«‚³‚ğ256‚É‚·‚é‚½‚ß‚Ì‚à‚ÌˆÓ–¡‚Í‚È‚¢
-    //int king_square[2];
-    int turn;
-}position_t;
-
 //position‚Ì’è”
 const int BOARD_UPPER = 16*13;
 const int STAND_BLACK_START = 16*13;
