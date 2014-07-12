@@ -5,10 +5,11 @@
 using namespace std;
 
 #include "gtest\gtest.h"
-#include "usioption.h"
 #include "position.h"
+#include "usioption.h"
 #include "movegen.h"
 #include "move.h"
+#include "search.h"
 
 //駒コード（GPSを参考にした）
 const char EMPTY = 0;
@@ -309,6 +310,7 @@ short *do_move(Position &pos,Move m,short *mf)
             *(mf++) = of;
             *(mf++) = pos.board[of];
             pos.board[of] += 1;
+            sech.material = 1;
         }
         *(mf++) = to; 
         *(mf++) = pos.board[to];    //変更を場所、内容の順に登録しておく

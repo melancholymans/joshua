@@ -8,9 +8,11 @@ Shogidokoro shogi playing engin
 using namespace std;
 
 #include "gtest\gtest.h"
+#include "position.h"
 #include "types.h"
 #include "usi.h"
 #include "usioption.h"
+#include "evaluate.h"
 
 /*
 https://github.com/sunfish-shogi/sunfish
@@ -36,6 +38,12 @@ int main(int argc,char *argv[])
 //アプリケーション全体の初期化
 void init(void)
 {
+    //駒割配列評価値設定
+    memset(piece_value,0,sizeof(int)*16);
+    piece_value[PAWN] = DPawn;
+    piece_value[LANCE] = DLance;
+    piece_value[KNIGHT] = DKnight;
+    piece_value[SILVER] = DSilver;
 }
 
 //テスト起動

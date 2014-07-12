@@ -5,13 +5,14 @@
 using namespace std;
 
 #include "gtest\gtest.h"
+#include "position.h"
 #include "usi.h"
 #include "usioption.h"
 #include "csa.h"
-#include "position.h"
 #include "search.h"
 #include "movegen.h"
 #include "move.h"
+#include "evaluate.h"
 
 void usi_main_loop(void)
 {
@@ -25,11 +26,12 @@ void usi_main_loop(void)
     }while(handle_command(command));
 }
 
-void game_init(void)
+void game_init(const Position &pos)
 {
     //対局ごと初期化する必要がある変数
     next_move[0].last_move = mlist;
     next_modify[0].last_dirty = modifylist;
+    sech.material = eval_material(pos);
 }
 
 
@@ -57,8 +59,8 @@ bool handle_command(const string &command)
     }
     else if(cmd == "usinewgame"){
         //色々初期など準備,このコマンドに対して将棋所に返すものはない
-        game_init();
         from_sfen(start_position);
+        game_init(root_position);
     }
     else if(cmd == "position"){
         //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
