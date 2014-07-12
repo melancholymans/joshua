@@ -1,7 +1,8 @@
 #if !defined(TYPES_H_INCLUDE)
 #define TYPES_H_INCLUDE
 
-#include <stdlib.h>
+#include <string>
+using namespace std;
 
 const int PLY_MAX = 3;//48; //bonanza‚©‚ç 
 
