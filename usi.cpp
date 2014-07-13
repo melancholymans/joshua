@@ -122,7 +122,7 @@ void set_position(USIInputParser &uip)
             while(!uip.at_end_of_line()){
                 cmd = uip.get_next_token(); //cmd‚É‚ÍŽw‚µŽè‚²‚Æ•ªŠ„‚³‚ê‚Ä“n‚·
                 Move m = move_from_string(root_position,cmd);
-                do_move(root_position,m,dummy);
+                DoMove(root_position.turn,root_position,m,dummy);
             }
         }
     }

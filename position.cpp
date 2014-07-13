@@ -10,6 +10,7 @@ using namespace std;
 #include "movegen.h"
 #include "move.h"
 #include "search.h"
+#include "evaluate.h"
 
 //駒コード（GPSを参考にした）
 const char EMPTY = 0;
@@ -287,7 +288,7 @@ void print_board(const Position &pos)
     cout << to_sfen(pos) << endl;
 }
 
-short *do_move(Position &pos,Move m,short *mf)
+short *do_move_b(Position &pos,Move m,short *mf)
 {
     int from = move_from(m);
     int to = move_to(m);
@@ -299,18 +300,17 @@ short *do_move(Position &pos,Move m,short *mf)
         p = pos.board[from];
         char pt = type_of_piece(p);
         if(pt == KING){
-            Color c = color_of_piece(p);
-            *(mf++) = 223+c;
-            *(mf++) = pos.board[223+c];
-            pos.board[223+c] = to;  //強制的にintからcharに入れている
+            *(mf++) = 223;
+            *(mf++) = pos.board[223];
+            pos.board[223] = to;  //強制的にintからcharに入れている
         }
         if(pos.board[to] != EMPTY){
             cp = pos.board[to] & 0x0F;
-            int of = pos.turn ? 215+(cp | 0x08) - 9:208+(cp | 0x08) - 9;
+            int of = 208 + (cp | 0x08) - 9;
             *(mf++) = of;
             *(mf++) = pos.board[of];
             pos.board[of] += 1;
-            sech.material = 1;
+            //sech.material += piece_value[cp]*2;   いったん保留
         }
         *(mf++) = to; 
         *(mf++) = pos.board[to];    //変更を場所、内容の順に登録しておく
@@ -325,7 +325,53 @@ short *do_move(Position &pos,Move m,short *mf)
         *(mf++) = to; 
         *(mf++) = EMPTY;    //変更を場所、内容の順に登録しておく
         pos.board[to] = pos.turn ? 0xF0 | p : p;    //駒コードに変換
-        int of = pos.turn ? 215+p-9:208+p-9;
+        int of = 208 + p - 9;
+        *(mf++) = of;
+        *(mf++) = pos.board[of];
+        pos.board[of] -= 1;
+    }
+    pos.turn = ~pos.turn;
+    return mf;
+}
+
+short *do_move_w(Position &pos,Move m,short *mf)
+{
+    int from = move_from(m);
+    int to = move_to(m);
+    char cp;
+    char p;
+
+    if(from != 0){
+        //盤上の手
+        p = pos.board[from];
+        char pt = type_of_piece(p);
+        if(pt == KING){
+            *(mf++) = 222;;
+            *(mf++) = pos.board[222];
+            pos.board[222] = to;  //強制的にintからcharに入れている
+        }
+        if(pos.board[to] != EMPTY){
+            cp = pos.board[to] & 0x0F;
+            int of = 215 + (cp | 0x08) - 9;
+            *(mf++) = of;
+            *(mf++) = pos.board[of];
+            pos.board[of] += 1;
+            //sech.material += piece_value[cp]*2;   いったん保留
+        }
+        *(mf++) = to; 
+        *(mf++) = pos.board[to];    //変更を場所、内容の順に登録しておく
+        pos.board[to] = m & 0x10000 ? p-8:p;
+        *(mf++) = from; 
+        *(mf++) = p;                //変更を場所、内容の順に登録しておく
+        pos.board[from] = EMPTY;
+    }
+    else{
+        //打つ手
+        p = move_piece(m);  //打つ駒種を取り出す
+        *(mf++) = to; 
+        *(mf++) = EMPTY;    //変更を場所、内容の順に登録しておく
+        pos.board[to] = pos.turn ? 0xF0 | p : p;    //駒コードに変換
+        int of = 215 + p - 9;
         *(mf++) = of;
         *(mf++) = pos.board[of];
         pos.board[of] -= 1;
@@ -911,7 +957,7 @@ int update_board(USIInputParser &uip)
                 cmd = uip.get_next_token(); //cmdには指し手ごと分割されて渡す
                 Move m = move_from_string(root_position,cmd);
                 mf = next_modify[ply].next_dirty;
-                next_modify[ply].last_dirty = do_move(root_position,m,mf);
+                next_modify[ply].last_dirty = DoMove(root_position.turn,root_position,m,mf);
                 next_modify[ply+1].next_dirty = next_modify[ply].last_dirty;
                 ply += 1;
             }

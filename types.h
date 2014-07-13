@@ -2,7 +2,11 @@
 #define TYPES_H_INCLUDE
 
 #include <string>
+
 using namespace std;
+
+//ŠÖ”‚ğŒÄ‚Ñ•ª‚¯‚éƒ}ƒNƒŒQ
+#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
 const int PLY_MAX = 3;//48; //bonanza‚©‚ç 
 
@@ -31,7 +35,7 @@ typedef struct Search{
     int material;
 }search_t;
 
-typedef struct next_move{
+typedef struct {
     Move *next_move;
     Move *last_move;
 }next_move_t;
