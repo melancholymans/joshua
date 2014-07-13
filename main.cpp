@@ -13,11 +13,14 @@ using namespace std;
 #include "usi.h"
 #include "usioption.h"
 #include "evaluate.h"
+#include "misc.h"
+#include "search.h"
 
 /*
 https://github.com/sunfish-shogi/sunfish
 https://github.com/sunfish-shogi/sunfish3
 */
+void profile(void);
 int main_test(int argc,char *argv[]);
 void init(void);
 
@@ -29,6 +32,7 @@ int main(int argc,char *argv[])
     setvbuf(stdout,NULL,_IONBF,0);
     init_usi_options();
 #if !defined(NDEBUG)
+    profile();
     main_test(argc,argv); 
 #endif
     usi_main_loop();
