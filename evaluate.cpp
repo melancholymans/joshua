@@ -9,7 +9,7 @@ const int DSilver = 371;
 const int DGold = 447;
 const int DBishop = 571;
 const int DRook = 647;
-const int Dking = 15000;
+const int DKing = 15000;
 const int DPPawn = 530;
 const int DPLance = 482;
 const int DPKnight = 500;
@@ -18,7 +18,9 @@ const int DPBishop = 832;
 const int DPRook = 955;
 
 int piece_value[16];
-/*
+int cap_piece_value[16];
+int pmoto_piece_value[8];
+    /*
 ‰Šú‹Ç–Ê‚Ì‹îŠ„•]‰¿’l‚ğZ’è
 */
 int eval_material(const Position &pos)

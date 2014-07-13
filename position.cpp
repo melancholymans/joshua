@@ -288,6 +288,9 @@ void print_board(const Position &pos)
     cout << to_sfen(pos) << endl;
 }
 
+/*
+BLACK,WHITE‚Æ•ª‚©‚ê‚Ä‚¢‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
+*/
 short *do_move_b(Position &pos,Move m,short *mf)
 {
     int from = move_from(m);
@@ -310,17 +313,24 @@ short *do_move_b(Position &pos,Move m,short *mf)
             *(mf++) = of;
             *(mf++) = pos.board[of];
             pos.board[of] += 1;
-            //sech.material += piece_value[cp]*2;   ‚¢‚Á‚½‚ñ•Û—¯
+            sech.material += cap_piece_value[cp];
         }
         *(mf++) = to; 
         *(mf++) = pos.board[to];    //•ÏX‚ðêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
-        pos.board[to] = m & 0x10000 ? p-8:p;
+        //¬ˆ—
+        if(m & 0x10000){
+            pos.board[to] = p-8;
+            sech.material += pmoto_piece_value[p-8];
+        }
+        else{
+            pos.board[to] = p;
+        }
         *(mf++) = from; 
         *(mf++) = p;                //•ÏX‚ðêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
         pos.board[from] = EMPTY;
     }
     else{
-        //‘Å‚ÂŽè
+        //‘Å‚ÂŽè@‘Å‚ÂŽè‚Ímaterial‚Í•Ï‰»‚µ‚È‚¢i”Õã‚Ì‹î‚Æ‹î‘ä‚Ì‹î‚Ì‰¿’l‚ªˆê‚Ì‚½‚ßBonanza•ûŽ®j
         p = move_piece(m);  //‘Å‚Â‹îŽí‚ðŽæ‚èo‚·
         *(mf++) = to; 
         *(mf++) = EMPTY;    //•ÏX‚ðêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
@@ -334,6 +344,9 @@ short *do_move_b(Position &pos,Move m,short *mf)
     return mf;
 }
 
+/*
+BLACK,WHITE‚Æ•ª‚©‚ê‚Ä‚¢‚é‚±‚Æ‚ð–Y‚ê‚È‚¢‚æ‚¤‚É
+*/
 short *do_move_w(Position &pos,Move m,short *mf)
 {
     int from = move_from(m);
@@ -356,17 +369,24 @@ short *do_move_w(Position &pos,Move m,short *mf)
             *(mf++) = of;
             *(mf++) = pos.board[of];
             pos.board[of] += 1;
-            //sech.material += piece_value[cp]*2;   ‚¢‚Á‚½‚ñ•Û—¯
+            sech.material -= cap_piece_value[cp];
         }
         *(mf++) = to; 
         *(mf++) = pos.board[to];    //•ÏX‚ðêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
-        pos.board[to] = m & 0x10000 ? p-8:p;
+        //¬ˆ—
+        if(m & 0x10000){
+            pos.board[to] = p-8;
+            sech.material -= pmoto_piece_value[(p-8) & 0x0F];
+        }
+        else{
+            pos.board[to] = p;
+        }
         *(mf++) = from; 
         *(mf++) = p;                //•ÏX‚ðêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
         pos.board[from] = EMPTY;
     }
     else{
-        //‘Å‚ÂŽè
+        //‘Å‚ÂŽè ‘Å‚ÂŽè‚Ímaterial‚Í•Ï‰»‚µ‚È‚¢i”Õã‚Ì‹î‚Æ‹î‘ä‚Ì‹î‚Ì‰¿’l‚ªˆê‚Ì‚½‚ßBonanza•ûŽ®j
         p = move_piece(m);  //‘Å‚Â‹îŽí‚ðŽæ‚èo‚·
         *(mf++) = to; 
         *(mf++) = EMPTY;    //•ÏX‚ðêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
