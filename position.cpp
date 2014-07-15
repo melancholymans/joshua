@@ -914,8 +914,9 @@ TEST(position,make_col_row)
     EXPECT_EQ(9,row);
 }
 
-int update_board(USIInputParser &uip);     //TESTのヘルパー関数
-void is_eq_board(void);
+int update_board(USIInputParser &uip);      //TESTのヘルパー関数
+int update_board_material(USIInputParser &uip,int material[][200],int row,int col);
+void is_eq_board(void);                     //TESTのヘルパー関数
 
 TEST(position,undo_move)
 {
@@ -936,6 +937,93 @@ TEST(position,undo_move)
     for(int i = 0;i < 11;i++){
         USIInputParser uip(q_str[i]);
         ply = update_board(uip);    //do_moveで局面を更新
+        for(int i = ply-1;i >= 0;i--){
+            undo_move(root_position,i); //undo_moveで局面を復元
+            is_ok(root_position);
+        }
+        is_eq_board();
+    }
+}
+
+/*
+手を動かしてmaterialがちゃんと更新されているかチエックする
+*/
+TEST(position,do_move_material)
+{
+    int ply = 0;
+    string q_str[11] = {
+        "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 8d8e 2h3h 6b7c 7i8h 4c5c 6g5g 5c5b 5g5h 7c8d 6h4f 8b9b 4h3g 4d4e 4f5g 4a4b 3g2f 7d7e 7f7e 8d7e P*7f 7e8d 2i3g 3c4d 6f6e 9b8b 4g4f 5d5e 4f4e 4d3c 3g2e 3c2b 5g4f 2c2d 4f2d 2a3c 2e3c+ 2b3c 2d4f 8a7c N*4d 3c4d 4e4d P*4e S*4c 3b4c 4d4c+ 4b4c 4f5e N*4f P*4d 4c5d 3h1h 4f5h+ 1h5h S*6i 7h7i 6i5h+ N*7d 8b8a G*6d 3a6d 6e6d P*2e 7d6b+ 2e2f 6b5b G*3b B*7d N*6a 7d6c+ 5d6e G*6f",  //MOVE_TEST_Q1.csaで棋譜登録してある
+        "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 3a6d 2i3g 4a3a 2g2f 3a2b 7i8h 8d8e 2h3h 6b5c 1g1f 5d5e 6f6e 6d7c 5f5e 6c6d 6e6d 5c6d P*6e P*6f 7g6f 6d5e 6f5e 7c5e S*6f 5e7c 3h3i S*2h 3i3h 2h1i+ 4h5g L*8c 5g5f 9c9d 7f7e 8e8f 7e7d 8f8g+ 8h7i 8g8h 7i6i 8h7h 6i7h 8c8h+ 7h6i G*7h 6i5i 7h6h 6g6h 7c9e 3h3i P*6g 5f6g B*2h 3i3h 2h1g+ G*2h 1g2f 3h3i 8h9i P*8c 8b5b P*5c 5b5c P*5d 5c5d P*5e 5d7d P*7e 7d8d 6g7h P*6g 6h7g 6g6h+ 5i6h P*8h 9g9f L*2g 2h2g 2f2g 9f9e G*2i 3i2i 1i2i L*8f R*1h P*2h 8d8f 7g8f 8h8i+ 8c8b+ 1h2h+ 6h7g 2g3g 8b8a 8i7i 7h6g 3g5i 7g7f N*8d 7f8e 2h8h B*8g 8h9g N*7g N*7c 8e7d 9g8f G*8h G*9f R*5f 5i3g 8a9a 3d3e 8g9f 8d9f G*8g B*8c 7d7c P*7b 7c8b 8f8d 8g9f P*8g 9f8e 8d7c 8b9c 8c7d L*8c 7c8c",   //MOVE_TEST_Q2.csa
+        "startpos moves 7g7f 8c8d 7i6h 3c3d 6h7g 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 6g6f 5a4a 5h6g 6a5b 8h7i 8d8e 3g3f 4b3c 5i6h 7c7d 6i7h 4c4d 2g2f 5b4c 2f2e 4a3a 9g9f 6c6d 9f9e 1c1d 7i9g 2b1c 4h5g 6b5c 7g8f 3c2d 8i7g 2a3c 6f6e 8b6b 8f8e 8a7c 8e7d 7c6e 7g6e 6d6e P*6f N*4e 2h5h 4e5g+ 6g5g 2d2e P*2f 2e3f 5h3h 3f4g+ 9g5c+ 4c5c 7d7c+ 1c5g+ 6h7g 5g6f 7g6h B*4f 6h6i S*5h 3h5h 4g5h 6i5h 4f5g+ 5h6i G*5h",   //MOVE_TEST_Q3.csa
+
+    };
+    int material_answer[11][200] = {
+        {
+            0,/*7g7f*/ 0,/*8c8d*/ 0,/*7i6h*/ 0,/*3c3d*/ 0,/*6g6f*/ 0,/*7a6b*/ 
+            0,/*5g5f*/ 0,/*5c5d*/ 0,/*3i4h*/ 0,/*3a4b*/ 0,/*4i5h*/ 0,/*4a3b*/ 
+            0,/*5h6g*/ 0,/*5a4a*/ 0,/*6i7h*/ 0,/*6a5b*/ 0,/*5i6i*/ 0,/*4b3c*/ 
+            0,/*6h7g*/ 0,/*2b3a*/ 0,/*8h7i*/ 0,/*4c4d*/ 0,/*3g3f*/ 0,/*5b4c*/ 
+            0,/*7i6h*/ 0,/*7c7d*/ 0,/*6i7i*/ 0,/*8d8e*/ 0,/*2h3h*/ 0,/*6b7c*/ 
+            0,/*7i8h*/ 0,/*4c5c*/ 0,/*6g5g*/ 0,/*5c5b*/ 0,/*5g5h*/ 0,/*7c8d*/ 
+            0,/*6h4f*/ 0,/*8b9b*/ 0,/*4h3g*/ 0,/*4d4e*/ 0,/*4f5g*/ 0,/*4a4b*/ 
+            0,/*3g2f*/ 0,/*7d7e*/ DPawn+DPawn,/*7f7e*/ -DPawn-DPawn,(46手目の同銀)/*8d7e*/ /*P*7f*/ /*7e8d*/ 
+            /*2i3g*/ /*3c4d*/ /*6f6e*/ /*9b8b*/ /*4g4f*/ /*5d5e*/ 
+            /*4f4e*/ /*4d3c*/ /*3g2e*/ /*3c2b*/ /*5g4f*/ /*2c2d*/ 
+            /*4f2d*/ /*2a3c*/ /*2e3c+*/ /*2b3c*/ /*2d4f*/ /*8a7c*/ 
+            /*N*4d*/ /*3c4d*/ /*4e4d*/ /*P*4e*/ /*S*4c*/ /*3b4c*/ 
+            /*4d4c+*/ /*4b4c*/ /*4f5e*/ /*N*4f*/ /*P*4d*/ /*4c5d*/ 
+            /*3h1h*/ /*4f5h+*/ /*1h5h*/ /*S*6i*/ /*7h7i*/ /*6i5h+*/ 
+            /*N*7d*/ /*8b8a*/ /*G*6d*/ /*3a6d*/ /*6e6d*/ /*P*2e*/ 
+            /*7d6b+*/ /*2e2f*/ /*6b5b*/ /*G*3b*/ /*B*7d*/ /*N*6a*/ 
+            /*7d6c+*/ /*5d6e*/ /*G*6f*/
+        },  //MOVE_TEST_Q1.csaで棋譜登録してある
+        {
+            /*7g7f*/ /*8c8d*/ /*7i6h*/ /*3c3d*/ /*6g6f*/ /*7a6b*/ 
+            /*5g5f*/ /*5c5d*/ /*3i4h*/ /*3a4b*/ /*4i5h*/ /*4a3b*/ 
+            /*5h6g*/ /*5a4a*/ /*6i7h*/ /*6a5b*/ /*5i6i*/ /*4b3c*/ 
+            /*6h7g*/ /*2b3a*/ /*8h7i*/ /*4c4d*/ /*3g3f*/ /*5b4c*/ 
+            /*7i6h*/ /*7c7d*/ /*6i7i*/ /*3a6d*/ /*2i3g*/ /*4a3a*/ 
+            /*2g2f*/ /*3a2b*/ /*7i8h*/ /*8d8e*/ /*2h3h*/ /*6b5c*/ 
+            /*1g1f*/ /*5d5e*/ /*6f6e*/ /*6d7c*/ /*5f5e*/ /*6c6d*/ 
+            /*6e6d*/ /*5c6d*/ /*P*6e*/ /*P*6f*/ /*7g6f*/ /*6d5e*/ 
+            /*6f5e*/ /*7c5e*/ /*S*6f*/ /*5e7c*/ /*3h3i*/ /*S*2h*/ 
+            /*3i3h*/ /*2h1i+*/ /*4h5g*/ /*L*8c*/ /*5g5f*/ /*9c9d*/ 
+            /*7f7e*/ /*8e8f*/ /*7e7d*/ /*8f8g+*/ /*8h7i*/ /*8g8h*/ 
+            /*7i6i*/ /*8h7h*/ /*6i7h*/ /*8c8h+*/ /*7h6i*/ /*G*7h*/ 
+            /*6i5i*/ /*7h6h*/ /*6g6h*/ /*7c9e*/ /*3h3i*/ /*P*6g*/ 
+            /*5f6g*/ /*B*2h*/ /*3i3h*/ /*2h1g+*/ /*G*2h*/ /*1g2f*/ 
+            /*3h3i*/ /*8h9i*/ /*P*8c*/ /*8b5b*/ /*P*5c*/ /*5b5c*/ 
+            /*P*5d*/ /*5c5d*/ /*P*5e*/ /*5d7d*/ /*P*7e*/ /*7d8d*/ 
+            /*6g7h*/ /*P*6g*/ /*6h7g*/ /*6g6h+*/ /*5i6h*/ /*P*8h*/ 
+            /*9g9f*/ /*L*2g*/ /*2h2g*/ /*2f2g*/ /*9f9e*/ /*G*2i*/ 
+            /*3i2i*/ /*1i2i*/ /*L*8f*/ /*R*1h*/ /*P*2h*/ /*8d8f*/ 
+            /*7g8f*/ /*8h8i+*/ /*8c8b+*/ /*1h2h+*/ /*6h7g*/ /*2g3g*/ 
+            /*8b8a*/ /*8i7i*/ /*7h6g*/ /*3g5i*/ /*7g7f*/ /*N*8d*/ 
+            /*7f8e*/ /*2h8h*/ /*B*8g*/ /*8h9g*/ /*N*7g*/ /*N*7c*/ 
+            /*8e7d*/ /*9g8f*/ /*G*8h*/ /*G*9f*/ /*R*5f*/ /*5i3g*/ 
+            /*8a9a*/ /*3d3e*/ /*8g9f*/ /*8d9f*/ /*G*8g*/ /*B*8c*/ 
+            /*7d7c*/ /*P*7b*/ /*7c8b*/ /*8f8d*/ /*8g9f*/ /*P*8g*/ 
+            /*9f8e*/ /*8d7c*/ /*8b9c*/ /*8c7d*/ /*L*8c*/ /*7c8c*/   //MOVE_TEST_Q2.csa
+        },
+        {
+            /*7g7f*/ /*8c8d*/ /*7i6h*/ /*3c3d*/ /*6h7g*/ /*7a6b*/ 
+            /*5g5f*/ /*5c5d*/ /*3i4h*/ /*3a4b*/ /*4i5h*/ /*4a3b*/ 
+            /*6g6f*/ /*5a4a*/ /*5h6g*/ /*6a5b*/ /*8h7i*/ /*8d8e*/ 
+            /*3g3f*/ /*4b3c*/ /*5i6h*/ /*7c7d*/ /*6i7h*/ /*4c4d*/ 
+            /*2g2f*/ /*5b4c*/ /*2f2e*/ /*4a3a*/ /*9g9f*/ /*6c6d*/ 
+            /*9f9e*/ /*1c1d*/ /*7i9g*/ /*2b1c*/ /*4h5g*/ /*6b5c*/ 
+            /*7g8f*/ /*3c2d*/ /*8i7g*/ /*2a3c*/ /*6f6e*/ /*8b6b*/ 
+            /*8f8e*/ /*8a7c*/ /*8e7d*/ /*7c6e*/ /*7g6e*/ /*6d6e*/ 
+            /*P*6f*/ /*N*4e*/ /*2h5h*/ /*4e5g+*/ /*6g5g*/ /*2d2e*/ 
+            /*P*2f*/ /*2e3f*/ /*5h3h*/ /*3f4g+*/ /*9g5c+*/ /*4c5c*/ 
+            /*7d7c+*/ /*1c5g+*/ /*6h7g*/ /*5g6f*/ /*7g6h*/ /*B*4f*/ 
+            /*6h6i*/ /*S*5h*/ /*3h5h*/ /*4g5h*/ /*6i5h*/ /*4f5g+*/ 
+            /*5h6i*/ /*G*5h*/   //MOVE_TEST_Q3.csa
+        },
+    };
+    for(int i = 0;i < 11;i++){
+        USIInputParser uip(q_str[i]);
+        ply = update_board_material(uip,material_answer,11,200);    //do_moveで局面を更新
         for(int i = ply-1;i >= 0;i--){
             undo_move(root_position,i); //undo_moveで局面を復元
             is_ok(root_position);
@@ -986,6 +1074,51 @@ int update_board(USIInputParser &uip)
     return ply;
 }
 
+int update_board_material(USIInputParser &uip,int material[][200],int row,int col)
+{
+    string cmd;
+    int ply = 0;
+    short *mf;
+
+    next_modify[ply].next_dirty = next_modify[ply].last_dirty = modifylist;   //念のため
+    cmd = uip.get_next_token();
+
+    //平手初期局面
+    if(cmd == "startpos"){
+        from_sfen(start_position);
+    }
+    //駒落ち初期局面
+    else if(cmd == "sfen"){
+        string sfen;
+        while(cmd != "moves" && !uip.at_end_of_line()){
+            cmd = uip.get_next_token();
+            sfen += cmd;
+            sfen += ' ';
+        }
+        from_sfen(sfen);
+    }
+    //指し手再現,局面更新
+    if(!uip.at_end_of_line()){
+        if(cmd != "moves"){
+            cmd = uip.get_next_token();
+        }
+        if(cmd == "moves"){
+            while(!uip.at_end_of_line()){
+                cmd = uip.get_next_token(); //cmdには指し手ごと分割されて渡す
+                Move m = move_from_string(root_position,cmd);
+                mf = next_modify[ply].next_dirty;
+                next_modify[ply].last_dirty = DoMove(root_position.turn,root_position,m,mf);
+                next_modify[ply+1].next_dirty = next_modify[ply].last_dirty;
+                ply += 1;
+            }
+        }
+    }
+    return ply;
+}
+
+/*
+初期局面の配置との比較
+*/
 void is_eq_board(void)
 {
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
