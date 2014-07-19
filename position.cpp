@@ -7,6 +7,7 @@ using namespace std;
 #include "gtest\gtest.h"
 #include "position.h"
 #include "usioption.h"
+#include "usi.h"
 #include "movegen.h"
 #include "move.h"
 #include "search.h"
@@ -915,7 +916,7 @@ TEST(position,make_col_row)
 }
 
 int update_board(USIInputParser &uip);      //TESTÇÃÉwÉãÉpÅ[ä÷êî
-int update_board_material(USIInputParser &uip,int material[][200],int row,int col);
+int update_board_material(USIInputParser &uip,int material[],int row,int col);
 void is_eq_board(void);                     //TESTÇÃÉwÉãÉpÅ[ä÷êî
 
 TEST(position,undo_move)
@@ -950,14 +951,12 @@ TEST(position,undo_move)
 */
 TEST(position,do_move_material)
 {
-    int ply = 0;
-    string q_str[11] = {
+    int ply;
+    string q_str[2] = {
         "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 8d8e 2h3h 6b7c 7i8h 4c5c 6g5g 5c5b 5g5h 7c8d 6h4f 8b9b 4h3g 4d4e 4f5g 4a4b 3g2f 7d7e 7f7e 8d7e P*7f 7e8d 2i3g 3c4d 6f6e 9b8b 4g4f 5d5e 4f4e 4d3c 3g2e 3c2b 5g4f 2c2d 4f2d 2a3c 2e3c+ 2b3c 2d4f 8a7c N*4d 3c4d 4e4d P*4e S*4c 3b4c 4d4c+ 4b4c 4f5e N*4f P*4d 4c5d 3h1h 4f5h+ 1h5h S*6i 7h7i 6i5h+ N*7d 8b8a G*6d 3a6d 6e6d P*2e 7d6b+ 2e2f 6b5b G*3b B*7d N*6a 7d6c+ 5d6e G*6f",  //MOVE_TEST_Q1.csaÇ≈ä˚ïàìoò^ÇµÇƒÇ†ÇÈ
         "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 3a6d 2i3g 4a3a 2g2f 3a2b 7i8h 8d8e 2h3h 6b5c 1g1f 5d5e 6f6e 6d7c 5f5e 6c6d 6e6d 5c6d P*6e P*6f 7g6f 6d5e 6f5e 7c5e S*6f 5e7c 3h3i S*2h 3i3h 2h1i+ 4h5g L*8c 5g5f 9c9d 7f7e 8e8f 7e7d 8f8g+ 8h7i 8g8h 7i6i 8h7h 6i7h 8c8h+ 7h6i G*7h 6i5i 7h6h 6g6h 7c9e 3h3i P*6g 5f6g B*2h 3i3h 2h1g+ G*2h 1g2f 3h3i 8h9i P*8c 8b5b P*5c 5b5c P*5d 5c5d P*5e 5d7d P*7e 7d8d 6g7h P*6g 6h7g 6g6h+ 5i6h P*8h 9g9f L*2g 2h2g 2f2g 9f9e G*2i 3i2i 1i2i L*8f R*1h P*2h 8d8f 7g8f 8h8i+ 8c8b+ 1h2h+ 6h7g 2g3g 8b8a 8i7i 7h6g 3g5i 7g7f N*8d 7f8e 2h8h B*8g 8h9g N*7g N*7c 8e7d 9g8f G*8h G*9f R*5f 5i3g 8a9a 3d3e 8g9f 8d9f G*8g B*8c 7d7c P*7b 7c8b 8f8d 8g9f P*8g 9f8e 8d7c 8b9c 8c7d L*8c 7c8c",   //MOVE_TEST_Q2.csa
-        "startpos moves 7g7f 8c8d 7i6h 3c3d 6h7g 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 6g6f 5a4a 5h6g 6a5b 8h7i 8d8e 3g3f 4b3c 5i6h 7c7d 6i7h 4c4d 2g2f 5b4c 2f2e 4a3a 9g9f 6c6d 9f9e 1c1d 7i9g 2b1c 4h5g 6b5c 7g8f 3c2d 8i7g 2a3c 6f6e 8b6b 8f8e 8a7c 8e7d 7c6e 7g6e 6d6e P*6f N*4e 2h5h 4e5g+ 6g5g 2d2e P*2f 2e3f 5h3h 3f4g+ 9g5c+ 4c5c 7d7c+ 1c5g+ 6h7g 5g6f 7g6h B*4f 6h6i S*5h 3h5h 4g5h 6i5h 4f5g+ 5h6i G*5h",   //MOVE_TEST_Q3.csa
-
     };
-    int material_answer[11][200] = {
+    int material_answer[3][200] = {
         {
             0,/*7g7f*/ 0,/*8c8d*/ 0,/*7i6h*/ 0,/*3c3d*/ 0,/*6g6f*/ 0,/*7a6b*/ 
             0,/*5g5f*/ 0,/*5c5d*/ 0,/*3i4h*/ 0,/*3a4b*/ 0,/*4i5h*/ 0,/*4a3b*/ 
@@ -966,69 +965,58 @@ TEST(position,do_move_material)
             0,/*7i6h*/ 0,/*7c7d*/ 0,/*6i7i*/ 0,/*8d8e*/ 0,/*2h3h*/ 0,/*6b7c*/ 
             0,/*7i8h*/ 0,/*4c5c*/ 0,/*6g5g*/ 0,/*5c5b*/ 0,/*5g5h*/ 0,/*7c8d*/ 
             0,/*6h4f*/ 0,/*8b9b*/ 0,/*4h3g*/ 0,/*4d4e*/ 0,/*4f5g*/ 0,/*4a4b*/ 
-            0,/*3g2f*/ 0,/*7d7e*/ DPawn+DPawn,/*7f7e*/ -DPawn-DPawn,(46éËñ⁄ÇÃìØã‚)/*8d7e*/ /*P*7f*/ /*7e8d*/ 
-            /*2i3g*/ /*3c4d*/ /*6f6e*/ /*9b8b*/ /*4g4f*/ /*5d5e*/ 
-            /*4f4e*/ /*4d3c*/ /*3g2e*/ /*3c2b*/ /*5g4f*/ /*2c2d*/ 
-            /*4f2d*/ /*2a3c*/ /*2e3c+*/ /*2b3c*/ /*2d4f*/ /*8a7c*/ 
-            /*N*4d*/ /*3c4d*/ /*4e4d*/ /*P*4e*/ /*S*4c*/ /*3b4c*/ 
-            /*4d4c+*/ /*4b4c*/ /*4f5e*/ /*N*4f*/ /*P*4d*/ /*4c5d*/ 
-            /*3h1h*/ /*4f5h+*/ /*1h5h*/ /*S*6i*/ /*7h7i*/ /*6i5h+*/ 
-            /*N*7d*/ /*8b8a*/ /*G*6d*/ /*3a6d*/ /*6e6d*/ /*P*2e*/ 
-            /*7d6b+*/ /*2e2f*/ /*6b5b*/ /*G*3b*/ /*B*7d*/ /*N*6a*/ 
-            /*7d6c+*/ /*5d6e*/ /*G*6f*/
-        },  //MOVE_TEST_Q1.csaÇ≈ä˚ïàìoò^ÇµÇƒÇ†ÇÈ
-        {
-            /*7g7f*/ /*8c8d*/ /*7i6h*/ /*3c3d*/ /*6g6f*/ /*7a6b*/ 
-            /*5g5f*/ /*5c5d*/ /*3i4h*/ /*3a4b*/ /*4i5h*/ /*4a3b*/ 
-            /*5h6g*/ /*5a4a*/ /*6i7h*/ /*6a5b*/ /*5i6i*/ /*4b3c*/ 
-            /*6h7g*/ /*2b3a*/ /*8h7i*/ /*4c4d*/ /*3g3f*/ /*5b4c*/ 
-            /*7i6h*/ /*7c7d*/ /*6i7i*/ /*3a6d*/ /*2i3g*/ /*4a3a*/ 
-            /*2g2f*/ /*3a2b*/ /*7i8h*/ /*8d8e*/ /*2h3h*/ /*6b5c*/ 
-            /*1g1f*/ /*5d5e*/ /*6f6e*/ /*6d7c*/ /*5f5e*/ /*6c6d*/ 
-            /*6e6d*/ /*5c6d*/ /*P*6e*/ /*P*6f*/ /*7g6f*/ /*6d5e*/ 
-            /*6f5e*/ /*7c5e*/ /*S*6f*/ /*5e7c*/ /*3h3i*/ /*S*2h*/ 
-            /*3i3h*/ /*2h1i+*/ /*4h5g*/ /*L*8c*/ /*5g5f*/ /*9c9d*/ 
-            /*7f7e*/ /*8e8f*/ /*7e7d*/ /*8f8g+*/ /*8h7i*/ /*8g8h*/ 
-            /*7i6i*/ /*8h7h*/ /*6i7h*/ /*8c8h+*/ /*7h6i*/ /*G*7h*/ 
-            /*6i5i*/ /*7h6h*/ /*6g6h*/ /*7c9e*/ /*3h3i*/ /*P*6g*/ 
-            /*5f6g*/ /*B*2h*/ /*3i3h*/ /*2h1g+*/ /*G*2h*/ /*1g2f*/ 
-            /*3h3i*/ /*8h9i*/ /*P*8c*/ /*8b5b*/ /*P*5c*/ /*5b5c*/ 
-            /*P*5d*/ /*5c5d*/ /*P*5e*/ /*5d7d*/ /*P*7e*/ /*7d8d*/ 
-            /*6g7h*/ /*P*6g*/ /*6h7g*/ /*6g6h+*/ /*5i6h*/ /*P*8h*/ 
-            /*9g9f*/ /*L*2g*/ /*2h2g*/ /*2f2g*/ /*9f9e*/ /*G*2i*/ 
-            /*3i2i*/ /*1i2i*/ /*L*8f*/ /*R*1h*/ /*P*2h*/ /*8d8f*/ 
-            /*7g8f*/ /*8h8i+*/ /*8c8b+*/ /*1h2h+*/ /*6h7g*/ /*2g3g*/ 
-            /*8b8a*/ /*8i7i*/ /*7h6g*/ /*3g5i*/ /*7g7f*/ /*N*8d*/ 
-            /*7f8e*/ /*2h8h*/ /*B*8g*/ /*8h9g*/ /*N*7g*/ /*N*7c*/ 
-            /*8e7d*/ /*9g8f*/ /*G*8h*/ /*G*9f*/ /*R*5f*/ /*5i3g*/ 
-            /*8a9a*/ /*3d3e*/ /*8g9f*/ /*8d9f*/ /*G*8g*/ /*B*8c*/ 
-            /*7d7c*/ /*P*7b*/ /*7c8b*/ /*8f8d*/ /*8g9f*/ /*P*8g*/ 
-            /*9f8e*/ /*8d7c*/ /*8b9c*/ /*8c7d*/ /*L*8c*/ /*7c8c*/   //MOVE_TEST_Q2.csa
+            0,/*3g2f*/ 0,/*7d7e*/ DPawn+DPawn,/*7f7e*/ -DPawn-DPawn,/*8d7e*/ 0,/*P*7f*/ 0,/*7e8d*/ 
+            0,/*2i3g*/ 0,/*3c4d*/ 0,/*6f6e*/ 0,/*9b8b*/ 0,/*4g4f*/ 0,/*5d5e*/ 
+            DPawn+DPawn,/*4f4e*/ 0,/*4d3c*/ 0,/*3g2e*/ 0,/*3c2b*/ 0,/*5g4f*/ 0,/*2c2d*/ 
+            DPawn+DPawn,/*4f2d*/ 0,/*2a3c*/ DKnight+DKnight+DPKnight-DKnight,/*2e3c+*/ -DPKnight-DKnight,/*2b3c*/ 0,/*2d4f*/ 0,/*8a7c*/ 
+            0,/*N*4d*/ -DKnight-DKnight,/*3c4d*/ DSilver+DSilver,/*4e4d*/ 0,/*P*4e*/ 0,/*S*4c*/ -DSilver-DSilver,/*3b4c*/ 
+            DGold+DGold+DPPawn-DPawn,/*4d4c+*/ -DPPawn-DPawn,/*4b4c*/ DPawn+DPawn,/*4f5e*/ 0,/*N*4f*/ 0,/*P*4d*/ 0,/*4c5d*/ 
+            0,/*3h1h*/ -DGold-DGold-DPKnight+DKnight,/*4f5h+*/ DPKnight+DKnight,/*1h5h*/ 0,/*S*6i*/ 0,/*7h7i*/ -DRook-DRook-DPSilver+DSilver,/*6i5h+*/ 
+            0,/*N*7d*/ 0,/*8b8a*/ 0,/*G*6d*/ -DGold-DGold,/*3a6d*/ DBishop+DBishop,/*6e6d*/ 0,/*P*2e*/
+            DPKnight-DKnight,/*7d6b+*/ -DSilver-DSilver,/*2e2f*/ DGold+DGold,/*6b5b*/ 0,/*G*3b*/ 0,/*B*7d*/ 0,/*N*6a*/ 
+            DPawn+DPawn+DPBishop-DBishop,/*7d6c+*/ 0,/*5d6e*/ 0/*G*6f*/
+            //MOVE_TEST_Q1.csaÇ≈ä˚ïàìoò^ÇµÇƒÇ†ÇÈ
         },
         {
-            /*7g7f*/ /*8c8d*/ /*7i6h*/ /*3c3d*/ /*6h7g*/ /*7a6b*/ 
-            /*5g5f*/ /*5c5d*/ /*3i4h*/ /*3a4b*/ /*4i5h*/ /*4a3b*/ 
-            /*6g6f*/ /*5a4a*/ /*5h6g*/ /*6a5b*/ /*8h7i*/ /*8d8e*/ 
-            /*3g3f*/ /*4b3c*/ /*5i6h*/ /*7c7d*/ /*6i7h*/ /*4c4d*/ 
-            /*2g2f*/ /*5b4c*/ /*2f2e*/ /*4a3a*/ /*9g9f*/ /*6c6d*/ 
-            /*9f9e*/ /*1c1d*/ /*7i9g*/ /*2b1c*/ /*4h5g*/ /*6b5c*/ 
-            /*7g8f*/ /*3c2d*/ /*8i7g*/ /*2a3c*/ /*6f6e*/ /*8b6b*/ 
-            /*8f8e*/ /*8a7c*/ /*8e7d*/ /*7c6e*/ /*7g6e*/ /*6d6e*/ 
-            /*P*6f*/ /*N*4e*/ /*2h5h*/ /*4e5g+*/ /*6g5g*/ /*2d2e*/ 
-            /*P*2f*/ /*2e3f*/ /*5h3h*/ /*3f4g+*/ /*9g5c+*/ /*4c5c*/ 
-            /*7d7c+*/ /*1c5g+*/ /*6h7g*/ /*5g6f*/ /*7g6h*/ /*B*4f*/ 
-            /*6h6i*/ /*S*5h*/ /*3h5h*/ /*4g5h*/ /*6i5h*/ /*4f5g+*/ 
-            /*5h6i*/ /*G*5h*/   //MOVE_TEST_Q3.csa
-        },
+            0,/*7g7f*/ 0,/*8c8d*/ 0,/*7i6h*/ 0,/*3c3d*/ 0,/*6g6f*/ 0,/*7a6b*/ 
+            0,/*5g5f*/ 0,/*5c5d*/ 0,/*3i4h*/ 0,/*3a4b*/ 0,/*4i5h*/ 0,/*4a3b*/ 
+            0,/*5h6g*/ 0,/*5a4a*/ 0,/*6i7h*/ 0,/*6a5b*/ 0,/*5i6i*/ 0,/*4b3c*/ 
+            0,/*6h7g*/ 0,/*2b3a*/ 0,/*8h7i*/ 0,/*4c4d*/ 0,/*3g3f*/ 0,/*5b4c*/ 
+            0,/*7i6h*/ 0,/*7c7d*/ 0,/*6i7i*/ 0,/*3a6d*/ 0,/*2i3g*/ 0,/*4a3a*/ 
+            0,/*2g2f*/ 0,/*3a2b*/ 0,/*7i8h*/ 0,/*8d8e*/ 0,/*2h3h*/ 0,/*6b5c*/ 
+            0,/*1g1f*/ 0,/*5d5e*/ 0,/*6f6e*/ 0,/*6d7c*/ DPawn+DPawn,/*5f5e*/ 0,/*6c6d*/ 
+            DPawn+DPawn,/*6e6d*/ -DPawn-DPawn,/*5c6d*/ 0,/*P*6e*/ 0,/*P*6f*/ DPawn+DPawn,/*7g6f*/ -DPawn-DPawn,/*6d5e*/ 
+            DSilver+DSilver,/*6f5e*/ -DSilver-DSilver,/*7c5e*/ 0,/*S*6f*/ 0,/*5e7c*/ 0,/*3h3i*/ 0,/*S*2h*/ 
+            0,/*3i3h*/ -DLance-DLance-DPSilver+DSilver,/*2h1i+*/ 0,/*4h5g*/ 0,/*L*8c*/ 0,/*5g5f*/ 0,/*9c9d*/ 
+            0,/*7f7e*/ 0,/*8e8f*/ DPawn+DPawn,/*7e7d*/ -DPawn-DPawn-DPPawn+DPawn,/*8f8g+*/ 0,/*8h7i*/ 0,/*8g8h*/ 
+            0,/*7i6i*/ -DGold-DGold,/*8h7h*/ DPPawn+DPawn,/*6i7h*/ -DPLance+DLance,/*8c8h+*/ 0,/*7h6i*/ 0,/*G*7h*/ 
+            0,/*6i5i*/ -DBishop-DBishop,/*7h6h*/ DGold+DGold,/*6g6h*/ 0,/*7c9e*/ 0,/*3h3i*/ 0,/*P*6g*/ 
+            DPawn+DPawn,/*5f6g*/ 0,/*B*2h*/ 0,/*3i3h*/ -DPBishop+DBishop,/*2h1g+*/ 0,/*G*2h*/ -DPawn-DPawn,/*1g2f*/ 
+            0,/*3h3i*/ -DLance-DLance,/*8h9i*/ 0,/*P*8c*/ 0,/*8b5b*/ 0,/*P*5c*/ -DPawn-DPawn,/*5b5c*/ 
+            0,/*P*5d*/ -DPawn-DPawn,/*5c5d*/ 0,/*P*5e*/ -DPawn-DPawn,/*5d7d*/ 0,/*P*7e*/ 0,/*7d8d*/ 
+            0,/*6g7h*/ 0,/*P*6g*/ 0,/*6h7g*/ -DPPawn+DPawn,/*6g6h+*/ DPPawn+DPawn,/*5i6h*/ 0,/*P*8h*/ 
+            0,/*9g9f*/ 0,/*L*2g*/ DLance+DLance,/*2h2g*/ -DGold-DGold,/*2f2g*/ DBishop+DBishop,/*9f9e*/ 0,/*G*2i*/ 
+            DGold+DGold,/*3i2i*/ -DRook-DRook,/*1i2i*/ 0,/*L*8f*/ 0,/*R*1h*/ 0,/*P*2h*/ -DLance-DLance,/*8d8f*/ 
+            DRook+DRook,/*7g8f*/ -DKnight-DKnight-DPPawn+DPawn,/*8h8i+*/ DPPawn-DPawn,/*8c8b+*/ -DPawn-DPawn-DPRook+DRook,/*1h2h+*/ 0,/*6h7g*/ -DKnight-DKnight,/*2g3g*/ 
+            DKnight+DKnight,/*8b8a*/ 0,/*8i7i*/ 0,/*7h6g*/ 0,/*3g5i*/ 0,/*7g7f*/ 0,/*N*8d*/ 
+            0,/*7f8e*/ 0,/*2h8h*/ 0,/*B*8g*/ 0,/*8h9g*/ 0,/*N*7g*/ 0,/*N*7c*/ 
+            0,/*8e7d*/ -DGold-DGold,/*9g8f*/ 0,/*G*8h*/ 0,/*G*9f*/ 0,/*R*5f*/ 0,/*5i3g*/ 
+            DLance+DLance,/*8a9a*/ 0,/*3d3e*/ DGold+DGold,/*8g9f*/ -DBishop-DBishop,/*8d9f*/ 0,/*G*8g*/ 0,/*B*8c*/ 
+            DKnight+DKnight,/*7d7c*/ 0,/*P*7b*/ 0,/*7c8b*/ 0,/*8f8d*/ DKnight+DKnight,/*8g9f*/ 0,/*P*8g*/ 
+            0,/*9f8e*/ 0,/*8d7c*/ 0,/*8b9c*/ 0,/*8c7d*/ 0,/*L*8c*/ -DLance-DLance/*7c8c*/   
+            //MOVE_TEST_Q2.csaÇ≈ä˚ïàìoò^ÇµÇƒÇ†ÇÈ
+        }
     };
-    for(int i = 0;i < 11;i++){
+    
+    for(int i = 0;i < 2;i++){
         USIInputParser uip(q_str[i]);
-        ply = update_board_material(uip,material_answer,11,200);    //do_moveÇ≈ã«ñ ÇçXêV
+        ply = update_board_material(uip,material_answer[i],3,200);    //do_moveÇ≈ã«ñ ÇçXêV
         for(int i = ply-1;i >= 0;i--){
             undo_move(root_position,i); //undo_moveÇ≈ã«ñ Çïúå≥
             is_ok(root_position);
         }
         is_eq_board();
+        EXPECT_EQ(0,sech.material);
     }
 }
 
@@ -1055,6 +1043,7 @@ int update_board(USIInputParser &uip)
         }
         from_sfen(sfen);
     }
+    game_init(root_position);
     //éwÇµéËçƒåª,ã«ñ çXêV
     if(!uip.at_end_of_line()){
         if(cmd != "moves"){
@@ -1074,11 +1063,12 @@ int update_board(USIInputParser &uip)
     return ply;
 }
 
-int update_board_material(USIInputParser &uip,int material[][200],int row,int col)
+int update_board_material(USIInputParser &uip,int material[],int row,int col)
 {
     string cmd;
     int ply = 0;
     short *mf;
+    int mater_total = 0;
 
     next_modify[ply].next_dirty = next_modify[ply].last_dirty = modifylist;   //îOÇÃÇΩÇﬂ
     cmd = uip.get_next_token();
@@ -1097,6 +1087,7 @@ int update_board_material(USIInputParser &uip,int material[][200],int row,int co
         }
         from_sfen(sfen);
     }
+    game_init(root_position);
     //éwÇµéËçƒåª,ã«ñ çXêV
     if(!uip.at_end_of_line()){
         if(cmd != "moves"){
@@ -1109,6 +1100,9 @@ int update_board_material(USIInputParser &uip,int material[][200],int row,int co
                 mf = next_modify[ply].next_dirty;
                 next_modify[ply].last_dirty = DoMove(root_position.turn,root_position,m,mf);
                 next_modify[ply+1].next_dirty = next_modify[ply].last_dirty;
+                mater_total += *material;
+                EXPECT_EQ(mater_total,sech.material);
+                material++;
                 ply += 1;
             }
         }
