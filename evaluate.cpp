@@ -62,8 +62,8 @@ int eval_material(const Position &pos)
 
 int evaluate(Position &pos)
 {
-    //¡‚Ì•]‰¿’l‚Í‹îŠ„‚Ì‚İ
-    return sech.material;
+    //¡‚Ì•]‰¿’l‚Í‹îŠ„‚Ì‚İ(turn=WHITE= -1‚È‚ç•„†”½“]‚µ‚Ä•Ô‚·ABLACK=0‚È‚ç‚»‚Ì‚Ü‚Ü‚Å•Ô‚·)
+    return pos.turn ? -sech.material:+sech.material;
 }
 
 TEST(evaluate,eval_material)

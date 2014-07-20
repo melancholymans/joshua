@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#include "gtest\gtest.h"
 #include "types.h"
 #include "position.h"
 #include "movegen.h"
@@ -11,6 +12,7 @@ using namespace std;
 #include "move.h"
 #include "misc.h"
 #include "evaluate.h"
+#include "usi.h"
 
 search_t sech;
 status_t stats;
@@ -52,6 +54,7 @@ bool think(Position &pos)
 Move search_root(Position &pos,int ply)
 {
     Move m;
+    backup_info_t bfo;
 
     short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
     //全ての手を生成
@@ -60,9 +63,11 @@ Move search_root(Position &pos,int ply)
     int max_score = -2147483648;
     //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
     for(;ml != next_move[ply].last_move;ml++){
+        bfo.material = sech.material;
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
         int score = search_min(pos,ply+1);
         undo_move(pos,ply);
+        sech.material = bfo.material;
         if(max_score < score){
             max_score = score;
             m = *ml;
@@ -73,6 +78,8 @@ Move search_root(Position &pos,int ply)
 
 int search_max(Position &pos,int ply)
 {
+    backup_info_t bfo;
+
     stats.search_node++;
     if(ply > PLY_MAX){
         return evaluate(pos);
@@ -84,9 +91,11 @@ int search_max(Position &pos,int ply)
     int max_score = -2147483648;
     //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
     for(;ml != next_move[ply].last_move;ml++){
+        bfo.material = sech.material;
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
         int score = search_min(pos,ply+1);
         undo_move(pos,ply);
+        sech.material = bfo.material;
         if(max_score < score){
             max_score = score;
         }
@@ -96,6 +105,8 @@ int search_max(Position &pos,int ply)
 
 int search_min(Position &pos,int ply)
 {
+    backup_info_t bfo;
+
     stats.search_node++;
     if(ply > PLY_MAX){
         return evaluate(pos);
@@ -107,12 +118,23 @@ int search_min(Position &pos,int ply)
     int min_score = 2147483647;
     //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
     for(;ml != next_move[ply].last_move;ml++){
+        bfo.material = sech.material;
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
         int score = search_max(pos,ply+1);
         undo_move(pos,ply);
+        sech.material = bfo.material;
         if(min_score > score){
             min_score = score;
         }
     }
     return min_score;
+}
+
+TEST(serach,search_root)
+{
+    //Q1の局面でテスト
+    string expect ="lR1B3nl/2gp5/ngk1+BspPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b P5psr 1";
+    from_sfen(expect);
+    game_init(root_position);
+    think(root_position);
 }

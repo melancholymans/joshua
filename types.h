@@ -8,7 +8,7 @@ using namespace std;
 //関数を呼び分けるマクロ群
 #define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
-const int PLY_MAX = 3;//48; //bonanzaから 
+const int PLY_MAX = 1;//48; //bonanzaから 
 
 typedef int Color;
 typedef unsigned int Move;
@@ -48,6 +48,11 @@ typedef struct next_modify{
 typedef struct status{
     long long search_node;    //展開された探索ノード数、922京までカウントできる   
 }status_t;
+
+typedef struct backup_info{
+    int material;
+}backup_info_t;
+
 /*
 駒の判定方法一覧
 char p;

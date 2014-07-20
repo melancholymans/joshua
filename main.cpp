@@ -93,7 +93,7 @@ void profile(void)
     from_sfen(start_position);
     game_init(root_position);
 
-    Move m = search(root_position,ply);
+    Move m = search_root(root_position,ply);
     double eapsed_time = ptime_now(&aPT);  //sec
     printf("eapsed_time=%.2f(sec) \n",eapsed_time);
     printf("search node=%dk \n",stats.search_node/1000);
