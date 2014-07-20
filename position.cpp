@@ -409,6 +409,7 @@ void undo_move(Position &pos,int ply)
         sq = *(mf++);
         pos.board[sq] = *(mf++);
     }
+    pos.turn = ~pos.turn;
 }
 
 void is_ok(Position &pos)
