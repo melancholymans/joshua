@@ -10,9 +10,13 @@ using namespace std;
 #include "search.h"
 #include "move.h"
 #include "misc.h"
+#include "evaluate.h"
 
 search_t sech;
 status_t stats;
+
+int search_max(Position &pos,int ply);
+int search_min(Position &pos,int ply);
 
 bool think(Position &pos)
 {
@@ -22,7 +26,7 @@ bool think(Position &pos)
     //nps計測
     stats.search_node = 0;
     ptime_init(&aPT);
-    Move m = search(pos,ply);
+    Move m = search_root(pos,ply);
     if(m == 0){
         //合法手がなければ投了
         print_board(pos);
@@ -45,29 +49,70 @@ bool think(Position &pos)
     return true;
 }
 
-Move search(Position &pos,int ply)
+Move search_root(Position &pos,int ply)
 {
-    stats.search_node++;
-    if(ply > PLY_MAX){
-        return 0;
-    }
-    short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
+    Move m;
 
+    short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
+    //全ての手を生成
     Move *ml = next_move[ply].next_move = next_move[ply].last_move;
     next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
+    int max_score = -2147483648;
+    //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
     for(;ml != next_move[ply].last_move;ml++){
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
-        search(pos,ply+1);
+        int score = search_min(pos,ply+1);
         undo_move(pos,ply);
+        if(max_score < score){
+            max_score = score;
+            m = *ml;
+        }
     }
-    //ルートでランダムに手を選ぶ（評価関数がまだないので）
-    int u = next_move[ply].last_move - next_move[ply].next_move;
-    if(u == 0){
-        return 0;
-    }
-    int r = rand();
-    int n = (u*r)/(RAND_MAX+1);
-    Move m = *(next_move[ply].next_move+n);
     return m;
 }
 
+int search_max(Position &pos,int ply)
+{
+    stats.search_node++;
+    if(ply > PLY_MAX){
+        return evaluate(pos);
+    }
+    short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
+    //全ての手を生成
+    Move *ml = next_move[ply].next_move = next_move[ply].last_move;
+    next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
+    int max_score = -2147483648;
+    //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
+    for(;ml != next_move[ply].last_move;ml++){
+        next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
+        int score = search_min(pos,ply+1);
+        undo_move(pos,ply);
+        if(max_score < score){
+            max_score = score;
+        }
+    }
+    return max_score;
+}
+
+int search_min(Position &pos,int ply)
+{
+    stats.search_node++;
+    if(ply > PLY_MAX){
+        return evaluate(pos);
+    }
+    short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
+    //全ての手を生成
+    Move *ml = next_move[ply].next_move = next_move[ply].last_move;
+    next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
+    int min_score = 2147483647;
+    //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
+    for(;ml != next_move[ply].last_move;ml++){
+        next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
+        int score = search_max(pos,ply+1);
+        undo_move(pos,ply);
+        if(min_score > score){
+            min_score = score;
+        }
+    }
+    return min_score;
+}

@@ -21,5 +21,6 @@ extern const int DPBishop;
 extern const int DPRook;
 
 int eval_material(const Position &pos);
+int evaluate(Position &pos);
 
 #endif

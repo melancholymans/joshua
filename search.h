@@ -7,6 +7,5 @@ extern search_t sech;
 extern status_t stats;
 
 bool think(Position &pos);
-Move search(Position &pos,int ply);
 
 #endif

@@ -1,6 +1,7 @@
 #include "gtest\gtest.h"
 #include "position.h"
 #include "evaluate.h"
+#include "search.h"
 
 const int DPawn = 87;
 const int DLance = 235;
@@ -61,7 +62,8 @@ int eval_material(const Position &pos)
 
 int evaluate(Position &pos)
 {
-    return 1;
+    //¡‚Ì•]‰¿’l‚Í‹îŠ„‚Ì‚İ
+    return sech.material;
 }
 
 TEST(evaluate,eval_material)
