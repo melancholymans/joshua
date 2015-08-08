@@ -1,4 +1,4 @@
-#if !defined(MOVEGEN_H_INCLUDE)
+﻿#if !defined(MOVEGEN_H_INCLUDE)
 #define MOVEGEN_H_INCLUDE
 
 #include "types.h"
@@ -60,9 +60,9 @@ bool is_checkmate_b(const Position &pos);
 Move *generate_evasions(const Position &pos,Move *ml);
 
 /*
-2014/7/7���_�ł̖��_
-KING���G�̗����̈�ɐi��
-is_checkmate_XX�Ŏ萶�����_�ŉ��肪�������Ă��锻�f���Ă��邪
-KING���g���������G�̗����̈�ɓ��邩�ǂ����͂܂������`�G�b�N���Ă��Ȃ�
+2014/7/7時点での問題点
+KINGが敵の利き領域に進む
+is_checkmate_XXで手生成時点で王手がかかっている判断しているが
+KING自身が動く時敵の利き領域に入るかどうかはまったくチエックしていない
 */
 #endif

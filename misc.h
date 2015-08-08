@@ -1,4 +1,4 @@
-#if !defined(MISC_H_INCLUDE)
+﻿#if !defined(MISC_H_INCLUDE)
 #define MISC_H_INCLUDE
 
 #include <time.h>

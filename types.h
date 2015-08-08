@@ -1,19 +1,19 @@
-#if !defined(TYPES_H_INCLUDE)
+﻿#if !defined(TYPES_H_INCLUDE)
 #define TYPES_H_INCLUDE
 
 #include <string>
 
 using namespace std;
 
-//�֐����Ăѕ�����}�N���Q
+//関数を呼び分けるマクロ群
 #define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
-const int PLY_MAX = 1;//48; //bonanza���� 
+const int PLY_MAX = 1;//48; //bonanzaから 
 
 typedef int Color;
 typedef unsigned int Move;
 
-//����������̃R�}���h���p�[�X
+//将棋所からのコマンドをパース
 class USIInputParser{
 public:
     USIInputParser(const string &line);
@@ -27,7 +27,7 @@ private:
 };
 
 typedef struct Position{
-    char board[16*13 + 7*2 + 2 + 32];  //�Ō�̂R�Q�͔z��̑傫����256�ɂ��邽�߂̂��̈Ӗ��͂Ȃ�
+    char board[16*13 + 7*2 + 2 + 32];  //最後の３２は配列の大きさを256にするためのもの意味はない
     int turn;
 }position_t;
 
@@ -46,7 +46,7 @@ typedef struct next_modify{
 }next_modify_t;
 
 typedef struct status{
-    long long search_node;    //�W�J���ꂽ�T���m�[�h���A922���܂ŃJ�E���g�ł���   
+    long long search_node;    //展開された探索ノード数、922京までカウントできる   
 }status_t;
 
 typedef struct backup_info{
@@ -54,41 +54,41 @@ typedef struct backup_info{
 }backup_info_t;
 
 /*
-��̔�����@�ꗗ
+駒の判定方法一覧
 char p;
 
-inline is_not_pmoto(char p)�ɓo�^
-p & NOT_PMOTO       true�Ƃł���s��
-p & NOT_PMOTO       false�Ƃł��琬
+inline is_not_pmoto(char p)に登録
+p & NOT_PMOTO       trueとでたら不成
+p & NOT_PMOTO       falseとでたら成
 
-p > 1               true�Ȃ���
-p > 1 || p == 0     true�Ȃ���܂��͋�
-p < 0               true�Ȃ���
-p <= 0              true�Ȃ���܂��͋�
+p > 1               trueなら先手
+p > 1 || p == 0     trueなら先手または空白
+p < 0               trueなら後手
+p <= 0              trueなら後手または空白
 
 inline do_white(char p)
-���������I�Ɍ���
+先手を強制的に後手に
 inline do_black(char p)
 p |= 0xF0
-���������I�ɐ���
+後手を強制的に先手に
 p &= 0x0F
 
-//��R�[�h�����^�C�v���v�Z
+//駒コードから駒タイプを計算
 p &= 0x0F;
-����̓C�����C���֐��Ƃ��ēo�^���Ă���
+これはインライン関数として登録してある
 inline char type_of_piece(char p)
 
-��R�[�h����J���[�𔻒肵�Ă���
-p >> 4;����̓{�c
-����̓C�����C���֐��Ƃ��ēo�^���Ă���
+駒コードからカラーを判定している
+p >> 4;これはボツ
+これはインライン関数として登録してある
 inline Color color_of_piece(int p)
 
-row,col���W����sq���W�ɕϊ�
-postion.h�ɂ���make_square�@inline�֐���
-���p�̂���
+row,col座標からsq座標に変換
+postion.hにあるmake_square　inline関数を
+利用のこと
 
-�ėp����������̂͂����ɏ����A�ώG�ɏ����悤�ɂȂ�����
-inline�֐��ւ��邱��
+汎用性があるものはここに書く、煩雑に書くようになったら
+inline関数へすること
 */
 
 #endif

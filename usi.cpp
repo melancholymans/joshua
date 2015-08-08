@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <string>
 #include <map>
 
@@ -20,7 +20,7 @@ void usi_main_loop(void)
 
     do{
         if(!getline(cin,command)){
-            //‰üs‚Ì‚İê‡‚Íquitˆµ‚¢
+            //æ”¹è¡Œã®ã¿å ´åˆã¯quitæ‰±ã„
             command = "quit";
         }
     }while(handle_command(command));
@@ -28,28 +28,28 @@ void usi_main_loop(void)
 
 void game_init(const Position &pos)
 {
-    //‘Î‹Ç‚²‚Æ‰Šú‰»‚·‚é•K—v‚ª‚ ‚é•Ï”
+    //å¯¾å±€ã”ã¨åˆæœŸåŒ–ã™ã‚‹å¿…è¦ãŒã‚ã‚‹å¤‰æ•°
     next_move[0].last_move = mlist;
     next_modify[0].last_dirty = modifylist;
     sech.material = eval_material(pos);
 }
 
 
-//usi->isready->usinewgame‚Å‘Î‹ÇŠJn
-//position‚Åvl‹Ç–Ê‚Ì•t—^->go‚Åvl
-//bestmove‚ÅvlŒ‹‰Ê‚ğ•ÔM,gameover‚ÅI‹Ç
+//usi->isready->usinewgameã§å¯¾å±€é–‹å§‹
+//positionã§æ€è€ƒå±€é¢ã®ä»˜ä¸->goã§æ€è€ƒ
+//bestmoveã§æ€è€ƒçµæœã‚’è¿”ä¿¡,gameoverã§çµ‚å±€
 bool handle_command(const string &command)
 {
     USIInputParser uip(command);
     string cmd = uip.get_next_token();
     if(cmd == "quit"){
-        //Œãn––
+        //å¾Œå§‹æœ«
         return false;
     }
     else if(cmd == "usi"){
         cout << "id name " << "joshua" << endl;
         cout << "id author takemori masami" << endl;
-        //option‚ª‚ ‚Á‚½‚ç‚±‚±‚Å‘—M
+        //optionãŒã‚ã£ãŸã‚‰ã“ã“ã§é€ä¿¡
         cout << "option name BookFile value public.bin" << endl;
         cout << "option name UseBook type default true" << endl;
         cout << "usiok" << endl;
@@ -58,20 +58,20 @@ bool handle_command(const string &command)
         cout << "readyok" << endl;
     }
     else if(cmd == "usinewgame"){
-        //FX‰Šú‚È‚Ç€”õ,‚±‚ÌƒRƒ}ƒ“ƒh‚É‘Î‚µ‚Ä«ŠûŠ‚É•Ô‚·‚à‚Ì‚Í‚È‚¢
+        //è‰²ã€…åˆæœŸãªã©æº–å‚™,ã“ã®ã‚³ãƒãƒ³ãƒ‰ã«å¯¾ã—ã¦å°†æ£‹æ‰€ã«è¿”ã™ã‚‚ã®ã¯ãªã„
         from_sfen(start_position);
         game_init(root_position);
     }
     else if(cmd == "position"){
-        //ƒGƒ“ƒWƒ“‚Évl‚³‚¹‚é‹Ç–Ê‚ğ’€ˆê‘—‚Á‚Ä‚­‚é‚Ì‚Å‰ğß‚³‚¹“à•”‚Ìƒf[ƒ^\‘¢‚É•ÏŠ·‚·‚é
+        //ã‚¨ãƒ³ã‚¸ãƒ³ã«æ€è€ƒã•ã›ã‚‹å±€é¢ã‚’é€ä¸€é€ã£ã¦ãã‚‹ã®ã§è§£é‡ˆã•ã›å†…éƒ¨ã®ãƒ‡ãƒ¼ã‚¿æ§‹é€ ã«å¤‰æ›ã™ã‚‹
         set_position(uip);
     }
     else if(cmd == "setoption"){
-        //ƒGƒ“ƒWƒ“‚É‘Î‚·‚é’l‚ğİ’è‚·‚é‚Æ‚«‘—M
+        //ã‚¨ãƒ³ã‚¸ãƒ³ã«å¯¾ã™ã‚‹å€¤ã‚’è¨­å®šã™ã‚‹ã¨ãé€ä¿¡
         set_option(uip);
     }
     else if(cmd == "go"){
-        //vlŠJn
+        //æ€è€ƒé–‹å§‹
         go();
     }
     else if(cmd == "d"){
@@ -81,7 +81,7 @@ bool handle_command(const string &command)
         csa(uip);
     }
     else if(cmd == "gameover"){
-        //GUI‘¤‚©‚ç‚ÌI‹Ç‚Ì’Ê’m
+        //GUIå´ã‹ã‚‰ã®çµ‚å±€ã®é€šçŸ¥
 
     }
     else{
@@ -90,7 +90,7 @@ bool handle_command(const string &command)
             cout << uip.get_next_token() << endl;
         }
     }
-    return true;    //–¾¦“I‚ÈI—¹ˆÈŠO‚Í“®ìŒp‘±(ƒ†[ƒU[‚©‚ç‚ÌI—¹ƒRƒ}ƒ“ƒh(quit)‚Ì‚İ)
+    return true;    //æ˜ç¤ºçš„ãªçµ‚äº†ä»¥å¤–ã¯å‹•ä½œç¶™ç¶š(ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‹ã‚‰ã®çµ‚äº†ã‚³ãƒãƒ³ãƒ‰(quit)ã®ã¿)
 }
 
 void set_position(USIInputParser &uip)
@@ -99,11 +99,11 @@ void set_position(USIInputParser &uip)
     short dummy[8];
 
     cmd = uip.get_next_token();
-    //•½è‰Šú‹Ç–Ê
+    //å¹³æ‰‹åˆæœŸå±€é¢
     if(cmd == "startpos"){
         from_sfen(start_position);
     }
-    //‹î—‚¿‰Šú‹Ç–Ê
+    //é§’è½ã¡åˆæœŸå±€é¢
     else if(cmd == "sfen"){
         string sfen;
         while(cmd != "moves" && !uip.at_end_of_line()){
@@ -113,14 +113,14 @@ void set_position(USIInputParser &uip)
         }
         from_sfen(sfen);
     }
-    //w‚µèÄŒ»,‹Ç–ÊXV
+    //æŒ‡ã—æ‰‹å†ç¾,å±€é¢æ›´æ–°
     if(!uip.at_end_of_line()){
         if(cmd != "moves"){
             cmd = uip.get_next_token();
         }
         if(cmd == "moves"){
             while(!uip.at_end_of_line()){
-                cmd = uip.get_next_token(); //cmd‚É‚Íw‚µè‚²‚Æ•ªŠ„‚³‚ê‚Ä“n‚·
+                cmd = uip.get_next_token(); //cmdã«ã¯æŒ‡ã—æ‰‹ã”ã¨åˆ†å‰²ã•ã‚Œã¦æ¸¡ã™
                 Move m = move_from_string(root_position,cmd);
                 DoMove(root_position.turn,root_position,m,dummy);
             }
@@ -131,7 +131,7 @@ void set_position(USIInputParser &uip)
 void go(void)
 {
     /*
-    ‚±‚±‚ÉgoƒRƒ}ƒ“ƒh‚ÌŒã‚É‚Â‚Ã‚­ƒIƒvƒVƒ‡ƒ“‰ğÍ‚ÌƒR[ƒh‚ğ‘‚­—\’è
+    ã“ã“ã«goã‚³ãƒãƒ³ãƒ‰ã®å¾Œã«ã¤ã¥ãã‚ªãƒ—ã‚·ãƒ§ãƒ³è§£æã®ã‚³ãƒ¼ãƒ‰ã‚’æ›¸ãäºˆå®š
     */
     think(root_position);
 }
@@ -269,7 +269,7 @@ TEST(usi,set_position)
     EXPECT_EQ(EMPTY,root_position.board[SQ_3I]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_2I]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    //‚¿‹î‚Ìƒ`ƒGƒbƒN
+    //æŒã¡é§’ã®ãƒã‚¨ãƒƒã‚¯
     EXPECT_EQ(0,root_position.board[208]);  //black gold
     EXPECT_EQ(4,root_position.board[209]);  //black pawn
     EXPECT_EQ(0,root_position.board[210]);  //black lance

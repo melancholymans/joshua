@@ -1,4 +1,4 @@
-#if !defined(USIOPTION_H_INCLUDE)
+ï»¿#if !defined(USIOPTION_H_INCLUDE)
 #define USIOPTION_H_INCLUDE
 
 #include <map>
@@ -7,9 +7,9 @@ using namespace std;
 
 #include "types.h"
 
-extern map<string,string> options;      //«ŠûŠ‚©‚çİ’è‚³‚ê‚½İ’è‚ğ•Û
-extern map<char,string> piece_letters;    //‹îƒR[ƒh‚Æ‹î•¶š(P,+P,r,R‚È‚Ç)‚ğŠÖŒW‚Ã‚¯‚Ä‚¢‚é
-extern map<string,char> csa_letters;     //csa‹î•¶š‚Æ‹îí‚ğ‘Î‰•t‚¯‚Ä‚¢‚é
+extern map<string,string> options;      //å°†æ£‹æ‰€ã‹ã‚‰è¨­å®šã•ã‚ŒãŸè¨­å®šã‚’ä¿æŒ
+extern map<char,string> piece_letters;    //é§’ã‚³ãƒ¼ãƒ‰ã¨é§’æ–‡å­—(P,+P,r,Rãªã©)ã‚’é–¢ä¿‚ã¥ã‘ã¦ã„ã‚‹
+extern map<string,char> csa_letters;     //csaé§’æ–‡å­—ã¨é§’ç¨®ã‚’å¯¾å¿œä»˜ã‘ã¦ã„ã‚‹
 
 void init_usi_options(void);
 void set_option(USIInputParser &uip);

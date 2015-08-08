@@ -1,4 +1,4 @@
-#include <string>
+ï»¿#include <string>
 #include <map>
 
 using namespace std;
@@ -63,11 +63,11 @@ void init_usi_options()
     csa_letters["NG"] = 5;
     csa_letters["UM"] = 6;
     csa_letters["RY"] = 7;
-    csa_letters["* "] = 0;   //‹î•¶š‚Å‚Í‚È‚¢‚ª
+    csa_letters["* "] = 0;   //é§’æ–‡å­—ã§ã¯ãªã„ãŒ
     return;
 }
 
-//stockfish‚ğQl‚Évalue’l‚ğ‘—‚Á‚Ä‚­‚éƒIƒvƒVƒ‡ƒ“‚É‚Í‚Æ‚è‚ ‚¦‚¸‘Î‰
+//stockfishã‚’å‚è€ƒã«valueå€¤ã‚’é€ã£ã¦ãã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«ã¯ã¨ã‚Šã‚ãˆãšå¯¾å¿œ
 void set_option(USIInputParser &uip)
 {
     string cmd;
@@ -89,7 +89,7 @@ void set_option(USIInputParser &uip)
 
 void set_option_value(const string &option_name,const string &new_value)
 {
-    //‰Šú“o˜^‚µ‚Ä‚¢‚éƒIƒvƒVƒ‡ƒ“‚µ‚©İ’è‚Å‚«‚È‚¢
+    //åˆæœŸç™»éŒ²ã—ã¦ã„ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã—ã‹è¨­å®šã§ããªã„
     if(options.find(option_name) != options.end()){
         options[option_name] = new_value;
     }
@@ -110,7 +110,7 @@ TEST(usoption,set_option)
     cmd = uip1.get_next_token();
     set_option(uip1);
     ASSERT_EQ("32",options["USI_Hash"]);
-    //‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢i–‘O‚É“o˜^‚³‚ê‚Ä‚¢‚È‚¢ƒIƒvƒVƒ‡ƒ“€–Ú‚Íİ’è‚µ‚È‚¢
+    //åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„ï¼ˆäº‹å‰ã«ç™»éŒ²ã•ã‚Œã¦ã„ãªã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³é …ç›®ã¯è¨­å®šã—ãªã„
     command = "setoption name USI_Option value 123";
     USIInputParser uip2(command);
     cmd = uip1.get_next_token();

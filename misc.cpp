@@ -1,9 +1,9 @@
-#include <Windows.h>
+ï»¿#include <Windows.h>
 
 #include "gtest\gtest.h"
 #include "misc.h"
 
-//CMAGAZINE 2005/2‚æ‚è
+//CMAGAZINE 2005/2ã‚ˆã‚Š
 void ptime_init(ptime_t *iPT)
 {
     *iPT = clock();
@@ -11,7 +11,7 @@ void ptime_init(ptime_t *iPT)
 
 double ptime_now(const ptime_t *iPT)
 {
-    //Œo‰ßŠÔ‚ğsec‚Å•Ô‚·
+    //çµŒéæ™‚é–“ã‚’secã§è¿”ã™
     return (double)(clock() - *iPT)/(double)(CLOCKS_PER_SEC);
 }
 
@@ -19,12 +19,12 @@ TEST(misc,ptime_init_ptime_now)
 {
     ptime_t aPT;
 
-    /*Œv‘ªŠJn*/
+    /*è¨ˆæ¸¬é–‹å§‹*/
     ptime_init(&aPT);
     
-    //Œv‘ª‘ÎÛ
-    Sleep(1234);    //’PˆÊ‚Ímsec
+    //è¨ˆæ¸¬å¯¾è±¡
+    Sleep(1234);    //å˜ä½ã¯msec
 
-    //Œv‘ªI—¹
+    //è¨ˆæ¸¬çµ‚äº†
     printf("%f msec \n",ptime_now(&aPT));
 }

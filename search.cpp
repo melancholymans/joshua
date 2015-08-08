@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <string>
 #include <stdlib.h>
 
@@ -25,24 +25,24 @@ bool think(Position &pos)
     ptime_t aPT;
     int ply = 0;
     
-    //npsŒv‘ª
+    //npsè¨ˆæ¸¬
     stats.search_node = 0;
     ptime_init(&aPT);
     Move m = search_root(pos,ply);
     if(m == 0){
-        //‡–@è‚ª‚È‚¯‚ê‚Î“Š—¹
+        //åˆæ³•æ‰‹ãŒãªã‘ã‚Œã°æŠ•äº†
         print_board(pos);
         cout << "bestmove resign" << endl;
         return false;
     }
     else{
-        //w‚µè‚ğÀs‚µ‚ÄA‚»‚Ìè‚ğ«ŠûŠ‚É‘—M
+        //æŒ‡ã—æ‰‹ã‚’å®Ÿè¡Œã—ã¦ã€ãã®æ‰‹ã‚’å°†æ£‹æ‰€ã«é€ä¿¡
         short dummy[8];
         DoMove(pos.turn,pos,m,dummy);
         print_board(pos);
         cout << "bestmove " << string_from_move(m) << endl;
     }
-    //‹Ç–Êƒf[ƒ^‚ğ•\¦
+    //å±€é¢ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
     double eapsed_time = ptime_now(&aPT);  //sec
     printf("eapsed_time=%.2f(sec) \n",eapsed_time);
     printf("search node=%dk \n",stats.search_node/1000);
@@ -57,11 +57,11 @@ Move search_root(Position &pos,int ply)
     backup_info_t bfo;
 
     short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
-    //‘S‚Ä‚Ìè‚ğ¶¬
+    //å…¨ã¦ã®æ‰‹ã‚’ç”Ÿæˆ
     Move *ml = next_move[ply].next_move = next_move[ply].last_move;
     next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
     int max_score = -2147483648;
-    //Move\‘¢‘Ì‚ğDoMoveŠÖ”‚É“n‚µ‚Ä‹Ç–ÊXVA‚à‚µ‡–@è‚ª0‚È‚çi‰¤è‚ğ”ğ‚¯‚éè‚ª‚È‚¢‚È‚Çj‚±‚Ìforƒ‹[ƒv‚ğƒpƒX‚·‚é
+    //Moveæ§‹é€ ä½“ã‚’DoMoveé–¢æ•°ã«æ¸¡ã—ã¦å±€é¢æ›´æ–°ã€ã‚‚ã—åˆæ³•æ‰‹ãŒ0ãªã‚‰ï¼ˆç‹æ‰‹ã‚’é¿ã‘ã‚‹æ‰‹ãŒãªã„ãªã©ï¼‰ã“ã®forãƒ«ãƒ¼ãƒ—ã‚’ãƒ‘ã‚¹ã™ã‚‹
     for(;ml != next_move[ply].last_move;ml++){
         bfo.material = sech.material;
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
@@ -85,11 +85,11 @@ int search_max(Position &pos,int ply)
         return evaluate(pos);
     }
     short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
-    //‘S‚Ä‚Ìè‚ğ¶¬
+    //å…¨ã¦ã®æ‰‹ã‚’ç”Ÿæˆ
     Move *ml = next_move[ply].next_move = next_move[ply].last_move;
     next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
     int max_score = -2147483648;
-    //Move\‘¢‘Ì‚ğDoMoveŠÖ”‚É“n‚µ‚Ä‹Ç–ÊXVA‚à‚µ‡–@è‚ª0‚È‚çi‰¤è‚ğ”ğ‚¯‚éè‚ª‚È‚¢‚È‚Çj‚±‚Ìforƒ‹[ƒv‚ğƒpƒX‚·‚é
+    //Moveæ§‹é€ ä½“ã‚’DoMoveé–¢æ•°ã«æ¸¡ã—ã¦å±€é¢æ›´æ–°ã€ã‚‚ã—åˆæ³•æ‰‹ãŒ0ãªã‚‰ï¼ˆç‹æ‰‹ã‚’é¿ã‘ã‚‹æ‰‹ãŒãªã„ãªã©ï¼‰ã“ã®forãƒ«ãƒ¼ãƒ—ã‚’ãƒ‘ã‚¹ã™ã‚‹
     for(;ml != next_move[ply].last_move;ml++){
         bfo.material = sech.material;
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
@@ -112,11 +112,11 @@ int search_min(Position &pos,int ply)
         return evaluate(pos);
     }
     short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
-    //‘S‚Ä‚Ìè‚ğ¶¬
+    //å…¨ã¦ã®æ‰‹ã‚’ç”Ÿæˆ
     Move *ml = next_move[ply].next_move = next_move[ply].last_move;
     next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
     int min_score = 2147483647;
-    //Move\‘¢‘Ì‚ğDoMoveŠÖ”‚É“n‚µ‚Ä‹Ç–ÊXVA‚à‚µ‡–@è‚ª0‚È‚çi‰¤è‚ğ”ğ‚¯‚éè‚ª‚È‚¢‚È‚Çj‚±‚Ìforƒ‹[ƒv‚ğƒpƒX‚·‚é
+    //Moveæ§‹é€ ä½“ã‚’DoMoveé–¢æ•°ã«æ¸¡ã—ã¦å±€é¢æ›´æ–°ã€ã‚‚ã—åˆæ³•æ‰‹ãŒ0ãªã‚‰ï¼ˆç‹æ‰‹ã‚’é¿ã‘ã‚‹æ‰‹ãŒãªã„ãªã©ï¼‰ã“ã®forãƒ«ãƒ¼ãƒ—ã‚’ãƒ‘ã‚¹ã™ã‚‹
     for(;ml != next_move[ply].last_move;ml++){
         bfo.material = sech.material;
         next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
@@ -132,7 +132,7 @@ int search_min(Position &pos,int ply)
 
 TEST(serach,search_root)
 {
-    //Q1‚Ì‹Ç–Ê‚ÅƒeƒXƒg
+    //Q1ã®å±€é¢ã§ãƒ†ã‚¹ãƒˆ
     string expect ="lR1B3nl/2gp5/ngk1+BspPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b P5psr 1";
     from_sfen(expect);
     game_init(root_position);

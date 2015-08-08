@@ -1,4 +1,4 @@
-#if !defined(USI_H_INCLUDE)
+﻿#if !defined(USI_H_INCLUDE)
 #define USI_H_INCLUDE
 
 #include "types.h"

@@ -1,4 +1,4 @@
-#include "gtest\gtest.h"
+ï»¿#include "gtest\gtest.h"
 #include "position.h"
 #include "evaluate.h"
 #include "search.h"
@@ -22,7 +22,7 @@ int piece_value[16];
 int cap_piece_value[16];
 int pmoto_piece_value[8];
     /*
-‰Šú‹Ç–Ê‚Ì‹îŠ„•]‰¿’l‚ğZ’è
+åˆæœŸå±€é¢ã®é§’å‰²è©•ä¾¡å€¤ã‚’ç®—å®š
 */
 int eval_material(const Position &pos)
 {
@@ -43,7 +43,7 @@ int eval_material(const Position &pos)
             piece_count[c+1][type_of_piece(p)]++;
         }
     }
-    //‚±‚±‚Å‚ÍBLACK=1,WHITE=0
+    //ã“ã“ã§ã¯BLACK=1,WHITE=0
     material += (piece_count[1][GOLD] + pos.board[208] - piece_count[0][GOLD] - pos.board[215])*DGold;
     material += (piece_count[1][PAWN] + pos.board[209] - piece_count[0][PAWN] - pos.board[216])*DPawn;
     material += (piece_count[1][LANCE] + pos.board[210] - piece_count[0][LANCE] - pos.board[217])*DLance;
@@ -62,13 +62,13 @@ int eval_material(const Position &pos)
 
 int evaluate(Position &pos)
 {
-    //¡‚Ì•]‰¿’l‚Í‹îŠ„‚Ì‚İ(turn=WHITE= -1‚È‚ç•„†”½“]‚µ‚Ä•Ô‚·ABLACK=0‚È‚ç‚»‚Ì‚Ü‚Ü‚Å•Ô‚·)
+    //ä»Šã®è©•ä¾¡å€¤ã¯é§’å‰²ã®ã¿(turn=WHITE= -1ãªã‚‰ç¬¦å·åè»¢ã—ã¦è¿”ã™ã€BLACK=0ãªã‚‰ãã®ã¾ã¾ã§è¿”ã™)
     return pos.turn ? -sech.material:+sech.material;
 }
 
 TEST(evaluate,eval_material)
 {
-    //Q1‚Ì‹Ç–Ê‚ÅƒeƒXƒg
+    //Q1ã®å±€é¢ã§ãƒ†ã‚¹ãƒˆ
     string expect ="lR1B3nl/2gp5/ngk1+BspPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b P5psr 1";
     from_sfen(expect);
     int ev = eval_material(root_position);
@@ -82,7 +82,7 @@ TEST(evaluate,eval_material)
     excep += (1-1)*DRook;
     excep += (1-0)*DPBishop;
     EXPECT_EQ(excep,ev);
-    //Q2‚Ì‹Ç–Ê‚ÅƒeƒXƒg
+    //Q2ã®å±€é¢ã§ãƒ†ã‚¹ãƒˆ
     expect ="5S2l/1rP2s1k1/p2+B1gnp1/5np2/3G3n1/5S2p/P1+p1PpPP1/1P1PG2KP/L2+rLPGNL b B3ps 1";
     from_sfen(expect);
     ev = eval_material(root_position);
@@ -99,7 +99,7 @@ TEST(evaluate,eval_material)
     excep += (0-1)*DPRook;
     EXPECT_EQ(excep,ev);
 
-    //Q3‚Ì‹Ç–Ê‚ÅƒeƒXƒg
+    //Q3ã®å±€é¢ã§ãƒ†ã‚¹ãƒˆ
     expect ="lR6l/1s1g5/1k1s1+P2p/1+bpp1+Bs2/1n1n2Pp1/2P6/S2R4P/K1GG5/9 b P2Ng9p2l 1";
     from_sfen(expect);
     ev = eval_material(root_position);

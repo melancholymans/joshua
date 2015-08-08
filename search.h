@@ -1,4 +1,4 @@
-#if !defined(SEARCH_H_INCLUDE)
+﻿#if !defined(SEARCH_H_INCLUDE)
 #define SEARCH_H_INCLUDE
 
 #include "types.h"

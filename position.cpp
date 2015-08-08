@@ -1,4 +1,4 @@
-#include <string>
+ï»¿#include <string>
 #include <ctype.h>
 #include <crtdbg.h>
 
@@ -13,7 +13,7 @@ using namespace std;
 #include "search.h"
 #include "evaluate.h"
 
-//‹îƒR[ƒhiGPS‚ğQl‚É‚µ‚½j
+//é§’ã‚³ãƒ¼ãƒ‰ï¼ˆGPSã‚’å‚è€ƒã«ã—ãŸï¼‰
 const char EMPTY = 0;
 const char EDGE = 1;
 
@@ -46,14 +46,14 @@ const char W_KNIGHT = B_KNIGHT - 16;    //-4
 const char W_SILVER = B_SILVER - 16;    //-3
 const char W_BISHOP = B_BISHOP - 16;    //-2
 const char W_ROOK = B_ROOK - 16;        //-1
-//player(è”Ôj BLACK‚ªæèAWHITE‚ªŒãè
+//player(æ‰‹ç•ªï¼‰ BLACKãŒå…ˆæ‰‹ã€WHITEãŒå¾Œæ‰‹
 const int BLACK = 0;
 const int WHITE = -1;
 const int NO_COLOR = 16;
 
-//æè‘å•¶šAŒãè¬•¶šA”š‚Í‹ó”’A/‚Ís‹æØ‚è +‚Í¬‹î‚Ìˆó
+//å…ˆæ‰‹å¤§æ–‡å­—ã€å¾Œæ‰‹å°æ–‡å­—ã€æ•°å­—ã¯ç©ºç™½ã€/ã¯è¡ŒåŒºåˆ‡ã‚Š +ã¯æˆé§’ã®å°
 string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
-string begin_poition;   //‚Ç‚ñ‚È‹Ç–Ê‚ğó•t‚¯‚½‚Ì‚©•Û
+string begin_poition;   //ã©ã‚“ãªå±€é¢ã‚’å—ä»˜ã‘ãŸã®ã‹ä¿æŒ
 position_t root_position;
 
 void from_sfen(string &sfen)
@@ -64,22 +64,22 @@ void from_sfen(string &sfen)
     int index;
     char pmoto = 0;
 
-    //‘S‘Ì‚ğ”ÕŠO‚Éİ’è
+    //å…¨ä½“ã‚’ç›¤å¤–ã«è¨­å®š
     for(index = 0;index < LIMIT;index++){
         root_position.board[index] = EDGE;
     }
-    //”Õã‚ÍEMPTY‚Éİ’è
+    //ç›¤ä¸Šã¯EMPTYã«è¨­å®š
     for(int row = 1;row < 10;row++){
         for(int col = 1;col < 10;col++){
             int sq = make_square(col,row); 
             root_position.board[sq] = EMPTY;
         }
     }
-    //‹î‘ä‚àEMPTY‚Éİ’è
+    //é§’å°ã‚‚EMPTYã«è¨­å®š
     for(int sq = 208;sq < 222;sq++){
         root_position.board[sq] = EMPTY;
     }
-    //”Õãİ’è
+    //ç›¤ä¸Šè¨­å®š
     int col = 1,row = 1;
     for(index = 0;token.size() > index;index++){
         if(isdigit(token[index])){
@@ -115,7 +115,7 @@ void from_sfen(string &sfen)
             }
         }
     }
-    //è”Ôİ’è
+    //æ‰‹ç•ªè¨­å®š
     token = uip.get_next_token();
 
     if(token[0] == 'b'){
@@ -129,27 +129,27 @@ void from_sfen(string &sfen)
         _ASSERT(false);
         return;
     }
-    //‚¿‹îİ’è(ƒTƒ“ƒvƒ‹ S2Pb18pj
+    //æŒã¡é§’è¨­å®š(ã‚µãƒ³ãƒ—ãƒ« S2Pb18pï¼‰
     token = uip.get_next_token();
     for(index = 0;token.size() > index;index++){
         char num;
-        if(isdigit(token[index]) && isalnum(token[index+1])){   //Å‰‚É”š‚ª—ˆ‚éƒpƒ^[ƒ“‚É‘Î‰
-            if(isdigit(token[index+1])){    //‚QŒ…‚Ì”š‚É‘Î‰
+        if(isdigit(token[index]) && isalnum(token[index+1])){   //æœ€åˆã«æ•°å­—ãŒæ¥ã‚‹ãƒ‘ã‚¿ãƒ¼ãƒ³ã«å¯¾å¿œ
+            if(isdigit(token[index+1])){    //ï¼’æ¡ã®æ•°å­—ã«å¯¾å¿œ
                 num = atoi(token.substr(index,2).c_str());
                 index += 2;
             }
-            else{                           //‚PŒ…‚Ì”š‚É‘Î‰
+            else{                           //ï¼‘æ¡ã®æ•°å­—ã«å¯¾å¿œ
                 num = atoi(token.substr(index,1).c_str());
                 index +=1;
             }
         }
-        else if(isalpha(token[index])){  //”š‚ª‚È‚¢ƒpƒ^[ƒ“‚É‘Î‰
+        else if(isalpha(token[index])){  //æ•°å­—ãŒãªã„ãƒ‘ã‚¿ãƒ¼ãƒ³ã«å¯¾å¿œ
             num = 1;
         }
-        else if(token[index] == '-'){   //‚¿‹î‚ª‚È‚¢ƒpƒ^[ƒ“‚É‘Î‰
+        else if(token[index] == '-'){   //æŒã¡é§’ãŒãªã„ãƒ‘ã‚¿ãƒ¼ãƒ³ã«å¯¾å¿œ
             break;
         }
-        else{       //‚Ç‚ê‚Å‚à‚È‚¢
+        else{       //ã©ã‚Œã§ã‚‚ãªã„
             cout << "Error in SFEN charracter" << endl;
             _ASSERT(false);
             return; 
@@ -172,7 +172,7 @@ void from_sfen(string &sfen)
         case 'R': put_piece(B_ROOK,214,num); break;
         }
     }
-    //‚¿‹î‚ÌŸ‚Íè”‚ª“ü‚Á‚Ä‚¢‚é‚ª–³‹‚µ‚Ä‚æ‚¢
+    //æŒã¡é§’ã®æ¬¡ã¯æ‰‹æ•°ãŒå…¥ã£ã¦ã„ã‚‹ãŒç„¡è¦–ã—ã¦ã‚ˆã„
 }
 
 string to_sfen(const Position &pos)
@@ -204,7 +204,7 @@ string to_sfen(const Position &pos)
     }
     result += (pos.turn == WHITE) ? 'w'  : 'b';
     result += ' ';
-    //‚±‚±‚Í‹î‘ä‚Ìˆ—
+    //ã“ã“ã¯é§’å°ã®å‡¦ç†
     bool is_stand = false;
     for(int sq = 208;sq < 215;sq++){
         int num = pos.board[sq];
@@ -227,7 +227,7 @@ string to_sfen(const Position &pos)
         }
     }
     if(!is_stand){
-        //‚¿‹î‚ª‚È‚©‚Á‚½ê‡
+        //æŒã¡é§’ãŒãªã‹ã£ãŸå ´åˆ
         result += '-';
     }
     result += ' ';
@@ -235,22 +235,22 @@ string to_sfen(const Position &pos)
     return result;
 }
 
-//sfen•¶š—ñ‚©‚çposition‚ğİ’è
+//sfenæ–‡å­—åˆ—ã‹ã‚‰positionã‚’è¨­å®š
 void put_piece(char p,int sq,int num)
 {
     char pt = type_of_piece(p);
     Color c = color_of_piece(p);
     if(sq < BOARD_UPPER){
-        //MAIN board‚É‹îƒR[ƒh‚ğ“ü‚ê‚é
+        //MAIN boardã«é§’ã‚³ãƒ¼ãƒ‰ã‚’å…¥ã‚Œã‚‹
         root_position.board[sq] = p;
         if(pt == KING){
-            //Color‚ÍWHITE=-1,BLACK=0‚Å”z—ñ‚Éû‚Ü‚ç‚È‚¢‚Ì‚Å+1‚É‚µ‚ÄWHITE=0,BLACK=1‚É‚µ‚Ä‚¢‚é
+            //Colorã¯WHITE=-1,BLACK=0ã§é…åˆ—ã«åã¾ã‚‰ãªã„ã®ã§+1ã«ã—ã¦WHITE=0,BLACK=1ã«ã—ã¦ã„ã‚‹
             //root_position.king_square[c+1] = sq;
-            root_position.board[223+c] = sq;    //‹­§“I‚Éint‚©‚çchar‚É“ü‚ê‚Ä‚¢‚é
+            root_position.board[223+c] = sq;    //å¼·åˆ¶çš„ã«intã‹ã‚‰charã«å…¥ã‚Œã¦ã„ã‚‹
         }
     }
     else{
-        //‚±‚¿‚ç‚Í‹î‘äA‹îí‚É‚æ‚Á‚ÄÀ•W‚ÍŒÅ’è‚³‚ê‚Ä‚¢‚éAŠi”[‚·‚é‚Ì‚Í–‡”
+        //ã“ã¡ã‚‰ã¯é§’å°ã€é§’ç¨®ã«ã‚ˆã£ã¦åº§æ¨™ã¯å›ºå®šã•ã‚Œã¦ã„ã‚‹ã€æ ¼ç´ã™ã‚‹ã®ã¯æšæ•°
         root_position.board[sq] = num;
     }
 }
@@ -290,7 +290,7 @@ void print_board(const Position &pos)
 }
 
 /*
-BLACK,WHITE‚Æ•ª‚©‚ê‚Ä‚¢‚é‚±‚Æ‚ğ–Y‚ê‚È‚¢‚æ‚¤‚É
+BLACK,WHITEã¨åˆ†ã‹ã‚Œã¦ã„ã‚‹ã“ã¨ã‚’å¿˜ã‚Œãªã„ã‚ˆã†ã«
 */
 short *do_move_b(Position &pos,Move m,short *mf)
 {
@@ -300,13 +300,13 @@ short *do_move_b(Position &pos,Move m,short *mf)
     char p;
 
     if(from != 0){
-        //”Õã‚Ìè
+        //ç›¤ä¸Šã®æ‰‹
         p = pos.board[from];
         char pt = type_of_piece(p);
         if(pt == KING){
             *(mf++) = 223;
             *(mf++) = pos.board[223];
-            pos.board[223] = to;  //‹­§“I‚Éint‚©‚çchar‚É“ü‚ê‚Ä‚¢‚é
+            pos.board[223] = to;  //å¼·åˆ¶çš„ã«intã‹ã‚‰charã«å…¥ã‚Œã¦ã„ã‚‹
         }
         if(pos.board[to] != EMPTY){
             cp = pos.board[to] & 0x0F;
@@ -317,8 +317,8 @@ short *do_move_b(Position &pos,Move m,short *mf)
             sech.material += cap_piece_value[cp];
         }
         *(mf++) = to; 
-        *(mf++) = pos.board[to];    //•ÏX‚ğêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
-        //¬ˆ—
+        *(mf++) = pos.board[to];    //å¤‰æ›´ã‚’å ´æ‰€ã€å†…å®¹ã®é †ã«ç™»éŒ²ã—ã¦ãŠã
+        //æˆå‡¦ç†
         if(m & 0x10000){
             pos.board[to] = p-8;
             sech.material += pmoto_piece_value[p-8];
@@ -327,15 +327,15 @@ short *do_move_b(Position &pos,Move m,short *mf)
             pos.board[to] = p;
         }
         *(mf++) = from; 
-        *(mf++) = p;                //•ÏX‚ğêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
+        *(mf++) = p;                //å¤‰æ›´ã‚’å ´æ‰€ã€å†…å®¹ã®é †ã«ç™»éŒ²ã—ã¦ãŠã
         pos.board[from] = EMPTY;
     }
     else{
-        //‘Å‚Âè@‘Å‚Âè‚Ímaterial‚Í•Ï‰»‚µ‚È‚¢i”Õã‚Ì‹î‚Æ‹î‘ä‚Ì‹î‚Ì‰¿’l‚ªˆê‚Ì‚½‚ßBonanza•û®j
-        p = move_piece(m);  //‘Å‚Â‹îí‚ğæ‚èo‚·
+        //æ‰“ã¤æ‰‹ã€€æ‰“ã¤æ‰‹ã¯materialã¯å¤‰åŒ–ã—ãªã„ï¼ˆç›¤ä¸Šã®é§’ã¨é§’å°ã®é§’ã®ä¾¡å€¤ãŒä¸€ç·’ã®ãŸã‚Bonanzaæ–¹å¼ï¼‰
+        p = move_piece(m);  //æ‰“ã¤é§’ç¨®ã‚’å–ã‚Šå‡ºã™
         *(mf++) = to; 
-        *(mf++) = EMPTY;    //•ÏX‚ğêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
-        pos.board[to] = pos.turn ? 0xF0 | p : p;    //‹îƒR[ƒh‚É•ÏŠ·
+        *(mf++) = EMPTY;    //å¤‰æ›´ã‚’å ´æ‰€ã€å†…å®¹ã®é †ã«ç™»éŒ²ã—ã¦ãŠã
+        pos.board[to] = pos.turn ? 0xF0 | p : p;    //é§’ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›
         int of = 208 + p - 9;
         *(mf++) = of;
         *(mf++) = pos.board[of];
@@ -346,7 +346,7 @@ short *do_move_b(Position &pos,Move m,short *mf)
 }
 
 /*
-BLACK,WHITE‚Æ•ª‚©‚ê‚Ä‚¢‚é‚±‚Æ‚ğ–Y‚ê‚È‚¢‚æ‚¤‚É
+BLACK,WHITEã¨åˆ†ã‹ã‚Œã¦ã„ã‚‹ã“ã¨ã‚’å¿˜ã‚Œãªã„ã‚ˆã†ã«
 */
 short *do_move_w(Position &pos,Move m,short *mf)
 {
@@ -356,13 +356,13 @@ short *do_move_w(Position &pos,Move m,short *mf)
     char p;
 
     if(from != 0){
-        //”Õã‚Ìè
+        //ç›¤ä¸Šã®æ‰‹
         p = pos.board[from];
         char pt = type_of_piece(p);
         if(pt == KING){
             *(mf++) = 222;;
             *(mf++) = pos.board[222];
-            pos.board[222] = to;  //‹­§“I‚Éint‚©‚çchar‚É“ü‚ê‚Ä‚¢‚é
+            pos.board[222] = to;  //å¼·åˆ¶çš„ã«intã‹ã‚‰charã«å…¥ã‚Œã¦ã„ã‚‹
         }
         if(pos.board[to] != EMPTY){
             cp = pos.board[to] & 0x0F;
@@ -373,8 +373,8 @@ short *do_move_w(Position &pos,Move m,short *mf)
             sech.material -= cap_piece_value[cp];
         }
         *(mf++) = to; 
-        *(mf++) = pos.board[to];    //•ÏX‚ğêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
-        //¬ˆ—
+        *(mf++) = pos.board[to];    //å¤‰æ›´ã‚’å ´æ‰€ã€å†…å®¹ã®é †ã«ç™»éŒ²ã—ã¦ãŠã
+        //æˆå‡¦ç†
         if(m & 0x10000){
             pos.board[to] = p-8;
             sech.material -= pmoto_piece_value[(p-8) & 0x0F];
@@ -383,15 +383,15 @@ short *do_move_w(Position &pos,Move m,short *mf)
             pos.board[to] = p;
         }
         *(mf++) = from; 
-        *(mf++) = p;                //•ÏX‚ğêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
+        *(mf++) = p;                //å¤‰æ›´ã‚’å ´æ‰€ã€å†…å®¹ã®é †ã«ç™»éŒ²ã—ã¦ãŠã
         pos.board[from] = EMPTY;
     }
     else{
-        //‘Å‚Âè ‘Å‚Âè‚Ímaterial‚Í•Ï‰»‚µ‚È‚¢i”Õã‚Ì‹î‚Æ‹î‘ä‚Ì‹î‚Ì‰¿’l‚ªˆê‚Ì‚½‚ßBonanza•û®j
-        p = move_piece(m);  //‘Å‚Â‹îí‚ğæ‚èo‚·
+        //æ‰“ã¤æ‰‹ æ‰“ã¤æ‰‹ã¯materialã¯å¤‰åŒ–ã—ãªã„ï¼ˆç›¤ä¸Šã®é§’ã¨é§’å°ã®é§’ã®ä¾¡å€¤ãŒä¸€ç·’ã®ãŸã‚Bonanzaæ–¹å¼ï¼‰
+        p = move_piece(m);  //æ‰“ã¤é§’ç¨®ã‚’å–ã‚Šå‡ºã™
         *(mf++) = to; 
-        *(mf++) = EMPTY;    //•ÏX‚ğêŠA“à—e‚Ì‡‚É“o˜^‚µ‚Ä‚¨‚­
-        pos.board[to] = pos.turn ? 0xF0 | p : p;    //‹îƒR[ƒh‚É•ÏŠ·
+        *(mf++) = EMPTY;    //å¤‰æ›´ã‚’å ´æ‰€ã€å†…å®¹ã®é †ã«ç™»éŒ²ã—ã¦ãŠã
+        pos.board[to] = pos.turn ? 0xF0 | p : p;    //é§’ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›
         int of = 215 + p - 9;
         *(mf++) = of;
         *(mf++) = pos.board[of];
@@ -451,7 +451,7 @@ void is_ok(Position &pos)
     _ASSERT((piece_count[BISHOP] + piece_count[PBISHOP]) == 2);
     _ASSERT((piece_count[ROOK] + piece_count[PROOK]) == 2);
     _ASSERT(piece_count[KING] == 2);
-    //BLACK‘¤€‚É‹î‚Ì—L–³
+    //BLACKå´æ­»ã«é§’ã®æœ‰ç„¡
     for(int sq = SQ_9A;sq <= SQ_1A;sq++){
         char p = pos.board[sq];
         if((p == B_PAWN) || (p == B_LANCE) || (p == B_KNIGHT)){
@@ -464,7 +464,7 @@ void is_ok(Position &pos)
             _ASSERT(false);
         }
     }
-    //WHITE‘¤€‚É‹î‚Ì—L–³
+    //WHITEå´æ­»ã«é§’ã®æœ‰ç„¡
     for(int sq = SQ_9I;sq <= SQ_1I;sq++){
         char p = pos.board[sq];
         if((p == W_PAWN) || (p == W_LANCE) || (p == W_KNIGHT)){
@@ -514,14 +514,14 @@ TEST(position,color_of_piece)
 
 TEST(position,piece_type)
 {
-    //•s¬‚èA¬‚è”»’è
-    EXPECT_FALSE(is_not_pmoto(BP_PAWN));  //BP_PAWN‚Í¬‚Á‚Ä‚¢‚È‚¢‚æ‚Ë->¬‚Á‚Ä‚¢‚é‚Ì‚ÅFALSE
+    //ä¸æˆã‚Šã€æˆã‚Šåˆ¤å®š
+    EXPECT_FALSE(is_not_pmoto(BP_PAWN));  //BP_PAWNã¯æˆã£ã¦ã„ãªã„ã‚ˆã­->æˆã£ã¦ã„ã‚‹ã®ã§FALSE
     EXPECT_FALSE(is_not_pmoto(BP_LANCE));
     EXPECT_FALSE(is_not_pmoto(BP_KNIGHT));
     EXPECT_FALSE(is_not_pmoto(BP_SILVER));
     EXPECT_FALSE(is_not_pmoto(BP_BISHOP));
     EXPECT_FALSE(is_not_pmoto(BP_ROOK));
-    EXPECT_TRUE(is_not_pmoto(B_PAWN));    //B_PAWN‚Í¬‚Á‚Ä‚¢‚È‚¢‚æ‚Ë->¬‚Á‚Ä‚¢‚È‚¢‚Ì‚ÅTRUE
+    EXPECT_TRUE(is_not_pmoto(B_PAWN));    //B_PAWNã¯æˆã£ã¦ã„ãªã„ã‚ˆã­->æˆã£ã¦ã„ãªã„ã®ã§TRUE
     EXPECT_TRUE(is_not_pmoto(B_LANCE));
     EXPECT_TRUE(is_not_pmoto(B_KNIGHT));
     EXPECT_TRUE(is_not_pmoto(B_SILVER));
@@ -540,23 +540,23 @@ TEST(position,piece_type)
     EXPECT_TRUE(is_not_pmoto(W_SILVER));
     EXPECT_TRUE(is_not_pmoto(W_BISHOP));
     EXPECT_TRUE(is_not_pmoto(W_ROOK));
-    //æèAŒãè”»•Ê
+    //å…ˆæ‰‹ã€å¾Œæ‰‹åˆ¤åˆ¥
     char p;
     p = BP_PAWN;
-    EXPECT_EQ(true,p > 1);  //æè”»’è
-    EXPECT_EQ(true,p > 1 || p == 0); //æè•‹ó”’”»’è
+    EXPECT_EQ(true,p > 1);  //å…ˆæ‰‹åˆ¤å®š
+    EXPECT_EQ(true,p > 1 || p == 0); //å…ˆæ‰‹ï¼†ç©ºç™½åˆ¤å®š
     p = WP_PAWN;
-    EXPECT_EQ(false,p > 1);  //æè”»’è
-    EXPECT_EQ(false,p > 1 || p == 0); //æè•‹ó”’”»’è
+    EXPECT_EQ(false,p > 1);  //å…ˆæ‰‹åˆ¤å®š
+    EXPECT_EQ(false,p > 1 || p == 0); //å…ˆæ‰‹ï¼†ç©ºç™½åˆ¤å®š
 
     p = BP_PAWN;
-    EXPECT_EQ(false,p < 0);  //Œãè”»’è
-    EXPECT_EQ(false,p <= 0);  //Œãè•‹ó”’”»’è
+    EXPECT_EQ(false,p < 0);  //å¾Œæ‰‹åˆ¤å®š
+    EXPECT_EQ(false,p <= 0);  //å¾Œæ‰‹ï¼†ç©ºç™½åˆ¤å®š
     p = WP_PAWN;
-    EXPECT_EQ(true,p < 0);  //Œãè”»’è
-    EXPECT_EQ(true,p <= 0);  //Œãè•‹ó”’”»’è
+    EXPECT_EQ(true,p < 0);  //å¾Œæ‰‹åˆ¤å®š
+    EXPECT_EQ(true,p <= 0);  //å¾Œæ‰‹ï¼†ç©ºç™½åˆ¤å®š
 
-    //æè->Œãè
+    //å…ˆæ‰‹->å¾Œæ‰‹
     EXPECT_EQ(WP_PAWN,do_white(BP_PAWN));
     EXPECT_EQ(WP_LANCE,do_white(BP_LANCE));
     EXPECT_EQ(WP_KNIGHT,do_white(BP_KNIGHT));
@@ -572,7 +572,7 @@ TEST(position,piece_type)
     EXPECT_EQ(W_SILVER,do_white(B_SILVER));
     EXPECT_EQ(W_BISHOP,do_white(B_BISHOP));
     EXPECT_EQ(W_ROOK,do_white(B_ROOK));
-    //Œãè->æè
+    //å¾Œæ‰‹->å…ˆæ‰‹
     p = WP_PAWN;
     EXPECT_EQ(BP_PAWN,do_black(WP_PAWN));
     EXPECT_EQ(BP_LANCE,do_black(WP_LANCE));
@@ -692,7 +692,7 @@ TEST(position,from_sfen)
     EXPECT_EQ(B_LANCE,root_position.board[SQ_9I]);
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
     
-    //Šg’£‚µ‚½from_sfen—p‚ÌƒeƒXƒg
+    //æ‹¡å¼µã—ãŸfrom_sfenç”¨ã®ãƒ†ã‚¹ãƒˆ
     from_sfen(string("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1"));
     EXPECT_EQ(EMPTY,root_position.board[SQ_9A]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_8A]);
@@ -783,7 +783,7 @@ TEST(position,from_sfen)
     EXPECT_EQ(EMPTY,root_position.board[SQ_3I]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_2I]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_1I]);
-    //‚¿‹î‚Ìƒ`ƒGƒbƒN
+    //æŒã¡é§’ã®ãƒã‚¨ãƒƒã‚¯
     EXPECT_EQ(0,root_position.board[208]);  //black gold
     EXPECT_EQ(1,root_position.board[209]);  //black pawn
     EXPECT_EQ(1,root_position.board[210]);  //black lance
@@ -862,7 +862,7 @@ TEST(position,to_sfen)
 
 TEST(position,make_square)
 {
-    //make_square(col,row)‚Åw’è
+    //make_square(col,row)ã§æŒ‡å®š
     EXPECT_EQ(166,make_square(6,9));
     EXPECT_EQ(72,make_square(8,3));
     EXPECT_EQ(116,make_square(4,6));
@@ -916,9 +916,9 @@ TEST(position,make_col_row)
     EXPECT_EQ(9,row);
 }
 
-int update_board(USIInputParser &uip);      //TEST‚Ìƒwƒ‹ƒp[ŠÖ”
+int update_board(USIInputParser &uip);      //TESTã®ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°
 int update_board_material(USIInputParser &uip,int material[],int row,int col);
-void is_eq_board(void);                     //TEST‚Ìƒwƒ‹ƒp[ŠÖ”
+void is_eq_board(void);                     //TESTã®ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°
 
 TEST(position,undo_move)
 {
@@ -938,9 +938,9 @@ TEST(position,undo_move)
     };
     for(int i = 0;i < 11;i++){
         USIInputParser uip(q_str[i]);
-        ply = update_board(uip);    //do_move‚Å‹Ç–Ê‚ğXV
+        ply = update_board(uip);    //do_moveã§å±€é¢ã‚’æ›´æ–°
         for(int i = ply-1;i >= 0;i--){
-            undo_move(root_position,i); //undo_move‚Å‹Ç–Ê‚ğ•œŒ³
+            undo_move(root_position,i); //undo_moveã§å±€é¢ã‚’å¾©å…ƒ
             is_ok(root_position);
         }
         is_eq_board();
@@ -948,13 +948,13 @@ TEST(position,undo_move)
 }
 
 /*
-è‚ğ“®‚©‚µ‚Ämaterial‚ª‚¿‚á‚ñ‚ÆXV‚³‚ê‚Ä‚¢‚é‚©ƒ`ƒGƒbƒN‚·‚é
+æ‰‹ã‚’å‹•ã‹ã—ã¦materialãŒã¡ã‚ƒã‚“ã¨æ›´æ–°ã•ã‚Œã¦ã„ã‚‹ã‹ãƒã‚¨ãƒƒã‚¯ã™ã‚‹
 */
 TEST(position,do_move_material)
 {
     int ply;
     string q_str[2] = {
-        "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 8d8e 2h3h 6b7c 7i8h 4c5c 6g5g 5c5b 5g5h 7c8d 6h4f 8b9b 4h3g 4d4e 4f5g 4a4b 3g2f 7d7e 7f7e 8d7e P*7f 7e8d 2i3g 3c4d 6f6e 9b8b 4g4f 5d5e 4f4e 4d3c 3g2e 3c2b 5g4f 2c2d 4f2d 2a3c 2e3c+ 2b3c 2d4f 8a7c N*4d 3c4d 4e4d P*4e S*4c 3b4c 4d4c+ 4b4c 4f5e N*4f P*4d 4c5d 3h1h 4f5h+ 1h5h S*6i 7h7i 6i5h+ N*7d 8b8a G*6d 3a6d 6e6d P*2e 7d6b+ 2e2f 6b5b G*3b B*7d N*6a 7d6c+ 5d6e G*6f",  //MOVE_TEST_Q1.csa‚ÅŠû•ˆ“o˜^‚µ‚Ä‚ ‚é
+        "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 8d8e 2h3h 6b7c 7i8h 4c5c 6g5g 5c5b 5g5h 7c8d 6h4f 8b9b 4h3g 4d4e 4f5g 4a4b 3g2f 7d7e 7f7e 8d7e P*7f 7e8d 2i3g 3c4d 6f6e 9b8b 4g4f 5d5e 4f4e 4d3c 3g2e 3c2b 5g4f 2c2d 4f2d 2a3c 2e3c+ 2b3c 2d4f 8a7c N*4d 3c4d 4e4d P*4e S*4c 3b4c 4d4c+ 4b4c 4f5e N*4f P*4d 4c5d 3h1h 4f5h+ 1h5h S*6i 7h7i 6i5h+ N*7d 8b8a G*6d 3a6d 6e6d P*2e 7d6b+ 2e2f 6b5b G*3b B*7d N*6a 7d6c+ 5d6e G*6f",  //MOVE_TEST_Q1.csaã§æ£‹è­œç™»éŒ²ã—ã¦ã‚ã‚‹
         "startpos moves 7g7f 8c8d 7i6h 3c3d 6g6f 7a6b 5g5f 5c5d 3i4h 3a4b 4i5h 4a3b 5h6g 5a4a 6i7h 6a5b 5i6i 4b3c 6h7g 2b3a 8h7i 4c4d 3g3f 5b4c 7i6h 7c7d 6i7i 3a6d 2i3g 4a3a 2g2f 3a2b 7i8h 8d8e 2h3h 6b5c 1g1f 5d5e 6f6e 6d7c 5f5e 6c6d 6e6d 5c6d P*6e P*6f 7g6f 6d5e 6f5e 7c5e S*6f 5e7c 3h3i S*2h 3i3h 2h1i+ 4h5g L*8c 5g5f 9c9d 7f7e 8e8f 7e7d 8f8g+ 8h7i 8g8h 7i6i 8h7h 6i7h 8c8h+ 7h6i G*7h 6i5i 7h6h 6g6h 7c9e 3h3i P*6g 5f6g B*2h 3i3h 2h1g+ G*2h 1g2f 3h3i 8h9i P*8c 8b5b P*5c 5b5c P*5d 5c5d P*5e 5d7d P*7e 7d8d 6g7h P*6g 6h7g 6g6h+ 5i6h P*8h 9g9f L*2g 2h2g 2f2g 9f9e G*2i 3i2i 1i2i L*8f R*1h P*2h 8d8f 7g8f 8h8i+ 8c8b+ 1h2h+ 6h7g 2g3g 8b8a 8i7i 7h6g 3g5i 7g7f N*8d 7f8e 2h8h B*8g 8h9g N*7g N*7c 8e7d 9g8f G*8h G*9f R*5f 5i3g 8a9a 3d3e 8g9f 8d9f G*8g B*8c 7d7c P*7b 7c8b 8f8d 8g9f P*8g 9f8e 8d7c 8b9c 8c7d L*8c 7c8c",   //MOVE_TEST_Q2.csa
     };
     int material_answer[3][200] = {
@@ -976,7 +976,7 @@ TEST(position,do_move_material)
             0,/*N*7d*/ 0,/*8b8a*/ 0,/*G*6d*/ -DGold-DGold,/*3a6d*/ DBishop+DBishop,/*6e6d*/ 0,/*P*2e*/
             DPKnight-DKnight,/*7d6b+*/ -DSilver-DSilver,/*2e2f*/ DGold+DGold,/*6b5b*/ 0,/*G*3b*/ 0,/*B*7d*/ 0,/*N*6a*/ 
             DPawn+DPawn+DPBishop-DBishop,/*7d6c+*/ 0,/*5d6e*/ 0/*G*6f*/
-            //MOVE_TEST_Q1.csa‚ÅŠû•ˆ“o˜^‚µ‚Ä‚ ‚é
+            //MOVE_TEST_Q1.csaã§æ£‹è­œç™»éŒ²ã—ã¦ã‚ã‚‹
         },
         {
             0,/*7g7f*/ 0,/*8c8d*/ 0,/*7i6h*/ 0,/*3c3d*/ 0,/*6g6f*/ 0,/*7a6b*/ 
@@ -1005,15 +1005,15 @@ TEST(position,do_move_material)
             DLance+DLance,/*8a9a*/ 0,/*3d3e*/ DGold+DGold,/*8g9f*/ -DBishop-DBishop,/*8d9f*/ 0,/*G*8g*/ 0,/*B*8c*/ 
             DKnight+DKnight,/*7d7c*/ 0,/*P*7b*/ 0,/*7c8b*/ 0,/*8f8d*/ DKnight+DKnight,/*8g9f*/ 0,/*P*8g*/ 
             0,/*9f8e*/ 0,/*8d7c*/ 0,/*8b9c*/ 0,/*8c7d*/ 0,/*L*8c*/ -DLance-DLance/*7c8c*/   
-            //MOVE_TEST_Q2.csa‚ÅŠû•ˆ“o˜^‚µ‚Ä‚ ‚é
+            //MOVE_TEST_Q2.csaã§æ£‹è­œç™»éŒ²ã—ã¦ã‚ã‚‹
         }
     };
     
     for(int i = 0;i < 2;i++){
         USIInputParser uip(q_str[i]);
-        ply = update_board_material(uip,material_answer[i],3,200);    //do_move‚Å‹Ç–Ê‚ğXV
+        ply = update_board_material(uip,material_answer[i],3,200);    //do_moveã§å±€é¢ã‚’æ›´æ–°
         for(int i = ply-1;i >= 0;i--){
-            undo_move(root_position,i); //undo_move‚Å‹Ç–Ê‚ğ•œŒ³
+            undo_move(root_position,i); //undo_moveã§å±€é¢ã‚’å¾©å…ƒ
             is_ok(root_position);
         }
         is_eq_board();
@@ -1027,14 +1027,14 @@ int update_board(USIInputParser &uip)
     int ply = 0;
     short *mf;
 
-    next_modify[ply].next_dirty = next_modify[ply].last_dirty = modifylist;   //”O‚Ì‚½‚ß
+    next_modify[ply].next_dirty = next_modify[ply].last_dirty = modifylist;   //å¿µã®ãŸã‚
     cmd = uip.get_next_token();
 
-    //•½è‰Šú‹Ç–Ê
+    //å¹³æ‰‹åˆæœŸå±€é¢
     if(cmd == "startpos"){
         from_sfen(start_position);
     }
-    //‹î—‚¿‰Šú‹Ç–Ê
+    //é§’è½ã¡åˆæœŸå±€é¢
     else if(cmd == "sfen"){
         string sfen;
         while(cmd != "moves" && !uip.at_end_of_line()){
@@ -1045,14 +1045,14 @@ int update_board(USIInputParser &uip)
         from_sfen(sfen);
     }
     game_init(root_position);
-    //w‚µèÄŒ»,‹Ç–ÊXV
+    //æŒ‡ã—æ‰‹å†ç¾,å±€é¢æ›´æ–°
     if(!uip.at_end_of_line()){
         if(cmd != "moves"){
             cmd = uip.get_next_token();
         }
         if(cmd == "moves"){
             while(!uip.at_end_of_line()){
-                cmd = uip.get_next_token(); //cmd‚É‚Íw‚µè‚²‚Æ•ªŠ„‚³‚ê‚Ä“n‚·
+                cmd = uip.get_next_token(); //cmdã«ã¯æŒ‡ã—æ‰‹ã”ã¨åˆ†å‰²ã•ã‚Œã¦æ¸¡ã™
                 Move m = move_from_string(root_position,cmd);
                 mf = next_modify[ply].next_dirty;
                 next_modify[ply].last_dirty = DoMove(root_position.turn,root_position,m,mf);
@@ -1071,14 +1071,14 @@ int update_board_material(USIInputParser &uip,int material[],int row,int col)
     short *mf;
     int mater_total = 0;
 
-    next_modify[ply].next_dirty = next_modify[ply].last_dirty = modifylist;   //”O‚Ì‚½‚ß
+    next_modify[ply].next_dirty = next_modify[ply].last_dirty = modifylist;   //å¿µã®ãŸã‚
     cmd = uip.get_next_token();
 
-    //•½è‰Šú‹Ç–Ê
+    //å¹³æ‰‹åˆæœŸå±€é¢
     if(cmd == "startpos"){
         from_sfen(start_position);
     }
-    //‹î—‚¿‰Šú‹Ç–Ê
+    //é§’è½ã¡åˆæœŸå±€é¢
     else if(cmd == "sfen"){
         string sfen;
         while(cmd != "moves" && !uip.at_end_of_line()){
@@ -1089,14 +1089,14 @@ int update_board_material(USIInputParser &uip,int material[],int row,int col)
         from_sfen(sfen);
     }
     game_init(root_position);
-    //w‚µèÄŒ»,‹Ç–ÊXV
+    //æŒ‡ã—æ‰‹å†ç¾,å±€é¢æ›´æ–°
     if(!uip.at_end_of_line()){
         if(cmd != "moves"){
             cmd = uip.get_next_token();
         }
         if(cmd == "moves"){
             while(!uip.at_end_of_line()){
-                cmd = uip.get_next_token(); //cmd‚É‚Íw‚µè‚²‚Æ•ªŠ„‚³‚ê‚Ä“n‚·
+                cmd = uip.get_next_token(); //cmdã«ã¯æŒ‡ã—æ‰‹ã”ã¨åˆ†å‰²ã•ã‚Œã¦æ¸¡ã™
                 Move m = move_from_string(root_position,cmd);
                 mf = next_modify[ply].next_dirty;
                 next_modify[ply].last_dirty = DoMove(root_position.turn,root_position,m,mf);
@@ -1112,7 +1112,7 @@ int update_board_material(USIInputParser &uip,int material[],int row,int col)
 }
 
 /*
-‰Šú‹Ç–Ê‚Ì”z’u‚Æ‚Ì”äŠr
+åˆæœŸå±€é¢ã®é…ç½®ã¨ã®æ¯”è¼ƒ
 */
 void is_eq_board(void)
 {

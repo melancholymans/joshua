@@ -1,4 +1,4 @@
-#include <string>
+﻿#include <string>
 
 using namespace std;
 
@@ -6,10 +6,10 @@ using namespace std;
 #include "position.h"
 #include "movegen.h"
 
-Move mlist[16384];  //bonanza�����ꂭ�炢����Ă���2^14
+Move mlist[16384];  //bonanzaもこれくらい取っている2^14
 next_move_t next_move[256];
-short modifylist[1024];    //do_move�ł����Ȃ����ύX���L�^���Aundo_move�ł��̏����g����board�𕜌�����
-next_modify_t next_modify[256]; //modifylist�̊Ǘ�
+short modifylist[1024];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
+next_modify_t next_modify[256]; //modifylistの管理
 
 int DIRECT_WHITE[16][8] = {
     {0,0,0,0,0,0,0,0},
@@ -18,8 +18,8 @@ int DIRECT_WHITE[16][8] = {
     {DL,D,DR,L,R,U,0,0}, //WP_LANCE
     {DL,D,DR,L,R,U,0,0}, //WP_KNIGHT
     {DL,D,DR,L,R,U,0,0}, //WP_SILVER
-    {DL,DR,UL,UR,U,L,R,D}, //WP_BISHOP �ŏ��̂S�͔�ѕ����A�c��S�����ѕ���
-    {D,L,R,U,DL,DR,UL,UR}, //WP_ROOK �ŏ��̂S�͔�ѕ����A�c��S�����ѕ���
+    {DL,DR,UL,UR,U,L,R,D}, //WP_BISHOP 最初の４つは飛び方向、残り４つが非飛び方向
+    {D,L,R,U,DL,DR,UL,UR}, //WP_ROOK 最初の４つは飛び方向、残り４つが非飛び方向
     {DL,D,DR,L,R,UL,U,UR},  //W_KING
     {DL,D,DR,L,R,U,0,0},  //W_GOLD
     {D,0,0,0,0,0,0,0},  //W_PAWN
@@ -36,8 +36,8 @@ int DIRECT_BLACK[16][8] = {
     {UL,U,UR,L,R,D,0,0}, //BP_LANCE
     {UL,U,UR,L,R,D,0,0}, //BP_KNIGHT
     {UL,U,UR,L,R,D,0,0}, //BP_SILVER
-    {UL,UR,DL,DR,U,L,R,D}, //BP_BISHOP �ŏ��̂S�͔�ѕ����A�c��S�����ѕ���
-    {U,L,R,D,UL,UR,DL,DR}, //BP_ROOK �ŏ��̂S�͔�ѕ����A�c��S�����ѕ���
+    {UL,UR,DL,DR,U,L,R,D}, //BP_BISHOP 最初の４つは飛び方向、残り４つが非飛び方向
+    {U,L,R,D,UL,UR,DL,DR}, //BP_ROOK 最初の４つは飛び方向、残り４つが非飛び方向
     {UL,U,UR,L,R,DL,D,DR},  //B_KING
     {UL,U,UR,L,R,D,0,0},  //B_GOLD
     {U,0,0,0,0,0,0,0},  //B_PAWN
@@ -54,7 +54,7 @@ Move *generate_moves(const Position &pos,Move *ml)
     Color c;
 
     if(pos.turn ? is_checkmate_w(pos):is_checkmate_b(pos)){
-        //�����ɉ��肪�������Ă���Ȃ牤������𐶐����ĕԂ�
+        //自王に王手がかかっているなら王手回避手を生成して返す
         generate_evasions(pos,ml);
         return ml;
     }
@@ -93,7 +93,7 @@ Move *generate_moves(const Position &pos,Move *ml)
             }
         }
     }
-    //�ł�
+    //打つ手
     if(WHITE == pos.turn){
         for(int sq = 215;sq < 222;sq++){
             if(pos.board[sq] > 0){
@@ -136,7 +136,7 @@ Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
         cp = pos.board[to];
-        //KING�Ȃ̂œG�̗����̂���Ƃ���ɂ͂����Ȃ����܂������܂ł̃f�[�^�������ĂȂ��̂�PASS
+        //KINGなので敵の利きのあるところにはいけないがまだそこまでのデータが揃ってないのでPASS
         if(cp > 1 || cp == 0){
             *(ml++) = make_move(from,to,0,p,cp);
         }
@@ -182,7 +182,7 @@ Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
 
     p = pos.board[from];
     for(to = from,i = 0;i < 1;i++){
-        //loop���񂷕K�v���Ȃ������̂��܂̂��߂ɂ������Ă���
+        //loopを回す必要がないが他のこまのためにこうしている
         do{
             to = to + DIRECT_WHITE[LANCE][i];
             cp = pos.board[to];
@@ -205,7 +205,7 @@ Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
         to = from + DIRECT_WHITE[KNIGHT][i];
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
-            //�{���͐���łP��A����Ȃ��łP��Ȃ̂ŁA���̌��ߑł��͂悭�Ȃ�,����Ɍj�n�͐���K�{�̃��C�������邱�Ƃ�Y��Ȃ��悤��
+            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない,さらに桂馬は成る必須のラインがあることを忘れないように
             pmoto = is_pmoto_w(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -223,7 +223,7 @@ Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
         to = from + DIRECT_WHITE[SILVER][i];
         cp = pos.board[to];
         if(cp > 1 || cp == 0){
-            //�{���͐���łP��A����Ȃ��łP��Ȃ̂ŁA���̌��ߑł��͂悭�Ȃ�
+            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない
             pmoto = is_pmoto_w(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -334,9 +334,9 @@ Move *generate_gold_drop_w(const Position &pos,Move *ml)
 
 Move *generate_pawn_drop_w(const Position &pos,Move *ml)
 {
-    //col���Ƃɕ������邩�`�G�b�N���Ă���A�{���͏펞�ǖʂ�
-    //�_�����Ă���̂����̂�������Ȃ����ƂĂ���ς����Ȃ̂�
-    //�K�v�Ȏ��idrop_pawn�̎��j�����`�G�b�N������@�ɂ���
+    //colごとに歩がいるかチエックしている、本当は常時局面を
+    //点検しているのいいのかもしれないがとても大変そうなので
+    //必要な時（drop_pawnの時）だけチエックする方法にする
     int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
 
     for(int col = 1;col < 10;col++){
@@ -348,11 +348,11 @@ Move *generate_pawn_drop_w(const Position &pos,Move *ml)
             }
         }
     }
-    //�؂ɕ������łɂ��邩���f���鏈���ƁA��𐶐�����
-    //�����͓����ɂ͂ł��Ȃ�
-    //�Q�����肪�ł��Ă��Ȃ��A
+    //筋に歩がすでにいるか判断する処理と、手を生成する
+    //処理は同時にはできない
+    //２歩判定ができていない、
     for(int col = 1;col < 10;col++){ 
-        for(int row = 1;row < 9;row++){    //����΍�
+        for(int row = 1;row < 9;row++){    //死駒対策
             int sq = make_square(col,row);
             if(dpc[col]){
                 break;
@@ -367,7 +367,7 @@ Move *generate_pawn_drop_w(const Position &pos,Move *ml)
 
 Move *generate_lance_drop_w(const Position &pos,Move *ml)
 {
-    for(int row = 1;row < 9;row++){ //����΍�
+    for(int row = 1;row < 9;row++){ //死駒対策
         for(int col = 1;col < 10;col++){ 
             int sq = make_square(col,row);
             if(pos.board[sq] == EMPTY){
@@ -380,7 +380,7 @@ Move *generate_lance_drop_w(const Position &pos,Move *ml)
 
 Move *generate_knight_drop_w(const Position &pos,Move *ml)
 {
-    for(int row = 1;row < 8;row++){ //����΍�
+    for(int row = 1;row < 8;row++){ //死駒対策
         for(int col = 1;col < 10;col++){
             int sq = make_square(col,row);
             if(pos.board[sq] == EMPTY){
@@ -439,7 +439,7 @@ Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
     for(int i = 0;i < 8;i++){
         to = from + DIRECT_BLACK[KING][i];
         cp = pos.board[to];
-        //KING�Ȃ̂œG�̗����̂���Ƃ���ɂ͂����Ȃ����܂������܂ł̃f�[�^�������ĂȂ��̂�PASS
+        //KINGなので敵の利きのあるところにはいけないがまだそこまでのデータが揃ってないのでPASS
         if(cp <= 0){
             *(ml++) = make_move(from,to,0,p,cp);
         }
@@ -507,7 +507,7 @@ Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
         to = from + DIRECT_BLACK[KNIGHT][i];
         cp = pos.board[to];
         if(cp <= 0){
-            //�{���͐���łP��A����Ȃ��łP��Ȃ̂ŁA���̌��ߑł��͂悭�Ȃ�,����Ɍj�n�͐���K�{�̃��C�������邱�Ƃ�Y��Ȃ��悤��
+            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない,さらに桂馬は成る必須のラインがあることを忘れないように
             pmoto = is_pmoto_b(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -525,7 +525,7 @@ Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
         to = from + DIRECT_BLACK[SILVER][i];
         cp = pos.board[to];
         if(cp <= 0){
-            //�{���͐���łP��A����Ȃ��łP��Ȃ̂ŁA���̌��ߑł��͂悭�Ȃ�
+            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない
             pmoto = is_pmoto_b(to);
             *(ml++) = make_move(from,to,pmoto,p,cp);
         }
@@ -638,9 +638,9 @@ Move *generate_gold_drop_b(const Position &pos,Move *ml)
 
 Move *generate_pawn_drop_b(const Position &pos,Move *ml)
 {
-    //col���Ƃɕ������邩�`�G�b�N���Ă���A�{���͏펞�ǖʂ�
-    //�_�����Ă���̂����̂�������Ȃ����ƂĂ���ς����Ȃ̂�
-    //�K�v�Ȏ��idrop_pawn�̎��j�����`�G�b�N������@�ɂ���
+    //colごとに歩がいるかチエックしている、本当は常時局面を
+    //点検しているのいいのかもしれないがとても大変そうなので
+    //必要な時（drop_pawnの時）だけチエックする方法にする
     int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
 
     for(int col = 1;col < 10;col++){
@@ -652,10 +652,10 @@ Move *generate_pawn_drop_b(const Position &pos,Move *ml)
             }
         }
     }
-    //�؂ɕ������łɂ��邩���f���鏈���ƁA��𐶐�����
-    //�����͓����ɂ͂ł��Ȃ�
+    //筋に歩がすでにいるか判断する処理と、手を生成する
+    //処理は同時にはできない
     for(int col = 1;col < 10;col++){ 
-        for(int row = 2;row < 10;row++){    //����΍�
+        for(int row = 2;row < 10;row++){    //死駒対策
             int sq = make_square(col,row);
             if(dpc[col]){
                 break;
@@ -670,7 +670,7 @@ Move *generate_pawn_drop_b(const Position &pos,Move *ml)
 
 Move *generate_lance_drop_b(const Position &pos,Move *ml)
 {
-    for(int row = 2;row < 10;row++){ //����΍�
+    for(int row = 2;row < 10;row++){ //死駒対策
         for(int col = 1;col < 10;col++){ 
             int sq = make_square(col,row);
             if(pos.board[sq] == EMPTY){
@@ -683,7 +683,7 @@ Move *generate_lance_drop_b(const Position &pos,Move *ml)
 
 Move *generate_knight_drop_b(const Position &pos,Move *ml)
 {
-    for(int row = 3;row < 10;row++){ //����΍�
+    for(int row = 3;row < 10;row++){ //死駒対策
         for(int col = 1;col < 10;col++){
             int sq = make_square(col,row);
             if(pos.board[sq] == EMPTY){
@@ -735,14 +735,14 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
 
 bool is_checkmate_w(const Position &pos)
 {
-    //�����f�[�^�������Ă��Ȃ��̂Œ��꒲�ׂ�
+    //利きデータをもっていないので逐一調べる
     int from,to,i;
     Color c;
     char p,cp;
     
     //from = pos.king_square[pos.turn+1];
-    from = (unsigned char)pos.board[223+pos.turn];  //board��char�f�[�^�Ȃ̂�127�܂ł̐����������Ȃ��Aboard[222],[223]��king�̍��W������邱�Ƃɂ����̂�unsigned char�ŃL���X�g���邱�Ƃ�255�܂ł̐���������悤�ɂ����B
-    //8�����ɓG����Ȃ����T�[�`
+    from = (unsigned char)pos.board[223+pos.turn];  //boardはcharデータなので127までの数しか扱えない、board[222],[223]をkingの座標をいれることにしたのでunsigned charでキャストすることで255までの数を扱えるようにした。
+    //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_WHITE[KING][i];
         p = pos.board[to];
@@ -759,7 +759,7 @@ bool is_checkmate_w(const Position &pos)
             return true;
         }
     }
-    //�W�����ɓG��ы���邩���ׂ�
+    //８方向に敵飛び駒がいるか調べる
     for(to = from,i = 0;i < 8;i++,to = from){
         do{
             to = to + DIRECT_WHITE[KING][i];
@@ -791,14 +791,14 @@ bool is_checkmate_w(const Position &pos)
 
 bool is_checkmate_b(const Position &pos)
 {
-    //�����f�[�^�������Ă��Ȃ��̂Œ��꒲�ׂ�
+    //利きデータをもっていないので逐一調べる
     int from,to,i;
     Color c;
     char p,cp;
     
     //from = pos.king_square[pos.turn+1];
     from = (unsigned char)pos.board[223+pos.turn];
-    //8�����ɓG����Ȃ����T�[�`
+    //8方向に敵駒がいないかサーチ
     for(i = 0;i < 8;i++){
         to = from + DIRECT_BLACK[KING][i];
         p = pos.board[to];
@@ -807,7 +807,7 @@ bool is_checkmate_b(const Position &pos)
             return true;
         }
     }
-    //�j�n�̕���
+    //桂馬の方向
     for(i = 0;i < 2;i++){
         to = from + DIRECT_BLACK[KNIGHT][i];
         p = pos.board[to];
@@ -816,7 +816,7 @@ bool is_checkmate_b(const Position &pos)
             return true;
         }
     }
-    //�W�����ɓG��ы���邩���ׂ�
+    //８方向に敵飛び駒がいるか調べる
     for(to = from,i = 0;i < 8;i++,to = from){
         do{
             to = to + DIRECT_BLACK[KING][i];
@@ -847,7 +847,7 @@ bool is_checkmate_b(const Position &pos)
 
 Move *generate_evasions(const Position &pos,Move *ml)
 {
-    //���͂Ȃɂ����Ȃ�
+    //今はなにもしない
     for(int i = 0;i < 8;i++){
     }
     return ml;
@@ -877,7 +877,7 @@ bool array_check(Move anser,Move *m,int n);
 
 TEST(movegen,generate_moves)
 {
-    //�w����̃e�X�g�͐���������̐��Ɛ������ꂽ�肻�̂��̂��r����
+    //指し手のテストは生成される手の数と生成された手そのものを比較する
     from_sfen(start_position);
     next_move[0].last_move = mlist;
     Move *m = generate_moves(root_position,mlist);
@@ -951,7 +951,7 @@ TEST(movegen,generate_moves)
     anser = make_move(SQ_2H,SQ_7H,0,B_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
 
-    //Q1�̋ǖʂŃe�X�g,BLACK��
+    //Q1の局面でテスト,BLACK側
     string expect ="lR1B3nl/2gp5/ngk1+BspPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b P5psr 1";
     from_sfen(expect);
     next_move[0].last_move = mlist;
@@ -1091,7 +1091,7 @@ TEST(movegen,generate_moves)
     anser = make_move(0,SQ_4I,0,B_PAWN,EMPTY);
     ASSERT_TRUE(array_check(anser,m,n));
 
-    //Q1�̋ǖʂŃe�X�g,WHITE��
+    //Q1の局面でテスト,WHITE側
     from_sfen(expect);
     root_position.turn = WHITE;
     next_move[0].last_move = mlist;

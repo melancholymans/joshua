@@ -1,13 +1,13 @@
-#if !defined(POSITION_H_INCLUDE)
+ï»¿#if !defined(POSITION_H_INCLUDE)
 #define POSITION_H_INCLUDE
 
 #include "types.h"
 
-//position‚Ì’è”
+//positionã®å®šæ•°
 const int BOARD_UPPER = 16*13;
 const int STAND_BLACK_START = 16*13;
 const int STAND_WHITE_START = 16*13 + 7;
-const int LIMIT = 16*13 + 7*2 + 2;  //16*13‚Í”Õã7*2‚Í‹î‘äAÅŒã‚Ì‚Q‚ÍKING—p‚ÌÀ•W
+const int LIMIT = 16*13 + 7*2 + 2;  //16*13ã¯ç›¤ä¸Š7*2ã¯é§’å°ã€æœ€å¾Œã®ï¼’ã¯KINGç”¨ã®åº§æ¨™
 
 extern string start_position;
 extern position_t root_position;
@@ -58,7 +58,7 @@ const extern char W_SILVER;     //13-16=-3
 const extern char W_BISHOP;     //14-16=-2
 const extern char W_ROOK;       //15-16=-1
 
-//À•W‹L†
+//åº§æ¨™è¨˜å·
 enum{
     SQ_9A=33,SQ_8A,SQ_7A,SQ_6A,SQ_5A,SQ_4A,SQ_3A,SQ_2A,SQ_1A,
     SQ_9B=49,SQ_8B,SQ_7B,SQ_6B,SQ_5B,SQ_4B,SQ_3B,SQ_2B,SQ_1B,
@@ -71,23 +71,23 @@ enum{
     SQ_9I=161,SQ_8I,SQ_7I,SQ_6I,SQ_5I,SQ_4I,SQ_3I,SQ_2I,SQ_1I,
     SQ_LIMIT
 };
-//col,rowÀ•W‚©‚çsqÀ•W‚ğŒvZ
+//col,rowåº§æ¨™ã‹ã‚‰sqåº§æ¨™ã‚’è¨ˆç®—
 inline int make_square(int col,int row)
 {
     return ((row+1) << 4) | col;
 }
 
 /*
-sq”ÕÀ•W‚©‚çcol,rowÀ•W‚É•ÏŠ·
+sqç›¤åº§æ¨™ã‹ã‚‰col,rowåº§æ¨™ã«å¤‰æ›
 */
 inline void make_col_row(int sq,int *col,int *row)
 {
-    *row = sq/16;   //®”‚ÌŠ„‚èZ‚Í¬”“_‚ÍØ‚èÌ‚Ä
+    *row = sq/16;   //æ•´æ•°ã®å‰²ã‚Šç®—ã¯å°æ•°ç‚¹ã¯åˆ‡ã‚Šæ¨ã¦
     *col = sq - *row*16;
     *row = *row - 1;
 }
 
-//‹îƒR[ƒh‚©‚ç‹îƒ^ƒCƒv‚ğŒvZ
+//é§’ã‚³ãƒ¼ãƒ‰ã‹ã‚‰é§’ã‚¿ã‚¤ãƒ—ã‚’è¨ˆç®—
 inline char type_of_piece(char p)
 {
     return p & 0x0F;
@@ -95,13 +95,13 @@ inline char type_of_piece(char p)
 
 inline Color color_of_piece(int p)
 {
-    //‹îƒR[ƒh‚©‚çƒJƒ‰[‚ğ”»’è‚µ‚Ä‚¢‚é
-    //•„†‚ ‚ècharŒ^‚ğ‰EƒVƒtƒg‚µ‚Ä‚¢‚é‚Ì‚ÅANSI C‚Å‚Í‹““®‚ª’è‹`‚³‚ê‚Ä‚¢‚È‚¢
-    //VC++2010‚ÅZpƒVƒtƒg‚ğÌ—p‚µ‚Ä‚¢‚é‚æ‚¤‚È‚Ì‚Å‚±‚Ì‚Ü‚Ü‚Æ‚·‚é‚ªˆ—Œn‚ª
-    //•ÏX‚É‚È‚Á‚½‚çƒeƒXƒg‚ÅƒGƒ‰[‚ª‚Å‚é‚æ‚¤‚É‚µ‚Ä‚¨‚­
-    //BLACK‘¤‹î‚Í0‚ğWHITE‘¤‹î‚Í-1‚ğ•Ô‚·
-    //return p >> 4;‚¾‚ÆWHITE PIECE,BLACK PIECE‚Í-1A0‚ğ•Ô‚·‚ª
-    //EMPTY,EDGE‚ğBLACK PIECE‚Æ”»•Ê‚·‚é
+    //é§’ã‚³ãƒ¼ãƒ‰ã‹ã‚‰ã‚«ãƒ©ãƒ¼ã‚’åˆ¤å®šã—ã¦ã„ã‚‹
+    //ç¬¦å·ã‚ã‚Šcharå‹ã‚’å³ã‚·ãƒ•ãƒˆã—ã¦ã„ã‚‹ã®ã§ANSI Cã§ã¯æŒ™å‹•ãŒå®šç¾©ã•ã‚Œã¦ã„ãªã„
+    //VC++2010ã§ç®—è¡“ã‚·ãƒ•ãƒˆã‚’æ¡ç”¨ã—ã¦ã„ã‚‹ã‚ˆã†ãªã®ã§ã“ã®ã¾ã¾ã¨ã™ã‚‹ãŒå‡¦ç†ç³»ãŒ
+    //å¤‰æ›´ã«ãªã£ãŸã‚‰ãƒ†ã‚¹ãƒˆã§ã‚¨ãƒ©ãƒ¼ãŒã§ã‚‹ã‚ˆã†ã«ã—ã¦ãŠã
+    //BLACKå´é§’ã¯0ã‚’WHITEå´é§’ã¯-1ã‚’è¿”ã™
+    //return p >> 4;ã ã¨WHITE PIECE,BLACK PIECEã¯-1ã€0ã‚’è¿”ã™ãŒ
+    //EMPTY,EDGEã‚’BLACK PIECEã¨åˆ¤åˆ¥ã™ã‚‹
     if(p < 0){
         return -1;
     }
@@ -112,8 +112,8 @@ inline Color color_of_piece(int p)
 }
 
 /*
-‹îƒR[ƒh‚ğ—^‚¦‚Ä¬‚Á‚Ä‚¢‚È‚¢‚©”»’è‚·‚é
-¬‚Á‚Ä‚¢‚È‚©‚Á‚½‚çtrue,¬‹î‚È‚çfalse
+é§’ã‚³ãƒ¼ãƒ‰ã‚’ä¸ãˆã¦æˆã£ã¦ã„ãªã„ã‹åˆ¤å®šã™ã‚‹
+æˆã£ã¦ã„ãªã‹ã£ãŸã‚‰true,æˆé§’ãªã‚‰false
 */
 inline int is_not_pmoto(char p)
 {
@@ -121,7 +121,7 @@ inline int is_not_pmoto(char p)
 }
 
 /*
-æè‹îƒR[ƒh‚ğ‹­§“I‚ÉŒãè‹îƒR[ƒh‚É‚·‚é
+å…ˆæ‰‹é§’ã‚³ãƒ¼ãƒ‰ã‚’å¼·åˆ¶çš„ã«å¾Œæ‰‹é§’ã‚³ãƒ¼ãƒ‰ã«ã™ã‚‹
 */
 inline char do_white(char p)
 {
@@ -129,7 +129,7 @@ inline char do_white(char p)
 }
 
 /*
-Œãè‹îƒR[ƒh‚ğ‹­§“I‚Éæè‹îƒR[ƒh‚É‚·‚é
+å¾Œæ‰‹é§’ã‚³ãƒ¼ãƒ‰ã‚’å¼·åˆ¶çš„ã«å…ˆæ‰‹é§’ã‚³ãƒ¼ãƒ‰ã«ã™ã‚‹
 */
 inline char do_black(char p)
 {
@@ -141,12 +141,12 @@ Move
 31-30-29-28-27-26-25-24-23-22-21-20-19-18-17-16-15-14-13-12-11-10-09-08-07-06-05-04-03-02-01-00
                      | cap piece |src piece |pm |       from square      |       to square    |
 
-cap piece æ‚Á‚½‹îicolor‚Í‚Â‚©‚È‚¢‹îí‚Ì‚İ@ƒƒ‚ƒŠß–ñ‚Ì‚½‚ßj     21-24bit
-from piece “®‚¢‚½‹îicolor‚Í‚Â‚©‚È‚¢‹îí‚Ì‚İ@ƒƒ‚ƒŠß–ñ‚Ì‚½‚ßj    17-20bit
-pm->pmoto‚Ìƒtƒ‰ƒO‚P‚È‚ç¬‚è“®ì    1bit 16bit
-from square ˆÚ“®Œ³‚ÌÀ•W 8bit 8-15bit
-to square ˆÚ“®æ‚ÌÀ•W 8bit 0-7bit
-25-31bit‚Í‹ó‚«
+cap piece å–ã£ãŸé§’ï¼ˆcolorã¯ã¤ã‹ãªã„é§’ç¨®ã®ã¿ã€€ãƒ¡ãƒ¢ãƒªç¯€ç´„ã®ãŸã‚ï¼‰     21-24bit
+from piece å‹•ã„ãŸé§’ï¼ˆcolorã¯ã¤ã‹ãªã„é§’ç¨®ã®ã¿ã€€ãƒ¡ãƒ¢ãƒªç¯€ç´„ã®ãŸã‚ï¼‰    17-20bit
+pm->pmotoã®ãƒ•ãƒ©ã‚°ï¼‘ãªã‚‰æˆã‚Šå‹•ä½œ    1bit 16bit
+from square ç§»å‹•å…ƒã®åº§æ¨™ 8bit 8-15bit
+to square ç§»å‹•å…ˆã®åº§æ¨™ 8bit 0-7bit
+25-31bitã¯ç©ºã
 */
 inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 {

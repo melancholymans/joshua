@@ -1,4 +1,4 @@
-#include <string>
+ï»¿#include <string>
 
 using namespace std;
 
@@ -11,7 +11,7 @@ const int NOT_PMOTO = 0;
 
 string string_from_move(const Move m)
 {
-    //Move\‘¢‘Ì‚ğÀ•W•¶š‚É•ÏŠ·
+    //Moveæ§‹é€ ä½“ã‚’åº§æ¨™æ–‡å­—ã«å¤‰æ›
     int from = move_from(m);
     int to = move_to(m);
     char piece = move_piece(m);
@@ -21,12 +21,12 @@ string string_from_move(const Move m)
     string piece_string(" GPLNSBR");
 
     if(from == 0){
-        //‘Å‚Âè
+        //æ‰“ã¤æ‰‹
         result = piece_string[piece-8];   
         result += "*" +string_from_square(to);
     }
     else{
-        //”Õã
+        //ç›¤ä¸Š
         result = string_from_square(from) + string_from_square(to);
         if(pmoto){
             result += "+";
@@ -47,8 +47,8 @@ string string_from_square(int sq)
 
 Move move_from_string(const Position &pos,const string &cmd)
 {
-    //“n‚³‚ê‚é•¶š—ñ‚Í sample 7g7f –”‚Í G*5b
-    string pieceLetters(" GPLNSBRK");   //G‚ªæ“ª‚É‚È‚Á‚Ä‚¢‚é‚Ì‚Í‘Åè‚Ì‹îƒR[ƒh‚ª+8‚Ìˆ—‚ğ‚µ‚Ä‚¢‚é‚Ì‚Å‚»‚ê‚É‚ ‚í‚¹‚é‚½‚ß
+    //æ¸¡ã•ã‚Œã‚‹æ–‡å­—åˆ—ã¯ sample 7g7f åˆã¯ G*5b
+    string pieceLetters(" GPLNSBRK");   //GãŒå…ˆé ­ã«ãªã£ã¦ã„ã‚‹ã®ã¯æ‰“æ‰‹ã®é§’ã‚³ãƒ¼ãƒ‰ãŒ+8ã®å‡¦ç†ã‚’ã—ã¦ã„ã‚‹ã®ã§ãã‚Œã«ã‚ã‚ã›ã‚‹ãŸã‚
     string square_string = "123456789";
     int from,to;
     bool pmoto;
@@ -59,22 +59,22 @@ Move move_from_string(const Position &pos,const string &cmd)
         exit(0);
     }
     if(cmd[1] == '*'){
-        from = 0;   //‘Åè‚Ìê‡‚Í0
+        from = 0;   //æ‰“æ‰‹ã®å ´åˆã¯0
         to = square_from_string(cmd.substr(2,2));
         pmoto = false;
         piece = pieceLetters.find(cmd[0]) + 8;
         cap_piece = 0;
     }
     else if(square_string.find(cmd[0]) != string::npos){
-        //”Õã‚ÌˆÚ“®
+        //ç›¤ä¸Šã®ç§»å‹•
         from = square_from_string(cmd.substr(0,2));
         to = square_from_string(cmd.substr(2,2));
         pmoto = false;
         if(cmd.size() == 5 && cmd[4] == '+'){
             pmoto = true;
         }
-        piece = pos.board[from] & 0x0F;     //color‚ÍŠO‚·
-        cap_piece = pos.board[to] & 0x0F;   //color‚ÍŠO‚·
+        piece = pos.board[from] & 0x0F;     //colorã¯å¤–ã™
+        cap_piece = pos.board[to] & 0x0F;   //colorã¯å¤–ã™
     }
     else{
         cout << "Error move string format" << endl;
@@ -85,7 +85,7 @@ Move move_from_string(const Position &pos,const string &cmd)
 
 int square_from_string(const string sq)
 {
-    //À•W•¶š—ñ‚ğ“n‚³‚ê‚é(sample 7g)
+    //åº§æ¨™æ–‡å­—åˆ—ã‚’æ¸¡ã•ã‚Œã‚‹(sample 7g)
     int col,row;
 
     col = 9 - (sq[0] - '1');
@@ -95,22 +95,22 @@ int square_from_string(const string sq)
 
 TEST(move,move_from_string)
 {
-    //•½è‰Šú‹Ç–Ê‚ğ—^‚¦A‹î‚ğ“®‚©‚µ‚ÄA³‚µ‚¢Move‚ª•Ô‚Á‚Ä‚­‚é‚©’²‚×‚é
+    //å¹³æ‰‹åˆæœŸå±€é¢ã‚’ä¸ãˆã€é§’ã‚’å‹•ã‹ã—ã¦ã€æ­£ã—ã„MoveãŒè¿”ã£ã¦ãã‚‹ã‹èª¿ã¹ã‚‹
     from_sfen(start_position);
     string cmd;
     Move m;
 
-    cmd = "7g7f";   //‘æ‚Pè‚Å77•à‚ğ76•à‚ÖˆÚ“®
+    cmd = "7g7f";   //ç¬¬ï¼‘æ‰‹ã§77æ­©ã‚’76æ­©ã¸ç§»å‹•
     m = move_from_string(root_position,cmd);
     EXPECT_EQ(1344371,m);
-    cmd = "5a6b";   //51‰¤‚ğ62‰¤‚ÖˆÚ“®
+    cmd = "5a6b";   //51ç‹ã‚’62ç‹ã¸ç§»å‹•
     m = move_from_string(root_position,cmd);
     EXPECT_EQ(1058100,m);
-    //æ‚éè,¬‚éƒeƒXƒg
+    //å–ã‚‹æ‰‹,æˆã‚‹ãƒ†ã‚¹ãƒˆ
     cmd = "9g9c+";
     m = move_from_string(root_position,cmd);
     EXPECT_EQ(22380865,m);
-    //‘Å‚ÂƒeƒXƒg
+    //æ‰“ã¤ãƒ†ã‚¹ãƒˆ
     cmd = "P*9d";
     m = move_from_string(root_position,cmd);
     EXPECT_EQ(1310801,m);
@@ -197,7 +197,7 @@ TEST(move,move_from)
     m = make_move(SQ_8B,SQ_3B,0,W_LANCE,EMPTY);
     EXPECT_EQ(SQ_8B,move_from(m));
     EXPECT_EQ(SQ_3B,move_to(m));
-    EXPECT_EQ(B_LANCE,move_piece(m));   //Colorî•ñ‚ª‚È‚¢‚Ì‚ÅW_LANCE‚Æ‘‚¯‚È‚¢
+    EXPECT_EQ(B_LANCE,move_piece(m));   //Coloræƒ…å ±ãŒãªã„ã®ã§W_LANCEã¨æ›¸ã‘ãªã„
     EXPECT_EQ(EMPTY,move_cap_piece(m));
     EXPECT_EQ(NOT_PMOTO,move_pmoto(m));
 

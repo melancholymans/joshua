@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 Shogidokoro shogi playing engin
 */
 #include <stdio.h>
@@ -27,7 +27,7 @@ void init(void);
 int main(int argc,char *argv[])
 {
     init();
-    //•W€“üo—Í‚ÆƒŠƒ“ƒN‚³‚¹‚ÄA«ŠûŠ‚Æ’ÊM‚ª‚Å‚«‚é
+    //æ¨™æº–å…¥å‡ºåŠ›ã¨ãƒªãƒ³ã‚¯ã•ã›ã¦ã€å°†æ£‹æ‰€ã¨é€šä¿¡ãŒã§ãã‚‹
     setvbuf(stdin,NULL,_IONBF,0);
     setvbuf(stdout,NULL,_IONBF,0);
     init_usi_options();
@@ -39,10 +39,10 @@ int main(int argc,char *argv[])
     return 0;
 }
 
-//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‘S‘Ì‚Ì‰Šú‰»
+//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å…¨ä½“ã®åˆæœŸåŒ–
 void init(void)
 {
-    //‹îŠ„”z—ñ•]‰¿’lİ’è
+    //é§’å‰²é…åˆ—è©•ä¾¡å€¤è¨­å®š
     memset(piece_value,0,sizeof(piece_value));
     piece_value[PAWN] = DPawn;
     piece_value[LANCE] = DLance;
@@ -58,7 +58,7 @@ void init(void)
     piece_value[PSILVER] = DPSilver;
     piece_value[PBISHOP] = DPBishop;
     piece_value[PROOK] = DPRook;
-    //‹î‚ğæ‚Á‚½ê‡‚Ì•]‰¿’li“G‚Ì‹î‚ğ‚Æ‚é‚Æ‘S‘Ì‚Ì•]‰¿’l(material)‚Íæ‚ç‚ê‚½‘¤‚Ì‹î‚Ì‰¿’l+æ‚Á‚½‘¤‚Ì‹î‚Ì‰¿’l‚Æ‚È‚éj
+    //é§’ã‚’å–ã£ãŸå ´åˆã®è©•ä¾¡å€¤ï¼ˆæ•µã®é§’ã‚’ã¨ã‚‹ã¨å…¨ä½“ã®è©•ä¾¡å€¤(material)ã¯å–ã‚‰ã‚ŒãŸå´ã®é§’ã®ä¾¡å€¤+å–ã£ãŸå´ã®é§’ã®ä¾¡å€¤ã¨ãªã‚‹ï¼‰
     memset(cap_piece_value,0,sizeof(cap_piece_value));
     cap_piece_value[PAWN] = DPawn + DPawn;
     cap_piece_value[LANCE] = DLance + DLance;
@@ -74,7 +74,7 @@ void init(void)
     cap_piece_value[PSILVER] = DPSilver + DSilver;
     cap_piece_value[PBISHOP] = DPBishop + DBishop;
     cap_piece_value[PROOK] = DPRook + DRook;
-    //‹î‚ª¬‚Á‚½‚Ì•]‰¿’l(¬‚Á‚½ê‡‚ÍŒ»İ‚Ì•]‰¿’l‚©‚ç¬‚é‘O‚Ì‹î‚Ì‰¿’l‚ğˆø‚¢‚ÄA‰ü‚ß‚Ä¬‚Á‚½Œã‚Ì‹î‚Ì‰¿’l‚ğ‘«‚µ‡‚í‚¹‚é)
+    //é§’ãŒæˆã£ãŸæ™‚ã®è©•ä¾¡å€¤(æˆã£ãŸå ´åˆã¯ç¾åœ¨ã®è©•ä¾¡å€¤ã‹ã‚‰æˆã‚‹å‰ã®é§’ã®ä¾¡å€¤ã‚’å¼•ã„ã¦ã€æ”¹ã‚ã¦æˆã£ãŸå¾Œã®é§’ã®ä¾¡å€¤ã‚’è¶³ã—åˆã‚ã›ã‚‹)
     memset(pmoto_piece_value,0,sizeof(pmoto_piece_value));
     pmoto_piece_value[PPAWN] = DPPawn - DPawn;
     pmoto_piece_value[PLANCE] = DPLance - DLance;
@@ -100,7 +100,7 @@ void profile(void)
     printf("nps=%.2fk \n",double(stats.search_node/(eapsed_time*1000)));
 }
 /*
-¬Ñi‹Ç–Ê‚ÌXV‚Ì‚İj
+æˆç¸¾ï¼ˆå±€é¢ã®æ›´æ–°ã®ã¿ï¼‰
 2014/7
     debug           release
 PLY nps             nps             seach node      
@@ -109,9 +109,9 @@ PLY nps             nps             seach node
 3   2,431k                          724k   
 4   2,555k          25,119k         19,794k
 5   2,561k                          552,915k
-6   -ŠÔŠ|‚è‚·‚¬    4,320k(10min)   15,496,002k      1‹Ç–Ê 38 nsec
+6   -æ™‚é–“æ›ã‚Šã™ã    4,320k(10min)   15,496,002k      1å±€é¢ 38 nsec
 7
-30æ‚Å‘‚¦‚Ä‚¢‚­‚©‚ñ‚¶
+30ä¹—ã§å¢—ãˆã¦ã„ãã‹ã‚“ã˜
 30^1 = 30
 30^2 = 0.9k         PLY=1
 30^3 = 27k          PLY=2   ?
@@ -121,7 +121,7 @@ PLY nps             nps             seach node
 30^7 = 21,870,000k  PLY=6
 */
 
-//ƒeƒXƒg‹N“®
+//ãƒ†ã‚¹ãƒˆèµ·å‹•
 int main_test(int argc,char *argv[])
 {
     ::testing::InitGoogleTest(&argc,argv);
