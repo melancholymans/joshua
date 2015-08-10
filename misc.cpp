@@ -1,8 +1,9 @@
 ﻿#include <Windows.h>
-
-#include "gtest\gtest.h"
+#ifdef _DEBUG
+	#include "gtest\gtest.h"
+#endif
 #include "misc.h"
-
+#include "thread.h"
 //CMAGAZINE 2005/2より
 void ptime_init(ptime_t *iPT)
 {
@@ -15,6 +16,20 @@ double ptime_now(const ptime_t *iPT)
     return (double)(clock() - *iPT)/(double)(CLOCKS_PER_SEC);
 }
 
+std::ostream& operator<<(std::ostream& os, SyncCout sc)
+{
+	static std::mutex m;
+
+	if (sc == io_lock){
+		m.lock();
+	}
+	if (sc == io_unlock){
+		m.unlock();
+	}
+	return os;
+}
+
+#ifdef _DEBUG
 TEST(misc,ptime_init_ptime_now)
 {
     ptime_t aPT;
@@ -28,3 +43,4 @@ TEST(misc,ptime_init_ptime_now)
     //計測終了
     printf("%f msec \n",ptime_now(&aPT));
 }
+#endif

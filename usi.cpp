@@ -1,10 +1,15 @@
 ﻿#include <iostream>
+#include <sstream>
 #include <string>
 #include <map>
 
 using namespace std;
+#ifdef _DEBUG
+	#include "gtest\gtest.h"
+#endif
 
-#include "gtest\gtest.h"
+#include "types.h"
+/*
 #include "position.h"
 #include "usi.h"
 #include "usioption.h"
@@ -13,19 +18,25 @@ using namespace std;
 #include "movegen.h"
 #include "move.h"
 #include "evaluate.h"
+*/
+bool handle_command(const string &command);
 
 void usi_main_loop(void)
 {
-    string command;
+    string token,cmd;
 
     do{
-        if(!getline(cin,command)){
+		if (!getline(cin, cmd)){
             //改行のみ場合はquit扱い
-            command = "quit";
+            cmd = "quit";
         }
-    }while(handle_command(command));
+		istringstream is(cmd);
+		is >> skipws >> token;
+		cout << token << endl;
+    }while(handle_command(cmd));
 }
 
+/*
 void game_init(const Position &pos)
 {
     //対局ごと初期化する必要がある変数
@@ -33,13 +44,14 @@ void game_init(const Position &pos)
     next_modify[0].last_dirty = modifylist;
     sech.material = eval_material(pos);
 }
-
+*/
 
 //usi->isready->usinewgameで対局開始
 //positionで思考局面の付与->goで思考
 //bestmoveで思考結果を返信,gameoverで終局
 bool handle_command(const string &command)
 {
+	
     USIInputParser uip(command);
     string cmd = uip.get_next_token();
     if(cmd == "quit"){
@@ -55,30 +67,30 @@ bool handle_command(const string &command)
         cout << "usiok" << endl;
     }
     else if(cmd == "isready"){
-        cout << "readyok" << endl;
+        //cout << "readyok" << endl;
     }
     else if(cmd == "usinewgame"){
         //色々初期など準備,このコマンドに対して将棋所に返すものはない
-        from_sfen(start_position);
-        game_init(root_position);
+        //from_sfen(start_position);
+        //game_init(root_position);
     }
     else if(cmd == "position"){
         //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
-        set_position(uip);
+        //set_position(uip);
     }
     else if(cmd == "setoption"){
         //エンジンに対する値を設定するとき送信
-        set_option(uip);
+        //set_option(uip);
     }
     else if(cmd == "go"){
         //思考開始
-        go();
+        //go();
     }
     else if(cmd == "d"){
-        print_board(root_position);
+        //print_board(root_position);
     }
     else if(cmd == "csa"){
-        csa(uip);
+        //csa(uip);
     }
     else if(cmd == "gameover"){
         //GUI側からの終局の通知
@@ -92,7 +104,7 @@ bool handle_command(const string &command)
     }
     return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
 }
-
+/*
 void set_position(USIInputParser &uip)
 {
     string cmd;
@@ -127,14 +139,13 @@ void set_position(USIInputParser &uip)
         }
     }
 }
-
+*/
+/*
 void go(void)
 {
-    /*
-    ここにgoコマンドの後につづくオプション解析のコードを書く予定
-    */
     think(root_position);
 }
+*/
 
 USIInputParser::USIInputParser(const string &line) : input_line(line)
 {
@@ -174,12 +185,13 @@ bool USIInputParser::at_end_of_line(void)
     return this->current_index == this->length;
 }
 
+#ifdef _DEBUG
 TEST(usi,set_position)
 {
     string command("startpos moves 7g7f 3c3d 2g2f 4c4d 3i4h 3a4b 5g5f 5c5d 2f2e 2b3c 5i6h 4b4c 6h7h 7a6b 7i6h 6b5c 4i5h 7c7d 6g6f 4a3b 6h7g 4d4e 5h6g 5a4b 3g3f 5d5e 2i3g 5c5d 5f5e 3c5e 2e2d 2c2d 2h2d 4b3a P*2c 4e4f 4g4f P*4g 4h4g 6a5b 3g4e 5d4e 4f4e 5e3g+ S*2b 3a4b 2b1a+ 3b3c 2d2e P*2d P*5c 2d2e 5c5b+ 8b5b G*3h 3g3h 4g3h R*4h L*5h 4h3h+ 2c2b+ N*2g B*3a 4b4a P*5c 5b3b 4e4d 3c4d P*4b 3b4b 3a4b+ 4a4b R*7a P*5g 7a3a+ 4b5c 6g5g P*5f 5g5f P*5e 5f6e 6c6d 6e7d B*5f 7h6h S*6g 6h7i P*7h 6i7h 6g7h+");
     USIInputParser uip(command);
-    set_position(uip);
-
+    //set_position(uip);
+	/*
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
     EXPECT_EQ(W_KNIGHT,root_position.board[SQ_8A]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_7A]);
@@ -285,5 +297,6 @@ TEST(usi,set_position)
     EXPECT_EQ(0,root_position.board[219]);  //white silver
     EXPECT_EQ(0,root_position.board[220]);  //white bishop
     EXPECT_EQ(0,root_position.board[221]);  //white rook
+	*/
 }
-
+#endif

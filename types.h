@@ -6,26 +6,41 @@
 using namespace std;
 
 //関数を呼び分けるマクロ群
-#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
+//#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
-const int PLY_MAX = 1;//48; //bonanzaから 
+//const int PLY_MAX = 1;//48; //bonanzaから 
 
-typedef int Color;
-typedef unsigned int Move;
+//typedef int Color;
+//typedef unsigned int Move;
 
 //将棋所からのコマンドをパース
 class USIInputParser{
 public:
+	/*
+	コンストラクタ、string& lineを受け取り、プライベート変数input_lineで保持する
+	*/
     USIInputParser(const string &line);
+	/*
+	空白で区切られた文字列をパースして渡す
+	*/
     string get_next_token(void);
+	/*
+	現在あるだけの文字列をすべて返す（文末まで）
+	*/
     string get_rest_of_line(void);
+	/*
+	もう文字列が取り出せなくなったらtrueを返す
+	*/
     bool at_end_of_line(void);
 private:
     const string &input_line;   
     int length,current_index;
+	/*
+	空白を除去する
+	*/
     void skip_whitespace(void);
 };
-
+/*
 typedef struct Position{
     char board[16*13 + 7*2 + 2 + 32];  //最後の３２は配列の大きさを256にするためのもの意味はない
     int turn;
@@ -52,7 +67,7 @@ typedef struct status{
 typedef struct backup_info{
     int material;
 }backup_info_t;
-
+*/
 /*
 駒の判定方法一覧
 char p;

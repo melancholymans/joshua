@@ -1,45 +1,73 @@
 ﻿/*
 Shogidokoro shogi playing engin
+命名規則 2015/8/9
+定数
+UPPER_CASE_UNDER
+パブリック変数、プライベート変数
+lower_case_with_under
+関数、メソッド
+lower_case_with_under
+クラス、列挙型の型
+CamelCase
+グローバル変数の宣言
+元ソースファイルの冒頭に宣言、そのヘッダファイルにextern宣言、グローバル変数を使用したいソースファイル内でインクルード
+最初の目標はGoogle Testができるように環境を整える
+次に将棋所と通信ができるようにする
 */
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
+#ifdef _DEBUG
+	#include <gtest\gtest.h>
+#endif
+
+#include "cpuid.h"
+#include "misc.h"
 
 using namespace std;
 
-#include "gtest\gtest.h"
+/*
 #include "position.h"
 #include "types.h"
+*/
 #include "usi.h"
+/*
 #include "usioption.h"
 #include "evaluate.h"
 #include "misc.h"
 #include "search.h"
-
-/*
-https://github.com/sunfish-shogi/sunfish
-https://github.com/sunfish-shogi/sunfish3
 */
+/*
 void profile(void);
-int main_test(int argc,char *argv[]);
-void init(void);
+*/
 
+int main_test(int argc,char *argv[]);
+/*
+void init(void);
+*/
 int main(int argc,char *argv[])
 {
-    init();
+#ifdef _DEBUG
+	//CPUの性能を表示させる
+	cpuid();
+#endif
+    //init();
     //標準入出力とリンクさせて、将棋所と通信ができる
-    setvbuf(stdin,NULL,_IONBF,0);
-    setvbuf(stdout,NULL,_IONBF,0);
-    init_usi_options();
-#if !defined(NDEBUG)
-    profile();
+    //setvbuf(stdin,NULL,_IONBF,0);
+    //setvbuf(stdout,NULL,_IONBF,0);
+    //init_usi_options();
+
+#ifdef _DEBUG
+    //profile();
     main_test(argc,argv); 
 #endif
     usi_main_loop();
+	getchar();
     return 0;
 }
 
 //アプリケーション全体の初期化
+/*
 void init(void)
 {
     //駒割配列評価値設定
@@ -83,7 +111,8 @@ void init(void)
     pmoto_piece_value[PBISHOP] = DPBishop - DBishop;
     pmoto_piece_value[PROOK] = DPRook - DRook;
 }
-
+*/
+/*
 void profile(void)
 {
     int ply = 0;
@@ -99,6 +128,7 @@ void profile(void)
     printf("search node=%dk \n",stats.search_node/1000);
     printf("nps=%.2fk \n",double(stats.search_node/(eapsed_time*1000)));
 }
+*/
 /*
 成績（局面の更新のみ）
 2014/7
@@ -121,6 +151,7 @@ PLY nps             nps             seach node
 30^7 = 21,870,000k  PLY=6
 */
 
+#ifdef _DEBUG
 //テスト起動
 int main_test(int argc,char *argv[])
 {
@@ -128,3 +159,9 @@ int main_test(int argc,char *argv[])
     int result = RUN_ALL_TESTS();
     return result;
 }
+
+TEST(main_case, main)
+{
+	ASSERT_EQ(1, 2);
+}
+#endif
