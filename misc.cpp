@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, SyncCout sc)
 }
 
 #ifdef _DEBUG
-TEST(misc,ptime_init_ptime_now)
+TEST(misc_case,ptime_init_ptime_now)
 {
     ptime_t aPT;
 
@@ -41,6 +41,7 @@ TEST(misc,ptime_init_ptime_now)
     Sleep(1234);    //単位はmsec
 
     //計測終了
-    printf("%f msec \n",ptime_now(&aPT));
+    //printf("%f msec \n",ptime_now(&aPT));
+	EXPECT_EQ(2, 3);
 }
 #endif

@@ -1,18 +1,16 @@
 ﻿/*
 Shogidokoro shogi playing engin
 命名規則 2015/8/9
-定数
-UPPER_CASE_UNDER
-パブリック変数、プライベート変数
-lower_case_with_under
-関数、メソッド
-lower_case_with_under
-クラス、列挙型の型
-CamelCase
-グローバル変数の宣言
-元ソースファイルの冒頭に宣言、そのヘッダファイルにextern宣言、グローバル変数を使用したいソースファイル内でインクルード
-最初の目標はGoogle Testができるように環境を整える
-次に将棋所と通信ができるようにする
+	定数
+		UPPER_CASE_UNDER
+	パブリック変数、プライベート変数
+		lower_case_with_under
+	関数、メソッド
+		lower_case_with_under
+	クラス、列挙型の型
+		CamelCase
+	グローバル変数の宣言
+		元ソースファイルの冒頭に宣言、そのヘッダファイルにextern宣言、グローバル変数を使用したいソースファイル内でインクルード
 */
 #include <stdio.h>
 #include <cstdlib>
@@ -50,17 +48,12 @@ int main(int argc,char *argv[])
 #ifdef _DEBUG
 	//CPUの性能を表示させる
 	cpuid();
+	//profile();
+	main_test(argc, argv);
 #endif
     //init();
-    //標準入出力とリンクさせて、将棋所と通信ができる
-    //setvbuf(stdin,NULL,_IONBF,0);
-    //setvbuf(stdout,NULL,_IONBF,0);
     //init_usi_options();
 
-#ifdef _DEBUG
-    //profile();
-    main_test(argc,argv); 
-#endif
     usi_main_loop();
 	getchar();
     return 0;
@@ -162,6 +155,6 @@ int main_test(int argc,char *argv[])
 
 TEST(main_case, main)
 {
-	ASSERT_EQ(1, 2);
+	EXPECT_EQ(2, 3);
 }
 #endif
