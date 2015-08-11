@@ -30,7 +30,7 @@ void usi_main_loop(void)
             //改行のみ場合はquit扱い
             cmd = "quit";
         }
-		istringstream is(cmd);
+		istringstream is(cmd);	//USIInputParserよりistringstreamがよいのでは、機能をひかくすること
 		is >> skipws >> token;
 		cout << token << endl;
     }while(handle_command(cmd));
