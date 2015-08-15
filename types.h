@@ -14,32 +14,24 @@ using namespace std;
 //typedef unsigned int Move;
 
 //将棋所からのコマンドをパース
+/*
 class USIInputParser{
 public:
-	/*
-	コンストラクタ、string& lineを受け取り、プライベート変数input_lineで保持する
-	*/
-    USIInputParser(const string &line);
-	/*
-	空白で区切られた文字列をパースして渡す
-	*/
+	//コンストラクタ、string& lineを受け取り、プライベート変数input_lineで保持する
+    USIInputParser(const string &line);	
+	//空白で区切られた文字列をパースして渡す
     string get_next_token(void);
-	/*
-	現在あるだけの文字列をすべて返す（文末まで）
-	*/
+	//現在あるだけの文字列をすべて返す（文末まで）
     string get_rest_of_line(void);
-	/*
-	もう文字列が取り出せなくなったらtrueを返す
-	*/
+	//もう文字列が取り出せなくなったらtrueを返す
     bool at_end_of_line(void);
 private:
     const string &input_line;   
     int length,current_index;
-	/*
-	空白を除去する
-	*/
+	//空白を除去する
     void skip_whitespace(void);
 };
+*/
 /*
 typedef struct Position{
     char board[16*13 + 7*2 + 2 + 32];  //最後の３２は配列の大きさを256にするためのもの意味はない

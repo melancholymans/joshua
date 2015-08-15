@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <sstream>
 #include <string>
-#include <map>
+//#include <map>
 
 using namespace std;
 #ifdef _DEBUG
@@ -9,6 +9,7 @@ using namespace std;
 #endif
 
 #include "types.h"
+#include "misc.h"
 /*
 #include "position.h"
 #include "usi.h"
@@ -30,9 +31,7 @@ void usi_main_loop(void)
             //改行のみ場合はquit扱い
             cmd = "quit";
         }
-		istringstream is(cmd);	//USIInputParserよりistringstreamがよいのでは、機能をひかくすること
-		is >> skipws >> token;
-		cout << token << endl;
+
     }while(handle_command(cmd));
 }
 
@@ -51,56 +50,53 @@ void game_init(const Position &pos)
 //bestmoveで思考結果を返信,gameoverで終局
 bool handle_command(const string &command)
 {
-	
-    USIInputParser uip(command);
-    string cmd = uip.get_next_token();
-    if(cmd == "quit"){
+	string token;
+    stringstream uip(command);
+
+	uip >> skipws >> token;
+    if(token == "quit"){
         //後始末
         return false;
     }
-    else if(cmd == "usi"){
-        cout << "id name " << "joshua" << endl;
-        cout << "id author takemori masami" << endl;
-        //optionがあったらここで送信
-        cout << "option name BookFile value public.bin" << endl;
-        cout << "option name UseBook type default true" << endl;
-        cout << "usiok" << endl;
+    else if(token == "usi"){
+        sync_cout	<< "id name " << "joshua" << "\n"
+					<< "id author takemori masami"
+					//optionがあったらここで送信
+					<< "option name BookFile value public.bin"
+					<< "option name UseBook type default true"
+					<< "usiok" << sync_endl;
     }
-    else if(cmd == "isready"){
-        //cout << "readyok" << endl;
+    else if(token == "isready"){
+        sync_cout << "readyok" << sync_endl;
     }
-    else if(cmd == "usinewgame"){
+    else if(token == "usinewgame"){
         //色々初期など準備,このコマンドに対して将棋所に返すものはない
         //from_sfen(start_position);
         //game_init(root_position);
     }
-    else if(cmd == "position"){
+    else if(token == "position"){
         //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
-        //set_position(uip);
+        //set_position(pos,uip);
     }
-    else if(cmd == "setoption"){
+    else if(token == "setoption"){
         //エンジンに対する値を設定するとき送信
         //set_option(uip);
     }
-    else if(cmd == "go"){
+    else if(token == "go"){
         //思考開始
         //go();
     }
-    else if(cmd == "d"){
+    else if(token == "d"){
         //print_board(root_position);
     }
-    else if(cmd == "csa"){
+    else if(token == "csa"){
         //csa(uip);
     }
-    else if(cmd == "gameover"){
+    else if(token == "gameover"){
         //GUI側からの終局の通知
-
     }
     else{
-        cout << "Unknow command" << endl;
-        while(!uip.at_end_of_line()){
-            cout << uip.get_next_token() << endl;
-        }
+		sync_cout << "Unknow command" << uip.str() << sync_endl;
     }
     return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
 }
@@ -146,20 +142,22 @@ void go(void)
     think(root_position);
 }
 */
-
+/*
 USIInputParser::USIInputParser(const string &line) : input_line(line)
 {
     this->current_index = 0;
     this->length = line.length();
 }
-
+*/
+/*
 void USIInputParser::skip_whitespace(void)
 {
     while(isspace((int)(unsigned char)this->input_line[this->current_index])){
         this->current_index++;
     }
 }
-
+*/
+/*
 string USIInputParser::get_next_token(void)
 {
     int i,j;
@@ -173,18 +171,20 @@ string USIInputParser::get_next_token(void)
     string str = this->input_line.substr(i,j - i);
     return str;
 }
-
+*/
+/*
 string USIInputParser::get_rest_of_line(void)
 {
     this->skip_whitespace();
     return this->input_line.substr(this->current_index,this->length);
 }
-
+*/
+/*
 bool USIInputParser::at_end_of_line(void)
 {
     return this->current_index == this->length;
 }
-
+*/
 #ifdef _DEBUG
 TEST(usi_case,set_position)
 {
