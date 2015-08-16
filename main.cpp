@@ -7,7 +7,7 @@ Shogidokoro shogi playing engin
 		lower_case_with_under
 	関数、メソッド
 		lower_case_with_under
-	クラス、列挙型の型
+	namespace,クラス、列挙型の型
 		CamelCase
 	グローバル変数の宣言
 		元ソースファイルの冒頭に宣言、そのヘッダファイルにextern宣言、グローバル変数を使用したいソースファイル内でインクルード
@@ -48,6 +48,7 @@ int main(int argc,char *argv[])
 #ifdef _DEBUG
 	//CPUの性能を表示させる
 	cpuid();
+	implementation_avx();
 	//profile();
 	main_test(argc, argv);
 #endif
@@ -55,7 +56,6 @@ int main(int argc,char *argv[])
     //init_usi_options();
 
     usi_main_loop();
-	getchar();
     return 0;
 }
 

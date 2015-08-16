@@ -1,9 +1,25 @@
 ﻿#if !defined(TYPES_H_INCLUDE)
 #define TYPES_H_INCLUDE
 
+#include <inttypes.h>
 #include <string>
 
 using namespace std;
+
+enum Square
+{
+	I9, I8, I7, I6, I5, I4, I3, I2, I1,
+	H9, H8, H7, H6, H5, H4, H3, H2, H1,
+	G9, G8, G7, G6, G5, G4, G3, G2, G1,
+	F9, F8, F7, F6, F5, F4, F3, F2, F1,
+	E9, E8, E7, E6, E5, E4, E3, E2, E1,
+	D9, D8, D7, D6, D5, D4, D3, D2, D1,
+	C9, C8, C7, C6, C5, C4, C3, C2, C1,
+	B9, B8, B7, B6, B5, B4, B3, B2, B1,
+	A9, A8, A7, A6, A5, A4, A3, A2, A1,
+	SquareNum
+};
+
 
 //関数を呼び分けるマクロ群
 //#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
@@ -13,25 +29,6 @@ using namespace std;
 //typedef int Color;
 //typedef unsigned int Move;
 
-//将棋所からのコマンドをパース
-/*
-class USIInputParser{
-public:
-	//コンストラクタ、string& lineを受け取り、プライベート変数input_lineで保持する
-    USIInputParser(const string &line);	
-	//空白で区切られた文字列をパースして渡す
-    string get_next_token(void);
-	//現在あるだけの文字列をすべて返す（文末まで）
-    string get_rest_of_line(void);
-	//もう文字列が取り出せなくなったらtrueを返す
-    bool at_end_of_line(void);
-private:
-    const string &input_line;   
-    int length,current_index;
-	//空白を除去する
-    void skip_whitespace(void);
-};
-*/
 /*
 typedef struct Position{
     char board[16*13 + 7*2 + 2 + 32];  //最後の３２は配列の大きさを256にするためのもの意味はない

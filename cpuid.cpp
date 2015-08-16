@@ -9,8 +9,13 @@
 #include <bitset>
 #include <array>
 #include <string>
-#include <intrin.h>
+#include <intrin.h>		//_mm_popcnt_u32 / _mm_popcnt_u64
+#include <inttypes.h>	//uint64_t
+#include <smmintrin.h>	//SSE4.2
+#include <immintrin.h>	//AVX
+
 #include "cpuid.h"
+#include "bitboard.h"
 
 class InstructionSet
 {
@@ -260,4 +265,17 @@ int cpuid()
 	support_message("XOP", InstructionSet::XOP());
 	support_message("XSAVE", InstructionSet::XSAVE());
 	return 0;
+}
+
+
+void implementation_avx(void)
+{
+	uint64_t b0 = 0xCB87;
+	uint64_t b1 = 0x3b;
+
+	BitBoard bb(b0,b1);
+	std::cout << bb.pop_count() << std::endl;
+	/*
+	pext–½—ß
+	*/
 }
