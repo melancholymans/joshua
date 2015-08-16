@@ -286,6 +286,20 @@ void implementation_avx(void)
 	cout << "_tzcnt_u32= " << _tzcnt_u32(source) << endl;
 	source64 = 0xC00;	//0bit 10個
 	cout << "_tzcnt_u64= " << _tzcnt_u64(source64) << endl;
+	//ANDN(BMI1) ~x & y
+	unsigned int source1 = 0x457;	//010001010111
+	unsigned int source2 = 0x876;	//100001110110
+	//~x & y						
+	//~x							  11111111111111111111101110101000
+	//y								  00000000000000000000100001110110
+	//~x & y						  00000000000000000000100000100000	0x820
+	//計算結果と手計算が合わない、pythonで計算させてみたが計算結果が正しい、そもそも~xの計算が間違っているが
+	//いったん置いておく
+	cout << "_andn_u32= " << _andn_u32(source1, source2) << endl;
+	//BEXTR(BMI1)
+	//たぶん使うことなさそうなのでパス
+	//BLSI(BMI1) x & ~x	これはゼロクリアでは
+	source1 = 0x457;	//010001010111
 
 	//pext命令
 	
