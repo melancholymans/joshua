@@ -155,6 +155,5 @@ int main_test(int argc,char *argv[])
 
 TEST(main_case, main)
 {
-	EXPECT_EQ(2, 3);
 }
 #endif

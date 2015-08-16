@@ -1,5 +1,8 @@
 #include "types.h"
 #include "bitboard.h"
+#ifdef _DEBUG
+	#include <gtest\gtest.h>
+#endif
 
 /*
 WHILE(Œãè)								BLACK(æè)
@@ -119,3 +122,16 @@ const BitBoard SquareBB[SquareNum] = {		//bitboard index		board square
 	BitBoard(0, 1ULL << 16),				//79					A2
 	BitBoard(0, 1ULL << 17)					//80					A1
 };
+
+#ifdef _DEBUG
+TEST(bitboard_case, bitboard)
+{
+	//pop_count function
+	uint64_t b0 = 0xCB87;
+	uint64_t b1 = 0x3b;
+
+	BitBoard bb(b0, b1);
+	EXPECT_EQ(bb.pop_count(), 14);
+
+}
+#endif

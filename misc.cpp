@@ -42,6 +42,5 @@ TEST(misc_case,ptime_init_ptime_now)
 
     //計測終了
     //printf("%f msec \n",ptime_now(&aPT));
-	EXPECT_EQ(2, 3);
 }
 #endif

@@ -1,4 +1,4 @@
-// InstructionSet.cpp 
+﻿// InstructionSet.cpp 
 // Compile by using: cl /EHsc /W4 InstructionSet.cpp
 // processor: x86, x64
 // Uses the __cpuid intrinsic to get information about 
@@ -270,12 +270,23 @@ int cpuid()
 
 void implementation_avx(void)
 {
-	uint64_t b0 = 0xCB87;
-	uint64_t b1 = 0x3b;
+	//LZCNT命令(ABM)
+	//ソースオペランドの先頭からのゼロ・ビットの数をカウントします。 ソースオペランドが 0 の場合は、オペランドのサイズを返します。 対応するインテル® AVX2 命令は LZCNT です。
+	//変数全体に含まれている0bitの数ではなく最上位bitから0bitが連続で何個並んでいるかをカウントする。
+	//32bit 0x13E7FFは２進数では  0000 0000 0001 0011 1110 0111 1111 1111なので最上位から0が11個」並んでいるので答えは11
+	//64bit 0xFFFFFFFFFFFFは２進数では0000 0000 0000 0000 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111なので最上位から0が16個並んでいるので答えは16
+	unsigned int source = 0x13E7FF;	//0bit 15個
+	cout << "_lzcnt_u32= " << _lzcnt_u32(source) << endl;
+	unsigned __int64 source64 = 0xFFFFFFFFFFFF;	//0bit 16個
+	cout << "_lzcnt_u64= " << _lzcnt_u64(source64) << endl;
+	//TZCNT命令(BMI1)
+	//ソースオペランドの最後(最下位ビット) からのゼロ・ビットの数をカウントし、結果を返します。ソースオペランドが 0 の場合、ソースオペランドのサイズ(ビット数) が返されます。対応するインテル® AVX2 命令は TZCNT です。
+	//変数全体に含まれている0bitの数ではなく最下位bitから0bitが連続で何個並んでいるかをカウントする。
+	source = 0x13E700;	//0bit 8個
+	cout << "_tzcnt_u32= " << _tzcnt_u32(source) << endl;
+	source64 = 0xC00;	//0bit 10個
+	cout << "_tzcnt_u64= " << _tzcnt_u64(source64) << endl;
 
-	BitBoard bb(b0,b1);
-	std::cout << bb.pop_count() << std::endl;
-	/*
-	pext����
-	*/
+	//pext命令
+	
 }
