@@ -270,6 +270,8 @@ int cpuid()
 
 void implementation_avx(void)
 {
+	//参考になるスライド
+	//http://www.slideshare.net/herumi/x86opti6?from_action=save
 	//LZCNT命令(ABM)
 	//ソースオペランドの先頭からのゼロ・ビットの数をカウントします。 ソースオペランドが 0 の場合は、オペランドのサイズを返します。 対応するインテル® AVX2 命令は LZCNT です。
 	//変数全体に含まれている0bitの数ではなく最上位bitから0bitが連続で何個並んでいるかをカウントする。
@@ -298,9 +300,9 @@ void implementation_avx(void)
 	cout << "_andn_u32= " << _andn_u32(source1, source2) << endl;
 	//BEXTR(BMI1)
 	//たぶん使うことなさそうなのでパス
-	//BLSI(BMI1) x & ~x	これはゼロクリアでは
+	//BLSI(BMI1) x & -x	
 	source1 = 0x457;	//010001010111
-
+	
 	//pext命令
 	
 }
