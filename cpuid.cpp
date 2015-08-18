@@ -272,6 +272,8 @@ void implementation_avx(void)
 {
 	//参考になるスライド
 	//http://www.slideshare.net/herumi/x86opti6?from_action=save
+	//リファレンス
+	//http://nf.nci.org.au/facilities/software/intel-ct/13.5.192/Documentation/ja_JP/compiler_c/main_cls/GUID-E6E297BB-E575-4525-AE1C-DFD7D5B662F5.htm
 	//LZCNT命令(ABM)
 	//ソースオペランドの先頭からのゼロ・ビットの数をカウントします。 ソースオペランドが 0 の場合は、オペランドのサイズを返します。 対応するインテル® AVX2 命令は LZCNT です。
 	//変数全体に含まれている0bitの数ではなく最上位bitから0bitが連続で何個並んでいるかをカウントする。
@@ -301,8 +303,17 @@ void implementation_avx(void)
 	//BEXTR(BMI1)
 	//たぶん使うことなさそうなのでパス
 	//BLSI(BMI1) x & -x	
+	//この操作の意味
+	//最下位から見て最初の１がたったビットを抽出して返す
+	//例　0x457の場合 -> 010001010111なので最初にビットが立っているのは0bit目なの 0001が抽出され10進数に変換されて返されるので1となる
+	//例　0x88の場合 -> 10001000なので最初にビットがたっているのは3bit目なので01000が抽出され10進数に変換されて返されるので８となる
 	source1 = 0x457;	//010001010111
-	
+	//_blsi_u32/64
+	cout << "_blsi_u32= " << _blsi_u32(source1) << endl;	//1
+	source2 = 0x88;	//10001000
+	cout << "_blsi_u32= " << _blsi_u32(source2) << endl;	//8
+	__int64
+
 	//pext命令
 	
 }
