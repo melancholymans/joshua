@@ -326,14 +326,21 @@ void implementation_avx(void)
 	source3 = 0x807C00000ULL; //100000000111110000000000000000000000 -> 000000000000011111111111111111111111
 	cout << "_blsmsk_u32= " << _blsmsk_u64(source3) << endl;	//8388607 (10進数)
 	//BZHI(BMI2)
-
-	インデックスの不明
-
 	//この操作の意味、index(第二引数 インデックスは1から始まる)から上位を0クリアする
-	source1 = 0x477;	//010001110111 -> 000000010111 
+	source1 = 0x1E0;	//111100000 -> 100000　　indexは１からスタート 
 	cout << "_bzhi_u32= " << _bzhi_u32(source1, 6) << endl;	//55
 	source3 = 0x807C00000ULL; //100000000111110000000000000000000000 -> 000000000000010000000000000000000000
 	cout << "_bzhi_u64= " << _bzhi_u64(source3, 23) << endl; //4194304
+	//PDEP(BMI2)
+	//この操作の意味、マスクmakに応じてsource1のbitをコピーしたものを返す
+	//source1 y3 y2 y1 y0
+	//mask    1  1  0  0  1  1  0  0
+	//        y3 y2 0  0  y1 y0 0  0
+	source1 = 85;	//1010101
+	unsigned int mask = 0x3F8;	//1111111000
+	unsigned int dest = _pdep_u32(source1,mask);
+	cout << dest << endl;		//680(10進数)   1010101000
+
 	//pext命令
 	
 }
