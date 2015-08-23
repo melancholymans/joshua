@@ -20,6 +20,14 @@ enum Square
 	SquareNum
 };
 
+enum File
+{
+	FileI,FileH,FileG,FileF,FileE,FileD,FileC,FileB,FileA,FileNum
+};
+enum Rank
+{
+	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1, RankNum
+};
 
 //関数を呼び分けるマクロ群
 //#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
