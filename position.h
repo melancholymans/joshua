@@ -4,6 +4,7 @@
 #include "types.h"
 
 //positionの定数
+/*
 const int BOARD_UPPER = 16*13;
 const int STAND_BLACK_START = 16*13;
 const int STAND_WHITE_START = 16*13 + 7;
@@ -71,15 +72,17 @@ enum{
     SQ_9I=161,SQ_8I,SQ_7I,SQ_6I,SQ_5I,SQ_4I,SQ_3I,SQ_2I,SQ_1I,
     SQ_LIMIT
 };
-//col,row座標からsq座標を計算
-inline int make_square(int col,int row)
+*/
+//File,Rank座標からsq座標を計算
+inline int make_square(int File,int Rank)
 {
-    return ((row+1) << 4) | col;
+    return File*9+Rank;
 }
 
 /*
 sq盤座標からcol,row座標に変換
 */
+/*
 inline void make_col_row(int sq,int *col,int *row)
 {
     *row = sq/16;   //整数の割り算は小数点は切り捨て
@@ -110,32 +113,35 @@ inline Color color_of_piece(int p)
     }
     return NO_COLOR;
 }
-
+*/
 /*
 駒コードを与えて成っていないか判定する
 成っていなかったらtrue,成駒ならfalse
 */
+/*
 inline int is_not_pmoto(char p)
 {
     return p & 8;
 }
-
+*/
 /*
 先手駒コードを強制的に後手駒コードにする
 */
+/*
 inline char do_white(char p)
 {
     return p | 0xF0;
 }
-
+*/
 /*
 後手駒コードを強制的に先手駒コードにする
 */
+/*
 inline char do_black(char p)
 {
     return p & 0x0F;
 }
-
+*/
 /*
 Move
 31-30-29-28-27-26-25-24-23-22-21-20-19-18-17-16-15-14-13-12-11-10-09-08-07-06-05-04-03-02-01-00
@@ -148,6 +154,7 @@ from square 移動元の座標 8bit 8-15bit
 to square 移動先の座標 8bit 0-7bit
 25-31bitは空き
 */
+/*
 inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 {
     return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece & 0x0F) << 17 | unsigned int(cap_piece & 0x0F) << 21);
@@ -162,6 +169,6 @@ short *do_move_b(Position &pos,Move m,short *mf);
 short *do_move_w(Position &pos,Move m,short *mf);
 void undo_move(Position &pos,int ply);
 void is_ok(Position &pos);
-
+*/
 #endif
 
