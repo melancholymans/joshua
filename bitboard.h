@@ -38,6 +38,7 @@ public:
 	{
 		return _mm_popcnt_u64(p_[0]) + _mm_popcnt_u64(p_[1]);
 	}
+
 private:
 	union{
 		//将棋盤の座標0～62までをp_[0]が表現,座標63から80までをp_[1]が表現

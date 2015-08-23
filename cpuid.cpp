@@ -340,7 +340,11 @@ void implementation_avx(void)
 	unsigned int mask = 0x3F8;	//1111111000
 	unsigned int dest = _pdep_u32(source1,mask);
 	cout << dest << endl;		//680(10進数)   1010101000
-
+	//MULX
+	//演算の結果で、フラグを変更しない乗算、利用方法思いつかず、パス
+	//RORX
+	//演算の結果で、フラグを変更しない右シフト（ローテート）、利用方法思いつかずパス
+	//SARX,SHRX,SHLXなどもフラグを変更しないbit操作でるが、利用方法思いつかずパス
 	//pext命令
 	
 }

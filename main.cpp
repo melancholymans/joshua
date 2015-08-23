@@ -21,6 +21,7 @@ Shogidokoro shogi playing engin
 
 #include "cpuid.h"
 #include "misc.h"
+#include "bitboard.h"
 
 using namespace std;
 
@@ -54,7 +55,8 @@ int main(int argc,char *argv[])
 #endif
     //init();
     //init_usi_options();
-
+	BitBoard bb;
+	BitBoards::print(bb);
     usi_main_loop();
     return 0;
 }
