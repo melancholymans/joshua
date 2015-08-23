@@ -1,12 +1,17 @@
-﻿/*
-#include <string>
+﻿#include <string>
+#include <sstream>
+/*
 #include <ctype.h>
 #include <crtdbg.h>
-
+*/
 using namespace std;
 
-#include "gtest\gtest.h"
+#ifdef _DEBUG
+	#include <gtest\gtest.h>
+#endif
+
 #include "position.h"
+/*
 #include "usioption.h"
 #include "usi.h"
 #include "movegen.h"
@@ -51,16 +56,17 @@ const char W_ROOK = B_ROOK - 16;        //-1
 const int BLACK = 0;
 const int WHITE = -1;
 const int NO_COLOR = 16;
-
+*/
 //先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
 string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+/*
 string begin_poition;   //どんな局面を受付けたのか保持
 position_t root_position;
+*/
 
 void from_sfen(string &sfen)
 {
-    begin_poition = sfen;
-    USIInputParser uip(sfen);
+	stringstream uip(sfen);
     string token = uip.get_next_token();
     int index;
     char pmoto = 0;
@@ -175,7 +181,7 @@ void from_sfen(string &sfen)
     }
     //持ち駒の次は手数が入っているが無視してよい
 }
-
+/*
 string to_sfen(const Position &pos)
 {
     string result;
@@ -235,7 +241,7 @@ string to_sfen(const Position &pos)
     result += '1';
     return result;
 }
-
+*/
 //sfen文字列からpositionを設定
 void put_piece(char p,int sq,int num)
 {
@@ -255,7 +261,7 @@ void put_piece(char p,int sq,int num)
         root_position.board[sq] = num;
     }
 }
-*/
+
 /*
 void print_board(const Position &pos)
 {

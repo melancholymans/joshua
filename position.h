@@ -159,12 +159,15 @@ inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 {
     return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece & 0x0F) << 17 | unsigned int(cap_piece & 0x0F) << 21);
 }
-
+*/
 
 void from_sfen(string &sfen);
+/*
 string to_sfen(const Position &pos);
 void print_board(const Position &pos);
+*/
 void put_piece(char p,int sq,int num);
+/*
 short *do_move_b(Position &pos,Move m,short *mf);
 short *do_move_w(Position &pos,Move m,short *mf);
 void undo_move(Position &pos,int ply);

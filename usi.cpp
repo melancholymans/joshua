@@ -76,7 +76,7 @@ bool handle_command(const string &command)
     }
     else if(token == "position"){
         //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
-        //set_position(pos,uip);
+        set_position(pos,uip);
     }
     else if(token == "setoption"){
         //エンジンに対する値を設定するとき送信
@@ -100,15 +100,15 @@ bool handle_command(const string &command)
     }
     return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
 }
-/*
-void set_position(USIInputParser &uip)
+
+void set_position(stringstream& uip)
 {
-    string cmd;
+    string token;
     short dummy[8];
 
-    cmd = uip.get_next_token();
+    uip >> token;
     //平手初期局面
-    if(cmd == "startpos"){
+    if(token == "startpos"){
         from_sfen(start_position);
     }
     //駒落ち初期局面
@@ -135,7 +135,7 @@ void set_position(USIInputParser &uip)
         }
     }
 }
-*/
+
 /*
 void go(void)
 {
