@@ -1,5 +1,7 @@
 #include "types.h"
 #include "bitboard.h"
+#include "position.h"
+#include "misc.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
@@ -122,6 +124,26 @@ const BitBoard SquareBB[SquareNum] = {		//bitboard index		board square
 	BitBoard(0, 1ULL << 16),				//79					A2
 	BitBoard(0, 1ULL << 17)					//80					A1
 };
+
+void BitBoards::init()
+{
+
+}
+
+void BitBoards::print(BitBoard bb)
+{
+	sync_cout;
+	std::cout << "-------------------------------" << std::endl;
+	std::cout << "   A  B  C  D  E  F  G  H  I " << std::endl;
+	for (int r = Rank9; r < RankNum; r++){
+		std::cout << (9 - r) << " ";
+		for (int f = FileA; FileI <= f; f--){
+			std::cout << setw(2) << make_square(f, r) << " ";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "-------------------------------" << sync_endl;
+}
 
 #ifdef _DEBUG
 TEST(bitboard_case, bitboard)
