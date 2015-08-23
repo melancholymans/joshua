@@ -294,7 +294,7 @@ void implementation_avx(void)
 	unsigned int source1 = 0x457;	//010001010111
 	unsigned int source2 = 0x876;	//100001110110
 	//~x & y						
-	//~x							  11111111111111111111101110101000
+	//~x							  11111111111111111111101110101001
 	//y								  00000000000000000000100001110110
 	//~x & y						  00000000000000000000100000100000	0x820
 	//計算結果と手計算が合わない、pythonで計算させてみたが計算結果が正しい、そもそも~xの計算が間違っているが
@@ -339,7 +339,7 @@ void implementation_avx(void)
 	source1 = 85;	//1010101
 	unsigned int mask = 0x3F8;	//1111111000
 	unsigned int dest = _pdep_u32(source1,mask);
-	cout << dest << endl;		//680(10進数)   1010101000
+	cout << "_pdep_u32= " << dest << endl;		//680(10進数)   1010101000
 	//MULX
 	//演算の結果で、フラグを変更しない乗算、利用方法思いつかず、パス
 	//RORX
@@ -347,4 +347,8 @@ void implementation_avx(void)
 	//SARX,SHRX,SHLXなどもフラグを変更しないbit操作でるが、利用方法思いつかずパス
 	//pext命令
 	
+	//x64プロセッサでは__m64型の変数は使用できない.
+	//__int64型を使用すること
+
+
 }
