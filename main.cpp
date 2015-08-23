@@ -50,13 +50,13 @@ int main(int argc,char *argv[])
 	//CPUの性能を表示させる
 	cpuid();
 	implementation_avx();
+	BitBoard bb(0x1FF, 0);
+	BitBoards::print(bb);
 	//profile();
 	main_test(argc, argv);
 #endif
     //init();
     //init_usi_options();
-	BitBoard bb;
-	BitBoards::print(bb);
     usi_main_loop();
     return 0;
 }

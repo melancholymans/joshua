@@ -129,20 +129,39 @@ void BitBoards::init()
 {
 
 }
-
-void BitBoards::print(BitBoard bb)
+/*
+-+--+--+--+--+--+--+--+--+--+
+   A  B  C  D  E  F  G  H  I
+9 72 63 54 45 36 27 18  9  0
+8 73 64 55 46 37 28 19 10  1
+7 74 65 56 47 38 29 20 11  2
+6 75 66 57 48 39 30 21 12  3
+5 76 67 58 49 40 31 22 13  4
+4 77 68 59 50 41 32 23 14  5
+3 78 69 60 51 42 33 24 15  6
+2 79 70 61 52 43 34 25 16  7
+1 80 71 62 53 44 35 26 17  8
+-+--+--+--+--+--+--+--+--+--+
+make_squareÇ™ï‘Ç∑ç¿ïW
+*/
+void BitBoards::print(BitBoard &bb)
 {
+	int sq;
+
 	sync_cout;
-	std::cout << "-------------------------------" << std::endl;
+	std::cout << "-+--+--+--+--+--+--+--+--+--+" << std::endl;
 	std::cout << "   A  B  C  D  E  F  G  H  I " << std::endl;
 	for (int r = Rank9; r < RankNum; r++){
 		std::cout << (9 - r) << " ";
 		for (int f = FileA; FileI <= f; f--){
-			std::cout << setw(2) << make_square(f, r) << " ";
+			sq = make_square(f, r);
+			//std::cout << setw(2) << sq << " ";
+			std::cout << (!(_mm_testz_si128(bb.m_, SquareBB[sq].m_)) ? " *" : " .") << " ";
+
 		}
 		std::cout << std::endl;
 	}
-	std::cout << "-------------------------------" << sync_endl;
+	std::cout << "-+--+--+--+--+--+--+--+--+--+" << sync_endl;
 }
 
 #ifdef _DEBUG
