@@ -3,6 +3,18 @@
 
 #include "types.h"
 
+class Position{
+public:
+	Position(){}
+	Position(const Position& p);
+
+	Position(const string& sfen)
+	{ 
+		position_from_sfen(sfen);
+	}
+	void position_from_sfen(const string &sfen);
+	void Position::clear();
+};
 //positionの定数
 /*
 const int BOARD_UPPER = 16*13;
@@ -161,7 +173,6 @@ inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 }
 */
 
-void from_sfen(string &sfen);
 /*
 string to_sfen(const Position &pos);
 void print_board(const Position &pos);

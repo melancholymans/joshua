@@ -6,11 +6,11 @@
 */
 using namespace std;
 
+#include "position.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
 
-#include "position.h"
 /*
 #include "usioption.h"
 #include "usi.h"
@@ -57,41 +57,36 @@ const int BLACK = 0;
 const int WHITE = -1;
 const int NO_COLOR = 16;
 */
-//先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
-string start_position = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 /*
 string begin_poition;   //どんな局面を受付けたのか保持
 position_t root_position;
 */
 
-void from_sfen(string &sfen)
+//Position classのコンストラクタから呼ばれる
+//sfen文字列からPosition内部の局面情報をセットする。
+//標準初期sfen文字列はこう->"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+//小文字が後手駒、大文字が先手駒
+void Position::position_from_sfen(const string &sfen)
 {
 	stringstream uip(sfen);
-    string token = uip.get_next_token();
-    int index;
-    char pmoto = 0;
+	char token;
+	int sq = A9;
+	int pmoto = false;
 
-    //全体を盤外に設定
-    for(index = 0;index < LIMIT;index++){
-        root_position.board[index] = EDGE;
-    }
-    //盤上はEMPTYに設定
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row); 
-            root_position.board[sq] = EMPTY;
+	clear();
+	uip >> noskipws;	//空白をスキップさせない設定
+    //盤上構築
+    while(uip >> token && !isspace(token)){
+        if(isdigit(token)){
+			sq += DeltaE * (token - '0');
         }
-    }
-    //駒台もEMPTYに設定
-    for(int sq = 208;sq < 222;sq++){
-        root_position.board[sq] = EMPTY;
-    }
-    //盤上設定
-    int col = 1,row = 1;
-    for(index = 0;token.size() > index;index++){
-        if(isdigit(token[index])){
-            col += (token[index] - '1' + 1);
-        }
+		else if (token == '/'){
+			sq += (DeltaW * 9) + DeltaS;
+		}
+		else if (token == '+'){
+			pmoto = Promoted;
+		}
+		/*
         else{
             int sq = make_square(col,row);
             switch(token[index]){
@@ -121,8 +116,10 @@ void from_sfen(string &sfen)
                 return;
             }
         }
+		*/
     }
     //手番設定
+	/*
     token = uip.get_next_token();
 
     if(token[0] == 'b'){
@@ -179,8 +176,15 @@ void from_sfen(string &sfen)
         case 'R': put_piece(B_ROOK,214,num); break;
         }
     }
+	*/
     //持ち駒の次は手数が入っているが無視してよい
 }
+
+void Position::clear()
+{
+	memset(this, 0, sizeof(Position));
+}
+
 /*
 string to_sfen(const Position &pos)
 {
@@ -245,6 +249,7 @@ string to_sfen(const Position &pos)
 //sfen文字列からpositionを設定
 void put_piece(char p,int sq,int num)
 {
+	/*
     char pt = type_of_piece(p);
     Color c = color_of_piece(p);
     if(sq < BOARD_UPPER){
@@ -260,6 +265,7 @@ void put_piece(char p,int sq,int num)
         //こちらは駒台、駒種によって座標は固定されている、格納するのは枚数
         root_position.board[sq] = num;
     }
+	*/
 }
 
 /*

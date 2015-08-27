@@ -9,10 +9,10 @@ using namespace std;
 #endif
 
 #include "types.h"
-#include "misc.h"
-/*
 #include "position.h"
 #include "usi.h"
+#include "misc.h"
+/*
 #include "usioption.h"
 #include "csa.h"
 #include "search.h"
@@ -20,11 +20,12 @@ using namespace std;
 #include "move.h"
 #include "evaluate.h"
 */
-bool handle_command(const string &command);
 
-void usi_main_loop(void)
+
+void USI::usi_main_loop(void)
 {
     string token,cmd;
+	Position pos(start_sfen);
 
     do{
 		if (!getline(cin, cmd)){
@@ -35,20 +36,11 @@ void usi_main_loop(void)
     }while(handle_command(cmd));
 }
 
-/*
-void game_init(const Position &pos)
-{
-    //対局ごと初期化する必要がある変数
-    next_move[0].last_move = mlist;
-    next_modify[0].last_dirty = modifylist;
-    sech.material = eval_material(pos);
-}
-*/
 
 //usi->isready->usinewgameで対局開始
 //positionで思考局面の付与->goで思考
 //bestmoveで思考結果を返信,gameoverで終局
-bool handle_command(const string &command)
+bool USI::handle_command(const string &command)
 {
 	string token;
     stringstream uip(command);
@@ -58,6 +50,7 @@ bool handle_command(const string &command)
         //後始末
         return false;
     }
+	/*
     else if(token == "usi"){
         sync_cout	<< "id name " << "joshua" << "\n"
 					<< "id author takemori masami"
@@ -98,11 +91,13 @@ bool handle_command(const string &command)
     else{
 		sync_cout << "Unknow command" << uip.str() << sync_endl;
     }
+	*/
     return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
 }
 
 void set_position(stringstream& uip)
 {
+	/*
     string token;
     short dummy[8];
 
@@ -134,55 +129,23 @@ void set_position(stringstream& uip)
             }
         }
     }
+	*/
 }
+
+/*
+void game_init(const Position &pos)
+{
+//対局ごと初期化する必要がある変数
+next_move[0].last_move = mlist;
+next_modify[0].last_dirty = modifylist;
+sech.material = eval_material(pos);
+}
+*/
 
 /*
 void go(void)
 {
     think(root_position);
-}
-*/
-/*
-USIInputParser::USIInputParser(const string &line) : input_line(line)
-{
-    this->current_index = 0;
-    this->length = line.length();
-}
-*/
-/*
-void USIInputParser::skip_whitespace(void)
-{
-    while(isspace((int)(unsigned char)this->input_line[this->current_index])){
-        this->current_index++;
-    }
-}
-*/
-/*
-string USIInputParser::get_next_token(void)
-{
-    int i,j;
-
-    this->skip_whitespace();
-    for(i = j = this->current_index;j < this->length && !isspace(this->input_line[j]);j++){
-        ;
-    }
-    this->current_index = j;
-    this->skip_whitespace();
-    string str = this->input_line.substr(i,j - i);
-    return str;
-}
-*/
-/*
-string USIInputParser::get_rest_of_line(void)
-{
-    this->skip_whitespace();
-    return this->input_line.substr(this->current_index,this->length);
-}
-*/
-/*
-bool USIInputParser::at_end_of_line(void)
-{
-    return this->current_index == this->length;
 }
 */
 #ifdef _DEBUG

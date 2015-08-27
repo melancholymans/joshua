@@ -57,7 +57,7 @@ int main(int argc,char *argv[])
 #endif
     //init();
     //init_usi_options();
-    usi_main_loop();
+    USI::usi_main_loop();
     return 0;
 }
 

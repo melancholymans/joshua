@@ -29,6 +29,18 @@ enum Rank
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1, RankNum
 };
 
+enum SquareDelta{
+	DeltaNothing = 0,
+	DeltaN = -1, DeltaE = -9, DeltaS = 1, DeltaW = 9,
+	DeltaNE = DeltaN + DeltaE,
+	DeltaSE = DeltaS + DeltaE,
+	DeltaSW = DeltaS + DeltaW,
+	DeltaNW = DeltaN + DeltaW
+};
+
+enum Piece{
+	UnPromoted = 0, Promoted = 8
+};
 //関数を呼び分けるマクロ群
 //#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
