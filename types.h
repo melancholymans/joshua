@@ -38,6 +38,12 @@ enum SquareDelta{
 	DeltaNW = DeltaN + DeltaW
 };
 
+enum PieceType{
+	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King,
+	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
+	PieceTypeNum
+};
+
 enum Piece{
 	PieceNone = 0,UnPromoted = 0, Promoted = 8,
 	BPawn = 1,BLance,BNight,BSilver,BBishop,BRook,BGold,BKing,
