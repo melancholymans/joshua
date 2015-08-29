@@ -79,7 +79,7 @@ void Position::position_from_sfen(const string &sfen)
 			pmoto = Promoted;
 		}
         else{
-			put_piece('p', sq);
+			put_piece(WPawn, sq);
 			sq += DeltaE;
 			/*
 			int sq = make_square(col,row);
@@ -241,11 +241,12 @@ string to_sfen(const Position &pos)
 }
 */
 //sfen文字列からpositionを設定
-void Position::put_piece(char p,int sq)
+void Position::put_piece(Piece piece,int sq)
 {
+	board[sq] = piece;
+	PieceType pt = type_of_piece(piece);
+	Color c = color_of_piece(piece);
 	/*
-    char pt = type_of_piece(p);
-    Color c = color_of_piece(p);
     if(sq < BOARD_UPPER){
         //MAIN boardに駒コードを入れる
         root_position.board[sq] = p;
@@ -1224,6 +1225,72 @@ void is_eq_board(void)
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
 }
 */
+TEST(position, color_of_piece)
+{
+	EXPECT_EQ(Black, color_of_piece(BPawn));
+	EXPECT_EQ(Black, color_of_piece(BLance));
+	EXPECT_EQ(Black, color_of_piece(BNight));
+	EXPECT_EQ(Black, color_of_piece(BSilver));
+	EXPECT_EQ(Black, color_of_piece(BBishop));
+	EXPECT_EQ(Black, color_of_piece(BRook));
+	EXPECT_EQ(Black, color_of_piece(BGold));
+	EXPECT_EQ(Black, color_of_piece(BKing));
+	EXPECT_EQ(Black, color_of_piece(BProPawn));
+	EXPECT_EQ(Black, color_of_piece(BProLance));
+	EXPECT_EQ(Black, color_of_piece(BProNight));
+	EXPECT_EQ(Black, color_of_piece(BProSilver));
+	EXPECT_EQ(Black, color_of_piece(BHorse));
+	EXPECT_EQ(Black, color_of_piece(BDragon));
+
+	EXPECT_EQ(White, color_of_piece(WPawn));
+	EXPECT_EQ(White, color_of_piece(WLance));
+	EXPECT_EQ(White, color_of_piece(WNight));
+	EXPECT_EQ(White, color_of_piece(WSilver));
+	EXPECT_EQ(White, color_of_piece(WBishop));
+	EXPECT_EQ(White, color_of_piece(WRook));
+	EXPECT_EQ(White, color_of_piece(WGold));
+	EXPECT_EQ(White, color_of_piece(WKing));
+	EXPECT_EQ(White, color_of_piece(WProPawn));
+	EXPECT_EQ(White, color_of_piece(WProLance));
+	EXPECT_EQ(White, color_of_piece(WProNight));
+	EXPECT_EQ(White, color_of_piece(WProSilver));
+	EXPECT_EQ(White, color_of_piece(WHorse));
+	EXPECT_EQ(White, color_of_piece(WDragon));
+}
+
+TEST(position,type_of_piece)
+{
+	EXPECT_EQ(Pawn, type_of_piece(BPawn));
+	EXPECT_EQ(Lance, type_of_piece(BLance));
+	EXPECT_EQ(Night, type_of_piece(BNight));
+	EXPECT_EQ(Silver, type_of_piece(BSilver));
+	EXPECT_EQ(Bishop, type_of_piece(BBishop));
+	EXPECT_EQ(Rook, type_of_piece(BRook));
+	EXPECT_EQ(Gold, type_of_piece(BGold));
+	EXPECT_EQ(King, type_of_piece(BKing));
+	EXPECT_EQ(ProPawn, type_of_piece(BProPawn));
+	EXPECT_EQ(ProLance, type_of_piece(BProLance));
+	EXPECT_EQ(ProNight, type_of_piece(BProNight));
+	EXPECT_EQ(ProSilver, type_of_piece(BProSilver));
+	EXPECT_EQ(Horse, type_of_piece(BHorse));
+	EXPECT_EQ(Dragon, type_of_piece(BDragon));
+
+	EXPECT_EQ(Pawn, type_of_piece(WPawn));
+	EXPECT_EQ(Lance, type_of_piece(WLance));
+	EXPECT_EQ(Night, type_of_piece(WNight));
+	EXPECT_EQ(Silver, type_of_piece(WSilver));
+	EXPECT_EQ(Bishop, type_of_piece(WBishop));
+	EXPECT_EQ(Rook, type_of_piece(WRook));
+	EXPECT_EQ(Gold, type_of_piece(WGold));
+	EXPECT_EQ(King, type_of_piece(WKing));
+	EXPECT_EQ(ProPawn, type_of_piece(WProPawn));
+	EXPECT_EQ(ProLance, type_of_piece(WProLance));
+	EXPECT_EQ(ProNight, type_of_piece(WProNight));
+	EXPECT_EQ(ProSilver, type_of_piece(WProSilver));
+	EXPECT_EQ(Horse, type_of_piece(WHorse));
+	EXPECT_EQ(Dragon, type_of_piece(WDragon));
+}
+
 TEST(position, PieceToChar)
 {
 	/*
