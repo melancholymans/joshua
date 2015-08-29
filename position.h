@@ -13,8 +13,10 @@ public:
 		position_from_sfen(sfen);
 	}
 	void position_from_sfen(const string &sfen);
+private:
 	void Position::clear();
-	void put_piece(char p, int sq);
+	void put_piece(Piece piece, int sq);
+	int board[SquareNum];
 };
 //positionの定数
 /*
@@ -90,29 +92,7 @@ inline void make_col_row(int sq,int *col,int *row)
     *row = *row - 1;
 }
 
-//駒コードから駒タイプを計算
-inline char type_of_piece(char p)
-{
-    return p & 0x0F;
-}
 
-inline Color color_of_piece(int p)
-{
-    //駒コードからカラーを判定している
-    //符号ありchar型を右シフトしているのでANSI Cでは挙動が定義されていない
-    //VC++2010で算術シフトを採用しているようなのでこのままとするが処理系が
-    //変更になったらテストでエラーがでるようにしておく
-    //BLACK側駒は0をWHITE側駒は-1を返す
-    //return p >> 4;だとWHITE PIECE,BLACK PIECEは-1、0を返すが
-    //EMPTY,EDGEをBLACK PIECEと判別する
-    if(p < 0){
-        return -1;
-    }
-    else if(p > 1){
-        return 0;
-    }
-    return NO_COLOR;
-}
 */
 /*
 駒コードを与えて成っていないか判定する
