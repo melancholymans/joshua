@@ -6,6 +6,11 @@
 
 using namespace std;
 
+enum Color
+{
+	Black,White,ColorNum
+};
+
 enum Square
 {
 	I9, I8, I7, I6, I5, I4, I3, I2, I1,
@@ -52,6 +57,16 @@ enum Piece{
 	WProPawn, WProLance, WProNight, WProSilver, WHorse, WDragon,
 	PieceNum = 31
 };
+
+inline PieceType type_of_piece(Piece piece)
+{
+	return PieceType(piece & 0x0F);
+}
+
+inline Color color_of_piece(Piece piece)
+{
+	return Color(piece >> 4);
+}
 //関数を呼び分けるマクロ群
 //#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
