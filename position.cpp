@@ -18,40 +18,32 @@ using namespace std;
 #include "move.h"
 #include "search.h"
 #include "evaluate.h"
-
-//駒コード（GPSを参考にした）
+*/
+/*
+駒文字(先手文字、後手文字）
+Pawn..P p
+Lance..L l
+Night..N n
+Silver..S s
+Bishop..B b
+Rook..R r
+Golad..G g
+King..K k
+ProPawn..X x
+ProLance..T t
+ProNight..V v
+ProSilver..[ {
+Horse..J j
+Dragon..Z z
+*/
+static const string PieceToChar(" PLNSBRGKXTV[JZ   plnsbrgkxtv{jz");
+/*
+//駒コード
+（GPSを参考にした）
 const char EMPTY = 0;
 const char EDGE = 1;
 
-const char BP_PAWN = 2;
-const char BP_LANCE = 3;
-const char BP_KNIGHT = 4;
-const char BP_SILVER = 5;
-const char BP_BISHOP = 6;
-const char BP_ROOK = 7;
-const char B_KING = 8;
-const char B_GOLD = 9;
-const char B_PAWN = 10;
-const char B_LANCE = 11;
-const char B_KNIGHT = 12;
-const char B_SILVER = 13;
-const char B_BISHOP = 14;
-const char B_ROOK = 15;
 
-const char WP_PAWN = BP_PAWN - 16;      //-14
-const char WP_LANCE = BP_LANCE - 16;    //-13
-const char WP_KNIGHT = BP_KNIGHT - 16;  //-12
-const char WP_SILVER = BP_SILVER - 16;  //-11
-const char WP_BISHOP = BP_BISHOP - 16;  //-10   
-const char WP_ROOK = BP_ROOK - 16;      //-9
-const char W_KING = B_KING - 16;        //-8
-const char W_GOLD = B_GOLD - 16;        //-7
-const char W_PAWN = B_PAWN - 16;        //-6
-const char W_LANCE = B_LANCE - 16;      //-5
-const char W_KNIGHT = B_KNIGHT - 16;    //-4
-const char W_SILVER = B_SILVER - 16;    //-3
-const char W_BISHOP = B_BISHOP - 16;    //-2
-const char W_ROOK = B_ROOK - 16;        //-1
 //player(手番） BLACKが先手、WHITEが後手
 const int BLACK = 0;
 const int WHITE = -1;
@@ -86,9 +78,11 @@ void Position::position_from_sfen(const string &sfen)
 		else if (token == '+'){
 			pmoto = Promoted;
 		}
-		/*
         else{
-            int sq = make_square(col,row);
+			put_piece('p', sq);
+			sq += DeltaE;
+			/*
+			int sq = make_square(col,row);
             switch(token[index]){
             case '+': pmoto = -8; break; 
             case 'k': put_piece(W_KING,sq,0); col++; break;
@@ -115,8 +109,8 @@ void Position::position_from_sfen(const string &sfen)
                 _ASSERT(false);
                 return;
             }
+			*/
         }
-		*/
     }
     //手番設定
 	/*
@@ -247,7 +241,7 @@ string to_sfen(const Position &pos)
 }
 */
 //sfen文字列からpositionを設定
-void put_piece(char p,int sq,int num)
+void Position::put_piece(char p,int sq)
 {
 	/*
     char pt = type_of_piece(p);

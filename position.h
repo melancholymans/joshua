@@ -14,6 +14,7 @@ public:
 	}
 	void position_from_sfen(const string &sfen);
 	void Position::clear();
+	void put_piece(char p, int sq);
 };
 //positionの定数
 /*
@@ -71,19 +72,6 @@ const extern char W_SILVER;     //13-16=-3
 const extern char W_BISHOP;     //14-16=-2
 const extern char W_ROOK;       //15-16=-1
 
-//座標記号
-enum{
-    SQ_9A=33,SQ_8A,SQ_7A,SQ_6A,SQ_5A,SQ_4A,SQ_3A,SQ_2A,SQ_1A,
-    SQ_9B=49,SQ_8B,SQ_7B,SQ_6B,SQ_5B,SQ_4B,SQ_3B,SQ_2B,SQ_1B,
-    SQ_9C=65,SQ_8C,SQ_7C,SQ_6C,SQ_5C,SQ_4C,SQ_3C,SQ_2C,SQ_1C,
-    SQ_9D=81,SQ_8D,SQ_7D,SQ_6D,SQ_5D,SQ_4D,SQ_3D,SQ_2D,SQ_1D,
-    SQ_9E=97,SQ_8E,SQ_7E,SQ_6E,SQ_5E,SQ_4E,SQ_3E,SQ_2E,SQ_1E,
-    SQ_9F=113,SQ_8F,SQ_7F,SQ_6F,SQ_5F,SQ_4F,SQ_3F,SQ_2F,SQ_1F,
-    SQ_9G=129,SQ_8G,SQ_7G,SQ_6G,SQ_5G,SQ_4G,SQ_3G,SQ_2G,SQ_1G,
-    SQ_9H=145,SQ_8H,SQ_7H,SQ_6H,SQ_5H,SQ_4H,SQ_3H,SQ_2H,SQ_1H,
-    SQ_9I=161,SQ_8I,SQ_7I,SQ_6I,SQ_5I,SQ_4I,SQ_3I,SQ_2I,SQ_1I,
-    SQ_LIMIT
-};
 */
 //File,Rank座標からsq座標を計算
 inline int make_square(int File,int Rank)
@@ -177,7 +165,6 @@ inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
 string to_sfen(const Position &pos);
 void print_board(const Position &pos);
 */
-void put_piece(char p,int sq,int num);
 /*
 short *do_move_b(Position &pos,Move m,short *mf);
 short *do_move_w(Position &pos,Move m,short *mf);
