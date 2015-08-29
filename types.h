@@ -41,9 +41,9 @@ enum SquareDelta{
 enum Piece{
 	PieceNone = 0,UnPromoted = 0, Promoted = 8,
 	BPawn = 1,BLance,BNight,BSilver,BBishop,BRook,BGold,BKing,
-	BProPawn, BProLance, BProKnight, BProSilver, BHorse,BDragon,
+	BProPawn, BProLance, BProNight, BProSilver, BHorse,BDragon,
 	WPawn = 17, WLance, WNight, WSilver, WBishop, WRook, WGold, WKing,
-	WProPawn, WProLance, WProKnight, WProSilver, WHorse, WDragon,
+	WProPawn, WProLance, WProNight, WProSilver, WHorse, WDragon,
 	PieceNum = 31
 };
 //関数を呼び分けるマクロ群

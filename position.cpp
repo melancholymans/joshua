@@ -36,7 +36,7 @@ ProSilver..[ {
 Horse..J j
 Dragon..Z z
 */
-static const string PieceToChar(" PLNSBRGKXTV[JZ   plnsbrgkxtv{jz");
+static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
 /*
 //駒コード
 （GPSを参考にした）
@@ -521,7 +521,8 @@ TEST(position,color_of_piece)
     p = B_BISHOP;
     ASSERT_EQ(BLACK,color_of_piece(p));
 }
-
+*/
+/*
 TEST(position,piece_type)
 {
     //不成り、成り判定
@@ -600,7 +601,8 @@ TEST(position,piece_type)
     EXPECT_EQ(B_BISHOP,do_black(W_BISHOP));
     EXPECT_EQ(B_ROOK,do_black(W_ROOK));
 }
-
+*/
+/*
 TEST(position,from_sfen)
 {
     from_sfen(start_position);
@@ -1222,3 +1224,52 @@ void is_eq_board(void)
     EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
 }
 */
+TEST(position, PieceToChar)
+{
+	/*
+	駒文字（PieceToChar）のインデックスと駒コードが一致することを確認している
+	Pawn..P p
+	Lance..L l
+	Night..N n
+	Silver..S s
+	Bishop..B b
+	Rook..R r
+	Golad..G g
+	King..K k
+	ProPawn..X x
+	ProLance..T t
+	ProNight..V v
+	ProSilver..[{
+	Horse..J j
+	Dragon..Z z
+	*/
+	EXPECT_EQ(BPawn, PieceToChar.find('P'));
+	EXPECT_EQ(BLance, PieceToChar.find('L'));
+	EXPECT_EQ(BNight, PieceToChar.find('N'));
+	EXPECT_EQ(BSilver, PieceToChar.find('S'));
+	EXPECT_EQ(BBishop, PieceToChar.find('B'));
+	EXPECT_EQ(BRook, PieceToChar.find('R'));
+	EXPECT_EQ(BGold, PieceToChar.find('G'));
+	EXPECT_EQ(BKing, PieceToChar.find('K'));
+	EXPECT_EQ(BProPawn, PieceToChar.find('X'));
+	EXPECT_EQ(BProLance, PieceToChar.find('T'));
+	EXPECT_EQ(BProNight, PieceToChar.find('V'));
+	EXPECT_EQ(BProSilver, PieceToChar.find('['));
+	EXPECT_EQ(BHorse, PieceToChar.find('J'));
+	EXPECT_EQ(BDragon, PieceToChar.find('Z'));
+
+	EXPECT_EQ(WPawn, PieceToChar.find('p'));
+	EXPECT_EQ(WLance, PieceToChar.find('l'));
+	EXPECT_EQ(WNight, PieceToChar.find('n'));
+	EXPECT_EQ(WSilver, PieceToChar.find('s'));
+	EXPECT_EQ(WBishop, PieceToChar.find('b'));
+	EXPECT_EQ(WRook, PieceToChar.find('r'));
+	EXPECT_EQ(WGold, PieceToChar.find('g'));
+	EXPECT_EQ(WKing, PieceToChar.find('k'));
+	EXPECT_EQ(WProPawn, PieceToChar.find('x'));
+	EXPECT_EQ(WProLance, PieceToChar.find('t'));
+	EXPECT_EQ(WProNight, PieceToChar.find('v'));
+	EXPECT_EQ(WProSilver, PieceToChar.find('{'));
+	EXPECT_EQ(WHorse, PieceToChar.find('j'));
+	EXPECT_EQ(WDragon, PieceToChar.find('z'));
+}
