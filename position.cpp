@@ -7,13 +7,13 @@
 using namespace std;
 
 #include "position.h"
+#include "usi.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
 
 /*
 #include "usioption.h"
-#include "usi.h"
 #include "movegen.h"
 #include "move.h"
 #include "search.h"
@@ -37,6 +37,39 @@ Horse..J j
 Dragon..Z z
 */
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
+//unsigned 32bitに駒台の駒数をパッキングするための定数
+int hand_packed[] = {
+	0,
+	1 << 0,		//HandPawn
+	1 << 5,		//HandLance
+	1 << 8,		//HandNight
+	1 << 11,	//HandSilver
+	1 << 14,	//HandBishop
+	1 << 16,	//HandRook
+	1 << 18		//HandGold
+};
+int hand_shift[] = {
+	0,
+	0,			//HandPawn
+	5,			//HandLance
+	8,			//HandNight
+	11,			//HandSilver
+	14,			//HandBishop
+	16,			//HandRook
+	18			//HandGold
+};
+//unsigned 32bitから駒台の枚数をマスキングするための定数
+int hand_masking[] = {
+	0,
+	0x1F,		//pawn
+	0xE0,		//lance
+	0x700,		//night
+	0x3800,		//silver
+	0xC000,		//bishop
+	0x30000,	//rook
+	0x1C0000,	//gold
+};
+
 /*
 //駒コード
 （GPSを参考にした）
@@ -63,11 +96,12 @@ void Position::position_from_sfen(const string &sfen)
 	stringstream uip(sfen);
 	char token;
 	int sq = A9;
-	int pmoto = false;
+	int pmoto = 0;
+	int piece;
 
 	clear();
 	uip >> noskipws;	//空白をスキップさせない設定
-    //盤上構築
+    //盤上
     while(uip >> token && !isspace(token)){
         if(isdigit(token)){
 			sq += DeltaE * (token - '0');
@@ -78,99 +112,48 @@ void Position::position_from_sfen(const string &sfen)
 		else if (token == '+'){
 			pmoto = Promoted;
 		}
-        else{
-			put_piece(WPawn, sq);
+		else if ((piece = PieceToChar.find(token)) != string::npos){
+			put_piece(Piece(piece + pmoto), sq);
+			pmoto = UnPromoted;
 			sq += DeltaE;
-			/*
-			int sq = make_square(col,row);
-            switch(token[index]){
-            case '+': pmoto = -8; break; 
-            case 'k': put_piece(W_KING,sq,0); col++; break;
-            case 'g': put_piece(W_GOLD,sq,0); col++; break;
-            case 'p': put_piece(W_PAWN+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'l': put_piece(W_LANCE+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'n': put_piece(W_KNIGHT+pmoto,sq,0); col++; pmoto = 0;break;
-            case 's': put_piece(W_SILVER+pmoto,sq,0); col++; pmoto = 0;break; 
-            case 'b': put_piece(W_BISHOP+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'r': put_piece(W_ROOK+pmoto,sq,0); col++; pmoto = 0;break;
-            
-            case 'K': put_piece(B_KING,sq,0); col++; break;
-            case 'G': put_piece(B_GOLD,sq,0); col++; break;
-            case 'P': put_piece(B_PAWN+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'L': put_piece(B_LANCE+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'N': put_piece(B_KNIGHT+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'S': put_piece(B_SILVER+pmoto,sq,0); col++; pmoto = 0;break; 
-            case 'B': put_piece(B_BISHOP+pmoto,sq,0); col++; pmoto = 0;break;
-            case 'R': put_piece(B_ROOK+pmoto,sq,0); col++; pmoto = 0;break;
-            case '/': col = 1; row++; break;
-            case ' ': break;
-            default: 
-                cout << "Error in SFEN charracter" << endl;
-                _ASSERT(false);
-                return;
-            }
-			*/
         }
     }
-    //手番設定
-	/*
-    token = uip.get_next_token();
-
-    if(token[0] == 'b'){
-        root_position.turn = BLACK;
-    }
-    else if(token[0] == 'w'){
-        root_position.turn = WHITE;
-    }
-    else{
-        cout << "Error in SFEN charracter" << endl;
-        _ASSERT(false);
-        return;
-    }
-    //持ち駒設定(サンプル S2Pb18p）
-    token = uip.get_next_token();
-    for(index = 0;token.size() > index;index++){
-        char num;
-        if(isdigit(token[index]) && isalnum(token[index+1])){   //最初に数字が来るパターンに対応
-            if(isdigit(token[index+1])){    //２桁の数字に対応
-                num = atoi(token.substr(index,2).c_str());
-                index += 2;
-            }
-            else{                           //１桁の数字に対応
-                num = atoi(token.substr(index,1).c_str());
-                index +=1;
-            }
+    //手番
+	while (uip >> token){
+		if (token == 'b'){
+			color_turn = Black;
+			break;
+		}
+		else if (token == 'w'){
+			color_turn = White;
+			break;
+		}
+		else{
+			cout << "Error in SFEN charracter" << endl;
+			_ASSERT(false);
+			return;
+		}
+	}
+    //持ち駒(サンプル S2Pb18p）
+	while (uip >> token && isspace(token)){}	//space cut
+	int digits = 0;
+    do{
+		if (token == '-'){   //持ち駒がないパターンに対応
+			break;
+		}
+		else if (isdigit(token)){   //最初に数字が来るパターンに対応
+			digits = digits * 10 + token - '0';
         }
-        else if(isalpha(token[index])){  //数字がないパターンに対応
-            num = 1;
+		else if ((piece = PieceToChar.find(token)) != string::npos){  //数字がないパターンに対応
+			put_hand(Piece(piece), digits == 0 ? 1 : digits);
+			digits = 0;
         }
-        else if(token[index] == '-'){   //持ち駒がないパターンに対応
-            break;
-        }
-        else{       //どれでもない
+		else{//どれでもない
             cout << "Error in SFEN charracter" << endl;
             _ASSERT(false);
             return; 
         }
-        switch(token[index]){
-        case 'g': put_piece(W_GOLD,215,num); break;
-        case 'p': put_piece(W_PAWN,216,num); break;
-        case 'l': put_piece(W_LANCE,217,num); break;
-        case 'n': put_piece(W_KNIGHT,218,num); break;
-        case 's': put_piece(W_SILVER,219,num); break;
-        case 'b': put_piece(W_BISHOP,220,num); break;
-        case 'r': put_piece(W_ROOK,221,num); break;
-
-        case 'G': put_piece(B_GOLD,208,num); break;
-        case 'P': put_piece(B_PAWN,209,num); break;
-        case 'L': put_piece(B_LANCE,210,num); break;
-        case 'N': put_piece(B_KNIGHT,211,num); break;
-        case 'S': put_piece(B_SILVER,212,num); break; 
-        case 'B': put_piece(B_BISHOP,213,num); break;
-        case 'R': put_piece(B_ROOK,214,num); break;
-        }
-    }
-	*/
+	} while (uip >> token && !isspace(token));
     //持ち駒の次は手数が入っているが無視してよい
 }
 
@@ -240,29 +223,62 @@ string to_sfen(const Position &pos)
     return result;
 }
 */
-//sfen文字列からpositionを設定
+//sfen文字列から局面の盤上を設定
 void Position::put_piece(Piece piece,int sq)
 {
-	board[sq] = piece;
 	PieceType pt = type_of_piece(piece);
 	Color c = color_of_piece(piece);
-	/*
-    if(sq < BOARD_UPPER){
-        //MAIN boardに駒コードを入れる
-        root_position.board[sq] = p;
-        if(pt == KING){
-            //ColorはWHITE=-1,BLACK=0で配列に収まらないので+1にしてWHITE=0,BLACK=1にしている
-            //root_position.king_square[c+1] = sq;
-            root_position.board[223+c] = sq;    //強制的にintからcharに入れている
-        }
-    }
-    else{
-        //こちらは駒台、駒種によって座標は固定されている、格納するのは枚数
-        root_position.board[sq] = num;
-    }
-	*/
+	
+	board[sq] = piece;
+	
+	//byTypeBB[AllPieces] = sq;
+	//byTypeBB[pt] = sq;
+	//byColorBB[c] = sq;
+}
+void Position::put_hand(Piece piece,const int num)
+{
+	PieceType pt = type_of_piece(piece);
+	Color c = color_of_piece(piece);
+
+	for (int i = 0; i < num; i++){
+		hand[c] += hand_packed[pt];
+	}
 }
 
+void Position::set_color_turn(Color c)
+{
+	color_turn = c;
+}
+Color Position::get_color_turn(void)
+{
+	return Color(color_turn);
+}
+void Position::flip_color(void)
+{
+	color_turn = color_turn ^ 1;
+}
+int Position::get_board(int sq)
+{
+	return board[sq];
+}
+//駒台の駒数を加減算する			駒種		マスクbit				シフトなしのマスクbit
+//xxxxxxxx xxxxxxxx xxx11111	pawn	0x1F					0x1F
+//xxxxxxxx xxxxxxxx 111xxxxx	lance	0x07(シフトしているので)	0xE0
+//xxxxxxxx xxxxx111 xxxxxxxx	night	0x07(シフトしているので)	0x700
+//xxxxxxxx xx111xxx xxxxxxxx	silver	0x07(シフトしているので)	0x3800
+//xxxxxxxx 11xxxxxx xxxxxxxx	bishop　0x03(シフトしているので)	0xC000
+//xxxxxx11 xxxxxxxx xxxxxxxx	rook	0x03(シフトしているので)	0x30000
+//xxx111xx xxxxxxxx xxxxxxxx	gold	0x07(シフトしているので)	0x1C0000
+//指定したカラー、駒種の駒数を取得
+int Position::get_hand(Color c,PieceType pt)
+{
+	return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
+}
+//指定したカラー、駒種の有無を取得
+bool Position::is_hand(Color c,PieceType pt)
+{
+	return bool(hand[c] & hand_masking[pt]);
+}
 /*
 void print_board(const Position &pos)
 {
@@ -490,38 +506,6 @@ void is_ok(Position &pos)
     }
 }
 
-TEST(position,color_of_piece)
-{
-    char p = W_LANCE;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = W_PAWN;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = W_LANCE;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = W_KING;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = WP_PAWN;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = WP_SILVER;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = WP_ROOK;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-    p = WP_BISHOP;
-    ASSERT_EQ(WHITE,color_of_piece(p));
-
-    p = B_LANCE;
-    ASSERT_EQ(BLACK,color_of_piece(p));
-    p = B_KING;
-    ASSERT_EQ(BLACK,color_of_piece(p));
-    p = BP_PAWN;
-    ASSERT_EQ(BLACK,color_of_piece(p));
-    p = BP_SILVER;
-    ASSERT_EQ(BLACK,color_of_piece(p));
-    p = BP_ROOK;
-    ASSERT_EQ(BLACK,color_of_piece(p));
-    p = B_BISHOP;
-    ASSERT_EQ(BLACK,color_of_piece(p));
-}
 */
 /*
 TEST(position,piece_type)
@@ -607,7 +591,7 @@ TEST(position,piece_type)
 TEST(position,from_sfen)
 {
     from_sfen(start_position);
-    EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
+    EXPECT_EQ(W_LANCE,pos.get_board()[SQ_9A]);
     EXPECT_EQ(W_KNIGHT,root_position.board[SQ_8A]);
     EXPECT_EQ(W_SILVER,root_position.board[SQ_7A]);
     EXPECT_EQ(W_GOLD,root_position.board[SQ_6A]);
@@ -1128,103 +1112,229 @@ int update_board_material(USIInputParser &uip,int material[],int row,int col)
     return ply;
 }
 */
-/*
-初期局面の配置との比較
-*/
-/*
-void is_eq_board(void)
+TEST(position, position_from_sfen)
 {
-    EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
-    EXPECT_EQ(W_KNIGHT,root_position.board[SQ_8A]);
-    EXPECT_EQ(W_SILVER,root_position.board[SQ_7A]);
-    EXPECT_EQ(W_GOLD,root_position.board[SQ_6A]);
-    EXPECT_EQ(W_KING,root_position.board[SQ_5A]);
-    EXPECT_EQ(W_GOLD,root_position.board[SQ_4A]);
-    EXPECT_EQ(W_SILVER,root_position.board[SQ_3A]);
-    EXPECT_EQ(W_KNIGHT,root_position.board[SQ_2A]);
-    EXPECT_EQ(W_LANCE,root_position.board[SQ_1A]);
+	Position pos(USI::start_sfen);
+	EXPECT_EQ(WLance, pos.get_board(A9));
+	EXPECT_EQ(WNight, pos.get_board(B9));
+	EXPECT_EQ(WSilver, pos.get_board(C9));
+	EXPECT_EQ(WGold, pos.get_board(D9));
+	EXPECT_EQ(WKing, pos.get_board(E9));
+	EXPECT_EQ(WGold, pos.get_board(F9));
+	EXPECT_EQ(WSilver, pos.get_board(G9));
+	EXPECT_EQ(WNight, pos.get_board(H9));
+	EXPECT_EQ(WLance, pos.get_board(I9));
 
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9B]);
-    EXPECT_EQ(W_ROOK,root_position.board[SQ_8B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3B]);
-    EXPECT_EQ(W_BISHOP,root_position.board[SQ_2B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1B]);
+	EXPECT_EQ(PieceNone, pos.get_board(A8));
+	EXPECT_EQ(WRook, pos.get_board(B8));
+	EXPECT_EQ(PieceNone, pos.get_board(C8));
+	EXPECT_EQ(PieceNone, pos.get_board(D8));
+	EXPECT_EQ(PieceNone, pos.get_board(E8));
+	EXPECT_EQ(PieceNone, pos.get_board(F8));
+	EXPECT_EQ(PieceNone, pos.get_board(G8));
+	EXPECT_EQ(WBishop, pos.get_board(H8));
+	EXPECT_EQ(PieceNone, pos.get_board(I8));
 
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_9C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_8C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_7C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_6C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_5C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_4C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_3C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_2C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_1C]);
+	EXPECT_EQ(WPawn, pos.get_board(A7));
+	EXPECT_EQ(WPawn, pos.get_board(B7));
+	EXPECT_EQ(WPawn, pos.get_board(C7));
+	EXPECT_EQ(WPawn, pos.get_board(D7));
+	EXPECT_EQ(WPawn, pos.get_board(E7));
+	EXPECT_EQ(WPawn, pos.get_board(F7));
+	EXPECT_EQ(WPawn, pos.get_board(G7));
+	EXPECT_EQ(WPawn, pos.get_board(H7));
+	EXPECT_EQ(WPawn, pos.get_board(I7));
 
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1D]);
+	EXPECT_EQ(PieceNone, pos.get_board(A6));
+	EXPECT_EQ(PieceNone, pos.get_board(B6));
+	EXPECT_EQ(PieceNone, pos.get_board(C6));
+	EXPECT_EQ(PieceNone, pos.get_board(D6));
+	EXPECT_EQ(PieceNone, pos.get_board(E6));
+	EXPECT_EQ(PieceNone, pos.get_board(F6));
+	EXPECT_EQ(PieceNone, pos.get_board(G6));
+	EXPECT_EQ(PieceNone, pos.get_board(H6));
+	EXPECT_EQ(PieceNone, pos.get_board(I6));
 
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1E]);
+	EXPECT_EQ(PieceNone, pos.get_board(A5));
+	EXPECT_EQ(PieceNone, pos.get_board(B5));
+	EXPECT_EQ(PieceNone, pos.get_board(C5));
+	EXPECT_EQ(PieceNone, pos.get_board(D5));
+	EXPECT_EQ(PieceNone, pos.get_board(E5));
+	EXPECT_EQ(PieceNone, pos.get_board(F5));
+	EXPECT_EQ(PieceNone, pos.get_board(G5));
+	EXPECT_EQ(PieceNone, pos.get_board(H5));
+	EXPECT_EQ(PieceNone, pos.get_board(I5));
 
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1F]);
+	EXPECT_EQ(PieceNone, pos.get_board(A4));
+	EXPECT_EQ(PieceNone, pos.get_board(B4));
+	EXPECT_EQ(PieceNone, pos.get_board(C4));
+	EXPECT_EQ(PieceNone, pos.get_board(D4));
+	EXPECT_EQ(PieceNone, pos.get_board(E4));
+	EXPECT_EQ(PieceNone, pos.get_board(F4));
+	EXPECT_EQ(PieceNone, pos.get_board(G4));
+	EXPECT_EQ(PieceNone, pos.get_board(H4));
+	EXPECT_EQ(PieceNone, pos.get_board(I4));
 
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_9G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_8G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_7G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_6G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_5G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_4G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_3G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_2G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_1G]);
+	EXPECT_EQ(BPawn, pos.get_board(A3));
+	EXPECT_EQ(BPawn, pos.get_board(B3));
+	EXPECT_EQ(BPawn, pos.get_board(C3));
+	EXPECT_EQ(BPawn, pos.get_board(D3));
+	EXPECT_EQ(BPawn, pos.get_board(E3));
+	EXPECT_EQ(BPawn, pos.get_board(F3));
+	EXPECT_EQ(BPawn, pos.get_board(G3));
+	EXPECT_EQ(BPawn, pos.get_board(H3));
+	EXPECT_EQ(BPawn, pos.get_board(I3));
 
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9H]);
-    EXPECT_EQ(B_BISHOP,root_position.board[SQ_8H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3H]);
-    EXPECT_EQ(B_ROOK,root_position.board[SQ_2H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1H]);
+	EXPECT_EQ(PieceNone, pos.get_board(A2));
+	EXPECT_EQ(BBishop, pos.get_board(B2));
+	EXPECT_EQ(PieceNone, pos.get_board(C2));
+	EXPECT_EQ(PieceNone, pos.get_board(D2));
+	EXPECT_EQ(PieceNone, pos.get_board(E2));
+	EXPECT_EQ(PieceNone, pos.get_board(F2));
+	EXPECT_EQ(PieceNone, pos.get_board(G2));
+	EXPECT_EQ(BRook, pos.get_board(H2));
+	EXPECT_EQ(PieceNone, pos.get_board(I2));
 
-    EXPECT_EQ(B_LANCE,root_position.board[SQ_9I]);
-    EXPECT_EQ(B_KNIGHT,root_position.board[SQ_8I]);
-    EXPECT_EQ(B_SILVER,root_position.board[SQ_7I]);
-    EXPECT_EQ(B_GOLD,root_position.board[SQ_6I]);
-    EXPECT_EQ(B_KING,root_position.board[SQ_5I]);
-    EXPECT_EQ(B_GOLD,root_position.board[SQ_4I]);
-    EXPECT_EQ(B_SILVER,root_position.board[SQ_3I]);
-    EXPECT_EQ(B_KNIGHT,root_position.board[SQ_2I]);
-    EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
+	EXPECT_EQ(BLance, pos.get_board(A1));
+	EXPECT_EQ(BNight, pos.get_board(B1));
+	EXPECT_EQ(BSilver, pos.get_board(C1));
+	EXPECT_EQ(BGold, pos.get_board(D1));
+	EXPECT_EQ(BKing, pos.get_board(E1));
+	EXPECT_EQ(BGold, pos.get_board(F1));
+	EXPECT_EQ(BSilver, pos.get_board(G1));
+	EXPECT_EQ(BNight, pos.get_board(H1));
+	EXPECT_EQ(BLance, pos.get_board(I1));
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos1(ss);
+	EXPECT_EQ(WLance, pos1.get_board(A9));
+	EXPECT_EQ(WNight, pos1.get_board(B9));
+	EXPECT_EQ(PieceNone, pos1.get_board(C9));
+	EXPECT_EQ(WGold, pos1.get_board(D9));
+	EXPECT_EQ(PieceNone, pos1.get_board(E9));
+	EXPECT_EQ(WPawn, pos1.get_board(F9));
+	EXPECT_EQ(PieceNone, pos1.get_board(G9));
+	EXPECT_EQ(BDragon, pos1.get_board(H9));
+	EXPECT_EQ(PieceNone, pos1.get_board(I9));
+
+	EXPECT_EQ(PieceNone, pos1.get_board(A8));
+	EXPECT_EQ(PieceNone, pos1.get_board(B8));
+	EXPECT_EQ(PieceNone, pos1.get_board(C8));
+	EXPECT_EQ(WKing, pos1.get_board(D8));
+	EXPECT_EQ(WBishop, pos1.get_board(E8));
+	EXPECT_EQ(PieceNone, pos1.get_board(F8));
+	EXPECT_EQ(BProSilver, pos1.get_board(G8));
+	EXPECT_EQ(PieceNone, pos1.get_board(H8));
+	EXPECT_EQ(PieceNone, pos1.get_board(I8));
+
+	EXPECT_EQ(PieceNone, pos1.get_board(A7));
+	EXPECT_EQ(PieceNone, pos1.get_board(B7));
+	EXPECT_EQ(WPawn, pos1.get_board(C7));
+	EXPECT_EQ(PieceNone, pos1.get_board(D7));
+	EXPECT_EQ(WPawn, pos1.get_board(E7));
+	EXPECT_EQ(PieceNone, pos1.get_board(F7));
+	EXPECT_EQ(WNight, pos1.get_board(G7));
+	EXPECT_EQ(PieceNone, pos1.get_board(H7));
+	EXPECT_EQ(WPawn, pos1.get_board(I7));
+
+	EXPECT_EQ(WPawn, pos1.get_board(A6));
+	EXPECT_EQ(PieceNone, pos1.get_board(B6));
+	EXPECT_EQ(PieceNone, pos1.get_board(C6));
+	EXPECT_EQ(WSilver, pos1.get_board(D6));
+	EXPECT_EQ(PieceNone, pos1.get_board(E6));
+	EXPECT_EQ(WGold, pos1.get_board(F6));
+	EXPECT_EQ(PieceNone, pos1.get_board(G6));
+	EXPECT_EQ(PieceNone, pos1.get_board(H6));
+	EXPECT_EQ(PieceNone, pos1.get_board(I6));
+
+	EXPECT_EQ(PieceNone, pos1.get_board(A5));
+	EXPECT_EQ(WNight, pos1.get_board(B5));
+	EXPECT_EQ(BLance, pos1.get_board(C5));
+	EXPECT_EQ(PieceNone, pos1.get_board(D5));
+	EXPECT_EQ(PieceNone, pos1.get_board(E5));
+	EXPECT_EQ(PieceNone, pos1.get_board(F5));
+	EXPECT_EQ(WPawn, pos1.get_board(G5));
+	EXPECT_EQ(PieceNone, pos1.get_board(H5));
+	EXPECT_EQ(PieceNone, pos1.get_board(I5));
+
+	EXPECT_EQ(BPawn, pos1.get_board(A4));
+	EXPECT_EQ(BKing, pos1.get_board(B4));
+	EXPECT_EQ(BPawn, pos1.get_board(C4));
+	EXPECT_EQ(PieceNone, pos1.get_board(D4));
+	EXPECT_EQ(BSilver, pos1.get_board(E4));
+	EXPECT_EQ(PieceNone, pos1.get_board(F4));
+	EXPECT_EQ(PieceNone, pos1.get_board(G4));
+	EXPECT_EQ(PieceNone, pos1.get_board(H4));
+	EXPECT_EQ(PieceNone, pos1.get_board(I4));
+
+	EXPECT_EQ(PieceNone, pos1.get_board(A3));
+	EXPECT_EQ(BPawn, pos1.get_board(B3));
+	EXPECT_EQ(PieceNone, pos1.get_board(C3));
+	EXPECT_EQ(WPawn, pos1.get_board(D3));
+	EXPECT_EQ(BPawn, pos1.get_board(E3));
+	EXPECT_EQ(PieceNone, pos1.get_board(F3));
+	EXPECT_EQ(BPawn, pos1.get_board(G3));
+	EXPECT_EQ(PieceNone, pos1.get_board(H3));
+	EXPECT_EQ(BPawn, pos1.get_board(I3));
+
+	EXPECT_EQ(PieceNone, pos1.get_board(A2));
+	EXPECT_EQ(PieceNone, pos1.get_board(B2));
+	EXPECT_EQ(PieceNone, pos1.get_board(C2));
+	EXPECT_EQ(PieceNone, pos1.get_board(D2));
+	EXPECT_EQ(BGold, pos1.get_board(E2));
+	EXPECT_EQ(PieceNone, pos1.get_board(F2));
+	EXPECT_EQ(PieceNone, pos1.get_board(G2));
+	EXPECT_EQ(PieceNone, pos1.get_board(H2));
+	EXPECT_EQ(PieceNone, pos1.get_board(I2));
+
+	EXPECT_EQ(BLance, pos1.get_board(A1));
+	EXPECT_EQ(PieceNone, pos1.get_board(B1));
+	EXPECT_EQ(BSilver, pos1.get_board(C1));
+	EXPECT_EQ(PieceNone, pos1.get_board(D1));
+	EXPECT_EQ(PieceNone, pos1.get_board(E1));
+	EXPECT_EQ(PieceNone, pos1.get_board(F1));
+	EXPECT_EQ(WBishop, pos1.get_board(G1));
+	EXPECT_EQ(WProPawn, pos1.get_board(H1));
+	EXPECT_EQ(BLance, pos1.get_board(I1));
+	//get_hand	
+	EXPECT_EQ(2,pos1.get_hand(Black, Pawn));
+	EXPECT_EQ(0,pos1.get_hand(Black, Lance));
+	EXPECT_EQ(0,pos1.get_hand(Black, Night));
+	EXPECT_EQ(0,pos1.get_hand(Black, Silver));
+	EXPECT_EQ(0,pos1.get_hand(Black, Bishop));
+	EXPECT_EQ(1,pos1.get_hand(Black, Rook));
+	EXPECT_EQ(0,pos1.get_hand(Black, Gold));
+	EXPECT_EQ(2, pos1.get_hand(White, Pawn));
+	EXPECT_EQ(0, pos1.get_hand(White, Lance));
+	EXPECT_EQ(1, pos1.get_hand(White, Night));
+	EXPECT_EQ(0, pos1.get_hand(White, Silver));
+	EXPECT_EQ(0, pos1.get_hand(White, Bishop));
+	EXPECT_EQ(0, pos1.get_hand(White, Rook));
+	EXPECT_EQ(1, pos1.get_hand(White, Gold));
+	//is_hand
+	EXPECT_TRUE(pos1.is_hand(Black, Pawn));
+	EXPECT_FALSE(pos1.is_hand(Black, Lance));
+	EXPECT_FALSE(pos1.is_hand(Black, Night));
+	EXPECT_FALSE(0, pos1.is_hand(Black, Silver));
+	EXPECT_FALSE(0, pos1.is_hand(Black, Bishop));
+	EXPECT_TRUE(1, pos1.is_hand(Black, Rook));
+	EXPECT_FALSE(0, pos1.is_hand(Black, Gold));
+	EXPECT_TRUE(pos1.is_hand(White, Pawn));
+	EXPECT_FALSE(pos1.is_hand(White, Lance));
+	EXPECT_TRUE(pos1.is_hand(White, Night));
+	EXPECT_FALSE(pos1.is_hand(White, Silver));
+	EXPECT_FALSE(pos1.is_hand(White, Bishop));
+	EXPECT_FALSE(pos1.is_hand(White, Rook));
+	EXPECT_TRUE(pos1.is_hand(White, Gold));
 }
-*/
+TEST(position, color_turn)
+{
+	Position pos;
+	pos.set_color_turn(Black);
+	EXPECT_EQ(Black, pos.get_color_turn());
+	pos.flip_color();
+	EXPECT_EQ(White, pos.get_color_turn());
+}
 TEST(position, color_of_piece)
 {
 	EXPECT_EQ(Black, color_of_piece(BPawn));

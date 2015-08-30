@@ -2,6 +2,7 @@
 #define POSITION_H_INCLUDE
 
 #include "types.h"
+#include "bitboard.h"
 
 class Position{
 public:
@@ -13,11 +14,24 @@ public:
 		position_from_sfen(sfen);
 	}
 	void position_from_sfen(const string &sfen);
+	void set_color_turn(Color c);
+	Color get_color_turn();
+	void flip_color();
+	int get_board(int sq);
+	//template<PieceType pt> int get_hand(Color c);
+	int get_hand(Color c,PieceType pt);
+	bool is_hand(Color c,PieceType pt);
 private:
 	void Position::clear();
 	void put_piece(Piece piece, int sq);
+	void put_hand(Piece pt, int num);
 	int board[SquareNum];
+	unsigned int hand[ColorNum];
+	BitBoard byTypeBB[PieceTypeNum];
+	BitBoard byColorBB[ColorNum];
+	int color_turn;
 };
+
 //positionの定数
 /*
 const int BOARD_UPPER = 16*13;

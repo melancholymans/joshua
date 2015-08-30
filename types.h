@@ -29,6 +29,7 @@ enum File
 {
 	FileI,FileH,FileG,FileF,FileE,FileD,FileC,FileB,FileA,FileNum
 };
+
 enum Rank
 {
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1, RankNum
@@ -44,6 +45,7 @@ enum SquareDelta{
 };
 
 enum PieceType{
+	AllPieces = 0,
 	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King,
 	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
 	PieceTypeNum
@@ -57,16 +59,17 @@ enum Piece{
 	WProPawn, WProLance, WProNight, WProSilver, WHorse, WDragon,
 	PieceNum = 31
 };
-
+//駒コードから駒種を取り出す
 inline PieceType type_of_piece(Piece piece)
 {
 	return PieceType(piece & 0x0F);
 }
-
+//駒コードからカラーを取り出す
 inline Color color_of_piece(Piece piece)
 {
 	return Color(piece >> 4);
 }
+//
 //関数を呼び分けるマクロ群
 //#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
