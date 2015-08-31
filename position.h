@@ -18,7 +18,6 @@ public:
 	Color get_color_turn();
 	void flip_color();
 	int get_board(int sq);
-	//template<PieceType pt> int get_hand(Color c);
 	int get_hand(Color c,PieceType pt);
 	bool is_hand(Color c,PieceType pt);
 private:
@@ -49,44 +48,6 @@ extern int turn;
 const extern char EMPTY;
 const extern char EDGE;
 //const extern char NOT_PMOTO;
-enum{
-    PPAWN=2,PLANCE,PKNIGHT,PSILVER,PBISHOP,PROOK,
-    KING=8,GOLD,PAWN,LANCE,KNIGHT,SILVER,BISHOP,ROOK
-};
-enum{
-    UUL = -33,UUR = -31,UL = -17,U = -16,UR = -15,L = -1,
-    R = 1,DL = 15,D = 16,DR = 17,DDL = 31,DDR = 33
-};
-
-const extern char BP_PAWN;      //2
-const extern char BP_LANCE;     //3
-const extern char BP_KNIGHT;    //4   
-const extern char BP_SILVER;    //5
-const extern char BP_BISHOP;    //6
-const extern char BP_ROOK;      //7
-const extern char B_KING;       //8
-const extern char B_GOLD;       //9
-const extern char B_PAWN;       //10
-const extern char B_LANCE;      //11
-const extern char B_KNIGHT;     //12
-const extern char B_SILVER;     //13
-const extern char B_BISHOP;     //14
-const extern char B_ROOK;       //15
-
-const extern char WP_PAWN;      //2-16=-14
-const extern char WP_LANCE;     //3-16=-13
-const extern char WP_KNIGHT;    //4-16=-12
-const extern char WP_SILVER;    //5-16=-11
-const extern char WP_BISHOP;    //6-16=-10
-const extern char WP_ROOK;      //7-16=-9
-const extern char W_KING;       //8-16=-8
-const extern char W_GOLD;       //9-16=-7
-const extern char W_PAWN;       //10-16=-6
-const extern char W_LANCE;      //11-16=-5
-const extern char W_KNIGHT;     //12-16=-4
-const extern char W_SILVER;     //13-16=-3
-const extern char W_BISHOP;     //14-16=-2
-const extern char W_ROOK;       //15-16=-1
 
 */
 //File,Rank座標からsq座標を計算

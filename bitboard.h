@@ -3,6 +3,9 @@
 
 #include "types.h"
 
+class BitBoard;		//先行宣言
+extern const BitBoard SquareBB[SquareNum];
+
 class BitBoard{
 public:
 	//BitBoardを"="演算子で代入する
@@ -40,7 +43,10 @@ public:
 	{
 		return _mm_popcnt_u64(p_[0]) + _mm_popcnt_u64(p_[1]);
 	}
-
+	void set_bit(const Square sq)
+	{
+		*this |= SquareBB[sq];
+	}
 //private:
 	union{
 		//将棋盤の座標0～62までをp_[0]が表現,座標63から80までをp_[1]が表現

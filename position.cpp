@@ -37,7 +37,7 @@ Horse..J j
 Dragon..Z z
 */
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
-//unsigned 32bitに駒台の駒数をパッキングするための定数
+//unsigned int 32bitに駒台の駒数をパッキングするための定数
 int hand_packed[] = {
 	0,
 	1 << 0,		//HandPawn
@@ -48,6 +48,7 @@ int hand_packed[] = {
 	1 << 16,	//HandRook
 	1 << 18		//HandGold
 };
+//unsigned int 32bitにパッキングされて駒数を元に戻すためのシフト数
 int hand_shift[] = {
 	0,
 	0,			//HandPawn
@@ -231,9 +232,9 @@ void Position::put_piece(Piece piece,int sq)
 	
 	board[sq] = piece;
 	
-	//byTypeBB[AllPieces] = sq;
-	//byTypeBB[pt] = sq;
-	//byColorBB[c] = sq;
+	byTypeBB[AllPieces].set_bit(Square(sq));
+	byTypeBB[pt].set_bit(Square(sq));
+	byColorBB[c].set_bit(Square(sq));
 }
 void Position::put_hand(Piece piece,const int num)
 {
