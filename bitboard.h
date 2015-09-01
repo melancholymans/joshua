@@ -38,6 +38,7 @@ public:
 	BitBoard operator |= (const BitBoard& rhs)
 	{
 		_mm_store_si128(&this->m_, _mm_or_si128(this->m_, rhs.m_));
+		return *this;
 	}
 	int pop_count()
 	{
