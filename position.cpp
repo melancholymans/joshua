@@ -1316,10 +1316,10 @@ TEST(position, position_from_sfen)
 	EXPECT_TRUE(pos1.is_hand(Black, Pawn));
 	EXPECT_FALSE(pos1.is_hand(Black, Lance));
 	EXPECT_FALSE(pos1.is_hand(Black, Night));
-	EXPECT_FALSE(0, pos1.is_hand(Black, Silver));
-	EXPECT_FALSE(0, pos1.is_hand(Black, Bishop));
-	EXPECT_TRUE(1, pos1.is_hand(Black, Rook));
-	EXPECT_FALSE(0, pos1.is_hand(Black, Gold));
+	EXPECT_FALSE(pos1.is_hand(Black, Silver));
+	EXPECT_FALSE(pos1.is_hand(Black, Bishop));
+	EXPECT_TRUE(pos1.is_hand(Black, Rook));
+	EXPECT_FALSE(pos1.is_hand(Black, Gold));
 	EXPECT_TRUE(pos1.is_hand(White, Pawn));
 	EXPECT_FALSE(pos1.is_hand(White, Lance));
 	EXPECT_TRUE(pos1.is_hand(White, Night));
