@@ -49,7 +49,7 @@ int main(int argc,char *argv[])
 #ifdef _DEBUG
 	//CPUの性能を表示させる
 	//cpuid();
-	implementation_avx();
+	//implementation_avx();
 	BitBoard bb(0x1FF, 0);
 	BitBoards::print(bb);
 	//profile();

@@ -274,7 +274,7 @@ void implementation_avx(void)
 	//http://www.slideshare.net/herumi/x86opti6?from_action=save
 	//リファレンス
 	//http://nf.nci.org.au/facilities/software/intel-ct/13.5.192/Documentation/ja_JP/compiler_c/main_cls/GUID-E6E297BB-E575-4525-AE1C-DFD7D5B662F5.htm
-	//LZCNT命令(ABM)
+//LZCNT命令(ABM)
 	//ソースオペランドの先頭からのゼロ・ビットの数をカウントします。 ソースオペランドが 0 の場合は、オペランドのサイズを返します。 対応するインテル® AVX2 命令は LZCNT です。
 	//変数全体に含まれている0bitの数ではなく最上位bitから0bitが連続で何個並んでいるかをカウントする。
 	//32bit 0x13E7FFは２進数では  0000 0000 0001 0011 1110 0111 1111 1111なので最上位から0が11個」並んでいるので答えは11
@@ -283,14 +283,14 @@ void implementation_avx(void)
 	cout << "_lzcnt_u32= " << _lzcnt_u32(source) << endl;
 	unsigned __int64 source64 = 0xFFFFFFFFFFFF;	//0bit 16個
 	cout << "_lzcnt_u64= " << _lzcnt_u64(source64) << endl;
-	//TZCNT命令(BMI1)
+//TZCNT命令(BMI1)
 	//ソースオペランドの最後(最下位ビット) からのゼロ・ビットの数をカウントし、結果を返します。ソースオペランドが 0 の場合、ソースオペランドのサイズ(ビット数) が返されます。対応するインテル® AVX2 命令は TZCNT です。
 	//変数全体に含まれている0bitの数ではなく最下位bitから0bitが連続で何個並んでいるかをカウントする。
 	source = 0x13E700;	//0bit 8個
 	cout << "_tzcnt_u32= " << _tzcnt_u32(source) << endl;
 	source64 = 0xC00;	//0bit 10個
 	cout << "_tzcnt_u64= " << _tzcnt_u64(source64) << endl;
-	//ANDN(BMI1) ~x & y
+//ANDN(BMI1) ~x & y
 	unsigned int source1 = 0x457;	//010001010111
 	unsigned int source2 = 0x876;	//100001110110
 	//~x & y						
@@ -300,7 +300,7 @@ void implementation_avx(void)
 	//計算結果と手計算が合わない、pythonで計算させてみたが計算結果が正しい、そもそも~xの計算が間違っているが
 	//いったん置いておく
 	cout << "_andn_u32= " << _andn_u32(source1, source2) << endl;
-	//BEXTR(BMI1)
+//BEXTR(BMI1)
 	//たぶん使うことなさそうなのでパス
 	//BLSI(BMI1) x & -x	
 	//この操作の意味
@@ -313,25 +313,25 @@ void implementation_avx(void)
 	cout << "_blsi_u32= " << _blsi_u32(source2) << endl;	//8
 	__int64 source3 = 0x807C00000ULL; //100000000111110000000000000000000000
 	cout << "_blsi_u64= " << _blsi_u64(source3) << endl;	//4194304(10進数)
-	//BLSR(BMI1）
+//BLSR(BMI1）
 	//この操作の意味、最下位からみて初めて１になったまで0クリアする１が立っていた場所も0クリア
 	source1 = 0x457;	//010001010111->010001010110
 	cout << "_blsr_u32= " << _blsr_u32(source1) << endl;	//1110(10進数)
 	source2 = 0x88;	//10001000->10000000
 	cout << "_blsr_u64= " << _blsr_u64(source2) << endl;	//128(10進数)
-	//BLSMSK(BMI1)
+//BLSMSK(BMI1)
 	//この操作の意味、最下位からみて初めて１になった場所までマスクを作る、初めて１になった場所から上位はもちろん0
 	source1 = 0x88;	//10001000 -> 00001111 
 	cout << "_blsmsk_u32= " << _blsmsk_u32(source1) << endl;	//15 (10進数)
 	source3 = 0x807C00000ULL; //100000000111110000000000000000000000 -> 000000000000011111111111111111111111
 	cout << "_blsmsk_u32= " << _blsmsk_u64(source3) << endl;	//8388607 (10進数)
-	//BZHI(BMI2)
+//BZHI(BMI2)
 	//この操作の意味、index(第二引数 インデックスは1から始まる)から上位を0クリアする
 	source1 = 0x1E0;	//111100000 -> 100000　　indexは１からスタート 
 	cout << "_bzhi_u32= " << _bzhi_u32(source1, 6) << endl;	//55
 	source3 = 0x807C00000ULL; //100000000111110000000000000000000000 -> 000000000000010000000000000000000000
 	cout << "_bzhi_u64= " << _bzhi_u64(source3, 23) << endl; //4194304
-	//PDEP(BMI2)
+//PDEP(BMI2)
 	//この操作の意味、マスクmakに応じてsource1のbitをコピーしたものを返す
 	//source1 y3 y2 y1 y0
 	//mask    1  1  0  0  1  1  0  0
@@ -340,15 +340,39 @@ void implementation_avx(void)
 	unsigned int mask = 0x3F8;	//1111111000
 	unsigned int dest = _pdep_u32(source1,mask);
 	cout << "_pdep_u32= " << dest << endl;		//680(10進数)   1010101000
-	//MULX
+//MULX
 	//演算の結果で、フラグを変更しない乗算、利用方法思いつかず、パス
-	//RORX
+//RORX
 	//演算の結果で、フラグを変更しない右シフト（ローテート）、利用方法思いつかずパス
 	//SARX,SHRX,SHLXなどもフラグを変更しないbit操作でるが、利用方法思いつかずパス
-	//pext命令
-	
+//pext命令(BMI2)
+	//unsigned int _pext_u32(unsigned int a,unsigned int mask)
+	//unsigned __int64 _pext_u64(unsigned __int64 a,unsigned __int64 mask)
 	//x64プロセッサでは__m64型の変数は使用できない.
 	//__int64型を使用すること
-
-
+	uint64_t a = 0x00;
+	uint64_t b = 0x1040093042500548;
+	uint64_t mask64 = 0x1044414000504441;
+	/*
+	b0
+	最初に書かれているのが下位bit
+	下の行に行くほど上位bit
+	111000011
+	101001100
+	000000000
+	000000000
+	000000000
+	000000000
+	000000000
+	b1
+	110111000
+	000000000
+	*/
+	a = _pext_u64(b, mask64);
+	//正解は0xcb6となる
+	BitBoard bb(0x1040093042500548, 0);
+	cout << "pext 64 " << endl;		//680(10進数)   1010101000
+	BitBoards::print(bb);
+	BitBoard bb1(0x1044414000504441, 0);
+	BitBoards::print(bb1);
 }
