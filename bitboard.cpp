@@ -165,6 +165,86 @@ void BitBoards::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, is_set)
+{
+	uint64_t b0 = 0xCB87;
+	uint64_t b1 = 0x3b;
+	BitBoard bb(b0, b1);
+	//p[0]
+	EXPECT_TRUE(bb.is_set(I9));
+	EXPECT_TRUE(bb.is_set(I8));
+	EXPECT_TRUE(bb.is_set(I7));
+	EXPECT_FALSE(bb.is_set(I6));
+	EXPECT_FALSE(bb.is_set(I5));
+	EXPECT_FALSE(bb.is_set(I4));
+	EXPECT_FALSE(bb.is_set(I3));
+	EXPECT_TRUE(bb.is_set(I2));
+	EXPECT_TRUE(bb.is_set(I1));
+	EXPECT_TRUE(bb.is_set(H9));
+	EXPECT_FALSE(bb.is_set(H8));
+	EXPECT_TRUE(bb.is_set(H7));
+	EXPECT_FALSE(bb.is_set(H6));
+	EXPECT_FALSE(bb.is_set(H5));
+	EXPECT_TRUE(bb.is_set(H4));
+	EXPECT_TRUE(bb.is_set(H3));
+	EXPECT_FALSE(bb.is_set(H2));
+	EXPECT_FALSE(bb.is_set(H1));
+	EXPECT_FALSE(bb.is_set(G9));
+	EXPECT_FALSE(bb.is_set(G8));
+	EXPECT_FALSE(bb.is_set(G7));
+	EXPECT_FALSE(bb.is_set(G6));
+	EXPECT_FALSE(bb.is_set(G5));
+	EXPECT_FALSE(bb.is_set(G4));
+	EXPECT_FALSE(bb.is_set(G3));
+	EXPECT_FALSE(bb.is_set(G2));
+	EXPECT_FALSE(bb.is_set(G1));
+	EXPECT_FALSE(bb.is_set(F9));
+	EXPECT_FALSE(bb.is_set(F8));
+	EXPECT_FALSE(bb.is_set(F7));
+	EXPECT_FALSE(bb.is_set(F6));
+	EXPECT_FALSE(bb.is_set(F5));
+	EXPECT_FALSE(bb.is_set(F4));
+	EXPECT_FALSE(bb.is_set(F3));
+	EXPECT_FALSE(bb.is_set(F2));
+	EXPECT_FALSE(bb.is_set(F1));
+	EXPECT_FALSE(bb.is_set(E9));
+	EXPECT_FALSE(bb.is_set(E8));
+	EXPECT_FALSE(bb.is_set(E7));
+	EXPECT_FALSE(bb.is_set(E6));
+	EXPECT_FALSE(bb.is_set(E5));
+	EXPECT_FALSE(bb.is_set(E4));
+	EXPECT_FALSE(bb.is_set(E3));
+	EXPECT_FALSE(bb.is_set(E2));
+	EXPECT_FALSE(bb.is_set(E1));
+	EXPECT_FALSE(bb.is_set(D9));
+	EXPECT_FALSE(bb.is_set(D8));
+	EXPECT_FALSE(bb.is_set(D7));
+	EXPECT_FALSE(bb.is_set(D6));
+	EXPECT_FALSE(bb.is_set(D5));
+	EXPECT_FALSE(bb.is_set(D4));
+	EXPECT_FALSE(bb.is_set(D3));
+	EXPECT_FALSE(bb.is_set(D2));
+	EXPECT_FALSE(bb.is_set(D1));
+	EXPECT_FALSE(bb.is_set(C9));
+	EXPECT_FALSE(bb.is_set(C8));
+	EXPECT_FALSE(bb.is_set(C7));
+	EXPECT_FALSE(bb.is_set(C6));
+	EXPECT_FALSE(bb.is_set(C5));
+	EXPECT_FALSE(bb.is_set(C4));
+	EXPECT_FALSE(bb.is_set(C3));
+	EXPECT_FALSE(bb.is_set(C2));
+	EXPECT_FALSE(bb.is_set(C1));
+	//p[1]
+	EXPECT_TRUE(bb.is_set(B9));
+	EXPECT_TRUE(bb.is_set(B8));
+	EXPECT_FALSE(bb.is_set(B7));
+	EXPECT_TRUE(bb.is_set(B6));
+	EXPECT_TRUE(bb.is_set(B5));
+	EXPECT_TRUE(bb.is_set(B4));
+	EXPECT_FALSE(bb.is_set(B3));
+	EXPECT_FALSE(bb.is_set(B2));
+	EXPECT_FALSE(bb.is_set(B1));
+}
 TEST(bitboard_case, bitboard)
 {
 	//pop_count function

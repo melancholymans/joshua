@@ -35,6 +35,7 @@ public:
 	{
 		return !(_mm_testz_si128(this->m_, _mm_set1_epi8(static_cast<char>(0xFFu))));
 	}
+	//局面bitboardと引数rhsとのOR演算して更新する
 	BitBoard operator |= (const BitBoard& rhs)
 	{
 		_mm_store_si128(&this->m_, _mm_or_si128(this->m_, rhs.m_));
@@ -48,7 +49,13 @@ public:
 	{
 		*this |= SquareBB[sq];
 	}
-//private:
+	//局面bitboardと引数のbitboardとのAND演算して１が立っていればtrueを返す、指定した座標に駒がいるか判定する
+	//_mm_testz_si128は引数同士をAND演算をして0ならtrueを返す
+	bool is_set(const Square sq)
+	{
+		return !(_mm_testz_si128(this->m_, SquareBB[sq].m_));
+	}
+	//private:
 	union{
 		//将棋盤の座標0～62までをp_[0]が表現,座標63から80までをp_[1]が表現
 		//座標が若いほど下位bit,p_[0]では座標0が最下位bit,座標63が最上位bit
