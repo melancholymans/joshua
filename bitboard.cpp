@@ -38,7 +38,7 @@ FILEA		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
 			+--+--+--+--+--+--+--+--+--+
 	RANK	  9  8  7  6  5  4  3  2  1
 
-	将棋盤を真横から見ているような配置にしてある、将棋は先手側から、後手側から先手側に移動する手が多いので
+	将棋盤を真横から見ているような配置にしてある、将棋は先手側から後手側に、後手側から先手側に縦に移動する手が多いので
 	このような配置にしてある、と思う。
 */
 const BitBoard SquareBB[SquareNum] = {		//bitboard index		board square
@@ -165,6 +165,85 @@ void BitBoards::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, is_biton_inmask)
+{
+	uint64_t b0 = 0xCB87;
+	uint64_t b1 = 0x3b;
+	BitBoard bb(b0, b1);
+	BitBoards::print(bb);
+	/*
+	bbのbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+  	   A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  *
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  *
+	6  .  *  .  .  .  .  .  .  .
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  .  *  .
+	2  .  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	*/
+	BitBoard bb1(0x1FF, 0);
+	BitBoards::print(bb1);
+	/*
+	bb1のbitパターン
+	-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	   A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  .  *
+	6  .  .  .  .  .  .  .  .  *
+	5  .  .  .  .  .  .  .  .  *
+	4  .  .  .  .  .  .  .  .  *
+	3  .  .  .  .  .  .  .  .  *
+	2  .  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	*/
+	BitBoard bb2(0x20100804120104D, 0x11008);
+	BitBoards::print(bb2);
+	/*
+	bb2のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  *
+	6  *  *  *  *  *  *  *  *  *
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  *  .  *
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	*/
+	BitBoard bb3(0x00, 0x1FE00);
+	BitBoards::print(bb3);
+	/*
+	-+--+--+--+--+--+--+--+--+--+
+	   A  B  C  D  E  F  G  H  I
+	9  *  .  .  .  .  .  .  .  .
+	8  *  .  .  .  .  .  .  .  .
+	7  *  .  .  .  .  .  .  .  .
+	6  *  .  .  .  .  .  .  .  .
+	5  *  .  .  .  .  .  .  .  .
+	4  *  .  .  .  .  .  .  .  .
+	3  *  .  .  .  .  .  .  .  .
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	*/
+	EXPECT_TRUE(bb.is_biton_inmask(bb1));
+	EXPECT_TRUE(bb.is_biton_inmask(bb2));
+	EXPECT_TRUE(bb1.is_biton_inmask(bb2));
+	EXPECT_FALSE(bb.is_biton_inmask(bb3));
+	EXPECT_FALSE(bb1.is_biton_inmask(bb3));
+	EXPECT_TRUE(bb2.is_biton_inmask(bb3));
+}
+
 TEST(bitboard, is_set)
 {
 	uint64_t b0 = 0xCB87;

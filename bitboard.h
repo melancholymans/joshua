@@ -41,9 +41,14 @@ public:
 		_mm_store_si128(&this->m_, _mm_or_si128(this->m_, rhs.m_));
 		return *this;
 	}
+	//‹Ç–Êbitboard‚Æˆø”‚Ìbitboard‚ÌAND‰‰ŽZ‚Åbit‚ª—§‚Á‚Ä‚¢‚ê‚Îtrue‚ð•Ô‚·
+	bool is_biton_inmask(const BitBoard& mask)
+	{
+		return !(_mm_testz_si128(this->m_, mask.m_));
+	}
 	int pop_count()
 	{
-		return _mm_popcnt_u64(p_[0]) + _mm_popcnt_u64(p_[1]);
+		return int(_mm_popcnt_u64(p_[0]) + _mm_popcnt_u64(p_[1]));
 	}
 	void set_bit(const Square sq)
 	{

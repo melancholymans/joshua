@@ -50,8 +50,6 @@ int main(int argc,char *argv[])
 	//CPUの性能を表示させる
 	//cpuid();
 	//implementation_avx();
-	BitBoard bb(0x1FF, 0);
-	BitBoards::print(bb);
 	//profile();
 	main_test(argc, argv);
 #endif
