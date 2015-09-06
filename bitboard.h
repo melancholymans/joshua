@@ -29,17 +29,59 @@ public:
 		this->p_[0] = v0;
 		this->p_[1] = v1;
 	}
-	//_mm_testz_si128‚Íˆø”“¯m‚ğbit AND‰‰Z‚µ‚ÄŒ‹‰Ê‚ªƒ[ƒ‚É‚È‚ê‚Î1‚ğ•Ô‚·
-	//‚±‚Ìis_not_zeroŠÖ”‚Í‚±‚ÌBitBoardƒNƒ‰ƒX‚Ìbitboard‚ª‚¸‚×‚Äƒ[ƒ‚É‚È‚Á‚½‚çFALSE‚ğ•Ô‚·
-	bool is_not_zero()
+	//’P€‰‰ZqA•Û‚µ‚Ä‚¢‚ébitboard‚ğ”½“]‚·‚é
+	BitBoard operator ~() const
 	{
-		return !(_mm_testz_si128(this->m_, _mm_set1_epi8(static_cast<char>(0xFFu))));
+		BitBoard tmp;
+		_mm_store_si128(&tmp.m_, _mm_andnot_si128(this->m_, _mm_set1_epi8(static_cast<char>(0xFFu))));
+		return tmp;
 	}
-	//‹Ç–Êbitboard‚Æˆø”rhs‚Æ‚ÌOR‰‰Z‚µ‚ÄXV‚·‚é
+	//ˆø”rhs‚Æ‚ÌAND‰‰Z
+	BitBoard operator &= (const BitBoard& rhs)
+	{
+		_mm_store_si128(&this->m_, _mm_and_si128(this->m_, rhs.m_));
+		return *this;
+	}
+	//ˆø”rhs‚Æ‚ÌOR‰‰Z
 	BitBoard operator |= (const BitBoard& rhs)
 	{
 		_mm_store_si128(&this->m_, _mm_or_si128(this->m_, rhs.m_));
 		return *this;
+	}
+	//ˆø”rhs‚Æ‚ÌXOR‰‰Z
+	BitBoard operator ^= (const BitBoard& rhs)
+	{
+		_mm_store_si128(&this->m_, _mm_xor_si128(this->m_, rhs.m_));
+		return *this;
+	}
+	//bitboard‚ğˆø”i‚¾‚¯¶ƒVƒtƒg‚·‚é
+	BitBoard operator <<= (const int i)
+	{
+		_mm_store_si128(&this->m_, _mm_slli_epi64(this->m_, i));
+		return *this;
+	}
+	//bitboard‚ğˆø”i‚¾‚¯‰EƒVƒtƒg‚·‚é
+	BitBoard operator >>= (const int i)
+	{
+		_mm_store_si128(&this->m_, _mm_srli_epi64(this->m_, i));
+		return *this;
+	}
+	//bitboard‚ğˆø”rhs‚Æ”äŠr‚µ‚Ä“™‚µ‚¯‚ê‚Îtrue‚ğ•Ô‚·
+	bool operator == (const BitBoard& rhs) const
+	{
+		return _mm_testc_si128(_mm_cmpeq_epi8(this->m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? true:false;
+	}
+	//bitboard‚ğˆø”rhs‚Æ”äŠr‚µ‚Ä“™‚µ‚­‚È‚¯‚ê‚Îtrue‚ğ•Ô‚·
+	bool operator != (const BitBoard& rhs) const
+	{
+		return _mm_testc_si128(_mm_cmpeq_epi8(this->m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? false : true;
+	}
+
+	//_mm_testz_si128‚Íˆø”“¯m‚ğbit AND‰‰Z‚µ‚ÄŒ‹‰Ê‚ªƒ[ƒ‚É‚È‚ê‚Î1‚ğ•Ô‚·
+	//‚±‚Ìis_not_zeroŠÖ”‚ÍBitBoardƒNƒ‰ƒX‚Ìbitboard‚ª‚·‚×‚Äƒ[ƒ‚É‚È‚Á‚½‚çFALSE‚ğ•Ô‚·
+	bool is_not_zero()
+	{
+		return !(_mm_testz_si128(this->m_, _mm_set1_epi8(static_cast<char>(0xFFu))));
 	}
 	//‹Ç–Êbitboard‚Æˆø”‚Ìbitboard‚ÌAND‰‰Z‚Åbit‚ª—§‚Á‚Ä‚¢‚ê‚Îtrue‚ğ•Ô‚·
 	bool is_biton_inmask(const BitBoard& mask)
@@ -50,15 +92,36 @@ public:
 	{
 		return int(_mm_popcnt_u64(p_[0]) + _mm_popcnt_u64(p_[1]));
 	}
+	//w’è‚µ‚½À•W‚Ìbit‚ğon
 	void set_bit(const Square sq)
 	{
 		*this |= SquareBB[sq];
 	}
-	//‹Ç–Êbitboard‚Æˆø”‚Ìbitboard‚Æ‚ÌAND‰‰Z‚µ‚Ä‚P‚ª—§‚Á‚Ä‚¢‚ê‚Îtrue‚ğ•Ô‚·Aw’è‚µ‚½À•W‚É‹î‚ª‚¢‚é‚©”»’è‚·‚é
-	//_mm_testz_si128‚Íˆø”“¯m‚ğAND‰‰Z‚ğ‚µ‚Ä0‚È‚çtrue‚ğ•Ô‚·
-	bool is_set(const Square sq)
+	//w’è‚µ‚½À•W‚É‹î‚ª‚¢‚é‚©”»’è‚·‚é
+	bool is_bit_on(const Square sq)
 	{
 		return !(_mm_testz_si128(this->m_, SquareBB[sq].m_));
+	}
+	//mask‚ªon‚É‚È‚Á‚Ä‚¢‚é‚Æ‚±‚ë‚ğƒNƒŠƒA‚·‚é
+	BitBoard clear_bits(const BitBoard& mask)
+	{
+		_mm_store_si128(&this->m_, _mm_andnot_si128(mask.m_, this->m_));
+		return *this;
+	}
+	//w’è‚µ‚½À•W‚Ìbit‚ğoff‚É‚·‚é
+	void clear_square(const Square sq)
+	{
+		clear_bits(SquareBB[sq]);
+	}
+	//w’è‚µ‚½À•W‚ªbit on‚È‚çbit off‚Éoff‚È‚çon‚É‚·‚é
+	void xor_bit(const Square sq)
+	{
+		*this ^= SquareBB[sq];
+	}
+	//w’è‚µ‚½À•Wsq1,sq2‚Åxor‰‰ZA‹î‚ÌˆÚ“®•\Œ»
+	void xor_bit(const Square sq1, const Square sq2)
+	{
+		_mm_store_si128(&this->m_,_mm_xor_si128(this->m_, _mm_or_si128(SquareBB[sq1].m_, SquareBB[sq2].m_)));
 	}
 	//private:
 	union{
