@@ -125,7 +125,7 @@ const BitBoard SquareBB[SquareNum] = {		//bitboard index		board square
 	BitBoard(0, 1ULL << 17)					//80					A1
 };
 
-void BitBoards::init()
+void BitBoardns::init()
 {
 
 }
@@ -144,7 +144,7 @@ void BitBoards::init()
 -+--+--+--+--+--+--+--+--+--+
 make_squareが返す座標
 */
-void BitBoards::print(BitBoard &bb)
+void BitBoardns::print(BitBoard &bb)
 {
 	int sq;
 
@@ -164,6 +164,43 @@ void BitBoards::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, is_one_bit)
+{
+	BitBoard bb1(0x20100804120104D, 0x11008);	//0x11008=10001000000001000
+	BitBoard bb2(0x20, 0x00);
+	BitBoard bb3(0x00, 0x20);
+	EXPECT_FALSE(bb1.is_one_bit());
+	EXPECT_TRUE(bb2.is_one_bit());
+	EXPECT_TRUE(bb3.is_one_bit());
+}
+TEST(bitboard, first_one)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);	//0x11008=10001000000001000
+	int ans[] = { 0, 2, 3, 6, 12, 21, 24, 30, 39, 48, 57, 63 + 3, 63 + 12, 63 + 16 };
+	int len = bb.pop_count();
+	for (int i = 0; i < len; i++){
+		int index = bb.first_one();
+		EXPECT_EQ(ans[i], index);
+	}
+}
+TEST(bitboard, first_one_left)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);	//0x11008=10001000000001000
+	int ans[] = { 63 + 3, 63 + 12, 63 + 16 };
+	for (int i = 0; i < 3; i++){
+		int index = bb.first_one_left();
+		EXPECT_EQ(ans[i], index);
+	}
+}
+TEST(bitboard, first_one_right)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);	//0x20100804120104D=1000000001000000001000000001000001001000000001000001001101
+	int ans[] = { 0, 2, 3, 6, 12, 21, 24, 30, 39, 48, 57 };
+	for (int i = 0; i < 11; i++){
+		int index = bb.first_one_right();
+		EXPECT_EQ(ans[i], index);
+	}
+}
 TEST(bitboard, xor_bit)
 {
 	BitBoard bb1(0x20100804120104D, 0x11008);
@@ -183,7 +220,7 @@ TEST(bitboard, clear_bits)
 	BitBoard bb1(0x20100804120104D, 0x11008);
 	BitBoard bb2(0xCB87, 0x3b);
 	BitBoard ans(0x201008041201048, 0x11000);
-	BitBoards::print(bb2);
+	BitBoardns::print(bb2);
 	/*
 	bb1のbitパターン
 	-+--+--+--+--+--+--+--+--+--+
@@ -365,7 +402,7 @@ TEST(bitboard, or)
 	1  .  .  .  .  .  .  .  .  *
 	-+--+--+--+--+--+--+--+--+--+
 	*/
-	//BitBoards::print(bb1 |= bb2);
+	//BitBoardns::print(bb1 |= bb2);
 	EXPECT_TRUE((bb1 |= bb2) == ans);
 
 }
@@ -414,7 +451,7 @@ TEST(bitboard, and)
 	-+--+--+--+--+--+--+--+--+--+
 
 	*/
-	//BitBoards::print(bb1 &= bb2);
+	//BitBoardns::print(bb1 &= bb2);
 
 	BitBoard ans(0x05, 0x08);
 	EXPECT_TRUE((bb1 &= bb2) == ans);
@@ -423,7 +460,7 @@ TEST(bitboard, bit_Inversion_bit_equal)
 {
 	BitBoard bb(0xCB87, 0x3b);
 	BitBoard bb1(0xFFFFFFFFFFFF3478, 0xFFFFFFFFFFFFFFC4);
-	//BitBoards::print(~bb);
+	//BitBoardns::print(~bb);
 
 	EXPECT_TRUE(~bb == bb1);
 }
@@ -432,7 +469,7 @@ TEST(bitboard, is_biton_inmask)
 	uint64_t b0 = 0xCB87;
 	uint64_t b1 = 0x3b;
 	BitBoard bb(b0, b1);
-	//BitBoards::print(bb);
+	//BitBoardns::print(bb);
 	/*
 	bbのbitパターン
 	-+--+--+--+--+--+--+--+--+--+
@@ -449,7 +486,7 @@ TEST(bitboard, is_biton_inmask)
 	-+--+--+--+--+--+--+--+--+--+
 	*/
 	BitBoard bb1(0x1FF, 0);
-	//BitBoards::print(bb1);
+	//BitBoardns::print(bb1);
 	/*
 	bb1のbitパターン
 	-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
@@ -466,7 +503,7 @@ TEST(bitboard, is_biton_inmask)
 	-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
 	*/
 	BitBoard bb2(0x20100804120104D, 0x11008);
-	//BitBoards::print(bb2);
+	//BitBoardns::print(bb2);
 	/*
 	bb2のbitパターン
 	-+--+--+--+--+--+--+--+--+--+
@@ -483,7 +520,7 @@ TEST(bitboard, is_biton_inmask)
 	-+--+--+--+--+--+--+--+--+--+
 	*/
 	BitBoard bb3(0x00, 0x1FE00);
-	//BitBoards::print(bb3);
+	//BitBoardns::print(bb3);
 	/*
 	-+--+--+--+--+--+--+--+--+--+
 	   A  B  C  D  E  F  G  H  I
