@@ -11,13 +11,13 @@ public:
 	//BitBoardを"="演算子で代入する
 	BitBoard& operator = (const BitBoard& rhs)
 	{
-		_mm_store_si128(&this->m_, rhs.m_);
+		_mm_store_si128(&m_, rhs.m_);
 		return *this;
 	}
 	//コピーコンストラクタ
 	BitBoard(const BitBoard& bb)
 	{
-		_mm_store_si128(&this->m_, bb.m_);
+		_mm_store_si128(&m_, bb.m_);
 	}
 	//空コンストラクタ
 	BitBoard() {}
@@ -26,8 +26,8 @@ public:
 	//BitBoard bb(0,0);
 	BitBoard(const uint64_t v0, const uint64_t v1)
 	{
-		this->p_[0] = v0;
-		this->p_[1] = v1;
+		p_[0] = v0;
+		p_[1] = v1;
 	}
 	//単項演算子、保持しているbitboardを反転する
 	BitBoard operator ~() const
@@ -39,56 +39,56 @@ public:
 	//引数rhsとのAND演算
 	BitBoard operator &= (const BitBoard& rhs)
 	{
-		_mm_store_si128(&this->m_, _mm_and_si128(this->m_, rhs.m_));
+		_mm_store_si128(&this->m_, _mm_and_si128(m_, rhs.m_));
 		return *this;
 	}
 	//引数rhsとのOR演算
 	BitBoard operator |= (const BitBoard& rhs)
 	{
-		_mm_store_si128(&this->m_, _mm_or_si128(this->m_, rhs.m_));
+		_mm_store_si128(&m_, _mm_or_si128(m_, rhs.m_));
 		return *this;
 	}
 	//引数rhsとのXOR演算
 	BitBoard operator ^= (const BitBoard& rhs)
 	{
-		_mm_store_si128(&this->m_, _mm_xor_si128(this->m_, rhs.m_));
+		_mm_store_si128(&this->m_, _mm_xor_si128(m_, rhs.m_));
 		return *this;
 	}
 	//bitboardを引数iだけ左シフトする
 	BitBoard operator <<= (const int i)
 	{
-		_mm_store_si128(&this->m_, _mm_slli_epi64(this->m_, i));
+		_mm_store_si128(&m_, _mm_slli_epi64(m_, i));
 		return *this;
 	}
 	//bitboardを引数iだけ右シフトする
 	BitBoard operator >>= (const int i)
 	{
-		_mm_store_si128(&this->m_, _mm_srli_epi64(this->m_, i));
+		_mm_store_si128(&m_, _mm_srli_epi64(m_, i));
 		return *this;
 	}
 	//bitboardを引数rhsと比較して等しければtrueを返す
 	bool operator == (const BitBoard& rhs) const
 	{
-		return _mm_testc_si128(_mm_cmpeq_epi8(this->m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? true:false;
+		return _mm_testc_si128(_mm_cmpeq_epi8(m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? true:false;
 	}
 	//bitboardを引数rhsと比較して等しくなければtrueを返す
 	bool operator != (const BitBoard& rhs) const
 	{
-		return _mm_testc_si128(_mm_cmpeq_epi8(this->m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? false : true;
+		return _mm_testc_si128(_mm_cmpeq_epi8(m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? false : true;
 	}
 
 	//_mm_testz_si128は引数同士をbit AND演算して結果がゼロになれば1を返す
 	//このis_not_zero関数はBitBoardクラスのbitboardがすべてゼロになったらFALSEを返す
 	bool is_not_zero()
 	{
-		return !(_mm_testz_si128(this->m_, _mm_set1_epi8(static_cast<char>(0xFFu))));
+		return !(_mm_testz_si128(m_, _mm_set1_epi8(static_cast<char>(0xFFu))));
 	}
 	//局面bitboardと引数のbitboardのAND演算でbitが立っていればtrueを返す
 	bool is_biton_inmask(const BitBoard& mask)
 	{
-		return !(_mm_testz_si128(this->m_, mask.m_));
+		return !(_mm_testz_si128(m_, mask.m_));
 	}
-	int pop_count()
+	int pop_count() const
 	{
 		return int(_mm_popcnt_u64(p_[0]) + _mm_popcnt_u64(p_[1]));
 	}
@@ -100,12 +100,12 @@ public:
 	//指定した座標に駒がいるか判定する
 	bool is_bit_on(const Square sq)
 	{
-		return !(_mm_testz_si128(this->m_, SquareBB[sq].m_));
+		return !(_mm_testz_si128(m_, SquareBB[sq].m_));
 	}
 	//maskがonになっているところをクリアする
 	BitBoard clear_bits(const BitBoard& mask)
 	{
-		_mm_store_si128(&this->m_, _mm_andnot_si128(mask.m_, this->m_));
+		_mm_store_si128(&m_, _mm_andnot_si128(mask.m_, m_));
 		return *this;
 	}
 	//指定した座標のbitをoffにする
@@ -121,7 +121,41 @@ public:
 	//指定した座標sq1,sq2でxor演算、駒の移動表現
 	void xor_bit(const Square sq1, const Square sq2)
 	{
-		_mm_store_si128(&this->m_,_mm_xor_si128(this->m_, _mm_or_si128(SquareBB[sq1].m_, SquareBB[sq2].m_)));
+		_mm_store_si128(&m_,_mm_xor_si128(m_, _mm_or_si128(SquareBB[sq1].m_, SquareBB[sq2].m_)));
+	}
+	//bitboardが完全にゼロでないことを前提としている
+	//bitboardのp_[0]をLSB側からスキャンして最初のbit onのindexを返す。indexはゼロから始まる
+	//indexのbitをoffにする
+	Square first_one_right()
+	{
+		unsigned long index;
+
+		_BitScanForward64(&index, p_[0]);
+		p_[0] &= p_[0] - 1;
+		return Square(index);
+	}
+	//bitboardが完全にゼロでないことを前提としている
+	//bitboardのp_[1]をLSB側からスキャンして最初のbit onのindexを返す。indexはゼロから始まる
+	//indexのbitをoffにする
+	Square first_one_left()
+	{
+		unsigned long index;
+
+		_BitScanForward64(&index, p_[1]);
+		this->p_[1] &= p_[1] - 1;
+		return Square(index + 63);
+	}
+	Square first_one()
+	{
+		if (this->p_[0]){
+			return first_one_right();
+		}
+		return first_one_left();
+	}
+	//onになっているbitが１つだけか判定し、そうならtrueを返す
+	bool is_one_bit() const
+	{
+		return (pop_count() == 1);
 	}
 	//private:
 	union{
@@ -133,7 +167,7 @@ public:
 	};
 };
 
-namespace BitBoards
+namespace BitBoardns
 {
 	void init();
 	void print(BitBoard&);
