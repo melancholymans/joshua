@@ -372,7 +372,7 @@ void implementation_avx(void)
 	//正解は0xcb6となる
 	BitBoard bb(0x1040093042500548, 0);
 	cout << "pext 64 " << endl;		//680(10進数)   1010101000
-	BitBoards::print(bb);
+	BitBoardns::print(bb);
 	BitBoard bb1(0x1044414000504441, 0);
-	BitBoards::print(bb1);
+	BitBoardns::print(bb1);
 }
