@@ -155,7 +155,6 @@ void BitBoards::print(BitBoard &bb)
 		std::cout << (9 - r) << " ";
 		for (int f = FileA; FileI <= f; f--){
 			sq = make_square(f, r);
-			//std::cout << setw(2) << sq << " ";
 			std::cout << (!(_mm_testz_si128(bb.m_, SquareBB[sq].m_)) ? " *" : " .") << " ";
 
 		}
@@ -165,12 +164,275 @@ void BitBoards::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, xor_bit)
+{
+	BitBoard bb1(0x20100804120104D, 0x11008);
+	BitBoard ans1(0x20100804120104C, 0x11000);
+
+	bb1.xor_bit(Square(I9));
+	bb1.xor_bit(Square(B6));
+	
+	EXPECT_TRUE(bb1 == ans1);
+
+	bb1.xor_bit(Square(I7), Square(H1));
+	BitBoard ans2(0x20100804120104C - 0x04 + 0x20000, 0x11000);
+	EXPECT_TRUE(bb1 == ans2);
+}
+TEST(bitboard, clear_bits)
+{
+	BitBoard bb1(0x20100804120104D, 0x11008);
+	BitBoard bb2(0xCB87, 0x3b);
+	BitBoard ans(0x201008041201048, 0x11000);
+	BitBoards::print(bb2);
+	/*
+	bb1のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	   A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  *
+	6  *  *  *  *  *  *  *  *  *
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  *  .  *
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	bb2のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	   A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  *
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  *
+	6  .  *  .  .  .  .  .  .  .
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  .  *  .
+	2  .  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	clear_bitの結果
+	-+--+--+--+--+--+--+--+--+--+
+	   A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  .
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  .
+	6  *  .  *  *  *  *  *  *  *
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  *  .  *
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	*/
+	EXPECT_TRUE(bb1.clear_bits(bb2) == ans);
+}
+TEST(bitboard, pop_count)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);
+	
+	EXPECT_EQ(bb.pop_count(), 14);
+}
+TEST(bitboard, is_not_zero_clear_square)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);
+	int count = 0;
+
+	EXPECT_TRUE(bb.is_not_zero());
+	for (int sq = I9; sq < SquareNum; sq++){
+		if (bb.is_bit_on(Square(sq))){
+			bb.clear_square(Square(sq));
+			count++;
+		}
+	}
+	EXPECT_FALSE(bb.is_not_zero());
+	EXPECT_EQ(count, 14);
+
+}
+TEST(bitboard, not_bit_equal)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);
+	BitBoard ans(0x80402010480413, 0x4402);
+	
+	EXPECT_TRUE(bb != ans);
+}
+TEST(bitboard, roght_shift)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);
+	BitBoard ans(0x80402010480413, 0x4402);
+
+	EXPECT_TRUE((bb >>= 2) == ans);
+
+}
+TEST(bitboard, left_shift)
+{
+	BitBoard bb(0x20100804120104D, 0x11008);
+	BitBoard ans(0x40201008240209A, 0x22010);
+	//bb <<= 1;
+	EXPECT_TRUE((bb <<= 1) == ans);
+}
+TEST(bitboard, xor)
+{
+	BitBoard bb1(0xCB87, 0x3b);
+	BitBoard bb2(0x20100804120104D, 0x11008);
+	BitBoard ans(0x20100804120DBCA, 0x11033);
+	/*
+	bb1のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  *
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  *
+	6  .  *  .  .  .  .  .  .  .
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  .  *  .
+	2  .  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	bb2のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  *
+	6  *  *  *  *  *  *  *  *  *
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  *  .  *
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	xorの結果
+	-+--+--+--+--+--+--+--+--+--+
+	   A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  .
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  .
+	6  *  .  *  *  *  *  *  *  *
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  *  *  *
+	2  *  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	*/
+	EXPECT_TRUE((bb1 ^= bb2) == ans);
+}
+TEST(bitboard, or)
+{
+	BitBoard bb1(0xCB87, 0x3b);
+	BitBoard bb2(0x20100804120104D, 0x11008);
+	BitBoard ans(0x20100804120DBCF, 0x1103B);
+	/*
+	bb1のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  *
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  *
+	6  .  *  .  .  .  .  .  .  .
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  .  *  .
+	2  .  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	bb2のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  *
+	6  *  *  *  *  *  *  *  *  *
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  *  .  *
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	orの結果
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  *
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  *
+	6  *  *  *  *  *  *  *  *  *
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  *  *  *
+	2  *  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	*/
+	//BitBoards::print(bb1 |= bb2);
+	EXPECT_TRUE((bb1 |= bb2) == ans);
+
+}
+TEST(bitboard, and)
+{
+	BitBoard bb1(0xCB87, 0x3b);
+	BitBoard bb2(0x20100804120104D, 0x11008);
+	/*
+	bb1のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  *  .  .  .  .  .  *  *
+	8  .  *  .  .  .  .  .  .  *
+	7  .  .  .  .  .  .  .  *  *
+	6  .  *  .  .  .  .  .  .  .
+	5  .  *  .  .  .  .  .  .  .
+	4  .  *  .  .  .  .  .  *  .
+	3  .  .  .  .  .  .  .  *  .
+	2  .  .  .  .  .  .  .  .  *
+	1  .  .  .  .  .  .  .  .  *
+	-+--+--+--+--+--+--+--+--+--+
+	bb2のbitパターン
+	-+--+--+--+--+--+--+--+--+--+
+	A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  *
+	6  *  *  *  *  *  *  *  *  *
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  *  .  *
+	2  *  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+	andの結果
+  	   A  B  C  D  E  F  G  H  I
+	9  .  .  .  .  .  .  .  .  *
+	8  .  .  .  .  .  .  .  .  .
+	7  .  .  .  .  .  .  .  .  *
+	6  .  *  .  .  .  .  .  .  .
+	5  .  .  .  .  .  .  .  .  .
+	4  .  .  .  .  .  .  .  .  .
+	3  .  .  .  .  .  .  .  .  .
+	2  .  .  .  .  .  .  .  .  .
+	1  .  .  .  .  .  .  .  .  .
+	-+--+--+--+--+--+--+--+--+--+
+
+	*/
+	//BitBoards::print(bb1 &= bb2);
+
+	BitBoard ans(0x05, 0x08);
+	EXPECT_TRUE((bb1 &= bb2) == ans);
+}
+TEST(bitboard, bit_Inversion_bit_equal)
+{
+	BitBoard bb(0xCB87, 0x3b);
+	BitBoard bb1(0xFFFFFFFFFFFF3478, 0xFFFFFFFFFFFFFFC4);
+	//BitBoards::print(~bb);
+
+	EXPECT_TRUE(~bb == bb1);
+}
 TEST(bitboard, is_biton_inmask)
 {
 	uint64_t b0 = 0xCB87;
 	uint64_t b1 = 0x3b;
 	BitBoard bb(b0, b1);
-	BitBoards::print(bb);
+	//BitBoards::print(bb);
 	/*
 	bbのbitパターン
 	-+--+--+--+--+--+--+--+--+--+
@@ -187,7 +449,7 @@ TEST(bitboard, is_biton_inmask)
 	-+--+--+--+--+--+--+--+--+--+
 	*/
 	BitBoard bb1(0x1FF, 0);
-	BitBoards::print(bb1);
+	//BitBoards::print(bb1);
 	/*
 	bb1のbitパターン
 	-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
@@ -204,7 +466,7 @@ TEST(bitboard, is_biton_inmask)
 	-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
 	*/
 	BitBoard bb2(0x20100804120104D, 0x11008);
-	BitBoards::print(bb2);
+	//BitBoards::print(bb2);
 	/*
 	bb2のbitパターン
 	-+--+--+--+--+--+--+--+--+--+
@@ -221,7 +483,7 @@ TEST(bitboard, is_biton_inmask)
 	-+--+--+--+--+--+--+--+--+--+
 	*/
 	BitBoard bb3(0x00, 0x1FE00);
-	BitBoards::print(bb3);
+	//BitBoards::print(bb3);
 	/*
 	-+--+--+--+--+--+--+--+--+--+
 	   A  B  C  D  E  F  G  H  I
@@ -244,85 +506,85 @@ TEST(bitboard, is_biton_inmask)
 	EXPECT_TRUE(bb2.is_biton_inmask(bb3));
 }
 
-TEST(bitboard, is_set)
+TEST(bitboard, is_bit_on)
 {
 	uint64_t b0 = 0xCB87;
 	uint64_t b1 = 0x3b;
 	BitBoard bb(b0, b1);
 	//p[0]
-	EXPECT_TRUE(bb.is_set(I9));
-	EXPECT_TRUE(bb.is_set(I8));
-	EXPECT_TRUE(bb.is_set(I7));
-	EXPECT_FALSE(bb.is_set(I6));
-	EXPECT_FALSE(bb.is_set(I5));
-	EXPECT_FALSE(bb.is_set(I4));
-	EXPECT_FALSE(bb.is_set(I3));
-	EXPECT_TRUE(bb.is_set(I2));
-	EXPECT_TRUE(bb.is_set(I1));
-	EXPECT_TRUE(bb.is_set(H9));
-	EXPECT_FALSE(bb.is_set(H8));
-	EXPECT_TRUE(bb.is_set(H7));
-	EXPECT_FALSE(bb.is_set(H6));
-	EXPECT_FALSE(bb.is_set(H5));
-	EXPECT_TRUE(bb.is_set(H4));
-	EXPECT_TRUE(bb.is_set(H3));
-	EXPECT_FALSE(bb.is_set(H2));
-	EXPECT_FALSE(bb.is_set(H1));
-	EXPECT_FALSE(bb.is_set(G9));
-	EXPECT_FALSE(bb.is_set(G8));
-	EXPECT_FALSE(bb.is_set(G7));
-	EXPECT_FALSE(bb.is_set(G6));
-	EXPECT_FALSE(bb.is_set(G5));
-	EXPECT_FALSE(bb.is_set(G4));
-	EXPECT_FALSE(bb.is_set(G3));
-	EXPECT_FALSE(bb.is_set(G2));
-	EXPECT_FALSE(bb.is_set(G1));
-	EXPECT_FALSE(bb.is_set(F9));
-	EXPECT_FALSE(bb.is_set(F8));
-	EXPECT_FALSE(bb.is_set(F7));
-	EXPECT_FALSE(bb.is_set(F6));
-	EXPECT_FALSE(bb.is_set(F5));
-	EXPECT_FALSE(bb.is_set(F4));
-	EXPECT_FALSE(bb.is_set(F3));
-	EXPECT_FALSE(bb.is_set(F2));
-	EXPECT_FALSE(bb.is_set(F1));
-	EXPECT_FALSE(bb.is_set(E9));
-	EXPECT_FALSE(bb.is_set(E8));
-	EXPECT_FALSE(bb.is_set(E7));
-	EXPECT_FALSE(bb.is_set(E6));
-	EXPECT_FALSE(bb.is_set(E5));
-	EXPECT_FALSE(bb.is_set(E4));
-	EXPECT_FALSE(bb.is_set(E3));
-	EXPECT_FALSE(bb.is_set(E2));
-	EXPECT_FALSE(bb.is_set(E1));
-	EXPECT_FALSE(bb.is_set(D9));
-	EXPECT_FALSE(bb.is_set(D8));
-	EXPECT_FALSE(bb.is_set(D7));
-	EXPECT_FALSE(bb.is_set(D6));
-	EXPECT_FALSE(bb.is_set(D5));
-	EXPECT_FALSE(bb.is_set(D4));
-	EXPECT_FALSE(bb.is_set(D3));
-	EXPECT_FALSE(bb.is_set(D2));
-	EXPECT_FALSE(bb.is_set(D1));
-	EXPECT_FALSE(bb.is_set(C9));
-	EXPECT_FALSE(bb.is_set(C8));
-	EXPECT_FALSE(bb.is_set(C7));
-	EXPECT_FALSE(bb.is_set(C6));
-	EXPECT_FALSE(bb.is_set(C5));
-	EXPECT_FALSE(bb.is_set(C4));
-	EXPECT_FALSE(bb.is_set(C3));
-	EXPECT_FALSE(bb.is_set(C2));
-	EXPECT_FALSE(bb.is_set(C1));
+	EXPECT_TRUE(bb.is_bit_on(I9));
+	EXPECT_TRUE(bb.is_bit_on(I8));
+	EXPECT_TRUE(bb.is_bit_on(I7));
+	EXPECT_FALSE(bb.is_bit_on(I6));
+	EXPECT_FALSE(bb.is_bit_on(I5));
+	EXPECT_FALSE(bb.is_bit_on(I4));
+	EXPECT_FALSE(bb.is_bit_on(I3));
+	EXPECT_TRUE(bb.is_bit_on(I2));
+	EXPECT_TRUE(bb.is_bit_on(I1));
+	EXPECT_TRUE(bb.is_bit_on(H9));
+	EXPECT_FALSE(bb.is_bit_on(H8));
+	EXPECT_TRUE(bb.is_bit_on(H7));
+	EXPECT_FALSE(bb.is_bit_on(H6));
+	EXPECT_FALSE(bb.is_bit_on(H5));
+	EXPECT_TRUE(bb.is_bit_on(H4));
+	EXPECT_TRUE(bb.is_bit_on(H3));
+	EXPECT_FALSE(bb.is_bit_on(H2));
+	EXPECT_FALSE(bb.is_bit_on(H1));
+	EXPECT_FALSE(bb.is_bit_on(G9));
+	EXPECT_FALSE(bb.is_bit_on(G8));
+	EXPECT_FALSE(bb.is_bit_on(G7));
+	EXPECT_FALSE(bb.is_bit_on(G6));
+	EXPECT_FALSE(bb.is_bit_on(G5));
+	EXPECT_FALSE(bb.is_bit_on(G4));
+	EXPECT_FALSE(bb.is_bit_on(G3));
+	EXPECT_FALSE(bb.is_bit_on(G2));
+	EXPECT_FALSE(bb.is_bit_on(G1));
+	EXPECT_FALSE(bb.is_bit_on(F9));
+	EXPECT_FALSE(bb.is_bit_on(F8));
+	EXPECT_FALSE(bb.is_bit_on(F7));
+	EXPECT_FALSE(bb.is_bit_on(F6));
+	EXPECT_FALSE(bb.is_bit_on(F5));
+	EXPECT_FALSE(bb.is_bit_on(F4));
+	EXPECT_FALSE(bb.is_bit_on(F3));
+	EXPECT_FALSE(bb.is_bit_on(F2));
+	EXPECT_FALSE(bb.is_bit_on(F1));
+	EXPECT_FALSE(bb.is_bit_on(E9));
+	EXPECT_FALSE(bb.is_bit_on(E8));
+	EXPECT_FALSE(bb.is_bit_on(E7));
+	EXPECT_FALSE(bb.is_bit_on(E6));
+	EXPECT_FALSE(bb.is_bit_on(E5));
+	EXPECT_FALSE(bb.is_bit_on(E4));
+	EXPECT_FALSE(bb.is_bit_on(E3));
+	EXPECT_FALSE(bb.is_bit_on(E2));
+	EXPECT_FALSE(bb.is_bit_on(E1));
+	EXPECT_FALSE(bb.is_bit_on(D9));
+	EXPECT_FALSE(bb.is_bit_on(D8));
+	EXPECT_FALSE(bb.is_bit_on(D7));
+	EXPECT_FALSE(bb.is_bit_on(D6));
+	EXPECT_FALSE(bb.is_bit_on(D5));
+	EXPECT_FALSE(bb.is_bit_on(D4));
+	EXPECT_FALSE(bb.is_bit_on(D3));
+	EXPECT_FALSE(bb.is_bit_on(D2));
+	EXPECT_FALSE(bb.is_bit_on(D1));
+	EXPECT_FALSE(bb.is_bit_on(C9));
+	EXPECT_FALSE(bb.is_bit_on(C8));
+	EXPECT_FALSE(bb.is_bit_on(C7));
+	EXPECT_FALSE(bb.is_bit_on(C6));
+	EXPECT_FALSE(bb.is_bit_on(C5));
+	EXPECT_FALSE(bb.is_bit_on(C4));
+	EXPECT_FALSE(bb.is_bit_on(C3));
+	EXPECT_FALSE(bb.is_bit_on(C2));
+	EXPECT_FALSE(bb.is_bit_on(C1));
 	//p[1]
-	EXPECT_TRUE(bb.is_set(B9));
-	EXPECT_TRUE(bb.is_set(B8));
-	EXPECT_FALSE(bb.is_set(B7));
-	EXPECT_TRUE(bb.is_set(B6));
-	EXPECT_TRUE(bb.is_set(B5));
-	EXPECT_TRUE(bb.is_set(B4));
-	EXPECT_FALSE(bb.is_set(B3));
-	EXPECT_FALSE(bb.is_set(B2));
-	EXPECT_FALSE(bb.is_set(B1));
+	EXPECT_TRUE(bb.is_bit_on(B9));
+	EXPECT_TRUE(bb.is_bit_on(B8));
+	EXPECT_FALSE(bb.is_bit_on(B7));
+	EXPECT_TRUE(bb.is_bit_on(B6));
+	EXPECT_TRUE(bb.is_bit_on(B5));
+	EXPECT_TRUE(bb.is_bit_on(B4));
+	EXPECT_FALSE(bb.is_bit_on(B3));
+	EXPECT_FALSE(bb.is_bit_on(B2));
+	EXPECT_FALSE(bb.is_bit_on(B1));
 }
 TEST(bitboard_case, bitboard)
 {
