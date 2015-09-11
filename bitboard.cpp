@@ -164,6 +164,90 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, rank_mask)
+{
+	using namespace BitBoardns;
+
+	EXPECT_TRUE(rank_9_mask.pop_count() == 9);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(rank_9_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_8_mask.pop_count() == 9);
+	for (int sq = I8; sq <= A8; sq += 9){
+		EXPECT_TRUE(rank_8_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_7_mask.pop_count() == 9);
+	for (int sq = I7; sq <= A7; sq += 9){
+		EXPECT_TRUE(rank_7_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_6_mask.pop_count() == 9);
+	for (int sq = I6; sq <= A6; sq += 9){
+		EXPECT_TRUE(rank_6_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_5_mask.pop_count() == 9);
+	for (int sq = I5; sq <= A5; sq += 9){
+		EXPECT_TRUE(rank_5_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_4_mask.pop_count() == 9);
+	for (int sq = I4; sq <= A4; sq += 9){
+		EXPECT_TRUE(rank_4_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_3_mask.pop_count() == 9);
+	for (int sq = I3; sq <= A3; sq += 9){
+		EXPECT_TRUE(rank_3_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_2_mask.pop_count() == 9);
+	for (int sq = I2; sq <= A2; sq += 9){
+		EXPECT_TRUE(rank_2_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(rank_1_mask.pop_count() == 9);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(rank_1_mask.is_bit_on(Square(sq)));
+	}
+}
+TEST(bitboard, file_mask)
+{
+	using namespace BitBoardns;
+
+	EXPECT_TRUE(file_a_mask.pop_count() == 9);
+	for (int sq = A9; sq <= A1; sq++){
+		EXPECT_TRUE(file_a_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_b_mask.pop_count() == 9);
+	for (int sq = B9; sq <= B1; sq++){
+		EXPECT_TRUE(file_b_mask.is_bit_on(Square(sq)));
+	}
+	int count = file_c_mask.pop_count();
+	EXPECT_TRUE(file_c_mask.pop_count() == 9);
+	for (int sq = C9; sq <= C1; sq++){
+		EXPECT_TRUE(file_c_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_d_mask.pop_count() == 9);
+	for (int sq = D9; sq <= D1; sq++){
+		EXPECT_TRUE(file_d_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_e_mask.pop_count() == 9);
+	for (int sq = E9; sq <= E1; sq++){
+		EXPECT_TRUE(file_e_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_f_mask.pop_count() == 9);
+	for (int sq = F9; sq <= F1; sq++){
+		EXPECT_TRUE(file_f_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_g_mask.pop_count() == 9);
+	for (int sq = G9; sq <= G1; sq++){
+		EXPECT_TRUE(file_g_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_h_mask.pop_count() == 9);
+	for (int sq = H9; sq <= H1; sq++){
+		EXPECT_TRUE(file_h_mask.is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(file_i_mask.pop_count() == 9);
+	for (int sq = I9; sq <= I1; sq++){
+		EXPECT_TRUE(file_i_mask.is_bit_on(Square(sq)));
+	}
+}
+
 TEST(bitboard, is_one_bit)
 {
 	BitBoard bb1(0x20100804120104D, 0x11008);	//0x11008=10001000000001000
