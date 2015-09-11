@@ -171,15 +171,15 @@ namespace BitBoardns
 {
 	void init();
 	void print(BitBoard&);
-	const BitBoard file_i_mask(0x1FF << 9 * 0,0x00);
-	const BitBoard file_h_mask(0x1FF << 9 * 1, 0x00);
-	const BitBoard file_g_mask(0x1FF << 9 * 2, 0x00);
-	const BitBoard file_f_mask(0x1FF << 9 * 3, 0x00);
-	const BitBoard file_e_mask(0x1FF << 9 * 4, 0x00);
-	const BitBoard file_d_mask(0x1FF << 9 * 5, 0x00);
-	const BitBoard file_c_mask(0x1FF << 9 * 6, 0x00);
-	const BitBoard file_b_mask(0x00, 0x1FF << 9 * 0);
-	const BitBoard file_a_mask(0x00, 0x1FF << 9 * 1);
+	const BitBoard file_i_mask(static_cast<uint64_t>(0x1FF) << (9 * 0), 0x00);
+	const BitBoard file_h_mask(static_cast<uint64_t>(0x1FF) << (9 * 1), 0x00);
+	const BitBoard file_g_mask(static_cast<uint64_t>(0x1FF) << (9 * 2), 0x00);
+	const BitBoard file_f_mask(static_cast<uint64_t>(0x1FF) << (9 * 3), 0x00);
+	const BitBoard file_e_mask(static_cast<uint64_t>(0x1FF) << (9 * 4), 0x00);
+	const BitBoard file_d_mask(static_cast<uint64_t>(0x1FF) << (9 * 5), 0x00);
+	const BitBoard file_c_mask(static_cast<uint64_t>(0x1FF) << (9 * 6), 0x00);
+	const BitBoard file_b_mask(0x00, 0x1FF << (9 * 0));
+	const BitBoard file_a_mask(0x00, 0x1FF << (9 * 1));
 	const BitBoard rank_9_mask(0x40201008040201 << 0, 0x201 << 0);
 	const BitBoard rank_8_mask(0x40201008040201 << 1, 0x201 << 1);
 	const BitBoard rank_7_mask(0x40201008040201 << 2, 0x201 << 2);
