@@ -7,6 +7,7 @@
 using namespace std;
 
 #include "position.h"
+#include "bitboard.h"
 #include "usi.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
@@ -87,6 +88,7 @@ const int NO_COLOR = 16;
 string begin_poition;   //どんな局面を受付けたのか保持
 position_t root_position;
 */
+
 
 //Position classのコンストラクタから呼ばれる
 //sfen文字列からPosition内部の局面情報をセットする。
