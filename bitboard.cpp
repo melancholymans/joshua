@@ -164,6 +164,133 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, in_front_of_rank)
+{
+	using namespace BitBoardns;
+
+	EXPECT_TRUE(in_front_mask[Black][Rank9].pop_count() == 0);
+	EXPECT_TRUE(in_front_mask[Black][Rank8].pop_count() == 9);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank8].is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank7].pop_count() == 9*2);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank7].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank7].is_bit_on(Square(sq+1)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank6].pop_count() == 9 * 3);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank6].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank6].is_bit_on(Square(sq + 1)));
+		EXPECT_TRUE(in_front_mask[Black][Rank6].is_bit_on(Square(sq + 2)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank5].pop_count() == 9 * 4);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank5].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank5].is_bit_on(Square(sq + 1)));
+		EXPECT_TRUE(in_front_mask[Black][Rank5].is_bit_on(Square(sq + 2)));
+		EXPECT_TRUE(in_front_mask[Black][Rank5].is_bit_on(Square(sq + 3)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank4].pop_count() == 9 * 5);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank4].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank4].is_bit_on(Square(sq + 1)));
+		EXPECT_TRUE(in_front_mask[Black][Rank4].is_bit_on(Square(sq + 2)));
+		EXPECT_TRUE(in_front_mask[Black][Rank4].is_bit_on(Square(sq + 3)));
+		EXPECT_TRUE(in_front_mask[Black][Rank4].is_bit_on(Square(sq + 4)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank3].pop_count() == 9 * 6);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank3].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank3].is_bit_on(Square(sq + 1)));
+		EXPECT_TRUE(in_front_mask[Black][Rank3].is_bit_on(Square(sq + 2)));
+		EXPECT_TRUE(in_front_mask[Black][Rank3].is_bit_on(Square(sq + 3)));
+		EXPECT_TRUE(in_front_mask[Black][Rank3].is_bit_on(Square(sq + 4)));
+		EXPECT_TRUE(in_front_mask[Black][Rank3].is_bit_on(Square(sq + 5)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank2].pop_count() == 9 * 7);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq + 1)));
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq + 2)));
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq + 3)));
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq + 4)));
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq + 5)));
+		EXPECT_TRUE(in_front_mask[Black][Rank2].is_bit_on(Square(sq + 6)));
+	}
+	EXPECT_TRUE(in_front_mask[Black][Rank1].pop_count() == 9 * 8);
+	for (int sq = I9; sq <= A9; sq += 9){
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 1)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 2)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 3)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 4)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 5)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 6)));
+		EXPECT_TRUE(in_front_mask[Black][Rank1].is_bit_on(Square(sq + 7)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank1].pop_count() == 0);
+	EXPECT_TRUE(in_front_mask[White][Rank2].pop_count() == 9);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank2].is_bit_on(Square(sq)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank3].pop_count() == 9*2);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank3].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank3].is_bit_on(Square(sq-1)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank4].pop_count() == 9 * 3);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank4].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank4].is_bit_on(Square(sq - 1)));
+		EXPECT_TRUE(in_front_mask[White][Rank4].is_bit_on(Square(sq - 2)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank5].pop_count() == 9 * 4);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank5].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank5].is_bit_on(Square(sq - 1)));
+		EXPECT_TRUE(in_front_mask[White][Rank5].is_bit_on(Square(sq - 2)));
+		EXPECT_TRUE(in_front_mask[White][Rank5].is_bit_on(Square(sq - 3)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank6].pop_count() == 9 * 5);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank6].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank6].is_bit_on(Square(sq - 1)));
+		EXPECT_TRUE(in_front_mask[White][Rank6].is_bit_on(Square(sq - 2)));
+		EXPECT_TRUE(in_front_mask[White][Rank6].is_bit_on(Square(sq - 3)));
+		EXPECT_TRUE(in_front_mask[White][Rank6].is_bit_on(Square(sq - 4)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank7].pop_count() == 9 * 6);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank7].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank7].is_bit_on(Square(sq - 1)));
+		EXPECT_TRUE(in_front_mask[White][Rank7].is_bit_on(Square(sq - 2)));
+		EXPECT_TRUE(in_front_mask[White][Rank7].is_bit_on(Square(sq - 3)));
+		EXPECT_TRUE(in_front_mask[White][Rank7].is_bit_on(Square(sq - 4)));
+		EXPECT_TRUE(in_front_mask[White][Rank7].is_bit_on(Square(sq - 5)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank8].pop_count() == 9 * 7);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq - 1)));
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq - 2)));
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq - 3)));
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq - 4)));
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq - 5)));
+		EXPECT_TRUE(in_front_mask[White][Rank8].is_bit_on(Square(sq - 6)));
+	}
+	EXPECT_TRUE(in_front_mask[White][Rank9].pop_count() == 9 * 8);
+	for (int sq = I1; sq <= A1; sq += 9){
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 1)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 2)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 3)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 4)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 5)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 6)));
+		EXPECT_TRUE(in_front_mask[White][Rank9].is_bit_on(Square(sq - 7)));
+	}
+}
 TEST(bitboard, rank_mask)
 {
 	using namespace BitBoardns;
