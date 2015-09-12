@@ -174,6 +174,7 @@ namespace BitBoardns
 {
 	void init();
 	void print(BitBoard&);
+	//指定したfileのマスクを返す
 	const BitBoard file_i_mask(static_cast<uint64_t>(0x1FF) << (9 * 0), 0x00);
 	const BitBoard file_h_mask(static_cast<uint64_t>(0x1FF) << (9 * 1), 0x00);
 	const BitBoard file_g_mask(static_cast<uint64_t>(0x1FF) << (9 * 2), 0x00);
@@ -186,6 +187,7 @@ namespace BitBoardns
 	const BitBoard file_mask[FileNum] = {
 		file_i_mask, file_h_mask, file_g_mask, file_f_mask, file_g_mask, file_d_mask, file_c_mask, file_b_mask, file_a_mask
 	};
+	//指定したrankのマスクを返す
 	const BitBoard rank_9_mask(0x40201008040201 << 0, 0x201 << 0);
 	const BitBoard rank_8_mask(0x40201008040201 << 1, 0x201 << 1);
 	const BitBoard rank_7_mask(0x40201008040201 << 2, 0x201 << 2);
@@ -198,6 +200,7 @@ namespace BitBoardns
 	const BitBoard rank_mask[RankNum] = {
 		rank_9_mask, rank_8_mask, rank_7_mask, rank_6_mask, rank_5_mask, rank_4_mask, rank_3_mask, rank_2_mask, rank_1_mask
 	};
+	//指定したrankより前方（カラーによって変わる）のbitがonになるbitboardを返す、指定したrankのbitは含まれない
 	const BitBoard in_front_of_rank9_black(0x00, 0x00);
 	const BitBoard in_front_of_rank8_black = rank_9_mask;
 	const BitBoard in_front_of_rank7_black = in_front_of_rank8_black | rank_8_mask;
