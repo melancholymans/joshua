@@ -69,7 +69,7 @@ public:
 	//bitboardを引数rhsと比較して等しければtrueを返す
 	bool operator == (const BitBoard& rhs) const
 	{
-		return _mm_testc_si128(_mm_cmpeq_epi8(m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? true:false;
+		return _mm_testc_si128(_mm_cmpeq_epi8(m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? true : false;
 	}
 	//bitboardを引数rhsと比較して等しくなければtrueを返す
 	bool operator != (const BitBoard& rhs) const
@@ -124,7 +124,7 @@ public:
 	//指定した座標sq1,sq2でxor演算、駒の移動表現
 	void xor_bit(const Square sq1, const Square sq2)
 	{
-		_mm_store_si128(&m_,_mm_xor_si128(m_, _mm_or_si128(SquareBB[sq1].m_, SquareBB[sq2].m_)));
+		_mm_store_si128(&m_, _mm_xor_si128(m_, _mm_or_si128(SquareBB[sq1].m_, SquareBB[sq2].m_)));
 	}
 	//bitboardが完全にゼロでないことを前提としている
 	//bitboardのp_[0]をLSB側からスキャンして最初のbit onのindexを返す。indexはゼロから始まる
@@ -222,8 +222,7 @@ namespace BitBoardns
 	const BitBoard in_front_mask[ColorNum][RankNum] = {
 		{ in_front_of_rank9_black, in_front_of_rank8_black, in_front_of_rank7_black, in_front_of_rank6_black, in_front_of_rank5_black, in_front_of_rank4_black, in_front_of_rank3_black, in_front_of_rank2_black, in_front_of_rank1_black },
 		{ in_front_of_rank9_white, in_front_of_rank8_white, in_front_of_rank7_white, in_front_of_rank6_white, in_front_of_rank5_white, in_front_of_rank4_white, in_front_of_rank3_white, in_front_of_rank2_white, in_front_of_rank1_white }
-	};
+	};	
 }
-extern const BitBoard SquareBB[SquareNum];
 
 #endif
