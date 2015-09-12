@@ -76,7 +76,10 @@ public:
 	{
 		return _mm_testc_si128(_mm_cmpeq_epi8(m_, rhs.m_), _mm_set1_epi8(static_cast<char>(0xFFu))) ? false : true;
 	}
-
+	BitBoard operator | (const BitBoard& rhs) const
+	{
+		return BitBoard(*this) |= rhs;
+	}
 	//_mm_testz_si128‚Íˆø”“¯m‚ğbit AND‰‰Z‚µ‚ÄŒ‹‰Ê‚ªƒ[ƒ‚É‚È‚ê‚Î1‚ğ•Ô‚·
 	//‚±‚Ìis_not_zeroŠÖ”‚ÍBitBoardƒNƒ‰ƒX‚Ìbitboard‚ª‚·‚×‚Äƒ[ƒ‚É‚È‚Á‚½‚çFALSE‚ğ•Ô‚·
 	bool is_not_zero() const
@@ -180,6 +183,9 @@ namespace BitBoardns
 	const BitBoard file_c_mask(static_cast<uint64_t>(0x1FF) << (9 * 6), 0x00);
 	const BitBoard file_b_mask(0x00, 0x1FF << (9 * 0));
 	const BitBoard file_a_mask(0x00, 0x1FF << (9 * 1));
+	const BitBoard file_mask[FileNum] = {
+		file_i_mask, file_h_mask, file_g_mask, file_f_mask, file_g_mask, file_d_mask, file_c_mask, file_b_mask, file_a_mask
+	};
 	const BitBoard rank_9_mask(0x40201008040201 << 0, 0x201 << 0);
 	const BitBoard rank_8_mask(0x40201008040201 << 1, 0x201 << 1);
 	const BitBoard rank_7_mask(0x40201008040201 << 2, 0x201 << 2);
@@ -189,7 +195,31 @@ namespace BitBoardns
 	const BitBoard rank_3_mask(0x40201008040201 << 6, 0x201 << 6);
 	const BitBoard rank_2_mask(0x40201008040201 << 7, 0x201 << 7);
 	const BitBoard rank_1_mask(0x40201008040201 << 8, 0x201 << 8);
-
+	const BitBoard rank_mask[RankNum] = {
+		rank_9_mask, rank_8_mask, rank_7_mask, rank_6_mask, rank_5_mask, rank_4_mask, rank_3_mask, rank_2_mask, rank_1_mask
+	};
+	const BitBoard in_front_of_rank9_black(0x00, 0x00);
+	const BitBoard in_front_of_rank8_black = rank_9_mask;
+	const BitBoard in_front_of_rank7_black = in_front_of_rank8_black | rank_8_mask;
+	const BitBoard in_front_of_rank6_black = in_front_of_rank7_black | rank_7_mask;
+	const BitBoard in_front_of_rank5_black = in_front_of_rank6_black | rank_6_mask;
+	const BitBoard in_front_of_rank4_black = in_front_of_rank5_black | rank_5_mask;
+	const BitBoard in_front_of_rank3_black = in_front_of_rank4_black | rank_4_mask;
+	const BitBoard in_front_of_rank2_black = in_front_of_rank3_black | rank_3_mask;
+	const BitBoard in_front_of_rank1_black = in_front_of_rank2_black | rank_2_mask;
+	const BitBoard in_front_of_rank1_white(0x00, 0x00);
+	const BitBoard in_front_of_rank2_white = rank_1_mask;
+	const BitBoard in_front_of_rank3_white = in_front_of_rank2_white | rank_2_mask;
+	const BitBoard in_front_of_rank4_white = in_front_of_rank3_white | rank_3_mask;
+	const BitBoard in_front_of_rank5_white = in_front_of_rank4_white | rank_4_mask;
+	const BitBoard in_front_of_rank6_white = in_front_of_rank5_white | rank_5_mask;
+	const BitBoard in_front_of_rank7_white = in_front_of_rank6_white | rank_6_mask;
+	const BitBoard in_front_of_rank8_white = in_front_of_rank7_white | rank_7_mask;
+	const BitBoard in_front_of_rank9_white = in_front_of_rank8_white | rank_8_mask;
+	const BitBoard in_front_mask[ColorNum][RankNum] = {
+		{ in_front_of_rank9_black, in_front_of_rank8_black, in_front_of_rank7_black, in_front_of_rank6_black, in_front_of_rank5_black, in_front_of_rank4_black, in_front_of_rank3_black, in_front_of_rank2_black, in_front_of_rank1_black },
+		{ in_front_of_rank9_white, in_front_of_rank8_white, in_front_of_rank7_white, in_front_of_rank6_white, in_front_of_rank5_white, in_front_of_rank4_white, in_front_of_rank3_white, in_front_of_rank2_white, in_front_of_rank1_white }
+	};
 }
 extern const BitBoard SquareBB[SquareNum];
 
