@@ -160,7 +160,11 @@ public:
 	{
 		return (pop_count() == 1);
 	}
-	//private:
+	uint64_t p(const int index) const
+	{
+		return p_[index];
+	}
+private:
 	union{
 		//将棋盤の座標0～62までをp_[0]が表現,座標63から80までをp_[1]が表現
 		//座標が若いほど下位bit,p_[0]では座標0が最下位bit,座標63が最上位bit
@@ -222,7 +226,10 @@ namespace BitBoardns
 	const BitBoard in_front_mask[ColorNum][RankNum] = {
 		{ in_front_of_rank9_black, in_front_of_rank8_black, in_front_of_rank7_black, in_front_of_rank6_black, in_front_of_rank5_black, in_front_of_rank4_black, in_front_of_rank3_black, in_front_of_rank2_black, in_front_of_rank1_black },
 		{ in_front_of_rank9_white, in_front_of_rank8_white, in_front_of_rank7_white, in_front_of_rank6_white, in_front_of_rank5_white, in_front_of_rank4_white, in_front_of_rank3_white, in_front_of_rank2_white, in_front_of_rank1_white }
-	};	
+	};
+	BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
+	void init_bishop_attacks();
+	void init_rook_attacks();
 }
 
 #endif

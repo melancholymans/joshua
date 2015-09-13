@@ -125,10 +125,36 @@ FILEA		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
 	将棋盤を真横から見ているような配置にしてある、将棋は先手側から後手側に、後手側から先手側に縦に移動する手が多いので
 	このような配置にしてある、と思う。
 */
+BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
+{
+	SquareDelta deltas[2][4] = { { DeltaN, DeltaS, DeltaE, DeltaW }, { DeltaNE, DeltaSE, DeltaSW, DeltaNW } };
+	BitBoard bb(0x00, 0x00);
+	int delta,sq;
 
-void BitBoardns::init()
+	for (int i = 0; i < 4; i++){
+		delta = int(deltas[is_bishop][i]);
+		for (sq = square + delta; is_square(Square(sq)) && abs(make_rank(Square(sq - delta)) - make_rank(Square(sq))) <= 1; sq += delta){
+			bb.set_bit(Square(sq));
+			if (occ.is_bit_on(Square(sq))){
+				break;
+			}
+		}
+	}
+	return bb;
+}
+
+void BitBoardns::init_bishop_attacks()
 {
 
+}
+void BitBoardns::init_rook_attacks()
+{
+
+}
+void BitBoardns::init()
+{
+	init_bishop_attacks();
+	init_rook_attacks();
 }
 /*
 -+--+--+--+--+--+--+--+--+--+
@@ -148,6 +174,7 @@ make_squareが返す座標
 void BitBoardns::print(BitBoard &bb)
 {
 	int sq;
+	__m128i m = _mm_set_epi64x((bb.p(1)), bb.p(0));
 
 	sync_cout;
 	std::cout << "-+--+--+--+--+--+--+--+--+--+" << std::endl;
@@ -156,8 +183,8 @@ void BitBoardns::print(BitBoard &bb)
 		std::cout << (9 - r) << " ";
 		for (int f = FileA; FileI <= f; f--){
 			sq = make_square(f, r);
-			std::cout << (!(_mm_testz_si128(bb.m_, SquareBB[sq].m_)) ? " *" : " .") << " ";
-
+			__m128i sq_m = _mm_set_epi64x((SquareBB[sq].p(1)), SquareBB[sq].p(0));
+			std::cout << (!(_mm_testz_si128(m, sq_m)) ? " *" : " .") << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -165,6 +192,74 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, sliding_attack)
+{
+	BitBoard occ(0x00,0x00);
+	BitBoard bb(0x00, 0x00);
+
+	//bishop
+	bb = BitBoardns::sliding_attack(I9,occ,true);
+	EXPECT_EQ(bb.p(0), 0x1004010040100400);
+	EXPECT_EQ(bb.p(1), 0x20080);
+	bb = BitBoardns::sliding_attack(I4, occ, true);
+	EXPECT_EQ(bb.p(0), 0x20282220A000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = BitBoardns::sliding_attack(I1, occ, true);
+	EXPECT_EQ(bb.p(0), 0x101010101010000);
+	EXPECT_EQ(bb.p(1), 0x202);
+	bb = BitBoardns::sliding_attack(G9, occ, true);
+	EXPECT_EQ(bb.p(0), 0x401004010000404);
+	EXPECT_EQ(bb.p(1), 0x8020);
+	bb = BitBoardns::sliding_attack(A9, occ, true);
+	EXPECT_EQ(bb.p(0), 0x101010101010100);
+	EXPECT_EQ(bb.p(1), 0x02);
+	bb = BitBoardns::sliding_attack(A7, occ, true);
+	EXPECT_EQ(bb.p(0), 0x444040404000000);
+	EXPECT_EQ(bb.p(1), 0x0A);
+	bb = BitBoardns::sliding_attack(A1, occ, true);
+	EXPECT_EQ(bb.p(0), 0x1004010040100401);
+	EXPECT_EQ(bb.p(1), 0x80);
+	bb = BitBoardns::sliding_attack(E7, occ, true);
+	EXPECT_EQ(bb.p(0), 0x441400050444040);
+	EXPECT_EQ(bb.p(1), 0x8020);
+	bb = BitBoardns::sliding_attack(E5, occ, true);
+	EXPECT_EQ(bb.p(0), 0x1105000141110501);
+	EXPECT_EQ(bb.p(1), 0x20282);
+	bb = BitBoardns::sliding_attack(F4, occ, true);
+	EXPECT_EQ(bb.p(0), 0x4111050001411104);
+	EXPECT_EQ(bb.p(1), 0x202);
+	//rook
+	bb = BitBoardns::sliding_attack(I9, occ, false);
+	EXPECT_EQ(bb.p(0), 0x402010080403FE);
+	EXPECT_EQ(bb.p(1), 0x201);
+	bb = BitBoardns::sliding_attack(I4, occ, false);
+	EXPECT_EQ(bb.p(0), 0x8040201008041DF);
+	EXPECT_EQ(bb.p(1), 0x4020);
+	bb = BitBoardns::sliding_attack(I1, occ, false);
+	EXPECT_EQ(bb.p(0), 0x40201008040200FF);
+	EXPECT_EQ(bb.p(1), 0x20100);
+	bb = BitBoardns::sliding_attack(G9, occ, false);
+	EXPECT_EQ(bb.p(0), 0x4020100FF80201);
+	EXPECT_EQ(bb.p(1), 0x201);
+	bb = BitBoardns::sliding_attack(A9, occ, false);
+	EXPECT_EQ(bb.p(0), 0x40201008040201);
+	EXPECT_EQ(bb.p(1), 0x3FC01);
+	bb = BitBoardns::sliding_attack(A7, occ, false);
+	EXPECT_EQ(bb.p(0), 0x100804020100804);
+	EXPECT_EQ(bb.p(1), 0x3F604);
+	bb = BitBoardns::sliding_attack(A1, occ, false);
+	EXPECT_EQ(bb.p(0), 0x4020100804020100);
+	EXPECT_EQ(bb.p(1), 0x1FF00);
+	bb = BitBoardns::sliding_attack(E7, occ, false);
+	EXPECT_EQ(bb.p(0), 0x1009FB020100804);
+	EXPECT_EQ(bb.p(1), 0x804);
+	bb = BitBoardns::sliding_attack(E5, occ, false);
+	EXPECT_EQ(bb.p(0), 0x4021EF080402010);
+	EXPECT_EQ(bb.p(1), 0x2010);
+	bb = BitBoardns::sliding_attack(F4, occ, false);
+	EXPECT_EQ(bb.p(0), 0x804020EF8804020);
+	EXPECT_EQ(bb.p(1), 0x4020);
+}
 TEST(bitboard, in_front_of_rank)
 {
 	using namespace BitBoardns;
@@ -432,7 +527,7 @@ TEST(bitboard, clear_bits)
 	BitBoard bb1(0x20100804120104D, 0x11008);
 	BitBoard bb2(0xCB87, 0x3b);
 	BitBoard ans(0x201008041201048, 0x11000);
-	BitBoardns::print(bb2);
+	//BitBoardns::print(bb2);
 	/*
 	bb1のbitパターン
 	-+--+--+--+--+--+--+--+--+--+
