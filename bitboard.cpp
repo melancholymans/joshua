@@ -113,6 +113,7 @@ static const int bishop_attack_num[SquareNum] = {
 	7, 6, 6, 6, 6, 6, 6, 6, 7
 };
 
+
 /*
 WHILE(後手)								BLACK(先手)
 			+--+--+--+--+--+--+--+--+--+
@@ -166,9 +167,26 @@ BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
 	return bb;
 }
 
-void BitBoardns::init_bishop_attacks()
+BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask)
 {
 
+}
+
+void BitBoardns::init_bishop_attacks()
+{
+	int index = 0;
+	BitBoard zero_bb(0x00, 0x00);
+	BitBoard occ[1 << 14];
+
+	for (int sq = I9; sq < SquareNum; sq++){
+		bishop_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
+		bishop_attack_index[sq] = index;
+		const int attack_num = bishop_attack_num[sq]; //いらないのでは
+		for (int i = 0; i < (1 << attack_num); i++){
+			occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
+			bishop_attack[index + occupied_to_index(occ[i] & )]
+		}
+	}
 }
 void BitBoardns::init_rook_attacks()
 {

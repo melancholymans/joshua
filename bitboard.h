@@ -227,9 +227,16 @@ namespace BitBoardns
 		{ in_front_of_rank9_black, in_front_of_rank8_black, in_front_of_rank7_black, in_front_of_rank6_black, in_front_of_rank5_black, in_front_of_rank4_black, in_front_of_rank3_black, in_front_of_rank2_black, in_front_of_rank1_black },
 		{ in_front_of_rank9_white, in_front_of_rank8_white, in_front_of_rank7_white, in_front_of_rank6_white, in_front_of_rank5_white, in_front_of_rank4_white, in_front_of_rank3_white, in_front_of_rank2_white, in_front_of_rank1_white }
 	};
-	extern BitBoard rook_attack[495616];
 	extern BitBoard bishop_attack[20224];
+	extern BitBoard rook_attack[495616];
+	static BitBoard bishop_mask[81];
+	static BitBoard rook_mask[81];
+	static int bishop_attack_index[81];
+	static int rook_attack_index[81];
+
 	BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
+	static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask);
+	//BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask);
 	void init_bishop_attacks();
 	void init_rook_attacks();
 }
