@@ -80,6 +80,10 @@ public:
 	{
 		return BitBoard(*this) |= rhs;
 	}
+	BitBoard operator & (const BitBoard& rhs) const
+	{
+		return BitBoard(*this) &= rhs;
+	}
 	//_mm_testz_si128‚Íˆø”“¯Žm‚ðbit AND‰‰ŽZ‚µ‚ÄŒ‹‰Ê‚ªƒ[ƒ‚É‚È‚ê‚Î1‚ð•Ô‚·
 	//‚±‚Ìis_not_zeroŠÖ”‚ÍBitBoardƒNƒ‰ƒX‚Ìbitboard‚ª‚·‚×‚Äƒ[ƒ‚É‚È‚Á‚½‚çFALSE‚ð•Ô‚·
 	bool is_not_zero() const
@@ -163,6 +167,11 @@ public:
 	uint64_t p(const int index) const
 	{
 		return p_[index];
+	}
+	//_p[0],_p[1]‚ðƒ}[ƒW‚·‚é
+	uint64_t merge() const
+	{
+		return this->p_[0] | this->p_[1];
 	}
 private:
 	union{

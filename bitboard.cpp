@@ -169,7 +169,21 @@ BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
 
 BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask)
 {
+	BitBoard tmp_bb = mask;
+	BitBoard bb(0x00, 0x00);
 
+	for (int i = 0; i < attack_num; i++){
+		const Square sq = tmp_bb.first_one();
+		if (index & (1 << i)){
+			bb.set_bit();
+		}
+	}
+	return bb;
+}
+
+uint64_t occupied_to_index(const BitBoard& occ, const BitBoard& mask)
+{
+	return _pext_u64(occ.merge(), mask.merge());
 }
 
 void BitBoardns::init_bishop_attacks()
@@ -181,13 +195,14 @@ void BitBoardns::init_bishop_attacks()
 	for (int sq = I9; sq < SquareNum; sq++){
 		bishop_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
 		bishop_attack_index[sq] = index;
-		const int attack_num = bishop_attack_num[sq]; //いらないのでは
+		const int attack_num = bishop_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
 			occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
-			bishop_attack[index + occupied_to_index(occ[i] & )]
+			bishop_attack[index + occupied_to_index(occ[i] & bishop_mask[sq], bishop_mask[sq])] = sliding_attack(Square(sq), occ[i], true);
 		}
 	}
 }
+
 void BitBoardns::init_rook_attacks()
 {
 
