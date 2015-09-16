@@ -185,8 +185,6 @@ private:
 
 namespace BitBoardns
 {
-	void init();
-	void print(BitBoard&);
 	//指定したfileのマスクを返す
 	const BitBoard file_i_mask(static_cast<uint64_t>(0x1FF) << (9 * 0), 0x00);
 	const BitBoard file_h_mask(static_cast<uint64_t>(0x1FF) << (9 * 1), 0x00);
@@ -243,11 +241,15 @@ namespace BitBoardns
 	static int bishop_attack_index[81];
 	static int rook_attack_index[81];
 
-	BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
-	static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask);
-	//BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask);
-	void init_bishop_attacks();
-	void init_rook_attacks();
+	void init();
+	void print(BitBoard&);
+	BitBoard make_bishop_attack(const Square sq, const BitBoard& occ);
+	BitBoard make_rook_attack(const Square sq, const BitBoard& occ);
+	static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
+	static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
+	static uint64_t occupied_to_index(const BitBoard& occ, const BitBoard& mask);
+	static void init_bishop_attacks();
+	static void init_rook_attacks();
 }
 
 #endif

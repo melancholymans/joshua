@@ -149,7 +149,7 @@ FILEA		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
 	将棋盤を真横から見ているような配置にしてある、将棋は先手側から後手側に、後手側から先手側に縦に移動する手が多いので
 	このような配置にしてある、と思う。
 */
-BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
+static BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
 {
 	SquareDelta deltas[2][4] = { { DeltaN, DeltaS, DeltaE, DeltaW }, { DeltaNE, DeltaSE, DeltaSW, DeltaNW } };
 	BitBoard bb(0x00, 0x00);
@@ -167,7 +167,7 @@ BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
 	return bb;
 }
 
-BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask)
+static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask)
 {
 	BitBoard tmp_bb = mask;
 	BitBoard bb(0x00, 0x00);
@@ -175,18 +175,32 @@ BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard
 	for (int i = 0; i < attack_num; i++){
 		const Square sq = tmp_bb.first_one();
 		if (index & (1 << i)){
-			bb.set_bit();
+			bb.set_bit(sq);
 		}
 	}
 	return bb;
 }
 
-uint64_t occupied_to_index(const BitBoard& occ, const BitBoard& mask)
+static uint64_t BitBoardns::occupied_to_index(const BitBoard& occ, const BitBoard& mask)
 {
 	return _pext_u64(occ.merge(), mask.merge());
 }
 
-void BitBoardns::init_bishop_attacks()
+BitBoard BitBoardns::make_bishop_attack(const Square sq, const BitBoard& occ)
+{
+	const BitBoard line(occ & bishop_mask[sq]); 
+
+	return bishop_attack[bishop_attack_index[sq] + occupied_to_index(line,bishop_mask[sq])];
+}
+
+BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
+{
+	const BitBoard line(occ & rook_mask[sq]);
+
+	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq])];
+}
+
+static void BitBoardns::init_bishop_attacks()
 {
 	int index = 0;
 	BitBoard zero_bb(0x00, 0x00);
@@ -200,13 +214,28 @@ void BitBoardns::init_bishop_attacks()
 			occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
 			bishop_attack[index + occupied_to_index(occ[i] & bishop_mask[sq], bishop_mask[sq])] = sliding_attack(Square(sq), occ[i], true);
 		}
+		index += 1 << bishop_attack_num[sq];
 	}
 }
 
-void BitBoardns::init_rook_attacks()
+static void BitBoardns::init_rook_attacks()
 {
+	int index = 0;
+	BitBoard zero_bb(0x00, 0x00);
+	BitBoard occ[1 << 14];
 
+	for (int sq = I9; sq < SquareNum; sq++){
+		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
+		rook_attack_index[sq] = index;
+		const int attack_num = rook_attack_num[sq];
+		for (int i = 0; i < (1 << attack_num); i++){
+			occ[i] = index_to_occupied(i, attack_num, rook_mask[sq]);
+			rook_attack[index, occupied_to_index(occ[i] & rook_mask[sq], rook_mask[sq])] = sliding_attack(Square(sq),occ[i], false);
+		}
+		index += 1 << rook_attack_num[sq];
+	}
 }
+
 void BitBoardns::init()
 {
 	init_bishop_attacks();

@@ -53,6 +53,7 @@ int main(int argc,char *argv[])
 	//profile();
 	main_test(argc, argv);
 #endif
+	BitBoardns::init();
     //init();
     //init_usi_options();
     USI::usi_main_loop();
