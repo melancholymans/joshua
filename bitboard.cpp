@@ -149,6 +149,8 @@ FILEA		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
 	将棋盤を真横から見ているような配置にしてある、将棋は先手側から後手側に、後手側から先手側に縦に移動する手が多いので
 	このような配置にしてある、と思う。
 */
+//bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。
+//盤の端も記録する
 static BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
 {
 	SquareDelta deltas[2][4] = { { DeltaN, DeltaS, DeltaE, DeltaW }, { DeltaNE, DeltaSE, DeltaSW, DeltaNW } };
@@ -208,6 +210,7 @@ static void BitBoardns::init_bishop_attacks()
 
 	for (int sq = I9; sq < SquareNum; sq++){
 		bishop_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
+		bishop_mask[sq] &= ~(rank_mask[Rank1] | rank_mask[Rank9] | file_mask[FileA] | file_mask[FileI]);	//board edgeを削っている
 		bishop_attack_index[sq] = index;
 		const int attack_num = bishop_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
@@ -226,6 +229,10 @@ static void BitBoardns::init_rook_attacks()
 
 	for (int sq = I9; sq < SquareNum; sq++){
 		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
+		if (square_file[sq] != FileA){ rook_mask[sq] &= ~file_mask[FileA]; }	//board edgeを削っている
+		if (square_file[sq] != FileI){ rook_mask[sq] &= ~file_mask[FileI]; }
+		if (square_file[sq] != Rank1){ rook_mask[sq] &= ~file_mask[Rank1]; }
+		if (square_file[sq] != Rank9){ rook_mask[sq] &= ~file_mask[Rank9]; }
 		rook_attack_index[sq] = index;
 		const int attack_num = rook_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
@@ -263,6 +270,110 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, index_to_occupied)
+{
+	//引数：指定したindex値(i変数)と利きを利かしている駒がその座標で可能な最大利き数(attack_num)、
+	//その駒がその座標から利かせられる利きbitboard(bishop_mask[sq])
+	//index_to_occupiedは指定した座標から、指定した駒種の利き座標に、他の駒のがいるパターンを生成しそのbitboardを返す
+	//例　３座標しか利かない香車があったとするとindex=0は３座標に一切他の駒がいないパターン 000を生成
+	//index=1は001,index=2は010,index=3は011index=4は100となる全パターンを書き並べると下のようになる
+	//index  occパターン
+	//    0  000
+	//    1  001
+	//    2  010
+	//    3  011
+	//    4  100
+	//    5  101
+	//    6  110
+	//    7  111
+	//occすべてのパターンが漏れなくダブりなく生成されるこのoccパターンに対して
+	//とび駒がどこまで利きを伸ばせるかを設定しているのがinit_bishop_attacks、init_rook_attacks関数
+	//occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
+	using BitBoardns::index_to_occupied;
+	using BitBoardns::bishop_mask;
+	using BitBoardns::print;
+	BitBoard occ;
+	Square sq;
+
+	BitBoardns::init();
+	//I9 attack_numは７箇所、7bitあるのでパターンとしては127ケースある、全数テストするのは困難なため抜き取りでテストする
+	sq = I9;
+	occ = index_to_occupied(0, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x00);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(1, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(2, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x100000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(3, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x100400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(4, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x40000000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(5, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x40000400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(6, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x40100000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(7, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x40100400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(109, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x1000010040000400);
+	EXPECT_EQ(occ.p(1), 0x80);
+	sq = I4;
+	occ = index_to_occupied(1, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x2000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(3, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0xA000);
+	EXPECT_EQ(occ.p(1), 0x00);	
+	occ = index_to_occupied(4, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x200000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(7, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x20A000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(63, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x202220A000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	sq = E5;
+	occ = index_to_occupied(1, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(3, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x10400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(4, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x100000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(7, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x110400);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(4095, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x1105000141110400);
+	EXPECT_EQ(occ.p(1), 0x82);
+	sq = F4;
+	occ = index_to_occupied(1, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x1000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(3, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x11000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(4, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x400000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(7, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x411000);
+	EXPECT_EQ(occ.p(1), 0x00);
+	occ = index_to_occupied(1023, bishop_attack_num[sq], bishop_mask[sq]);
+	EXPECT_EQ(occ.p(0), 0x111050001411000);
+	EXPECT_EQ(occ.p(1), 0x02);
+}
 TEST(bitboard, sliding_attack)
 {
 	BitBoard occ(0x00,0x00);
