@@ -11,6 +11,11 @@ Shogidokoro shogi playing engin
 		CamelCase
 	グローバル変数の宣言
 		元ソースファイルの冒頭に宣言、そのヘッダファイルにextern宣言、グローバル変数を使用したいソースファイル内でインクルード
+	64bitの変数を16進数で表示させるためのprintf関数の表記
+		printf("%llx,%llx\n", occ.p(0), occ.p(1));
+		ストリームで表示させる方法もある。
+		cout << hex;
+		cout << vv << "," << uu << "," << "test" << "," << "words" << endl;
 */
 #include <stdio.h>
 #include <cstdlib>
