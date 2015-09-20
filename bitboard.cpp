@@ -228,11 +228,11 @@ static void BitBoardns::init_rook_attacks()
 	BitBoard occ[1 << 14];
 
 	for (int sq = I9; sq < SquareNum; sq++){
-		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
+		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, false);
 		if (square_file[sq] != FileA){ rook_mask[sq] &= ~file_mask[FileA]; }	//board edgeを削っている
 		if (square_file[sq] != FileI){ rook_mask[sq] &= ~file_mask[FileI]; }
-		if (square_file[sq] != Rank1){ rook_mask[sq] &= ~file_mask[Rank1]; }
-		if (square_file[sq] != Rank9){ rook_mask[sq] &= ~file_mask[Rank9]; }
+		if (square_rank[sq] != Rank1){ rook_mask[sq] &= ~rank_mask[Rank1]; }
+		if (square_rank[sq] != Rank9){ rook_mask[sq] &= ~rank_mask[Rank9]; }
 		rook_attack_index[sq] = index;
 		const int attack_num = rook_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
