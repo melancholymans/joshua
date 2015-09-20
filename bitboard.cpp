@@ -326,11 +326,13 @@ TEST(bitboard, index_to_occupied)
 	//occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
 	using BitBoardns::index_to_occupied;
 	using BitBoardns::bishop_mask;
+	using BitBoardns::rook_mask;
 	using BitBoardns::print;
 	BitBoard occ;
 	Square sq;
 
 	BitBoardns::init();
+	//bishop
 	//I9 attack_numは７箇所、7bitあるのでパターンとしては127ケースある、全数テストするのは困難なため抜き取りでテストする
 	sq = I9;
 	occ = index_to_occupied(0, bishop_attack_num[sq], bishop_mask[sq]);
