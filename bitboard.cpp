@@ -1,4 +1,5 @@
-﻿#include "types.h"
+﻿#include <stdio.h>
+#include "types.h"
 #include "bitboard.h"
 #include "position.h"
 #include "misc.h"
