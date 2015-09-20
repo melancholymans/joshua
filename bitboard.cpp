@@ -186,7 +186,8 @@ static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const B
 
 static uint64_t BitBoardns::occupied_to_index(const BitBoard& occ, const BitBoard& mask)
 {
-	return _pext_u64(occ.merge(), mask.merge());
+	//return _pext_u64(occ.merge(), mask.merge());
+	uint64_t(_pext_u64(occ.p(0), mask.p(0)) | _pext_u64(occ.p(1), mask.p(1)) << 63);
 }
 
 BitBoard BitBoardns::make_bishop_attack(const Square sq, const BitBoard& occ)
