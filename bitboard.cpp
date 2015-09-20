@@ -271,6 +271,39 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, occupied_to_index)
+{
+	//occupied_to_indexは局面bitboardを見てそれに対応するindexを返す関数
+	//BMI2命令を使っている。index_to_occupied()の逆関数
+	using BitBoardns::index_to_occupied;
+	using BitBoardns::occupied_to_index;
+	using BitBoardns::bishop_mask;
+	using BitBoardns::rook_mask;
+	using BitBoardns::print;
+	BitBoard occ;
+	Square sq;
+	uint64_t index;
+
+	BitBoardns::init();
+	//bishop
+	for (int sq = A1; sq < SquareNum; sq++){
+		for (int i = 0; i < (1 << bishop_attack_num[sq]); i++){
+			occ = index_to_occupied(i, bishop_attack_num[sq], bishop_mask[sq]);
+			index = occupied_to_index(occ, bishop_mask[sq]);
+			printf("i = %d sq = %d (index) = %lld\n",i,sq, index >> 1);
+			//if (i == (1 << bishop_attack_num[sq]) / 4){
+			//	getchar();
+			//}
+			//if (i == (1 << bishop_attack_num[sq])* 2/ 4){
+			//	getchar();
+			//}
+			//if (i == (1 << bishop_attack_num[sq]) * 3 / 4){
+			//	getchar();
+			//}
+		}
+	}
+}
+
 TEST(bitboard, index_to_occupied)
 {
 	//引数：指定したindex値(i変数)と利きを利かしている駒がその座標で可能な最大利き数(attack_num)、
