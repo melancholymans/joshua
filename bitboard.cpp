@@ -228,10 +228,10 @@ static void init_rook_attacks()
 
 	for (int sq = I9; sq < SquareNum; sq++){
 		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, false);
-		if (square_file[sq] != FileA){ rook_mask[sq] &= ~BitBoardns::FILE_MASK[FileA]; }	//board edgeを削っている
-		if (square_file[sq] != FileI){ rook_mask[sq] &= ~BitBoardns::FILE_MASK[FileI]; }
-		if (square_rank[sq] != Rank1){ rook_mask[sq] &= ~BitBoardns::RANK_MASK[Rank1]; }
-		if (square_rank[sq] != Rank9){ rook_mask[sq] &= ~BitBoardns::RANK_MASK[Rank9]; }
+		if (SQUARE_FILE[sq] != FileA){ rook_mask[sq] &= ~BitBoardns::FILE_MASK[FileA]; }	//board edgeを削っている
+		if (SQUARE_FILE[sq] != FileI){ rook_mask[sq] &= ~BitBoardns::FILE_MASK[FileI]; }
+		if (SQUARE_RANK[sq] != Rank1){ rook_mask[sq] &= ~BitBoardns::RANK_MASK[Rank1]; }
+		if (SQUARE_RANK[sq] != Rank9){ rook_mask[sq] &= ~BitBoardns::RANK_MASK[Rank9]; }
 		rook_attack_index[sq] = index;
 		const int attack_num = ROOK_ATTACK_NUM[sq];
 		for (int i = 0; i < (1 << attack_num); i++){

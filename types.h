@@ -60,7 +60,7 @@ enum Piece{
 	PieceNum = 31
 };
 
-const Rank square_rank[SquareNum] = {
+const Rank SQUARE_RANK[SquareNum] = {
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
@@ -71,7 +71,7 @@ const Rank square_rank[SquareNum] = {
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1
 };
-const File square_file[SquareNum] = {
+const File SQUARE_FILE[SquareNum] = {
 	FileI, FileI, FileI, FileI, FileI, FileI, FileI, FileI, FileI,
 	FileH, FileH, FileH, FileH, FileH, FileH, FileH, FileH, FileH,
 	FileG, FileG, FileG, FileG, FileG, FileG, FileG, FileG, FileG,
@@ -100,12 +100,12 @@ inline bool is_square(const Square sq)
 //座標が属しているrankを返す
 inline Rank make_rank(const Square sq)
 {
-	return square_rank[sq];
+	return SQUARE_RANK[sq];
 }
 //座標が属しているfileを返す
 inline File make_file(const Square sq)
 {
-	return square_file[sq];
+	return SQUARE_FILE[sq];
 }
 //
 //関数を呼び分けるマクロ群
