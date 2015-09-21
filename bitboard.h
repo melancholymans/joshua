@@ -234,22 +234,11 @@ namespace BitBoardns
 		{ in_front_of_rank9_black, in_front_of_rank8_black, in_front_of_rank7_black, in_front_of_rank6_black, in_front_of_rank5_black, in_front_of_rank4_black, in_front_of_rank3_black, in_front_of_rank2_black, in_front_of_rank1_black },
 		{ in_front_of_rank9_white, in_front_of_rank8_white, in_front_of_rank7_white, in_front_of_rank6_white, in_front_of_rank5_white, in_front_of_rank4_white, in_front_of_rank3_white, in_front_of_rank2_white, in_front_of_rank1_white }
 	};
-	static BitBoard bishop_attack[20224];
-	static BitBoard rook_attack[495616];
-	static BitBoard bishop_mask[81];
-	static BitBoard rook_mask[81];
-	static int bishop_attack_index[81];
-	static int rook_attack_index[81];
 
 	void init();
 	void print(BitBoard&);
 	BitBoard make_bishop_attack(const Square sq, const BitBoard& occ);
 	BitBoard make_rook_attack(const Square sq, const BitBoard& occ);
-	static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
-	static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
-	static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
-	static void init_bishop_attacks();
-	static void init_rook_attacks();
 }
 
 #endif

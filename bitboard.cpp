@@ -90,7 +90,7 @@ const BitBoard SquareBB[SquareNum] = {		//bitboard index		board square
 	BitBoard(0, 1ULL << 16),				//79					A2
 	BitBoard(0, 1ULL << 17)					//80					A1
 };
-
+//局所定数宣言・定義
 static const int bishop_attack_num[SquareNum] = {
 	7, 6, 6, 6, 6, 6, 6, 6, 7,
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -135,9 +135,22 @@ static const int rook_offset[SquareNum] = {
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
 };
-//bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。
-//盤の端も記録する
-static BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_bishop)
+//局所変数宣言
+static BitBoard bishop_attack[20224];
+static BitBoard rook_attack[495616];
+static BitBoard bishop_mask[81];
+static BitBoard rook_mask[81];
+static int bishop_attack_index[81];
+static int rook_attack_index[81];
+//局所関数宣言
+static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
+static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
+static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
+static void init_bishop_attacks();
+static void init_rook_attacks();
+
+//bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
+static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
 {
 	SquareDelta deltas[2][4] = { { DeltaN, DeltaS, DeltaE, DeltaW }, { DeltaNE, DeltaSE, DeltaSW, DeltaNW } };
 	BitBoard bb(0x00, 0x00);
@@ -155,7 +168,7 @@ static BitBoard BitBoardns::sliding_attack(Square square, BitBoard occ,bool is_b
 	return bb;
 }
 
-static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const BitBoard mask)
+static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask)
 {
 	BitBoard tmp_bb = mask;
 	BitBoard bb(0x00, 0x00);
@@ -169,7 +182,7 @@ static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const B
 	return bb;
 }
 
-static int BitBoardns::occupied_to_index(const BitBoard& occ, const BitBoard& mask,const int& offset)
+static int occupied_to_index(const BitBoard& occ, const BitBoard& mask,const int& offset)
 {
 	return static_cast<int>(_pext_u64(occ.p(0), mask.p(0)) | (_pext_u64(occ.p(1), mask.p(1)) << offset));
 }
@@ -188,7 +201,7 @@ BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
 	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq],rook_offset[sq])];
 }
 
-static void BitBoardns::init_bishop_attacks()
+static void init_bishop_attacks()
 {
 	int index = 0;
 	BitBoard zero_bb(0x00, 0x00);
@@ -196,7 +209,7 @@ static void BitBoardns::init_bishop_attacks()
 
 	for (int sq = I9; sq < SquareNum; sq++){
 		bishop_mask[sq] = sliding_attack(Square(sq), zero_bb, true);
-		bishop_mask[sq] &= ~(rank_mask[Rank1] | rank_mask[Rank9] | file_mask[FileA] | file_mask[FileI]);	//board edgeを削っている
+		bishop_mask[sq] &= ~(BitBoardns::rank_mask[Rank1] | BitBoardns::rank_mask[Rank9] | BitBoardns::file_mask[FileA] | BitBoardns::file_mask[FileI]);	//board edgeを削っている
 		bishop_attack_index[sq] = index;
 		const int attack_num = bishop_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
@@ -207,7 +220,7 @@ static void BitBoardns::init_bishop_attacks()
 	}
 }
 
-static void BitBoardns::init_rook_attacks()
+static void init_rook_attacks()
 {
 	int index = 0;
 	BitBoard zero_bb(0x00, 0x00);
@@ -215,10 +228,10 @@ static void BitBoardns::init_rook_attacks()
 
 	for (int sq = I9; sq < SquareNum; sq++){
 		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, false);
-		if (square_file[sq] != FileA){ rook_mask[sq] &= ~file_mask[FileA]; }	//board edgeを削っている
-		if (square_file[sq] != FileI){ rook_mask[sq] &= ~file_mask[FileI]; }
-		if (square_rank[sq] != Rank1){ rook_mask[sq] &= ~rank_mask[Rank1]; }
-		if (square_rank[sq] != Rank9){ rook_mask[sq] &= ~rank_mask[Rank9]; }
+		if (square_file[sq] != FileA){ rook_mask[sq] &= ~BitBoardns:: file_mask[FileA]; }	//board edgeを削っている
+		if (square_file[sq] != FileI){ rook_mask[sq] &= ~BitBoardns::file_mask[FileI]; }
+		if (square_rank[sq] != Rank1){ rook_mask[sq] &= ~BitBoardns::rank_mask[Rank1]; }
+		if (square_rank[sq] != Rank9){ rook_mask[sq] &= ~BitBoardns::rank_mask[Rank9]; }
 		rook_attack_index[sq] = index;
 		const int attack_num = rook_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
@@ -273,9 +286,8 @@ TEST(bitboard, rook_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::index_to_occupied;
-	using BitBoardns::occupied_to_index;
-	using BitBoardns::rook_mask;
+	/*using BitBoardns::index_to_occupied;*/
+	/*using BitBoardns::occupied_to_index;*/
 	using BitBoardns::make_rook_attack;
 	using BitBoardns::print;
 	int sq;
@@ -337,9 +349,8 @@ TEST(bitboard, bishop_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::index_to_occupied;
-	using BitBoardns::occupied_to_index;
-	using BitBoardns::bishop_mask;
+	/*using BitBoardns::index_to_occupied;*/
+	/*using BitBoardns::occupied_to_index;*/
 	using BitBoardns::make_bishop_attack;
 	using BitBoardns::print;
 	int sq;
@@ -388,10 +399,8 @@ TEST(bitboard, occupied_to_index)
 {
 	//occupied_to_indexは局面bitboardを見てそれに対応するindexを返す関数
 	//BMI2命令を使っている。index_to_occupied()の逆関数
-	using BitBoardns::index_to_occupied;
-	using BitBoardns::occupied_to_index;
-	using BitBoardns::bishop_mask;
-	using BitBoardns::rook_mask;
+	/*using BitBoardns::index_to_occupied;*/
+	/*using BitBoardns::occupied_to_index;*/
 	using BitBoardns::print;
 	BitBoard occ;
 	uint64_t index;
@@ -434,9 +443,7 @@ TEST(bitboard, index_to_occupied)
 	//occすべてのパターンが漏れなくダブりなく生成されるこのoccパターンに対して
 	//とび駒がどこまで利きを伸ばせるかを設定しているのがinit_bishop_attacks、init_rook_attacks関数
 	//occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
-	using BitBoardns::index_to_occupied;
-	using BitBoardns::bishop_mask;
-	using BitBoardns::rook_mask;
+	/*using BitBoardns::index_to_occupied;*/
 	using BitBoardns::print;
 	BitBoard occ;
 	Square sq;
@@ -604,65 +611,65 @@ TEST(bitboard, sliding_attack)
 	BitBoard bb(0x00, 0x00);
 
 	//bishop
-	bb = BitBoardns::sliding_attack(I9,occ,true);
+	bb = sliding_attack(I9,occ,true);
 	EXPECT_EQ(bb.p(0), 0x1004010040100400);
 	EXPECT_EQ(bb.p(1), 0x20080);
-	bb = BitBoardns::sliding_attack(I4, occ, true);
+	bb = sliding_attack(I4, occ, true);
 	EXPECT_EQ(bb.p(0), 0x20282220A000);
 	EXPECT_EQ(bb.p(1), 0x00);
-	bb = BitBoardns::sliding_attack(I1, occ, true);
+	bb = sliding_attack(I1, occ, true);
 	EXPECT_EQ(bb.p(0), 0x101010101010000);
 	EXPECT_EQ(bb.p(1), 0x202);
-	bb = BitBoardns::sliding_attack(G9, occ, true);
+	bb = sliding_attack(G9, occ, true);
 	EXPECT_EQ(bb.p(0), 0x401004010000404);
 	EXPECT_EQ(bb.p(1), 0x8020);
-	bb = BitBoardns::sliding_attack(A9, occ, true);
+	bb = sliding_attack(A9, occ, true);
 	EXPECT_EQ(bb.p(0), 0x101010101010100);
 	EXPECT_EQ(bb.p(1), 0x02);
-	bb = BitBoardns::sliding_attack(A7, occ, true);
+	bb = sliding_attack(A7, occ, true);
 	EXPECT_EQ(bb.p(0), 0x444040404000000);
 	EXPECT_EQ(bb.p(1), 0x0A);
-	bb = BitBoardns::sliding_attack(A1, occ, true);
+	bb = sliding_attack(A1, occ, true);
 	EXPECT_EQ(bb.p(0), 0x1004010040100401);
 	EXPECT_EQ(bb.p(1), 0x80);
-	bb = BitBoardns::sliding_attack(E7, occ, true);
+	bb = sliding_attack(E7, occ, true);
 	EXPECT_EQ(bb.p(0), 0x441400050444040);
 	EXPECT_EQ(bb.p(1), 0x8020);
-	bb = BitBoardns::sliding_attack(E5, occ, true);
+	bb = sliding_attack(E5, occ, true);
 	EXPECT_EQ(bb.p(0), 0x1105000141110501);
 	EXPECT_EQ(bb.p(1), 0x20282);
-	bb = BitBoardns::sliding_attack(F4, occ, true);
+	bb = sliding_attack(F4, occ, true);
 	EXPECT_EQ(bb.p(0), 0x4111050001411104);
 	EXPECT_EQ(bb.p(1), 0x202);
 	//rook
-	bb = BitBoardns::sliding_attack(I9, occ, false);
+	bb = sliding_attack(I9, occ, false);
 	EXPECT_EQ(bb.p(0), 0x402010080403FE);
 	EXPECT_EQ(bb.p(1), 0x201);
-	bb = BitBoardns::sliding_attack(I4, occ, false);
+	bb = sliding_attack(I4, occ, false);
 	EXPECT_EQ(bb.p(0), 0x8040201008041DF);
 	EXPECT_EQ(bb.p(1), 0x4020);
-	bb = BitBoardns::sliding_attack(I1, occ, false);
+	bb = sliding_attack(I1, occ, false);
 	EXPECT_EQ(bb.p(0), 0x40201008040200FF);
 	EXPECT_EQ(bb.p(1), 0x20100);
-	bb = BitBoardns::sliding_attack(G9, occ, false);
+	bb = sliding_attack(G9, occ, false);
 	EXPECT_EQ(bb.p(0), 0x4020100FF80201);
 	EXPECT_EQ(bb.p(1), 0x201);
-	bb = BitBoardns::sliding_attack(A9, occ, false);
+	bb = sliding_attack(A9, occ, false);
 	EXPECT_EQ(bb.p(0), 0x40201008040201);
 	EXPECT_EQ(bb.p(1), 0x3FC01);
-	bb = BitBoardns::sliding_attack(A7, occ, false);
+	bb = sliding_attack(A7, occ, false);
 	EXPECT_EQ(bb.p(0), 0x100804020100804);
 	EXPECT_EQ(bb.p(1), 0x3F604);
-	bb = BitBoardns::sliding_attack(A1, occ, false);
+	bb = sliding_attack(A1, occ, false);
 	EXPECT_EQ(bb.p(0), 0x4020100804020100);
 	EXPECT_EQ(bb.p(1), 0x1FF00);
-	bb = BitBoardns::sliding_attack(E7, occ, false);
+	bb = sliding_attack(E7, occ, false);
 	EXPECT_EQ(bb.p(0), 0x1009FB020100804);
 	EXPECT_EQ(bb.p(1), 0x804);
-	bb = BitBoardns::sliding_attack(E5, occ, false);
+	bb = sliding_attack(E5, occ, false);
 	EXPECT_EQ(bb.p(0), 0x4021EF080402010);
 	EXPECT_EQ(bb.p(1), 0x2010);
-	bb = BitBoardns::sliding_attack(F4, occ, false);
+	bb = sliding_attack(F4, occ, false);
 	EXPECT_EQ(bb.p(0), 0x804020EF8804020);
 	EXPECT_EQ(bb.p(1), 0x4020);
 }
