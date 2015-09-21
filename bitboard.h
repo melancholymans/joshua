@@ -4,7 +4,7 @@
 #include "types.h"
 
 class BitBoard;		//先行宣言
-extern const BitBoard SquareBB[SquareNum];
+extern const BitBoard SQUARE_BB[SquareNum];
 
 class BitBoard{
 public:
@@ -102,12 +102,12 @@ public:
 	//指定した座標のbitをon
 	void set_bit(const Square sq)
 	{
-		*this |= SquareBB[sq];
+		*this |= SQUARE_BB[sq];
 	}
 	//指定した座標に駒がいるか判定する
 	bool is_bit_on(const Square sq) const
 	{
-		return !(_mm_testz_si128(m_, SquareBB[sq].m_));
+		return !(_mm_testz_si128(m_, SQUARE_BB[sq].m_));
 	}
 	//maskがonになっているところをクリアする
 	BitBoard clear_bits(const BitBoard& mask)
@@ -118,17 +118,17 @@ public:
 	//指定した座標のbitをoffにする
 	void clear_square(const Square sq)
 	{
-		clear_bits(SquareBB[sq]);
+		clear_bits(SQUARE_BB[sq]);
 	}
 	//指定した座標がbit onならbit offにoffならonにする
 	void xor_bit(const Square sq)
 	{
-		*this ^= SquareBB[sq];
+		*this ^= SQUARE_BB[sq];
 	}
 	//指定した座標sq1,sq2でxor演算、駒の移動表現
 	void xor_bit(const Square sq1, const Square sq2)
 	{
-		_mm_store_si128(&m_, _mm_xor_si128(m_, _mm_or_si128(SquareBB[sq1].m_, SquareBB[sq2].m_)));
+		_mm_store_si128(&m_, _mm_xor_si128(m_, _mm_or_si128(SQUARE_BB[sq1].m_, SQUARE_BB[sq2].m_)));
 	}
 	//bitboardが完全にゼロでないことを前提としている
 	//bitboardのp_[0]をLSB側からスキャンして最初のbit onのindexを返す。indexはゼロから始まる
@@ -186,53 +186,53 @@ private:
 namespace BitBoardns
 {
 	//指定したfileのマスクを返す
-	const BitBoard file_i_mask(static_cast<uint64_t>(0x1FF) << (9 * 0), 0x00);
-	const BitBoard file_h_mask(static_cast<uint64_t>(0x1FF) << (9 * 1), 0x00);
-	const BitBoard file_g_mask(static_cast<uint64_t>(0x1FF) << (9 * 2), 0x00);
-	const BitBoard file_f_mask(static_cast<uint64_t>(0x1FF) << (9 * 3), 0x00);
-	const BitBoard file_e_mask(static_cast<uint64_t>(0x1FF) << (9 * 4), 0x00);
-	const BitBoard file_d_mask(static_cast<uint64_t>(0x1FF) << (9 * 5), 0x00);
-	const BitBoard file_c_mask(static_cast<uint64_t>(0x1FF) << (9 * 6), 0x00);
-	const BitBoard file_b_mask(0x00, 0x1FF << (9 * 0));
-	const BitBoard file_a_mask(0x00, 0x1FF << (9 * 1));
-	const BitBoard file_mask[FileNum] = {
-		file_i_mask, file_h_mask, file_g_mask, file_f_mask, file_g_mask, file_d_mask, file_c_mask, file_b_mask, file_a_mask
+	const BitBoard FILE_I_MASK(static_cast<uint64_t>(0x1FF) << (9 * 0), 0x00);
+	const BitBoard FILE_H_MASK(static_cast<uint64_t>(0x1FF) << (9 * 1), 0x00);
+	const BitBoard FILE_G_MASK(static_cast<uint64_t>(0x1FF) << (9 * 2), 0x00);
+	const BitBoard FILE_F_MASK(static_cast<uint64_t>(0x1FF) << (9 * 3), 0x00);
+	const BitBoard FILE_E_MASK(static_cast<uint64_t>(0x1FF) << (9 * 4), 0x00);
+	const BitBoard FILE_D_MASK(static_cast<uint64_t>(0x1FF) << (9 * 5), 0x00);
+	const BitBoard FILE_C_MASK(static_cast<uint64_t>(0x1FF) << (9 * 6), 0x00);
+	const BitBoard FILE_B_MASK(0x00, 0x1FF << (9 * 0));
+	const BitBoard FILE_A_MASK(0x00, 0x1FF << (9 * 1));
+	const BitBoard FILE_MASK[FileNum] = {
+		FILE_I_MASK, FILE_H_MASK, FILE_G_MASK, FILE_F_MASK, FILE_G_MASK, FILE_D_MASK, FILE_C_MASK, FILE_B_MASK, FILE_A_MASK
 	};
 	//指定したrankのマスクを返す
-	const BitBoard rank_9_mask(0x40201008040201 << 0, 0x201 << 0);
-	const BitBoard rank_8_mask(0x40201008040201 << 1, 0x201 << 1);
-	const BitBoard rank_7_mask(0x40201008040201 << 2, 0x201 << 2);
-	const BitBoard rank_6_mask(0x40201008040201 << 3, 0x201 << 3);
-	const BitBoard rank_5_mask(0x40201008040201 << 4, 0x201 << 4);
-	const BitBoard rank_4_mask(0x40201008040201 << 5, 0x201 << 5);
-	const BitBoard rank_3_mask(0x40201008040201 << 6, 0x201 << 6);
-	const BitBoard rank_2_mask(0x40201008040201 << 7, 0x201 << 7);
-	const BitBoard rank_1_mask(0x40201008040201 << 8, 0x201 << 8);
-	const BitBoard rank_mask[RankNum] = {
-		rank_9_mask, rank_8_mask, rank_7_mask, rank_6_mask, rank_5_mask, rank_4_mask, rank_3_mask, rank_2_mask, rank_1_mask
+	const BitBoard RANK_9_MASK(0x40201008040201 << 0, 0x201 << 0);
+	const BitBoard RANK_8_MASK(0x40201008040201 << 1, 0x201 << 1);
+	const BitBoard RANK_7_MASK(0x40201008040201 << 2, 0x201 << 2);
+	const BitBoard RANK_6_MASK(0x40201008040201 << 3, 0x201 << 3);
+	const BitBoard RANK_5_MASK(0x40201008040201 << 4, 0x201 << 4);
+	const BitBoard RANK_4_MASK(0x40201008040201 << 5, 0x201 << 5);
+	const BitBoard RANK_3_MASK(0x40201008040201 << 6, 0x201 << 6);
+	const BitBoard RANK_2_MASK(0x40201008040201 << 7, 0x201 << 7);
+	const BitBoard RANK_1_MASK(0x40201008040201 << 8, 0x201 << 8);
+	const BitBoard RANK_MASK[RankNum] = {
+		RANK_9_MASK, RANK_8_MASK, RANK_7_MASK, RANK_6_MASK, RANK_5_MASK, RANK_4_MASK, RANK_3_MASK, RANK_2_MASK, RANK_1_MASK
 	};
 	//指定したrankより前方（カラーによって変わる）のbitがonになるbitboardを返す、指定したrankのbitは含まれない
-	const BitBoard in_front_of_rank9_black(0x00, 0x00);
-	const BitBoard in_front_of_rank8_black = rank_9_mask;
-	const BitBoard in_front_of_rank7_black = in_front_of_rank8_black | rank_8_mask;
-	const BitBoard in_front_of_rank6_black = in_front_of_rank7_black | rank_7_mask;
-	const BitBoard in_front_of_rank5_black = in_front_of_rank6_black | rank_6_mask;
-	const BitBoard in_front_of_rank4_black = in_front_of_rank5_black | rank_5_mask;
-	const BitBoard in_front_of_rank3_black = in_front_of_rank4_black | rank_4_mask;
-	const BitBoard in_front_of_rank2_black = in_front_of_rank3_black | rank_3_mask;
-	const BitBoard in_front_of_rank1_black = in_front_of_rank2_black | rank_2_mask;
-	const BitBoard in_front_of_rank1_white(0x00, 0x00);
-	const BitBoard in_front_of_rank2_white = rank_1_mask;
-	const BitBoard in_front_of_rank3_white = in_front_of_rank2_white | rank_2_mask;
-	const BitBoard in_front_of_rank4_white = in_front_of_rank3_white | rank_3_mask;
-	const BitBoard in_front_of_rank5_white = in_front_of_rank4_white | rank_4_mask;
-	const BitBoard in_front_of_rank6_white = in_front_of_rank5_white | rank_5_mask;
-	const BitBoard in_front_of_rank7_white = in_front_of_rank6_white | rank_6_mask;
-	const BitBoard in_front_of_rank8_white = in_front_of_rank7_white | rank_7_mask;
-	const BitBoard in_front_of_rank9_white = in_front_of_rank8_white | rank_8_mask;
-	const BitBoard in_front_mask[ColorNum][RankNum] = {
-		{ in_front_of_rank9_black, in_front_of_rank8_black, in_front_of_rank7_black, in_front_of_rank6_black, in_front_of_rank5_black, in_front_of_rank4_black, in_front_of_rank3_black, in_front_of_rank2_black, in_front_of_rank1_black },
-		{ in_front_of_rank9_white, in_front_of_rank8_white, in_front_of_rank7_white, in_front_of_rank6_white, in_front_of_rank5_white, in_front_of_rank4_white, in_front_of_rank3_white, in_front_of_rank2_white, in_front_of_rank1_white }
+	const BitBoard IN_FRONT_OF_RANK9_BLACK(0x00, 0x00);
+	const BitBoard IN_FRONT_OF_RANK8_BLACK = RANK_9_MASK;
+	const BitBoard IN_FRONT_OF_RANK7_BLACK = IN_FRONT_OF_RANK8_BLACK | RANK_8_MASK;
+	const BitBoard IN_FRONT_OF_RANK6_BLACK = IN_FRONT_OF_RANK7_BLACK | RANK_7_MASK;
+	const BitBoard IN_FRONT_OF_RANK5_BLACK = IN_FRONT_OF_RANK6_BLACK | RANK_6_MASK;
+	const BitBoard IN_FRONT_OF_RANK4_BLACK = IN_FRONT_OF_RANK5_BLACK | RANK_5_MASK;
+	const BitBoard IN_FRONT_OF_RANK3_BLACK = IN_FRONT_OF_RANK4_BLACK | RANK_4_MASK;
+	const BitBoard IN_FRONT_OF_RANK2_BLACK = IN_FRONT_OF_RANK3_BLACK | RANK_3_MASK;
+	const BitBoard IN_FRONT_OF_RANK1_BLACK = IN_FRONT_OF_RANK2_BLACK | RANK_2_MASK;
+	const BitBoard IN_FRONT_OF_RANK1_WHITE(0x00, 0x00);
+	const BitBoard IN_FRONT_OF_RANK2_WHITE = RANK_1_MASK;
+	const BitBoard IN_FRONT_OF_RANK3_WHITE = IN_FRONT_OF_RANK2_WHITE | RANK_2_MASK;
+	const BitBoard IN_FRONT_OF_RANK4_WHITE = IN_FRONT_OF_RANK3_WHITE | RANK_3_MASK;
+	const BitBoard IN_FRONT_OF_RANK5_WHITE = IN_FRONT_OF_RANK4_WHITE | RANK_4_MASK;
+	const BitBoard IN_FRONT_OF_RANK6_WHITE = IN_FRONT_OF_RANK5_WHITE | RANK_5_MASK;
+	const BitBoard IN_FRONT_OF_RANK7_WHITE = IN_FRONT_OF_RANK6_WHITE | RANK_6_MASK;
+	const BitBoard IN_FRONT_OF_RANK8_WHITE = IN_FRONT_OF_RANK7_WHITE | RANK_7_MASK;
+	const BitBoard IN_FRONT_OF_RANK9_WHITE = IN_FRONT_OF_RANK8_WHITE | RANK_8_MASK;
+	const BitBoard IN_FRONT_MASK[ColorNum][RankNum] = {
+		{ IN_FRONT_OF_RANK9_BLACK, IN_FRONT_OF_RANK8_BLACK, IN_FRONT_OF_RANK7_BLACK, IN_FRONT_OF_RANK6_BLACK, IN_FRONT_OF_RANK5_BLACK, IN_FRONT_OF_RANK4_BLACK, IN_FRONT_OF_RANK3_BLACK, IN_FRONT_OF_RANK2_BLACK, IN_FRONT_OF_RANK1_BLACK },
+		{ IN_FRONT_OF_RANK9_WHITE, IN_FRONT_OF_RANK8_WHITE, IN_FRONT_OF_RANK7_WHITE, IN_FRONT_OF_RANK6_WHITE, IN_FRONT_OF_RANK5_WHITE, IN_FRONT_OF_RANK4_WHITE, IN_FRONT_OF_RANK3_WHITE, IN_FRONT_OF_RANK2_WHITE, IN_FRONT_OF_RANK1_WHITE }
 	};
 
 	void init();
