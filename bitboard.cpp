@@ -91,17 +91,6 @@ const BitBoard SquareBB[SquareNum] = {		//bitboard index		board square
 	BitBoard(0, 1ULL << 17)					//80					A1
 };
 
-static const int rook_attack_num[SquareNum] = {
-	14, 13, 13, 13, 13, 13, 13, 13, 14,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	13, 12, 12, 12, 12, 12, 12, 12, 13,
-	14, 13, 13, 13, 13, 13, 13, 13, 14,
-};
 static const int bishop_attack_num[SquareNum] = {
 	7, 6, 6, 6, 6, 6, 6, 6, 7,
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
@@ -113,8 +102,39 @@ static const int bishop_attack_num[SquareNum] = {
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
 	7, 6, 6, 6, 6, 6, 6, 6, 7
 };
-
-
+static const int rook_attack_num[SquareNum] = {
+	14, 13, 13, 13, 13, 13, 13, 13, 14,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	14, 13, 13, 13, 13, 13, 13, 13, 14,
+};
+static const int bishop_offset[SquareNum] = {
+	6, 6, 6, 6, 6, 6, 6, 6, 6,
+	5, 5, 6, 6, 6, 6, 6, 5, 5,
+	5, 5, 7, 8, 8, 8, 7, 5, 5,
+	5, 5, 7, 9, 10, 9, 7, 5, 5,
+	5, 5, 7, 9, 10, 9, 7, 5, 5,
+	5, 5, 7, 8, 8, 8, 7, 5, 5,
+	5, 5, 6, 6, 6, 6, 6, 5, 5,
+	6, 6, 6, 6, 6, 6, 6, 6, 6,
+	6, 5, 4, 4, 4, 4, 4, 5, 6
+};
+static const int rook_offset[SquareNum] = {
+	13, 12, 12, 12, 12, 12, 12, 12, 13,
+	12, 11, 11, 11, 11, 11, 11, 11, 12,
+	12, 11, 11, 11, 11, 11, 11, 11, 12,
+	12, 11, 11, 11, 11, 11, 11, 11, 12,
+	12, 11, 11, 11, 11, 11, 11, 11, 12,
+	12, 11, 11, 11, 11, 11, 11, 11, 12,
+	12, 11, 11, 11, 11, 11, 11, 11, 12,
+	6, 6, 6, 6, 6, 6, 6, 6, 6,
+	6, 6, 6, 6, 6, 6, 6, 6, 6,
+};
 /*
 WHILE(後手)								BLACK(先手)
 			+--+--+--+--+--+--+--+--+--+
@@ -184,24 +204,23 @@ static BitBoard BitBoardns::index_to_occupied(int index, int attack_num, const B
 	return bb;
 }
 
-static uint64_t BitBoardns::occupied_to_index(const BitBoard& occ, const BitBoard& mask)
+static int BitBoardns::occupied_to_index(const BitBoard& occ, const BitBoard& mask,const int& offset)
 {
-	//return _pext_u64(occ.merge(), mask.merge());
-	uint64_t(_pext_u64(occ.p(0), mask.p(0)) | _pext_u64(occ.p(1), mask.p(1)) << 63);
+	return static_cast<int>(_pext_u64(occ.p(0), mask.p(0)) | (_pext_u64(occ.p(1), mask.p(1)) << offset));
 }
 
 BitBoard BitBoardns::make_bishop_attack(const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & bishop_mask[sq]); 
 
-	return bishop_attack[bishop_attack_index[sq] + occupied_to_index(line,bishop_mask[sq])];
+	return bishop_attack[bishop_attack_index[sq] + occupied_to_index(line,bishop_mask[sq],bishop_offset[sq])];
 }
 
 BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & rook_mask[sq]);
 
-	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq])];
+	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq],rook_offset[sq])];
 }
 
 static void BitBoardns::init_bishop_attacks()
@@ -217,7 +236,7 @@ static void BitBoardns::init_bishop_attacks()
 		const int attack_num = bishop_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
 			occ[i] = index_to_occupied(i, attack_num, bishop_mask[sq]);
-			bishop_attack[index + occupied_to_index(occ[i] & bishop_mask[sq], bishop_mask[sq])] = sliding_attack(Square(sq), occ[i], true);
+			bishop_attack[index + occupied_to_index(occ[i] & bishop_mask[sq], bishop_mask[sq],bishop_offset[sq])] = sliding_attack(Square(sq), occ[i], true);
 		}
 		index += 1 << bishop_attack_num[sq];
 	}
@@ -239,7 +258,7 @@ static void BitBoardns::init_rook_attacks()
 		const int attack_num = rook_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
 			occ[i] = index_to_occupied(i, attack_num, rook_mask[sq]);
-			rook_attack[index, occupied_to_index(occ[i] & rook_mask[sq], rook_mask[sq])] = sliding_attack(Square(sq),occ[i], false);
+			rook_attack[index, occupied_to_index(occ[i] & rook_mask[sq], rook_mask[sq],rook_offset[sq])] = sliding_attack(Square(sq),occ[i], false);
 		}
 		index += 1 << rook_attack_num[sq];
 	}
@@ -282,25 +301,23 @@ TEST(bitboard, occupied_to_index)
 	using BitBoardns::rook_mask;
 	using BitBoardns::print;
 	BitBoard occ;
-	Square sq;
 	uint64_t index;
 
 	BitBoardns::init();
 	//bishop
-	for (int sq = A1; sq < SquareNum; sq++){
+	for (int sq = I9; sq < SquareNum; sq++){
 		for (int i = 0; i < (1 << bishop_attack_num[sq]); i++){
 			occ = index_to_occupied(i, bishop_attack_num[sq], bishop_mask[sq]);
-			index = occupied_to_index(occ, bishop_mask[sq]);
-			printf("i = %d sq = %d (index) = %lld\n",i,sq, index >> 1);
-			//if (i == (1 << bishop_attack_num[sq]) / 4){
-			//	getchar();
-			//}
-			//if (i == (1 << bishop_attack_num[sq])* 2/ 4){
-			//	getchar();
-			//}
-			//if (i == (1 << bishop_attack_num[sq]) * 3 / 4){
-			//	getchar();
-			//}
+			index = occupied_to_index(occ, bishop_mask[sq],bishop_offset[sq]);
+			EXPECT_EQ(i, index);
+		}
+	}
+	//rook
+	for (int sq = I9; sq < SquareNum; sq++){
+		for (int i = 0; i < (1 << rook_attack_num[sq]); i++){
+			occ = index_to_occupied(i, rook_attack_num[sq], rook_mask[sq]);
+			index = occupied_to_index(occ, rook_mask[sq], rook_offset[sq]);
+			EXPECT_EQ(i, index);
 		}
 	}
 }

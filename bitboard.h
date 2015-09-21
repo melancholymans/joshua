@@ -247,7 +247,7 @@ namespace BitBoardns
 	BitBoard make_rook_attack(const Square sq, const BitBoard& occ);
 	static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 	static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
-	static uint64_t occupied_to_index(const BitBoard& occ, const BitBoard& mask);
+	static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
 	static void init_bishop_attacks();
 	static void init_rook_attacks();
 }
