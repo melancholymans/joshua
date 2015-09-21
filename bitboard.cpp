@@ -223,7 +223,7 @@ static void BitBoardns::init_rook_attacks()
 		const int attack_num = rook_attack_num[sq];
 		for (int i = 0; i < (1 << attack_num); i++){
 			occ[i] = index_to_occupied(i, attack_num, rook_mask[sq]);
-			rook_attack[index, occupied_to_index(occ[i] & rook_mask[sq], rook_mask[sq],rook_offset[sq])] = sliding_attack(Square(sq),occ[i], false);
+			rook_attack[index + occupied_to_index(occ[i] & rook_mask[sq], rook_mask[sq],rook_offset[sq])] = sliding_attack(Square(sq),occ[i], false);
 		}
 		index += 1 << rook_attack_num[sq];
 	}
