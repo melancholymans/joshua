@@ -256,6 +256,134 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, rook_attack)
+{
+	//rook_attack配列はrook_mask配列,rook_attack_index配列から作られる最終成果物で
+	//局面bitboardの指定した座標にrookをおいた時得られる利きbitboardを持っている
+	//配列数は495,616個あるので全数テストするのは困難であるのでサンプリングしてテストする
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	//	A  B  C  D  E  F  G  H  I
+	//9  *  *  .  *  .  *  .  * .
+	//8  .  .  .  *  *  .  *  . .
+	//7  .  .  *  .  *  .  *  . *
+	//6  *  .  .  *  .  *  .  . .
+	//5  .  *  *  .  .  .  *  . .
+	//4  *  *  *  .  *  .  .  . .
+	//3  .  *  .  *  *  .  *  . *
+	//2	 .  .  .  .  *  .  .  . .
+	//1  *  .  *  .  .  .  *  * *
+	using BitBoardns::index_to_occupied;
+	using BitBoardns::occupied_to_index;
+	using BitBoardns::rook_mask;
+	using BitBoardns::make_rook_attack;
+	using BitBoardns::print;
+	int sq;
+	BitBoard occ(0x5682E4614D50B0AB, 0x38A10);
+	BitBoard ack;
+
+	BitBoardns::init();
+	sq = I7;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x10080A);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H1;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x4018100);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G4;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x101404020);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F7;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x4058100000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x206C080400000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D3;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x1036040000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C9;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x80200000000000);
+	EXPECT_EQ(ack.p(1), 0x201);
+	sq = B7;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x100800000000000);
+	EXPECT_EQ(ack.p(1), 0x81B);
+	sq = A4;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x804020100000000);
+	EXPECT_EQ(ack.p(1), 0xB820);
+}
+TEST(bitboard, bishop_attack)
+{
+	//bishop_attack配列はbishop_mask配列,bishop_attack_index配列から作られる最終成果物で
+	//局面bitboardの指定した座標にbishopをおいた時得られる利きbitboardを持っている
+	//配列数は20,224個あるので全数テストするのは困難であるのでサンプリングしてテストする
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	//	A  B  C  D  E  F  G  H  I
+	//9  *  *  .  *  .  *  .  * .
+	//8  .  .  .  *  *  .  *  . .
+	//7  .  .  *  .  *  .  *  . *
+	//6  *  .  .  *  .  *  .  . .
+	//5  .  *  *  .  .  .  *  . .
+	//4  *  *  *  .  *  .  .  . .
+	//3  .  *  .  *  *  .  *  . *
+	//2	 .  .  .  .  *  .  .  . .
+	//1  *  .  *  .  .  .  *  * *
+	using BitBoardns::index_to_occupied;
+	using BitBoardns::occupied_to_index;
+	using BitBoardns::bishop_mask;
+	using BitBoardns::make_bishop_attack;
+	using BitBoardns::print;
+	int sq;
+	BitBoard occ(0x5682E4614D50B0AB, 0x38A10);
+	BitBoard ack;
+
+	BitBoardns::init();
+	sq = I7;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x41400);
+	EXPECT_EQ(ack.p(1), 0x00000);
+	sq = H1;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x2020202000080);
+	EXPECT_EQ(ack.p(1), 0x00000);
+	sq = G4;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x2088828000A000);
+	EXPECT_EQ(ack.p(1), 0x00000);
+	sq = F7;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x200A000282200);
+	EXPECT_EQ(ack.p(1), 0x00000);
+	sq = E5;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x1105000140000000);
+	EXPECT_EQ(ack.p(1), 0x202);
+	sq = D3;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x28000A0880200802);
+	EXPECT_EQ(ack.p(1), 0x110);
+	sq = C9;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x400000000000);
+	EXPECT_EQ(ack.p(1), 0x802);
+	sq = B7;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x280000000000000);
+	EXPECT_EQ(ack.p(1), 0x1400);
+	sq = A4;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x2020000000000000);
+	EXPECT_EQ(ack.p(1), 0x50);
+}
 TEST(bitboard, occupied_to_index)
 {
 	//occupied_to_indexは局面bitboardを見てそれに対応するindexを返す関数
@@ -1217,4 +1345,40 @@ TEST(bitboard_case, bitboard)
 	BitBoard bb(b0, b1);
 	EXPECT_EQ(bb.pop_count(), 14);
 }
+/*
+WHILE(後手)								BLACK(先手)
++--+--+--+--+--+--+--+--+--+
+FILEI		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+FILEH		|H9|H8|H7|H6|H5|H4|H3|H2|H1|
+|09|10|11|12|13|14|15|16|17|
++--+--+--+--+--+--+--+--+--+
+FILEG		|G9|G8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+FILEF		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+FILEE		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+FILED		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+FILEC		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+  ↑ BitBoard.p_[0]	63座標
+FILEB		|I9|I8|I7|I6|I5|I4|I3|I2|I1|  ↓ BitBoard.p_[1]	18座標
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+FILEA		|I9|I8|I7|I6|I5|I4|I3|I2|I1|
+|00|01|02|03|04|05|06|07|08|
++--+--+--+--+--+--+--+--+--+
+RANK	  9  8  7  6  5  4  3  2  1
+
+将棋盤を真横から見ているような配置にしてある、将棋は先手側から後手側に、後手側から先手側に縦に移動する手が多いので
+このような配置にしてある、と思う。
+*/
+
 #endif
