@@ -142,12 +142,16 @@ static BitBoard bishop_mask[81];
 static BitBoard rook_mask[81];
 static int bishop_attack_index[81];
 static int rook_attack_index[81];
+static BitBoard lance_attack[ColorNum][SquareNum][128];
+
 //局所関数宣言
 static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
+static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
 static void init_bishop_attacks();
 static void init_rook_attacks();
+static void init_lance_attacks();
 
 //bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
 static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
@@ -163,6 +167,22 @@ static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
 			if (occ.is_bit_on(Square(sq))){
 				break;
 			}
+		}
+	}
+	return bb;
+}
+//lanceの利きをbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する,カラーを指定できる
+static BitBoard one_direction_attack(Square square, BitBoard occ, Color c)
+{
+	SquareDelta deltas[2] = { DeltaN, DeltaS };
+	BitBoard bb(0x00, 0x00);
+	int delta = deltas[c];
+	int sq;
+
+	for (sq = square + delta; is_square(Square(sq)) && abs(make_rank(Square(sq - delta)) - make_rank(Square(sq))) <= 1; sq += delta){
+		bb.set_bit(Square(sq));
+		if (occ.is_bit_on(Square(sq))){
+			break;
 		}
 	}
 	return bb;
@@ -201,6 +221,10 @@ BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
 	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq],rook_offset[sq])];
 }
 
+static void init_lance_attacks()
+{
+
+}
 static void init_bishop_attacks()
 {
 	int index = 0;
@@ -269,6 +293,121 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, one_direction_attack)
+{
+	BitBoard occ(0x00,0x00),bb;
+
+	//lance black
+	bb = one_direction_attack(I1, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xFF);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(H2, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xFE00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(G3, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xFC0000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(F4, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xF8000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(E5, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xF000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(D6, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xE00000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(C7, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xC0000000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(B8, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x01);
+	bb = one_direction_attack(A9, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(I9, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(H8, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x200);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(G7, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xC0000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(F6, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x38000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(E5, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xF000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(D4, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x3E00000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(C3, occ, Black);
+	EXPECT_EQ(bb.p(0), 0xFC0000000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(B2, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x7F);
+	bb = one_direction_attack(A1, occ, Black);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x1FE00);
+	//lance white
+	bb = one_direction_attack(I9, occ, White);
+	EXPECT_EQ(bb.p(0), 0x1FE);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(H8, occ, White);
+	EXPECT_EQ(bb.p(0), 0x3F800);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(G7, occ, White);
+	EXPECT_EQ(bb.p(0), 0x7E00000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(F6, occ, White);
+	EXPECT_EQ(bb.p(0), 0xF80000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(E5, occ, White);
+	EXPECT_EQ(bb.p(0), 0x1E0000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(D4, occ, White);
+	EXPECT_EQ(bb.p(0), 0x38000000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(C3, occ, White);
+	EXPECT_EQ(bb.p(0), 0x6000000000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(B2, occ, White);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x100);
+	bb = one_direction_attack(A1, occ, White);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(I1, occ, White);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(H2, occ, White);
+	EXPECT_EQ(bb.p(0), 0x20000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(G3, occ, White);
+	EXPECT_EQ(bb.p(0), 0x6000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(F4, occ, White);
+	EXPECT_EQ(bb.p(0), 0xE00000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(E5, occ, White);
+	EXPECT_EQ(bb.p(0), 0x1E0000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(D6, occ, White);
+	EXPECT_EQ(bb.p(0), 0x3E000000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(C7, occ, White);
+	EXPECT_EQ(bb.p(0), 0x7E00000000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = one_direction_attack(B8, occ, White);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x1FC);
+	bb = one_direction_attack(A9, occ, White);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x3FC00);
+}
 TEST(bitboard, rook_attack)
 {
 	//rook_attack配列はrook_mask配列,rook_attack_index配列から作られる最終成果物で
