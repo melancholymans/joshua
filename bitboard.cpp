@@ -187,9 +187,10 @@ static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
+static void init_lance_attacks(Color c);
 static void init_bishop_attacks();
 static void init_rook_attacks();
-static void init_lance_attacks(Color c);
+static void init_king_attacks();
 
 //bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
 static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
@@ -380,14 +381,79 @@ TEST(bitboard, lance_attack)
 	BitBoard ack;
 
 	BitBoardns::init();
+	//lance black
 	sq = C9;
 	ack = make_lance_attack(Square(sq), occ,Black);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
-
 	sq = I8;
 	ack = make_lance_attack(Square(sq), occ, Black);
 	EXPECT_EQ(ack.p(0), 0x01);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F7;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x18000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C6;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x100000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0xC000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G4;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x400000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A3;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x4000);
+	sq = C2;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x1800000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F1;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x7C0000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	//lance white
+	sq = C9;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x180000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = I8;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x04);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F7;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x40000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C6;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x400000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x20000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G4;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x1000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A3;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x30000);
+	sq = C2;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x4000000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F1;
+	ack = make_lance_attack(Square(sq), occ, White);
+	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
 }
 TEST(bitboard, one_direction_attack)
