@@ -309,11 +309,11 @@ static void init_bishop_attacks()
 static void init_rook_attacks()
 {
 	int index = 0;
-	BitBoard zero_bb(0x00, 0x00);
+	BitBoard alloff_bb(0x00, 0x00);
 	BitBoard occ[1 << 14];
 
 	for (int sq = I9; sq < SquareNum; sq++){
-		rook_mask[sq] = sliding_attack(Square(sq), zero_bb, false);
+		rook_mask[sq] = sliding_attack(Square(sq), alloff_bb, false);
 		if (SQUARE_FILE[sq] != FileA){ rook_mask[sq] &= ~BitBoardns::FILE_MASK[FileA]; }	//board edgeを削っている
 		if (SQUARE_FILE[sq] != FileI){ rook_mask[sq] &= ~BitBoardns::FILE_MASK[FileI]; }
 		if (SQUARE_RANK[sq] != Rank1){ rook_mask[sq] &= ~BitBoardns::RANK_MASK[Rank1]; }
