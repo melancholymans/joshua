@@ -173,12 +173,14 @@ static const int rook_offset[SquareNum] = {
 };
 //局所変数宣言
 static BitBoard bishop_attack[20224];
-static BitBoard rook_attack[495616];
 static BitBoard bishop_mask[81];
-static BitBoard rook_mask[81];
 static int bishop_attack_index[81];
+static BitBoard rook_attack[495616];
+static BitBoard rook_mask[81];
 static int rook_attack_index[81];
-static BitBoard lance_attack[ColorNum][SquareNum][128];
+static BitBoard lance_attack[ColorNum][4599];
+static BitBoard lance_mask[ColorNum][81];
+static int lance_attack_index[ColorNum][81];
 
 //局所関数宣言
 static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
@@ -241,6 +243,13 @@ static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask,const int& offset)
 {
 	return static_cast<int>(_pext_u64(occ.p(0), mask.p(0)) | (_pext_u64(occ.p(1), mask.p(1)) << offset));
+}
+
+BitBoard BitBoardns::make_lance_attack(const Square sq, const BitBoard& occ,Color c)
+{
+	const BitBoard line(occ & lance_mask[c][sq]);
+
+	return lance_attack[c][lance_attack_index[c][sq] + occupied_to_index(line, lance_mask[c][sq], LANCE_OFFSET[sq])];
 }
 
 BitBoard BitBoardns::make_bishop_attack(const Square sq, const BitBoard& occ)
