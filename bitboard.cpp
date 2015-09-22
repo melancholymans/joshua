@@ -189,7 +189,7 @@ static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
 static void init_bishop_attacks();
 static void init_rook_attacks();
-static void init_lance_attacks();
+static void init_lance_attacks(Color c);
 
 //bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
 static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
@@ -266,10 +266,26 @@ BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
 	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq],rook_offset[sq])];
 }
 
-static void init_lance_attacks()
+static void init_lance_attacks(Color c)
 {
+	int index = 0;
+	BitBoard zero_bb(0x00, 0x00);
+	BitBoard occ[1 << 8];
 
+	for (int sq = I9; sq < SquareNum; sq++){
+		lance_mask[c][sq] = one_direction_attack(Square(sq), zero_bb, c);
+		lance_mask[c][sq] &= ~BitBoardns::RANK_MASK[Rank1];		//white側のとき盤の端を消す
+		lance_mask[c][sq] &= ~BitBoardns::RANK_MASK[Rank9];		//black側のとき盤の端を消す
+		lance_attack_index[c][sq] = index;
+		const int attack_num = LANCE_ATTACK_NUM[c][sq];
+		for (int i = 0; i < (1 << attack_num); i++){
+			occ[i] = index_to_occupied(i, attack_num, lance_mask[c][sq]);
+			lance_attack[c][index + occupied_to_index(occ[i] & lance_mask[c][sq], lance_mask[c][sq], LANCE_OFFSET[sq])] = one_direction_attack(Square(sq), occ[i], c);
+		}
+		index += 1 << LANCE_ATTACK_NUM[c][sq];
+	}
 }
+
 static void init_bishop_attacks()
 {
 	int index = 0;
@@ -315,6 +331,8 @@ void BitBoardns::init()
 {
 	init_bishop_attacks();
 	init_rook_attacks();
+	init_lance_attacks(Black);
+	init_lance_attacks(White);
 }
 
 void BitBoardns::print(BitBoard &bb)
@@ -338,9 +356,44 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, lance_attack)
+{
+	//lance_attack配列はlance_mask配列,lance_attack_index配列から作られる最終成果物で
+	//局面bitboardの指定した座標にlanceをおいた時得られる利きbitboardを持っている
+	//配列数は4,599個あるので全数テストするのは困難であるのでサンプリングしてテストする
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	//	A  B  C  D  E  F  G  H  I
+	//9  *  *  .  *  .  *  .  * .
+	//8  .  .  .  *  *  .  *  . .
+	//7  .  .  *  .  *  .  *  . *
+	//6  *  .  .  *  .  *  .  . .
+	//5  .  *  *  .  .  .  *  . .
+	//4  *  *  *  .  *  .  .  . .
+	//3  .  *  .  *  *  .  *  . *
+	//2	 .  .  .  .  *  .  .  . .
+	//1  *  .  *  .  .  .  *  * *
+	using BitBoardns::make_lance_attack;
+	using BitBoardns::print;
+	int sq;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	BitBoard ack;
+
+	BitBoardns::init();
+	sq = C9;
+	ack = make_lance_attack(Square(sq), occ,Black);
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+
+	sq = I8;
+	ack = make_lance_attack(Square(sq), occ, Black);
+	EXPECT_EQ(ack.p(0), 0x01);
+	EXPECT_EQ(ack.p(1), 0x00);
+}
 TEST(bitboard, one_direction_attack)
 {
-	BitBoard occ(0x00,0x00),bb;
+	BitBoard occ(0x00, 0x00), bb;
+	using BitBoardns::print;
 
 	//lance black
 	bb = one_direction_attack(I1, occ, Black);
@@ -470,51 +523,49 @@ TEST(bitboard, rook_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	/*using BitBoardns::index_to_occupied;*/
-	/*using BitBoardns::occupied_to_index;*/
 	using BitBoardns::make_rook_attack;
 	using BitBoardns::print;
 	int sq;
-	BitBoard occ(0x5682E4614D50B0AB, 0x38A10);
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
 
 	BitBoardns::init();
-	sq = I7;
+	sq = C9;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x10080A);
-	EXPECT_EQ(ack.p(1), 0x00);
-	sq = H1;
+	EXPECT_EQ(ack.p(0), 0x180200000000000);
+	EXPECT_EQ(ack.p(1), 0x01);
+	sq = I8;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x4018100);
-	EXPECT_EQ(ack.p(1), 0x00);
-	sq = G4;
-	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x101404020);
+	EXPECT_EQ(ack.p(0), 0x80405);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
 	ack = make_rook_attack(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x4058100000);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C6;
+	ack = make_rook_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x501000000000000);
+	EXPECT_EQ(ack.p(1), 0x1008);
 	sq = E5;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x206C080400000);
+	EXPECT_EQ(ack.p(0), 0x40202C080400000);
 	EXPECT_EQ(ack.p(1), 0x00);
-	sq = D3;
+	sq = G4;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x1036040000000000);
+	EXPECT_EQ(ack.p(0), 0x20101404020);
 	EXPECT_EQ(ack.p(1), 0x00);
-	sq = C9;
+	sq = A3;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x80200000000000);
-	EXPECT_EQ(ack.p(1), 0x201);
-	sq = B7;
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x34040);
+	sq = C2;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x100800000000000);
-	EXPECT_EQ(ack.p(1), 0x81B);
-	sq = A4;
+	EXPECT_EQ(ack.p(0), 0x5810080000000000);
+	EXPECT_EQ(ack.p(1), 0x10080);
+	sq = F1;
 	ack = make_rook_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x804020100000000);
-	EXPECT_EQ(ack.p(1), 0xB820);
+	EXPECT_EQ(ack.p(0), 0x40201007C4000000);
+	EXPECT_EQ(ack.p(1), 0x00);
 }
 TEST(bitboard, bishop_attack)
 {
@@ -538,46 +589,46 @@ TEST(bitboard, bishop_attack)
 	using BitBoardns::make_bishop_attack;
 	using BitBoardns::print;
 	int sq;
-	BitBoard occ(0x5682E4614D50B0AB, 0x38A10);
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
 
 	BitBoardns::init();
-	sq = I7;
-	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x41400);
-	EXPECT_EQ(ack.p(1), 0x00000);
-	sq = H1;
-	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x2020202000080);
-	EXPECT_EQ(ack.p(1), 0x00000);
-	sq = G4;
-	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x2088828000A000);
-	EXPECT_EQ(ack.p(1), 0x00000);
-	sq = F7;
-	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x200A000282200);
-	EXPECT_EQ(ack.p(1), 0x00000);
-	sq = E5;
-	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x1105000140000000);
-	EXPECT_EQ(ack.p(1), 0x202);
-	sq = D3;
-	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x28000A0880200802);
-	EXPECT_EQ(ack.p(1), 0x110);
 	sq = C9;
 	ack = make_bishop_attack(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x400000000000);
 	EXPECT_EQ(ack.p(1), 0x802);
-	sq = B7;
+	sq = I8;
 	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x280000000000000);
-	EXPECT_EQ(ack.p(1), 0x1400);
-	sq = A4;
+	EXPECT_EQ(ack.p(0), 0x20080200A00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F7;
 	ack = make_bishop_attack(Square(sq), occ);
-	EXPECT_EQ(ack.p(0), 0x2020000000000000);
-	EXPECT_EQ(ack.p(1), 0x50);
+	EXPECT_EQ(ack.p(0), 0x80200A000282020);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C6;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x2822000000000);
+	EXPECT_EQ(ack.p(1), 0x414);
+	sq = E5;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x1005000141000000);
+	EXPECT_EQ(ack.p(1), 0x20080);
+	sq = G4;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x8088828000A088);
+	EXPECT_EQ(ack.p(1), 0x01);
+	sq = A3;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x4000000000000000);
+	EXPECT_EQ(ack.p(1), 0xA0);
+	sq = C2;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x28000000000000);
+	EXPECT_EQ(ack.p(1), 0x140);
+	sq = F1;
+	ack = make_bishop_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x80002008020);
+	EXPECT_EQ(ack.p(1), 0x00);
 }
 TEST(bitboard, occupied_to_index)
 {
@@ -793,6 +844,7 @@ TEST(bitboard, sliding_attack)
 {
 	BitBoard occ(0x00,0x00);
 	BitBoard bb(0x00, 0x00);
+	using BitBoardns::print;
 
 	//bishop
 	bb = sliding_attack(I9,occ,true);
