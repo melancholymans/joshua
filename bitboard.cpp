@@ -329,20 +329,31 @@ static void init_rook_attacks()
 		index += 1 << ROOK_ATTACK_NUM[sq];
 	}
 }
+//kingの利きbitboardを作る
 static void init_king_attacks()
 {
-	/*
 	BitBoard allon_bb(0x7FFFFFFFFFFFFFFF, 0x000000000003FFFF);
-	for ()
-	*/
-}
+	//事前にbishop,rookの利きbitboardができていることに依存している
 
+	for (int sq = I9; sq < SquareNum; sq++){
+		king_attack[sq] = BitBoardns::make_bishop_attack(Square(sq), allon_bb) | BitBoardns::make_rook_attack(Square(sq), allon_bb);
+	}
+}
+static void init_gold_attacks()
+{
+	for (int sq = I9; sq < SquareNum; sq++){
+
+	}
+}
 void BitBoardns::init()
 {
+	//init_passed_mark(Black);
+	//init_passed_mark(White);
 	init_lance_attacks(Black);
 	init_lance_attacks(White);
 	init_bishop_attacks();
 	init_rook_attacks();
+	init_gold_attacks();
 	init_king_attacks();
 }
 
@@ -984,6 +995,49 @@ TEST(bitboard, sliding_attack)
 	bb = sliding_attack(F4, occ, false);
 	EXPECT_EQ(bb.p(0), 0x804020EF8804020);
 	EXPECT_EQ(bb.p(1), 0x4020);
+}
+TEST(bitboard, passed_front_black)
+{
+	using BitBoardns::PASSED_FRONT_BLACK;
+	using BitBoardns::PASSED_FRONT_WHITE;
+
+	EXPECT_EQ(PASSED_FRONT_BLACK[I9].p(0), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[I9].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[H8].p(0), 0x40201);
+	EXPECT_EQ(PASSED_FRONT_BLACK[H8].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[G7].p(0), 0x180C0600);
+	EXPECT_EQ(PASSED_FRONT_BLACK[G7].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[F6].p(0), 0x70381C0000);
+	EXPECT_EQ(PASSED_FRONT_BLACK[F6].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[E5].p(0), 0x1E0F078000000);
+	EXPECT_EQ(PASSED_FRONT_BLACK[E5].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[D4].p(0), 0x7C3E1F000000000);
+	EXPECT_EQ(PASSED_FRONT_BLACK[D4].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[C3].p(0), 0xFC7E00000000000);
+	EXPECT_EQ(PASSED_FRONT_BLACK[C3].p(1), 0x3F);
+	EXPECT_EQ(PASSED_FRONT_BLACK[B2].p(0), 0x1FC0000000000000);
+	EXPECT_EQ(PASSED_FRONT_BLACK[B2].p(1), 0xFE7F);
+	EXPECT_EQ(PASSED_FRONT_BLACK[A1].p(0), 0x00);
+	EXPECT_EQ(PASSED_FRONT_BLACK[A1].p(1), 0x1FEFF);
+
+	EXPECT_EQ(PASSED_FRONT_WHITE[I9].p(0), 0x3FDFE);
+	EXPECT_EQ(PASSED_FRONT_WHITE[I9].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[H8].p(0), 0x7F3F9FC);
+	EXPECT_EQ(PASSED_FRONT_WHITE[H8].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[G7].p(0), 0xFC7E3F000);
+	EXPECT_EQ(PASSED_FRONT_WHITE[G7].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[F6].p(0), 0x1F0F87C00000);
+	EXPECT_EQ(PASSED_FRONT_WHITE[F6].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[E5].p(0), 0x3C1E0F00000000);
+	EXPECT_EQ(PASSED_FRONT_WHITE[E5].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[D4].p(0), 0x70381C0000000000);
+	EXPECT_EQ(PASSED_FRONT_WHITE[D4].p(1), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[C3].p(0), 0x6030000000000000);
+	EXPECT_EQ(PASSED_FRONT_WHITE[C3].p(1), 0x180);
+	EXPECT_EQ(PASSED_FRONT_WHITE[B2].p(0), 0x4000000000000000);
+	EXPECT_EQ(PASSED_FRONT_WHITE[B2].p(1), 0x20100);
+	EXPECT_EQ(PASSED_FRONT_WHITE[A1].p(0), 0x00);
+	EXPECT_EQ(PASSED_FRONT_WHITE[A1].p(1), 0x00);
 }
 TEST(bitboard, in_front_of_rank)
 {
