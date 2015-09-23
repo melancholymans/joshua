@@ -268,7 +268,10 @@ BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
 
 	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq],ROOK_OFFSET[sq])];
 }
-
+BitBoard BitBoardns::make_king_attack(const Square sq)
+{
+	return king_attack[sq];
+}
 static void init_lance_attacks(Color c)
 {
 	int index = 0;
@@ -376,6 +379,59 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, gold_attacks)
+{
+	//サンプルでテスト
+
+}
+TEST(bitboard, king_attack)
+{
+	//サンプルでテスト
+	using BitBoardns::print;
+	using BitBoardns::make_king_attack;
+	int sq;
+	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
+	BitBoard ack;
+
+	BitBoardns::init();
+	//kingにはblack/whiteは関係ない
+	sq = I9;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x602);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x1C0A07);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x70281C00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x1C0A0700000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x70281C0000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x1C0A070000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x281C000000000000);
+	EXPECT_EQ(ack.p(1), 0xE0);
+	sq = B2;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x7000000000000000);
+	EXPECT_EQ(ack.p(1), 0x38140);
+	sq = A1;
+	ack = make_king_attack(Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x10180);
+}
 TEST(bitboard, lance_attack)
 {
 	//lance_attack配列はlance_mask配列,lance_attack_index配列から作られる最終成果物で
