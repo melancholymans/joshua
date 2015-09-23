@@ -175,6 +175,7 @@ static const int ROOK_OFFSET[SquareNum] = {
 static BitBoard lance_attack[ColorNum][4599];
 static BitBoard lance_mask[ColorNum][SquareNum];
 static int lance_attack_index[ColorNum][SquareNum];
+static BitBoard silver_attack[ColorNum][SquareNum];
 static BitBoard bishop_attack[20224];
 static BitBoard bishop_mask[SquareNum];
 static int bishop_attack_index[SquareNum];
@@ -189,6 +190,7 @@ static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
 static void init_lance_attacks(Color c);
+static void init_silver_attacks(Color c);
 static void init_bishop_attacks();
 static void init_rook_attacks();
 static void init_gold_attacks(Color c);
@@ -254,7 +256,10 @@ BitBoard BitBoardns::make_lance_attack(Color c,const Square sq, const BitBoard& 
 
 	return lance_attack[c][lance_attack_index[c][sq] + occupied_to_index(line, lance_mask[c][sq], LANCE_OFFSET[sq])];
 }
-
+BitBoard BitBoardns::make_silver_attack(Color c, const Square sq)
+{
+	return silver_attack[c][sq];
+}
 BitBoard BitBoardns::make_bishop_attack(const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & bishop_mask[sq]); 
@@ -295,7 +300,17 @@ static void init_lance_attacks(Color c)
 		index += 1 << LANCE_ATTACK_NUM[c][sq];
 	}
 }
+static void init_silver_attacks(Color c)
+{
+	using BitBoardns::make_bishop_attack;
+	using BitBoardns::allon;
+	using BitBoardns::PASSED_FRONT;
+	using BitBoardns::RANK_MASK;
 
+	for (int sq = I9; sq < SquareNum; sq++){
+		silver_attack[c][sq] = make_bishop_attack(Square(sq), allon) | (PASSED_FRONT[c][sq] & RANK_MASK[c == Black ? SQUARE_RANK[sq] - 1 : SQUARE_RANK[sq] + 1]);
+	}
+}
 static void init_bishop_attacks()
 {
 	int index = 0;
@@ -363,9 +378,11 @@ void BitBoardns::init()
 	init_lance_attacks(White);
 	init_bishop_attacks();
 	init_rook_attacks();
-	init_gold_attacks(Black);
+	init_silver_attacks(Black);	//silverはbishop_attackが完成していることが前提なので順番の変更厳禁
+	init_silver_attacks(White);	
+	init_gold_attacks(Black);	//goldはrookが完成していることが前提なので順番の変更厳禁
 	init_gold_attacks(White);
-	init_king_attacks();
+	init_king_attacks();		//kingはbishopとrookが完成していることが前提なので順番の変更厳禁
 }
 
 void BitBoardns::print(BitBoard &bb)
@@ -389,6 +406,94 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, silver_attack)
+{
+	//サンプルでテスト
+	using BitBoardns::print;
+	using BitBoardns::make_silver_attack;
+	int sq;
+	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
+	BitBoard ack;
+
+	BitBoardns::init();
+	//black
+	Color c = Black;
+	sq = I9;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x400);
+	EXPECT_EQ(ack.p(1), 0x00);
+	print(ack);
+	sq = H8;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x140205);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x50081400);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x14020500000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x5008140000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x1402050000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x814000000000000);
+	EXPECT_EQ(ack.p(1), 0xA0);
+	sq = B2;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x5000000000000000);
+	EXPECT_EQ(ack.p(1), 0x28040);
+	sq = A1;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x10080);
+	//white
+	c = White;
+	sq = I9;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x402);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x140805);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x50201400);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x14080500000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x5020140000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x1408050000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2014000000000000);
+	EXPECT_EQ(ack.p(1), 0xA0);
+	sq = B2;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x5000000000000000);
+	EXPECT_EQ(ack.p(1), 0x28100);
+	sq = A1;
+	ack = make_silver_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x80);
+}
 TEST(bitboard, gold_attacks)
 {
 	//サンプルでテスト
@@ -409,14 +514,10 @@ TEST(bitboard, gold_attacks)
 	ack = make_gold_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0xC0A03);
 	EXPECT_EQ(ack.p(1), 0x00);
-	printf("sq = H8\n");
-	print(ack);
 	sq = G7;
 	ack = make_gold_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x30280C00);
 	EXPECT_EQ(ack.p(1), 0x00);
-	printf("sq = G7\n");
-	print(ack);
 	sq = F6;
 	ack = make_gold_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0xC0A0300000);
@@ -471,7 +572,6 @@ TEST(bitboard, gold_attacks)
 	ack = make_gold_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x2818000000000000);
 	EXPECT_EQ(ack.p(1), 0xC0);
-	print(ack);
 	sq = B2;
 	ack = make_gold_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x6000000000000000);

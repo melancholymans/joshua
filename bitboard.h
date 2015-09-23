@@ -426,6 +426,7 @@ namespace BitBoardns
 	void init();
 	void print(BitBoard&);
 	BitBoard make_lance_attack(Color c,const Square sq, const BitBoard& occ);
+	BitBoard make_silver_attack(Color c, const Square sq);
 	BitBoard make_bishop_attack(const Square sq, const BitBoard& occ);
 	BitBoard make_rook_attack(const Square sq, const BitBoard& occ);
 	BitBoard make_gold_attack(Color c,const Square sq);
