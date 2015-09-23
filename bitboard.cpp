@@ -192,8 +192,18 @@ static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const in
 static void init_lance_attacks(Color c);
 static void init_bishop_attacks();
 static void init_rook_attacks();
+static void init_gold_attacks();
 static void init_king_attacks();
 
+//指定した座標より前方３列のFILE BITを初期化する
+/*
+static void init_passed_mark(Color c)
+{
+	for (int sq = I9; sq < SquareNum; sq++){
+
+	}
+}
+*/
 //bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
 static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
 {
