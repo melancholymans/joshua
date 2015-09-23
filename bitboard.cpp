@@ -184,7 +184,6 @@ static int rook_attack_index[SquareNum];
 static BitBoard king_attack[SquareNum];
 static BitBoard passed_mark[ColorNum][SquareNum];
 //局所関数宣言
-//static void init_passed_mark(Color c);
 static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
@@ -195,15 +194,6 @@ static void init_rook_attacks();
 static void init_gold_attacks();
 static void init_king_attacks();
 
-//指定した座標より前方３列のFILE BITを初期化する
-/*
-static void init_passed_mark(Color c)
-{
-	for (int sq = I9; sq < SquareNum; sq++){
-
-	}
-}
-*/
 //bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
 static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
 {
@@ -357,8 +347,6 @@ static void init_gold_attacks()
 }
 void BitBoardns::init()
 {
-	//init_passed_mark(Black);
-	//init_passed_mark(White);
 	init_lance_attacks(Black);
 	init_lance_attacks(White);
 	init_bishop_attacks();
