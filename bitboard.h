@@ -196,7 +196,7 @@ namespace BitBoardns
 	const BitBoard FILE_B_MASK(0x00, 0x1FF << (9 * 0));
 	const BitBoard FILE_A_MASK(0x00, 0x1FF << (9 * 1));
 	const BitBoard FILE_MASK[FileNum] = {
-		FILE_I_MASK, FILE_H_MASK, FILE_G_MASK, FILE_F_MASK, FILE_G_MASK, FILE_D_MASK, FILE_C_MASK, FILE_B_MASK, FILE_A_MASK
+		FILE_I_MASK, FILE_H_MASK, FILE_G_MASK, FILE_F_MASK, FILE_E_MASK, FILE_D_MASK, FILE_C_MASK, FILE_B_MASK, FILE_A_MASK
 	};
 	//指定したrankのマスクを返す
 	const BitBoard RANK_9_MASK(0x40201008040201 << 0, 0x201 << 0);
