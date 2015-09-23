@@ -172,17 +172,19 @@ static const int ROOK_OFFSET[SquareNum] = {
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
 };
 //局所変数宣言
-static BitBoard bishop_attack[20224];
-static BitBoard bishop_mask[81];
-static int bishop_attack_index[81];
-static BitBoard rook_attack[495616];
-static BitBoard rook_mask[81];
-static int rook_attack_index[81];
 static BitBoard lance_attack[ColorNum][4599];
-static BitBoard lance_mask[ColorNum][81];
-static int lance_attack_index[ColorNum][81];
-
+static BitBoard lance_mask[ColorNum][SquareNum];
+static int lance_attack_index[ColorNum][SquareNum];
+static BitBoard bishop_attack[20224];
+static BitBoard bishop_mask[SquareNum];
+static int bishop_attack_index[SquareNum];
+static BitBoard rook_attack[495616];
+static BitBoard rook_mask[SquareNum];
+static int rook_attack_index[SquareNum];
+static BitBoard king_attack[SquareNum];
+static BitBoard passed_mark[ColorNum][SquareNum];
 //局所関数宣言
+//static void init_passed_mark(Color c);
 static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
