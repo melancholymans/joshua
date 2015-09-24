@@ -186,6 +186,8 @@ static BitBoard rook_mask[SquareNum];
 static int rook_attack_index[SquareNum];
 static BitBoard king_attack[SquareNum];
 static BitBoard gold_attack[ColorNum][SquareNum];
+static BitBoard between_bb[SquareNum][SquareNum];
+static Directtion square_relation[SquareNum][SquareNum];
 //局所関数宣言
 static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
@@ -199,7 +201,8 @@ static void init_bishop_attacks();
 static void init_rook_attacks();
 static void init_gold_attacks(Color c);
 static void init_king_attacks();
-
+static void init_square_relation();
+static void init_between_bb();
 //bishop,rookの利きを全ての方向にbitboardに記録する。occに他の駒があればそこで停止。盤の端も記録する
 static BitBoard sliding_attack(Square square, BitBoard occ,bool is_bishop)
 {
@@ -291,6 +294,18 @@ BitBoard BitBoardns::make_gold_attack(Color c, const Square sq)
 BitBoard BitBoardns::make_king_attack(const Square sq)
 {
 	return king_attack[sq];
+}
+Directtion BitBoardns::make_square_relation(const Square sq1, const Square sq2)
+{
+	return square_relation[sq1][sq2];
+}
+BitBoard BitBoardns::make_square_bb(Square sq)
+{
+	return SQUARE_BB[sq];
+}
+BitBoard BitBoardns::make_between_bb(const Square sq1, const Square sq2)
+{
+	return between_bb[sq1][sq2];
 }
 static void init_pawn_attacks(Color c)
 {
@@ -401,13 +416,66 @@ static void init_gold_attacks(Color c)
 //kingの利きbitboardの初期化
 static void init_king_attacks()
 {
-	BitBoard allon_bb(0x7FFFFFFFFFFFFFFF, 0x000000000003FFFF);
-	//事前にbishop,rookの利きbitboardができていることに依存している
+	using BitBoardns::allon;
 
+	//事前にbishop,rookの利きbitboardができていることに依存している
 	for (int sq = I9; sq < SquareNum; sq++){
-		king_attack[sq] = BitBoardns::make_bishop_attack(Square(sq), allon_bb) | BitBoardns::make_rook_attack(Square(sq), allon_bb);
+		king_attack[sq] = BitBoardns::make_bishop_attack(Square(sq), allon) | BitBoardns::make_rook_attack(Square(sq), allon);
 	}
 }
+//square_relation[sq1][sq2]配列の初期化、square_relation配列はsq1,sq2を指定すればその座標間に成立する方向子を返してくれる
+static void init_square_relation()
+{
+	for (int sq1 = I9; sq1 < SquareNum; sq1++){
+		const File f1 = make_file(Square(sq1));
+		const Rank r1 = make_rank(Square(sq1));
+		for (int sq2 = I9; sq2 < SquareNum; sq2++){
+			const File f2 = make_file(Square(sq2));
+			const Rank r2 = make_rank(Square(sq2));
+			square_relation[sq1][sq2] = DirectMisc;
+			if (sq1 == sq2){
+				continue;
+			}
+			if (f1 == f2){
+				square_relation[sq1][sq2] = DirectFile;
+			}
+			else if (r1 == r2){
+				square_relation[sq1][sq2] = DirectRank;
+			}
+			else if ((r1 - r2) == (f1 - f2)){
+				square_relation[sq1][sq2] = DirectDiagNESW;
+			}
+			else if ((r1 - r2) == (f2 - f1)){
+				square_relation[sq1][sq2] = DirectDiagNWSE;
+			}
+		}
+	}
+}
+static void init_between_bb()
+{
+	using BitBoardns::alloff;
+	using BitBoardns::make_square_relation;
+	using BitBoardns::make_rook_attack;
+	using BitBoardns::make_bishop_attack;
+	using BitBoardns::make_square_bb;
+
+	for (int sq1 = I9; sq1 < SquareNum; sq1++){
+		for (int sq2 = I9; sq2 < SquareNum; sq2++){
+			between_bb[sq1][sq2] = alloff;
+			if (sq1 == sq2){
+				continue;
+			}
+			Directtion dir = make_square_relation(Square(sq1), Square(sq2));
+			if (dir & DirectDiagCross){
+				between_bb[sq1][sq2] = make_rook_attack(Square(sq1), make_square_bb(Square(sq2))) & make_rook_attack(Square(sq2), make_square_bb(Square(sq1)));
+			}
+			else if (dir & DirectDiag){
+				between_bb[sq1][sq2] = make_bishop_attack(Square(sq1), make_square_bb(Square(sq2))) & make_bishop_attack(Square(sq2), make_square_bb(Square(sq1)));
+			}
+		}
+	}	
+}
+
 void BitBoardns::init()
 {
 	init_lance_attacks(Black);
@@ -423,6 +491,8 @@ void BitBoardns::init()
 	init_gold_attacks(Black);	//goldはrookが完成していることが前提なので順番の変更厳禁
 	init_gold_attacks(White);
 	init_king_attacks();		//kingはbishopとrookが完成していることが前提なので順番の変更厳禁
+	init_square_relation();
+	init_between_bb();			//betweenはsquare_relation配列が初期化してあることが前提なので順番の変更厳禁
 }
 
 void BitBoardns::print(BitBoard &bb)
@@ -446,6 +516,136 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, make_between_bb)
+{
+	using BitBoardns::make_between_bb;
+	int sq1,sq2;
+
+	BitBoardns::init();
+	sq1 = I9;
+	sq2 = A1;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x1004010040100400);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x80);
+	sq1 = I8;
+	sq2 = F5;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x200800);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x00);
+	sq1 = I1;
+	sq2 = A9;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x101010101010000);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x02);
+	sq1 = H5;
+	sq2 = E8;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x20200000);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x00);
+	sq1 = I9;
+	sq2 = I1;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0xFE);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x00);
+	sq1 = I5;
+	sq2 = A5;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x402010080402000);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x10);
+	sq1 = G7;
+	sq2 = H3;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x00);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x00);
+	sq1 = G6;
+	sq2 = B3;
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(0), 0x00);
+	EXPECT_EQ(make_between_bb(Square(sq1), Square(sq2)).p(1), 0x00);
+}
+TEST(bitboard, make_square_bb)
+{
+	using BitBoardns::make_square_bb;
+	int sq;
+
+	sq = I9;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x01);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = H8;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x400);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = G7;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x100000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = F6;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x40000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = E5;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x10000000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = D4;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x4000000000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = C3;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x1000000000000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = B2;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x00);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x80);
+	sq = A1;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x00);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x20000);
+	sq = I1;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x100);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = H2;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x10000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = G3;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x1000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = F4;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x100000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = E5;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x10000000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = D6;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x1000000000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = C7;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x100000000000000);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x00);
+	sq = B8;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x00);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x02);
+	sq = A9;
+	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x00);
+	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x200);
+}
+TEST(position, make_square_relation)
+{
+	using BitBoardns::make_square_relation;
+	//enum Directtion{
+	//	DirectMisc = 0,		//縦、横斜めの位置関係にない
+	//	DirectFile = 2,		//縦
+	//	DirectRank = 3,		//横
+	//	DirectDiagNESW = 4,	//右上から左下
+	//	DirectDiagNWSE = 5,	//左上から右下
+	//	DirectDiagCross = 2,	//縦横
+	//	DirectDiag = 4			//斜め
+	//};
+
+	BitBoardns::init();
+	EXPECT_EQ(make_square_relation(I9, I1),DirectFile);
+	EXPECT_EQ(make_square_relation(I1, A1), DirectRank);
+	EXPECT_EQ(make_square_relation(A9, A1), DirectFile);
+	EXPECT_EQ(make_square_relation(A9, I9), DirectRank);
+	EXPECT_EQ(make_square_relation(A9, I1), DirectDiagNWSE);
+	EXPECT_EQ(make_square_relation(A1, I9), DirectDiagNESW);
+
+	EXPECT_EQ(make_square_relation(E6, E5), DirectFile);
+	EXPECT_EQ(make_square_relation(D5, E5), DirectRank);
+	EXPECT_EQ(make_square_relation(D6, D5), DirectFile);
+	EXPECT_EQ(make_square_relation(D6, E6), DirectRank);
+	EXPECT_EQ(make_square_relation(D6, E5), DirectDiagNWSE);
+	EXPECT_EQ(make_square_relation(D5, E6), DirectDiagNESW);
+
+	EXPECT_EQ(make_square_relation(B9, C7), DirectMisc);
+	EXPECT_EQ(make_square_relation(H7, G3), DirectMisc);
+}
 TEST(bitboard, pawn_attack)
 {
 	//サンプルでテスト

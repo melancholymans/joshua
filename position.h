@@ -31,6 +31,10 @@ private:
 	int color_turn;
 };
 
+namespace Positionns
+{
+	void init();
+}
 //positionの定数
 /*
 const int BOARD_UPPER = 16*13;

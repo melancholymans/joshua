@@ -42,10 +42,6 @@ enum SquareDelta{
 	DeltaSE = DeltaS + DeltaE,
 	DeltaSW = DeltaS + DeltaW,
 	DeltaNW = DeltaN + DeltaW,
-	DeltaNNW = DeltaN + DeltaN + DeltaW, 
-	DeltaNNE = DeltaN + DeltaN + DeltaE,
-	DeltaSSW = DeltaS + DeltaS + DeltaW, 
-	DeltaSSE = DeltaS + DeltaS + DeltaE
 };
 
 enum PieceType{
@@ -62,6 +58,16 @@ enum Piece{
 	WPawn = 17, WLance, WNight, WSilver, WBishop, WRook, WGold, WKing,
 	WProPawn, WProLance, WProNight, WProSilver, WHorse, WDragon,
 	PieceNum = 31
+};
+//方向子、方向を決めているだけで座標の移動には使用しない。
+enum Directtion{
+	DirectMisc = 0,		//縦、横斜めの位置関係にない
+	DirectFile = 2,		//縦
+	DirectRank = 3,		//横
+	DirectDiagNESW = 4,	//右上から左下
+	DirectDiagNWSE = 5,	//左上から右下
+	DirectDiagCross = 2,	//縦横
+	DirectDiag = 4			//斜め
 };
 
 const Rank SQUARE_RANK[SquareNum] = {
