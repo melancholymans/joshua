@@ -13,33 +13,26 @@ using namespace std;
 	#include <gtest\gtest.h>
 #endif
 
-/*
-#include "usioption.h"
-#include "movegen.h"
-#include "move.h"
-#include "search.h"
-#include "evaluate.h"
-*/
-/*
-駒文字(先手文字、後手文字）
-Pawn..P p
-Lance..L l
-Night..N n
-Silver..S s
-Bishop..B b
-Rook..R r
-Golad..G g
-King..K k
-ProPawn..X x
-ProLance..T t
-ProNight..V v
-ProSilver..[ {
-Horse..J j
-Dragon..Z z
-*/
+//局所定数宣言・定義
+
+//駒文字(先手文字、後手文字）
+	//Pawn..P p
+	//Lance..L l
+	//Night..N n
+	//Silver..S s
+	//Bishop..B b
+	//Rook..R r
+	//Golad..G g
+	//King..K k
+	//ProPawn..X x
+	//ProLance..T t
+	//ProNight..V v
+	//ProSilver..[ {
+	//Horse..J j
+	//Dragon..Z z
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
 //unsigned int 32bitに駒台の駒数をパッキングするための定数
-int hand_packed[] = {
+const int hand_packed[] = {
 	0,
 	1 << 0,		//HandPawn
 	1 << 5,		//HandLance
@@ -50,7 +43,7 @@ int hand_packed[] = {
 	1 << 18		//HandGold
 };
 //unsigned int 32bitにパッキングされて駒数を元に戻すためのシフト数
-int hand_shift[] = {
+const int hand_shift[] = {
 	0,
 	0,			//HandPawn
 	5,			//HandLance
@@ -61,7 +54,7 @@ int hand_shift[] = {
 	18			//HandGold
 };
 //unsigned 32bitから駒台の枚数をマスキングするための定数
-int hand_masking[] = {
+const int hand_masking[] = {
 	0,
 	0x1F,		//pawn
 	0xE0,		//lance
@@ -71,24 +64,9 @@ int hand_masking[] = {
 	0x30000,	//rook
 	0x1C0000,	//gold
 };
+//局所変数宣言
 
-/*
-//駒コード
-（GPSを参考にした）
-const char EMPTY = 0;
-const char EDGE = 1;
-
-
-//player(手番） BLACKが先手、WHITEが後手
-const int BLACK = 0;
-const int WHITE = -1;
-const int NO_COLOR = 16;
-*/
-/*
-string begin_poition;   //どんな局面を受付けたのか保持
-position_t root_position;
-*/
-
+//局所関数宣言
 
 //Position classのコンストラクタから呼ばれる
 //sfen文字列からPosition内部の局面情報をセットする。
@@ -281,6 +259,9 @@ int Position::get_hand(Color c,PieceType pt)
 bool Position::is_hand(Color c,PieceType pt)
 {
 	return bool(hand[c] & hand_masking[pt]);
+}
+void Positionns::init()
+{
 }
 /*
 void print_board(const Position &pos)
@@ -588,220 +569,6 @@ TEST(position,piece_type)
     EXPECT_EQ(B_SILVER,do_black(W_SILVER));
     EXPECT_EQ(B_BISHOP,do_black(W_BISHOP));
     EXPECT_EQ(B_ROOK,do_black(W_ROOK));
-}
-*/
-/*
-TEST(position,from_sfen)
-{
-    from_sfen(start_position);
-    EXPECT_EQ(W_LANCE,pos.get_board()[SQ_9A]);
-    EXPECT_EQ(W_KNIGHT,root_position.board[SQ_8A]);
-    EXPECT_EQ(W_SILVER,root_position.board[SQ_7A]);
-    EXPECT_EQ(W_GOLD,root_position.board[SQ_6A]);
-    EXPECT_EQ(W_KING,root_position.board[SQ_5A]);
-    EXPECT_EQ(W_GOLD,root_position.board[SQ_4A]);
-    EXPECT_EQ(W_SILVER,root_position.board[SQ_3A]);
-    EXPECT_EQ(W_KNIGHT,root_position.board[SQ_2A]);
-    EXPECT_EQ(W_LANCE,root_position.board[SQ_1A]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9B]);
-    EXPECT_EQ(W_ROOK,root_position.board[SQ_8B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3B]);
-    EXPECT_EQ(W_BISHOP,root_position.board[SQ_2B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1B]);
-
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_9C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_8C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_7C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_6C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_5C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_4C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_3C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_2C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_1C]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1D]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1E]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1F]);
-
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_9G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_8G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_7G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_6G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_5G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_4G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_3G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_2G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_1G]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9H]);
-    EXPECT_EQ(B_BISHOP,root_position.board[SQ_8H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3H]);
-    EXPECT_EQ(B_ROOK,root_position.board[SQ_2H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1H]);
-
-    EXPECT_EQ(B_LANCE,root_position.board[SQ_9I]);
-    EXPECT_EQ(B_KNIGHT,root_position.board[SQ_8I]);
-    EXPECT_EQ(B_SILVER,root_position.board[SQ_7I]);
-    EXPECT_EQ(B_GOLD,root_position.board[SQ_6I]);
-    EXPECT_EQ(B_KING,root_position.board[SQ_5I]);
-    EXPECT_EQ(B_GOLD,root_position.board[SQ_4I]);
-    EXPECT_EQ(B_SILVER,root_position.board[SQ_3I]);
-    EXPECT_EQ(B_KNIGHT,root_position.board[SQ_2I]);
-    EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    EXPECT_EQ(SQ_5A,(unsigned char)root_position.board[222]);
-    EXPECT_EQ(SQ_5I,(unsigned char)root_position.board[223]);
-
-    from_sfen(string("lnsgkgsn1/1r5b1/pppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1"));
-    EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1A]);
-    EXPECT_EQ(B_LANCE,root_position.board[SQ_9I]);
-    EXPECT_EQ(B_LANCE,root_position.board[SQ_1I]);
-    
-    //拡張したfrom_sfen用のテスト
-    from_sfen(string("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1"));
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5A]);
-    EXPECT_EQ(W_GOLD,root_position.board[SQ_4A]);
-    EXPECT_EQ(W_KING,root_position.board[SQ_3A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2A]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1A]);
-
-    EXPECT_EQ(BP_PAWN,root_position.board[SQ_9B]);
-    EXPECT_EQ(BP_LANCE,root_position.board[SQ_8B]);
-    EXPECT_EQ(BP_KNIGHT,root_position.board[SQ_7B]);
-    EXPECT_EQ(BP_SILVER,root_position.board[SQ_6B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2B]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1B]);
-
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_9C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_8C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_7C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_6C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_5C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_4C]);
-    EXPECT_EQ(W_PAWN,root_position.board[SQ_3C]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2C]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1C]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2D]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1D]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2E]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1E]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2F]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1F]);
-
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_9G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_8G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_7G]);
-    EXPECT_EQ(B_PAWN,root_position.board[SQ_6G]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5G]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4G]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3G]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2G]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1G]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_7H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_6H]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5H]);
-    EXPECT_EQ(WP_SILVER,root_position.board[SQ_4H]);
-    EXPECT_EQ(WP_KNIGHT,root_position.board[SQ_3H]);
-    EXPECT_EQ(WP_LANCE,root_position.board[SQ_2H]);
-    EXPECT_EQ(WP_PAWN,root_position.board[SQ_1H]);
-
-    EXPECT_EQ(EMPTY,root_position.board[SQ_9I]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_8I]);
-    EXPECT_EQ(B_KING,root_position.board[SQ_7I]);
-    EXPECT_EQ(B_GOLD,root_position.board[SQ_6I]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_5I]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_4I]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_3I]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_2I]);
-    EXPECT_EQ(EMPTY,root_position.board[SQ_1I]);
-    //持ち駒のチエック
-    EXPECT_EQ(0,root_position.board[208]);  //black gold
-    EXPECT_EQ(1,root_position.board[209]);  //black pawn
-    EXPECT_EQ(1,root_position.board[210]);  //black lance
-    EXPECT_EQ(0,root_position.board[211]);  //black knight
-    EXPECT_EQ(2,root_position.board[212]);  //black silver
-    EXPECT_EQ(1,root_position.board[213]);  //black bishop
-    EXPECT_EQ(1,root_position.board[214]);  //black rook
-
-    EXPECT_EQ(2,root_position.board[215]);  //white gold
-    EXPECT_EQ(4,root_position.board[216]);  //white pawn
-    EXPECT_EQ(1,root_position.board[217]);  //white lance
-    EXPECT_EQ(2,root_position.board[218]);  //white knight
-    EXPECT_EQ(0,root_position.board[219]);  //white silver
-    EXPECT_EQ(1,root_position.board[220]);  //white bishop
-    EXPECT_EQ(1,root_position.board[221]);  //white rook
-
-    //EXPECT_EQ(SQ_3A,(unsigned char)root_position.board[223+WHITE] );
-    //EXPECT_EQ(SQ_7I,(unsigned char)root_position.board[223+BLACK] );
 }
 */
 /*

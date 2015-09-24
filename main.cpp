@@ -25,30 +25,22 @@ Shogidokoro shogi playing engin
 #endif
 
 #include "cpuid.h"
+#include "types.h"
 #include "misc.h"
 #include "bitboard.h"
+#include "position.h"
+#include "usi.h"
 
 using namespace std;
-
-/*
-#include "position.h"
-#include "types.h"
-*/
-#include "usi.h"
 /*
 #include "usioption.h"
 #include "evaluate.h"
-#include "misc.h"
 #include "search.h"
-*/
-/*
 void profile(void);
 */
 
 int main_test(int argc,char *argv[]);
-/*
-void init(void);
-*/
+
 int main(int argc,char *argv[])
 {
 #ifdef _DEBUG
@@ -59,7 +51,7 @@ int main(int argc,char *argv[])
 	main_test(argc, argv);
 #endif
 	BitBoardns::init();
-    //init();
+	Positionns::init();		//Positionns::init()はBitBoardで初期化しているので順序変更禁止
     //init_usi_options();
     USI::usi_main_loop();
     return 0;
