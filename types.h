@@ -41,7 +41,11 @@ enum SquareDelta{
 	DeltaNE = DeltaN + DeltaE,
 	DeltaSE = DeltaS + DeltaE,
 	DeltaSW = DeltaS + DeltaW,
-	DeltaNW = DeltaN + DeltaW
+	DeltaNW = DeltaN + DeltaW,
+	DeltaNNW = DeltaN + DeltaN + DeltaW, 
+	DeltaNNE = DeltaN + DeltaN + DeltaE,
+	DeltaSSW = DeltaS + DeltaS + DeltaW, 
+	DeltaSSE = DeltaS + DeltaS + DeltaE
 };
 
 enum PieceType{
@@ -106,6 +110,18 @@ inline Rank make_rank(const Square sq)
 inline File make_file(const Square sq)
 {
 	return SQUARE_FILE[sq];
+}
+inline bool is_rank(Rank r)
+{
+	return (0 <= r) && (r < RankNum);
+}
+inline bool is_file(File f)
+{
+	return (0 <= f) && (f < RankNum);
+}
+inline Square make_square(File f, Rank r)
+{
+	return Square(f * 9 + r);
 }
 //
 //関数を呼び分けるマクロ群

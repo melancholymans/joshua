@@ -172,9 +172,11 @@ static const int ROOK_OFFSET[SquareNum] = {
 	6, 6, 6, 6, 6, 6, 6, 6, 6,
 };
 //局所変数宣言
+static BitBoard pawn_attack[ColorNum][SquareNum];
 static BitBoard lance_attack[ColorNum][4599];
 static BitBoard lance_mask[ColorNum][SquareNum];
 static int lance_attack_index[ColorNum][SquareNum];
+static BitBoard night_attack[ColorNum][SquareNum];
 static BitBoard silver_attack[ColorNum][SquareNum];
 static BitBoard bishop_attack[20224];
 static BitBoard bishop_mask[SquareNum];
@@ -190,6 +192,7 @@ static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
 static void init_lance_attacks(Color c);
+static void init_night_attack(Color c);
 static void init_silver_attacks(Color c);
 static void init_bishop_attacks();
 static void init_rook_attacks();
@@ -256,6 +259,10 @@ BitBoard BitBoardns::make_lance_attack(Color c,const Square sq, const BitBoard& 
 
 	return lance_attack[c][lance_attack_index[c][sq] + occupied_to_index(line, lance_mask[c][sq], LANCE_OFFSET[sq])];
 }
+BitBoard BitBoardns::make_night_attack(Color c, const Square sq)
+{
+	return night_attack[c][sq];
+}
 BitBoard BitBoardns::make_silver_attack(Color c, const Square sq)
 {
 	return silver_attack[c][sq];
@@ -298,6 +305,25 @@ static void init_lance_attacks(Color c)
 			lance_attack[c][index + occupied_to_index(occ[i] & lance_mask[c][sq], lance_mask[c][sq], LANCE_OFFSET[sq])] = one_direction_attack(Square(sq), occ[i], c);
 		}
 		index += 1 << LANCE_ATTACK_NUM[c][sq];
+	}
+}
+
+static void init_night_attacks(Color c)
+{
+	File f,f_to;
+	Rank r,r_to;
+	int Delta[ColorNum][2][2] = { { { -1, -2 }, { +1, -2 } }, { { -1, +2 }, { +1, +2 } } };		//[0]がblack　[1]がwhite
+
+ 	for(int sq = I9; sq < SquareNum; sq++){
+		r = SQUARE_RANK[sq];
+		f = SQUARE_FILE[sq];
+		for (int dir = 0; dir < 2; dir++){
+			f_to = File(f + Delta[c][dir][0]);
+			r_to = Rank(r + Delta[c][dir][1]);
+			if (is_file(f_to) && is_rank(r_to)){
+				night_attack[c][sq].set_bit(make_square(f_to,r_to));
+			}
+		}
 	}
 }
 static void init_silver_attacks(Color c)
@@ -362,7 +388,7 @@ static void init_gold_attacks(Color c)
 		gold_attack[c][sq] = make_rook_attack(Square(sq), allon) | (PASSED_FRONT[c][sq] & RANK_MASK[c == Black ? SQUARE_RANK[sq] - 1 : SQUARE_RANK[sq] + 1]);
 	}
 }
-//kingの利きbitboardを作る
+//kingの利きbitboardの初期化
 static void init_king_attacks()
 {
 	BitBoard allon_bb(0x7FFFFFFFFFFFFFFF, 0x000000000003FFFF);
@@ -376,6 +402,8 @@ void BitBoardns::init()
 {
 	init_lance_attacks(Black);
 	init_lance_attacks(White);
+	init_night_attacks(Black);
+	init_night_attacks(White);
 	init_bishop_attacks();
 	init_rook_attacks();
 	init_silver_attacks(Black);	//silverはbishop_attackが完成していることが前提なので順番の変更厳禁
@@ -406,10 +434,230 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
-TEST(bitboard, silver_attack)
+TEST(bitboard, night_attack)
 {
 	//サンプルでテスト
 	using BitBoardns::print;
+	using BitBoardns::make_night_attack;
+	int sq;
+	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
+	BitBoard ack;
+
+	BitBoardns::init();
+	//black
+	Color c = Black;
+	sq = G7;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000200);
+	EXPECT_EQ(ack.p(1), 0x00);
+	print(ack);
+	sq = F6;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000080000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	print(ack);
+	sq = E5;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800020000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200008000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000000000000);
+	EXPECT_EQ(ack.p(1), 0x10);
+	sq = B2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800000000000000);
+	EXPECT_EQ(ack.p(1), 0x4000);
+	sq = A1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x40);
+	//できないことを再確認
+	sq = I9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+
+	sq = I8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	//white
+	c = White;
+	sq = I9;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200008);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x80002000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000800000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000200000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000080000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000000000000);
+	EXPECT_EQ(ack.p(1), 0x100);
+	//できないことを再確認
+	sq = I2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A2;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+
+	sq = I1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A1;
+	ack = make_night_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+}
+TEST(bitboard, silver_attack)
+{
+	//サンプルでテスト
 	using BitBoardns::make_silver_attack;
 	int sq;
 	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
@@ -422,7 +670,6 @@ TEST(bitboard, silver_attack)
 	ack = make_silver_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x400);
 	EXPECT_EQ(ack.p(1), 0x00);
-	print(ack);
 	sq = H8;
 	ack = make_silver_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x140205);
@@ -497,7 +744,6 @@ TEST(bitboard, silver_attack)
 TEST(bitboard, gold_attacks)
 {
 	//サンプルでテスト
-	using BitBoardns::print;
 	using BitBoardns::make_gold_attack;
 	int sq;
 	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
