@@ -191,6 +191,7 @@ static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask);
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask, const int& offset);
+static void init_pawn_attacks(Color c);
 static void init_lance_attacks(Color c);
 static void init_night_attack(Color c);
 static void init_silver_attacks(Color c);
@@ -252,7 +253,10 @@ static int occupied_to_index(const BitBoard& occ, const BitBoard& mask,const int
 {
 	return static_cast<int>(_pext_u64(occ.p(0), mask.p(0)) | (_pext_u64(occ.p(1), mask.p(1)) << offset));
 }
-
+BitBoard BitBoardns::make_pawn_attack(Color c, const Square sq)
+{
+	return pawn_attack[c][sq];
+}
 BitBoard BitBoardns::make_lance_attack(Color c,const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & lance_mask[c][sq]);
@@ -288,6 +292,12 @@ BitBoard BitBoardns::make_king_attack(const Square sq)
 {
 	return king_attack[sq];
 }
+static void init_pawn_attacks(Color c)
+{
+	for (int sq = I9; sq < SquareNum; sq++){
+		pawn_attack[c][sq] = BitBoardns::make_silver_attack(c, Square(sq)) ^ BitBoardns::make_bishop_attack(Square(sq),BitBoardns::allon);
+	}
+}
 static void init_lance_attacks(Color c)
 {
 	int index = 0;
@@ -312,7 +322,7 @@ static void init_night_attacks(Color c)
 {
 	File f,f_to;
 	Rank r,r_to;
-	int Delta[ColorNum][2][2] = { { { -1, -2 }, { +1, -2 } }, { { -1, +2 }, { +1, +2 } } };		//[0]がblack　[1]がwhite
+	int Delta[ColorNum][2][2] = { { { -1, -2 }, { +1, -2 } }, { { -1, +2 }, { +1, +2 } } };		//[Color][Dir=左,右][file,rankの移動量]
 
  	for(int sq = I9; sq < SquareNum; sq++){
 		r = SQUARE_RANK[sq];
@@ -408,6 +418,8 @@ void BitBoardns::init()
 	init_rook_attacks();
 	init_silver_attacks(Black);	//silverはbishop_attackが完成していることが前提なので順番の変更厳禁
 	init_silver_attacks(White);	
+	init_pawn_attacks(Black);	//pawnはbishopとsilverが完成していることが前提なので順番の変更厳禁
+	init_pawn_attacks(White);
 	init_gold_attacks(Black);	//goldはrookが完成していることが前提なので順番の変更厳禁
 	init_gold_attacks(White);
 	init_king_attacks();		//kingはbishopとrookが完成していることが前提なので順番の変更厳禁
@@ -434,13 +446,98 @@ void BitBoardns::print(BitBoard &bb)
 }
 
 #ifdef _DEBUG
+TEST(bitboard, pawn_attack)
+{
+	//サンプルでテスト
+	using BitBoardns::print;
+	using BitBoardns::make_pawn_attack;
+	int sq;
+	BitBoard ack;
+
+	BitBoardns::init();
+	//black
+	Color c = Black;
+	sq = I9;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x80000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B2;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x40);
+	sq = A1;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x10000);
+	
+	c = White;
+	sq = I9;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x02);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x80000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B2;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x100);
+	sq = A1;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+}
 TEST(bitboard, night_attack)
 {
 	//サンプルでテスト
 	using BitBoardns::print;
 	using BitBoardns::make_night_attack;
 	int sq;
-	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
 	BitBoard ack;
 
 	BitBoardns::init();
@@ -450,12 +547,10 @@ TEST(bitboard, night_attack)
 	ack = make_night_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x8000200);
 	EXPECT_EQ(ack.p(1), 0x00);
-	print(ack);
 	sq = F6;
 	ack = make_night_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x2000080000);
 	EXPECT_EQ(ack.p(1), 0x00);
-	print(ack);
 	sq = E5;
 	ack = make_night_attack(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x800020000000);
@@ -660,7 +755,6 @@ TEST(bitboard, silver_attack)
 	//サンプルでテスト
 	using BitBoardns::make_silver_attack;
 	int sq;
-	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
 	BitBoard ack;
 
 	BitBoardns::init();
@@ -746,7 +840,6 @@ TEST(bitboard, gold_attacks)
 	//サンプルでテスト
 	using BitBoardns::make_gold_attack;
 	int sq;
-	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
 	BitBoard ack;
 
 	BitBoardns::init();
@@ -833,7 +926,6 @@ TEST(bitboard, king_attack)
 	using BitBoardns::print;
 	using BitBoardns::make_king_attack;
 	int sq;
-	BitBoard occ(0x00, 0x00);	//非とび駒なので周りの駒の状況は関係ない
 	BitBoard ack;
 
 	BitBoardns::init();
