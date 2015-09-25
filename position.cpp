@@ -153,9 +153,9 @@ void Position::put_piece(Piece piece,int sq)
 	
 	board[sq] = piece;
 	
-	byTypeBB[AllPieces].set_bit(Square(sq));
-	byTypeBB[pt].set_bit(Square(sq));
-	byColorBB[c].set_bit(Square(sq));
+	by_type_bb[AllPieces].set_bit(Square(sq));
+	by_type_bb[pt].set_bit(Square(sq));
+	by_color_bb[c].set_bit(Square(sq));
 }
 void Position::put_hand(Piece piece,const int num)
 {
@@ -192,7 +192,7 @@ int Position::get_board(int sq) const
 //xxxxxx11 xxxxxxxx xxxxxxxx	rook	0x03(シフトしているので)	0x30000
 //xxx111xx xxxxxxxx xxxxxxxx	gold	0x07(シフトしているので)	0x1C0000
 //指定したカラー、駒種の駒数を取得
-int Position::get_hand(Color c,PieceType pt)
+int Position::get_hand(Color c,PieceType pt) const
 {
 	return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
 }
@@ -211,12 +211,22 @@ void Positionns::print_board(const Position& pos)
     for(int r = Rank9;r < RankNum;r++){
 		cout << "|";
 		for (int f = FileA; FileI <= f; f--){
-            int sq = make_square(f,r);
+            int sq = make_square(File(f),Rank(r));
             int p = pos.get_board(sq);
 			cout << std::setw(3) << PieceToChar[p];
         }
         cout << "  |" << endl;
     }
+	cout << "black:";
+	for (int pt = Pawn; pt < King; pt++){
+		cout << PieceToChar[pt] << pos.get_hand(Black, PieceType(pt)) << " ";
+	}
+	cout << endl;
+	cout << "white:";
+	for (int pt = Pawn; pt < King; pt++){
+		cout << PieceToChar[pt] << " " << pos.get_hand(White, PieceType(pt)) << " ";
+	}
+	cout << endl;
 }
 
 /*
@@ -693,10 +703,83 @@ int update_board_material(USIInputParser &uip,int material[],int row,int col)
     return ply;
 }
 */
+TEST(position, piece_type_of_bb)
+{
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
+
+	BitBoard bb = pos.piece_type_of_bb(Pawn);
+	EXPECT_EQ(bb.p(0), 0x908044009400044);
+	EXPECT_EQ(bb.p(1), 0x5040);
+	bb = pos.piece_type_of_bb(Lance);
+	EXPECT_EQ(bb.p(0), 0x400000000000100);
+	EXPECT_EQ(bb.p(1), 0x20200);
+	bb = pos.piece_type_of_bb(Night);
+	EXPECT_EQ(bb.p(0), 0x100000);
+	EXPECT_EQ(bb.p(1), 0x11);
+	bb = pos.piece_type_of_bb(Silver);
+	EXPECT_EQ(bb.p(0), 0x4001020000000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(Bishop);
+	EXPECT_EQ(bb.p(0), 0x2004000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(Rook);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(Gold);
+	EXPECT_EQ(bb.p(0), 0x280040000000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(King);
+	EXPECT_EQ(bb.p(0), 0x400000000000);
+	EXPECT_EQ(bb.p(1), 0x20);
+	bb = pos.piece_type_of_bb(ProPawn);
+	EXPECT_EQ(bb.p(0), 0x20000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(ProLance);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(ProNight);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(ProSilver);
+	EXPECT_EQ(bb.p(0), 0x80000);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(Horse);
+	EXPECT_EQ(bb.p(0), 0x00);
+	EXPECT_EQ(bb.p(1), 0x00);
+	bb = pos.piece_type_of_bb(Dragon);
+	EXPECT_EQ(bb.p(0), 0x200);
+	EXPECT_EQ(bb.p(1), 0x00);
+}
+TEST(position, color_of_bb)
+{
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
+
+	BitBoard bb = pos.color_of_bb(Black);
+	EXPECT_EQ(bb.p(0), 0x4C000E0001080340);
+	EXPECT_EQ(bb.p(1), 0x24060);
+	bb = pos.color_of_bb(White);
+	EXPECT_EQ(bb.p(0), 0x10960604C520004);
+	EXPECT_EQ(bb.p(1), 0x1211);
+}
+TEST(position, all_bb)
+{
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
+	BitBoard bb = pos.all_bb();
+	EXPECT_EQ(bb.p(0), 0x4D096E604D5A0344);
+	EXPECT_EQ(bb.p(1), 0x25271);
+}
 TEST(position, print_board)
 {
 	Position pos(USI::start_sfen);
 	Positionns::print_board(pos);
+
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos1(ss);
+	Positionns::print_board(pos1);
 }
 TEST(position, position_from_sfen)
 {
@@ -921,71 +1004,7 @@ TEST(position, color_turn)
 	pos.flip_color();
 	EXPECT_EQ(White, pos.get_color_turn());
 }
-TEST(position, color_of_piece)
-{
-	EXPECT_EQ(Black, color_of_piece(BPawn));
-	EXPECT_EQ(Black, color_of_piece(BLance));
-	EXPECT_EQ(Black, color_of_piece(BNight));
-	EXPECT_EQ(Black, color_of_piece(BSilver));
-	EXPECT_EQ(Black, color_of_piece(BBishop));
-	EXPECT_EQ(Black, color_of_piece(BRook));
-	EXPECT_EQ(Black, color_of_piece(BGold));
-	EXPECT_EQ(Black, color_of_piece(BKing));
-	EXPECT_EQ(Black, color_of_piece(BProPawn));
-	EXPECT_EQ(Black, color_of_piece(BProLance));
-	EXPECT_EQ(Black, color_of_piece(BProNight));
-	EXPECT_EQ(Black, color_of_piece(BProSilver));
-	EXPECT_EQ(Black, color_of_piece(BHorse));
-	EXPECT_EQ(Black, color_of_piece(BDragon));
 
-	EXPECT_EQ(White, color_of_piece(WPawn));
-	EXPECT_EQ(White, color_of_piece(WLance));
-	EXPECT_EQ(White, color_of_piece(WNight));
-	EXPECT_EQ(White, color_of_piece(WSilver));
-	EXPECT_EQ(White, color_of_piece(WBishop));
-	EXPECT_EQ(White, color_of_piece(WRook));
-	EXPECT_EQ(White, color_of_piece(WGold));
-	EXPECT_EQ(White, color_of_piece(WKing));
-	EXPECT_EQ(White, color_of_piece(WProPawn));
-	EXPECT_EQ(White, color_of_piece(WProLance));
-	EXPECT_EQ(White, color_of_piece(WProNight));
-	EXPECT_EQ(White, color_of_piece(WProSilver));
-	EXPECT_EQ(White, color_of_piece(WHorse));
-	EXPECT_EQ(White, color_of_piece(WDragon));
-}
-
-TEST(position,type_of_piece)
-{
-	EXPECT_EQ(Pawn, type_of_piece(BPawn));
-	EXPECT_EQ(Lance, type_of_piece(BLance));
-	EXPECT_EQ(Night, type_of_piece(BNight));
-	EXPECT_EQ(Silver, type_of_piece(BSilver));
-	EXPECT_EQ(Bishop, type_of_piece(BBishop));
-	EXPECT_EQ(Rook, type_of_piece(BRook));
-	EXPECT_EQ(Gold, type_of_piece(BGold));
-	EXPECT_EQ(King, type_of_piece(BKing));
-	EXPECT_EQ(ProPawn, type_of_piece(BProPawn));
-	EXPECT_EQ(ProLance, type_of_piece(BProLance));
-	EXPECT_EQ(ProNight, type_of_piece(BProNight));
-	EXPECT_EQ(ProSilver, type_of_piece(BProSilver));
-	EXPECT_EQ(Horse, type_of_piece(BHorse));
-	EXPECT_EQ(Dragon, type_of_piece(BDragon));
-
-	EXPECT_EQ(Pawn, type_of_piece(WPawn));
-	EXPECT_EQ(Lance, type_of_piece(WLance));
-	EXPECT_EQ(Night, type_of_piece(WNight));
-	EXPECT_EQ(Silver, type_of_piece(WSilver));
-	EXPECT_EQ(Bishop, type_of_piece(WBishop));
-	EXPECT_EQ(Rook, type_of_piece(WRook));
-	EXPECT_EQ(Gold, type_of_piece(WGold));
-	EXPECT_EQ(King, type_of_piece(WKing));
-	EXPECT_EQ(ProPawn, type_of_piece(WProPawn));
-	EXPECT_EQ(ProLance, type_of_piece(WProLance));
-	EXPECT_EQ(ProNight, type_of_piece(WProNight));
-	EXPECT_EQ(ProSilver, type_of_piece(WProSilver));
-	EXPECT_EQ(Horse, type_of_piece(WHorse));
-	EXPECT_EQ(Dragon, type_of_piece(WDragon));
-}
 
 TEST(position, PieceToChar)
 {

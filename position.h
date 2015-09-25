@@ -20,16 +20,28 @@ public:
 	Color get_color_turn();
 	void flip_color();
 	int get_board(int sq) const;
-	int get_hand(Color c,PieceType pt);
+	int get_hand(Color c,PieceType pt) const;
 	bool is_hand(Color c,PieceType pt);
+	BitBoard all_bb()
+	{
+		return by_type_bb[AllPieces];
+	}
+	BitBoard color_of_bb(const Color c)
+	{
+		return by_color_bb[c];
+	}
+	BitBoard piece_type_of_bb(const PieceType pt)
+	{
+		return by_type_bb[pt];
+	}
 private:
 	void Position::clear();
 	void put_piece(Piece piece, int sq);
 	void put_hand(Piece pt, int num);
 	int board[SquareNum];
 	unsigned int hand[ColorNum];
-	BitBoard byTypeBB[PieceTypeNum];
-	BitBoard byColorBB[ColorNum];
+	BitBoard by_type_bb[PieceTypeNum];
+	BitBoard by_color_bb[ColorNum];
 	int color_turn;
 };
 
