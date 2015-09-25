@@ -237,7 +237,7 @@ static BitBoard one_direction_attack(Square square, BitBoard occ, Color c)
 	}
 	return bb;
 }
-
+//indexの値を局面bitboardに変換する。
 static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask)
 {
 	BitBoard tmp_bb = mask;
@@ -251,68 +251,80 @@ static BitBoard index_to_occupied(int index, int attack_num, const BitBoard mask
 	}
 	return bb;
 }
-
+//局面bitboardからindex値に変換する
 static int occupied_to_index(const BitBoard& occ, const BitBoard& mask,const int& offset)
 {
 	return static_cast<int>(_pext_u64(occ.p(0), mask.p(0)) | (_pext_u64(occ.p(1), mask.p(1)) << offset));
 }
-BitBoard BitBoardns::make_pawn_attack(Color c, const Square sq)
+//指定したカラー指定した座標でのpawnの利きbitboardを返す
+BitBoard BitBoardns::make_pawn_attack(const Color c, const Square sq)
 {
 	return pawn_attack[c][sq];
 }
-BitBoard BitBoardns::make_lance_attack(Color c,const Square sq, const BitBoard& occ)
+//指定したカラー指定した座標,指定した局面bitboardでのlanceの利きbitboardを返す
+BitBoard BitBoardns::make_lance_attack(const Color c, const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & lance_mask[c][sq]);
 
 	return lance_attack[c][lance_attack_index[c][sq] + occupied_to_index(line, lance_mask[c][sq], LANCE_OFFSET[sq])];
 }
-BitBoard BitBoardns::make_night_attack(Color c, const Square sq)
+//指定したカラー指定した座標,でのnightの利きbitboardを返す
+BitBoard BitBoardns::make_night_attack(const Color c, const Square sq)
 {
 	return night_attack[c][sq];
 }
-BitBoard BitBoardns::make_silver_attack(Color c, const Square sq)
+//指定したカラー指定した座標,でのsilverの利きbitboardを返す
+BitBoard BitBoardns::make_silver_attack(const Color c, const Square sq)
 {
 	return silver_attack[c][sq];
 }
+//指定したカラー指定した座標,指定した局面bitboardでのbishopの利きbitboardを返す
 BitBoard BitBoardns::make_bishop_attack(const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & bishop_mask[sq]); 
 
 	return bishop_attack[bishop_attack_index[sq] + occupied_to_index(line,bishop_mask[sq],BISHOP_OFFSET[sq])];
 }
-
+//指定したカラー指定した座標,指定した局面bitboardでのrookの利きbitboardを返す
 BitBoard BitBoardns::make_rook_attack(const Square sq, const BitBoard& occ)
 {
 	const BitBoard line(occ & rook_mask[sq]);
 
 	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq],ROOK_OFFSET[sq])];
 }
-BitBoard BitBoardns::make_gold_attack(Color c, const Square sq)
+//指定したカラー指定した座標,でのgoldの利きbitboardを返す
+BitBoard BitBoardns::make_gold_attack(const Color c, const Square sq)
 {
 	return gold_attack[c][sq];
 }
+//指定した座標,でのkingの利きbitboardを返す
 BitBoard BitBoardns::make_king_attack(const Square sq)
 {
 	return king_attack[sq];
 }
+//指定した座標sq1,sq2間に成立する方向子を返す
 Directtion BitBoardns::make_square_relation(const Square sq1, const Square sq2)
 {
 	return square_relation[sq1][sq2];
 }
-BitBoard BitBoardns::make_square_bb(Square sq)
+//指定した座標だけがonになったbitboardを返す
+BitBoard BitBoardns::make_square_bb(const Square sq)
 {
 	return SQUARE_BB[sq];
 }
+//指定した座標sq1,sq2間にbishopまたはrookの利きが成立するならそのbitboardを返す。sq1sq2のbitはonにならない
 BitBoard BitBoardns::make_between_bb(const Square sq1, const Square sq2)
 {
 	return between_bb[sq1][sq2];
 }
+//pawnの利きを初期化する
 static void init_pawn_attacks(Color c)
 {
 	for (int sq = I9; sq < SquareNum; sq++){
 		pawn_attack[c][sq] = BitBoardns::make_silver_attack(c, Square(sq)) ^ BitBoardns::make_bishop_attack(Square(sq),BitBoardns::allon);
 	}
 }
+//lanceの利きを初期化する
 static void init_lance_attacks(Color c)
 {
 	int index = 0;
@@ -332,7 +344,7 @@ static void init_lance_attacks(Color c)
 		index += 1 << LANCE_ATTACK_NUM[c][sq];
 	}
 }
-
+//nightの利きを初期化する
 static void init_night_attacks(Color c)
 {
 	File f,f_to;
@@ -351,6 +363,7 @@ static void init_night_attacks(Color c)
 		}
 	}
 }
+//silverの利きを初期化する
 static void init_silver_attacks(Color c)
 {
 	using BitBoardns::make_bishop_attack;
@@ -362,6 +375,7 @@ static void init_silver_attacks(Color c)
 		silver_attack[c][sq] = make_bishop_attack(Square(sq), allon) | (PASSED_FRONT[c][sq] & RANK_MASK[c == Black ? SQUARE_RANK[sq] - 1 : SQUARE_RANK[sq] + 1]);
 	}
 }
+//bishopの利きを初期化する
 static void init_bishop_attacks()
 {
 	int index = 0;
@@ -380,7 +394,7 @@ static void init_bishop_attacks()
 		index += 1 << BISHOP_ATTACK_NUM[sq];
 	}
 }
-
+//rookの利きを初期化する
 static void init_rook_attacks()
 {
 	int index = 0;
@@ -402,6 +416,7 @@ static void init_rook_attacks()
 		index += 1 << ROOK_ATTACK_NUM[sq];
 	}
 }
+//goldの利きを初期化する
 static void init_gold_attacks(Color c)
 {
 	using BitBoardns::make_rook_attack;
@@ -413,7 +428,7 @@ static void init_gold_attacks(Color c)
 		gold_attack[c][sq] = make_rook_attack(Square(sq), allon) | (PASSED_FRONT[c][sq] & RANK_MASK[c == Black ? SQUARE_RANK[sq] - 1 : SQUARE_RANK[sq] + 1]);
 	}
 }
-//kingの利きbitboardの初期化
+//kingの利きを初期化
 static void init_king_attacks()
 {
 	using BitBoardns::allon;
@@ -451,6 +466,7 @@ static void init_square_relation()
 		}
 	}
 }
+//between_bb配列の初期化
 static void init_between_bb()
 {
 	using BitBoardns::alloff;
@@ -475,7 +491,7 @@ static void init_between_bb()
 		}
 	}	
 }
-
+//BitBoardの初期化
 void BitBoardns::init()
 {
 	init_lance_attacks(Black);
@@ -494,7 +510,7 @@ void BitBoardns::init()
 	init_square_relation();
 	init_between_bb();			//betweenはsquare_relation配列が初期化してあることが前提なので順番の変更厳禁
 }
-
+//bitboardのprint、人間が見やすいように上側が後手、下側が先手とbitboardを９０度傾けた表示
 void BitBoardns::print(BitBoard &bb)
 {
 	int sq;
