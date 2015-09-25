@@ -4,8 +4,6 @@
 #include <inttypes.h>
 #include <string>
 
-using namespace std;
-
 enum Color
 {
 	Black,White,ColorNum

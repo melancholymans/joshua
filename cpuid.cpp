@@ -17,6 +17,10 @@
 #include "cpuid.h"
 #include "bitboard.h"
 
+using std::cout;
+using std::cin;
+using std::endl;
+
 class InstructionSet
 {
 	// forward declarations

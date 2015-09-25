@@ -4,6 +4,8 @@
 #include "types.h"
 #include "bitboard.h"
 
+using std::string;
+
 class Position{
 public:
 	Position(){}
@@ -34,6 +36,7 @@ private:
 namespace Positionns
 {
 	void init();
+	void print_board(const Position &pos);
 }
 //positionの定数
 /*

@@ -1,10 +1,5 @@
 ﻿#include <string>
 #include <sstream>
-/*
-#include <ctype.h>
-#include <crtdbg.h>
-*/
-using namespace std;
 
 #include "position.h"
 #include "bitboard.h"
@@ -12,6 +7,12 @@ using namespace std;
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
+
+using std::cout;
+using std::cin;
+using std::endl;
+using std::stringstream;
+using std::noskipws;
 
 //局所定数宣言・定義
 
@@ -263,15 +264,10 @@ bool Position::is_hand(Color c,PieceType pt)
 void Positionns::init()
 {
 }
-/*
-void print_board(const Position &pos)
+
+void Positionns::print_board(const Position &pos)
 {
-    for(int sq = 215;sq < 222;sq++){
-        int num = pos.board[sq];
-        if(num > 0){
-            cout << piece_letters[sq - 222] << ":" << num << " ";
-        }
-    }
+	/*
     cout << endl;
     for(int row = 1;row <10;row++){
         cout << "+--+--+--+--+--+--+--+--+--+" << endl;
@@ -296,8 +292,9 @@ void print_board(const Position &pos)
     }
     cout << endl;
     cout << to_sfen(pos) << endl;
+	*/
 }
-*/
+
 /*
 BLACK,WHITEと分かれていることを忘れないように
 */
