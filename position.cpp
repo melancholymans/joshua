@@ -239,7 +239,7 @@ void Position::flip_color(void)
 {
 	color_turn = color_turn ^ 1;
 }
-int Position::get_board(int sq)
+int Position::get_board(int sq) const
 {
 	return board[sq];
 }
@@ -265,34 +265,17 @@ void Positionns::init()
 {
 }
 
-void Positionns::print_board(const Position &pos)
+void Positionns::print_board(const Position& pos)
 {
-	/*
-    cout << endl;
-    for(int row = 1;row <10;row++){
-        cout << "+--+--+--+--+--+--+--+--+--+" << endl;
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            char p = pos.board[sq];
-            if(p != EMPTY){
-                cout << "|" << setw(2) << piece_letters[p];
-            }
-            else{
-                cout << "|  ";
-            }
+    for(int r = Rank9;r < RankNum;r++){
+		cout << "|";
+		for (int f = FileA; FileI <= f; f--){
+            int sq = make_square(f,r);
+            int p = pos.get_board(sq);
+			cout << std::setw(3) << PieceToChar[p];
         }
-        cout << "|" << endl;
+        cout << "  |" << endl;
     }
-    cout << "+--+--+--+--+--+--+--+--+--+" << endl;
-    for(int sq = 208;sq < 215;sq++){
-        int num = pos.board[sq];
-        if(num > 0){
-            cout << piece_letters[sq - 199] << ":" << num << " ";
-        }
-    }
-    cout << endl;
-    cout << to_sfen(pos) << endl;
-	*/
 }
 
 /*
@@ -879,6 +862,11 @@ int update_board_material(USIInputParser &uip,int material[],int row,int col)
     return ply;
 }
 */
+TEST(position, print_board)
+{
+	Position pos(USI::start_sfen);
+	Positionns::print_board(pos);
+}
 TEST(position, position_from_sfen)
 {
 	Position pos(USI::start_sfen);

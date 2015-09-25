@@ -19,7 +19,7 @@ public:
 	void set_color_turn(Color c);
 	Color get_color_turn();
 	void flip_color();
-	int get_board(int sq);
+	int get_board(int sq) const;
 	int get_hand(Color c,PieceType pt);
 	bool is_hand(Color c,PieceType pt);
 private:
