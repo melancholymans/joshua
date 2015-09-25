@@ -150,8 +150,127 @@ int main_test(int argc,char *argv[])
     int result = RUN_ALL_TESTS();
     return result;
 }
-
-TEST(main_case, main)
+TEST(main, is_rank)
 {
+	for (int r = Rank9; r < RankNum; r++){
+		EXPECT_TRUE(is_rank(Rank(r)));
+	}
+	EXPECT_FALSE(is_rank(Rank(-1)));
+	EXPECT_FALSE(is_rank(Rank(9)));
+}
+TEST(main, is_file)
+{
+	for (int f = FileI; f < FileNum; f++){
+		EXPECT_TRUE(is_file(File(f)));
+	}
+	EXPECT_FALSE(is_file(File(-1)));
+	EXPECT_FALSE(is_file(File(9)));
+}
+TEST(main, make_file)
+{
+	EXPECT_EQ(FileI, make_file(I9));
+	EXPECT_EQ(FileH, make_file(H8));
+	EXPECT_EQ(FileG, make_file(G7));
+	EXPECT_EQ(FileF, make_file(F6));
+	EXPECT_EQ(FileE, make_file(E5));
+	EXPECT_EQ(FileD, make_file(D4));
+	EXPECT_EQ(FileC, make_file(C3));
+	EXPECT_EQ(FileB, make_file(B2));
+	EXPECT_EQ(FileA, make_file(A1));
+}
+TEST(main, make_rank)
+{
+	EXPECT_EQ(Rank9, make_rank(I9));
+	EXPECT_EQ(Rank8, make_rank(H8));
+	EXPECT_EQ(Rank7, make_rank(G7));
+	EXPECT_EQ(Rank6, make_rank(F6));
+	EXPECT_EQ(Rank5, make_rank(E5));
+	EXPECT_EQ(Rank4, make_rank(D4));
+	EXPECT_EQ(Rank3, make_rank(C3));
+	EXPECT_EQ(Rank2, make_rank(B2));
+	EXPECT_EQ(Rank1, make_rank(A1));
+}
+TEST(main, is_square)
+{
+	for (int sq = I9; sq < SquareNum; sq++){
+		EXPECT_EQ(true, is_square(Square(sq)));
+	}
+	EXPECT_EQ(false, is_square(Square(-1)));
+	EXPECT_EQ(false, is_square(Square(81)));
+}
+TEST(main, color_of_piece)
+{
+	EXPECT_EQ(Black, color_of_piece(BPawn));
+	EXPECT_EQ(Black, color_of_piece(BLance));
+	EXPECT_EQ(Black, color_of_piece(BNight));
+	EXPECT_EQ(Black, color_of_piece(BSilver));
+	EXPECT_EQ(Black, color_of_piece(BBishop));
+	EXPECT_EQ(Black, color_of_piece(BRook));
+	EXPECT_EQ(Black, color_of_piece(BGold));
+	EXPECT_EQ(Black, color_of_piece(BKing));
+	EXPECT_EQ(Black, color_of_piece(BProPawn));
+	EXPECT_EQ(Black, color_of_piece(BProLance));
+	EXPECT_EQ(Black, color_of_piece(BProNight));
+	EXPECT_EQ(Black, color_of_piece(BProSilver));
+	EXPECT_EQ(Black, color_of_piece(BHorse));
+	EXPECT_EQ(Black, color_of_piece(BDragon));
+
+	EXPECT_EQ(White, color_of_piece(WPawn));
+	EXPECT_EQ(White, color_of_piece(WLance));
+	EXPECT_EQ(White, color_of_piece(WNight));
+	EXPECT_EQ(White, color_of_piece(WSilver));
+	EXPECT_EQ(White, color_of_piece(WBishop));
+	EXPECT_EQ(White, color_of_piece(WRook));
+	EXPECT_EQ(White, color_of_piece(WGold));
+	EXPECT_EQ(White, color_of_piece(WKing));
+	EXPECT_EQ(White, color_of_piece(WProPawn));
+	EXPECT_EQ(White, color_of_piece(WProLance));
+	EXPECT_EQ(White, color_of_piece(WProNight));
+	EXPECT_EQ(White, color_of_piece(WProSilver));
+	EXPECT_EQ(White, color_of_piece(WHorse));
+	EXPECT_EQ(White, color_of_piece(WDragon));
+}
+TEST(main, type_of_piece)
+{
+	EXPECT_EQ(Pawn, type_of_piece(BPawn));
+	EXPECT_EQ(Lance, type_of_piece(BLance));
+	EXPECT_EQ(Night, type_of_piece(BNight));
+	EXPECT_EQ(Silver, type_of_piece(BSilver));
+	EXPECT_EQ(Bishop, type_of_piece(BBishop));
+	EXPECT_EQ(Rook, type_of_piece(BRook));
+	EXPECT_EQ(Gold, type_of_piece(BGold));
+	EXPECT_EQ(King, type_of_piece(BKing));
+	EXPECT_EQ(ProPawn, type_of_piece(BProPawn));
+	EXPECT_EQ(ProLance, type_of_piece(BProLance));
+	EXPECT_EQ(ProNight, type_of_piece(BProNight));
+	EXPECT_EQ(ProSilver, type_of_piece(BProSilver));
+	EXPECT_EQ(Horse, type_of_piece(BHorse));
+	EXPECT_EQ(Dragon, type_of_piece(BDragon));
+
+	EXPECT_EQ(Pawn, type_of_piece(WPawn));
+	EXPECT_EQ(Lance, type_of_piece(WLance));
+	EXPECT_EQ(Night, type_of_piece(WNight));
+	EXPECT_EQ(Silver, type_of_piece(WSilver));
+	EXPECT_EQ(Bishop, type_of_piece(WBishop));
+	EXPECT_EQ(Rook, type_of_piece(WRook));
+	EXPECT_EQ(Gold, type_of_piece(WGold));
+	EXPECT_EQ(King, type_of_piece(WKing));
+	EXPECT_EQ(ProPawn, type_of_piece(WProPawn));
+	EXPECT_EQ(ProLance, type_of_piece(WProLance));
+	EXPECT_EQ(ProNight, type_of_piece(WProNight));
+	EXPECT_EQ(ProSilver, type_of_piece(WProSilver));
+	EXPECT_EQ(Horse, type_of_piece(WHorse));
+	EXPECT_EQ(Dragon, type_of_piece(WDragon));
+}
+TEST(main, make_square)
+{
+	//make_square(file,rank)で指定
+	EXPECT_EQ(E2, make_square(FileE, Rank2));
+	EXPECT_EQ(H4, make_square(FileH, Rank4));
+	EXPECT_EQ(D2, make_square(FileD, Rank2));
+	EXPECT_EQ(A7, make_square(FileA, Rank7));
+	EXPECT_EQ(B1, make_square(FileB, Rank1));
+	EXPECT_EQ(C3, make_square(FileC, Rank3));
+	EXPECT_EQ(F5, make_square(FileF, Rank5));
 }
 #endif
