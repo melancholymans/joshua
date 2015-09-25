@@ -429,13 +429,13 @@ namespace BitBoardns
 	};
 	void init();
 	void print(BitBoard&);
-	BitBoard make_pawn_attack(Color c, const Square sq);
-	BitBoard make_lance_attack(Color c, const Square sq, const BitBoard& occ);
-	BitBoard make_night_attack(Color c, const Square sq);
-	BitBoard make_silver_attack(Color c, const Square sq);
+	BitBoard make_pawn_attack(const Color c, const Square sq);
+	BitBoard make_lance_attack(const Color c, const Square sq, const BitBoard& occ);
+	BitBoard make_night_attack(const Color c, const Square sq);
+	BitBoard make_silver_attack(const Color c, const Square sq);
 	BitBoard make_bishop_attack(const Square sq, const BitBoard& occ);
 	BitBoard make_rook_attack(const Square sq, const BitBoard& occ);
-	BitBoard make_gold_attack(Color c,const Square sq);
+	BitBoard make_gold_attack(const Color c, const Square sq);
 	BitBoard make_king_attack(const Square sq);
 	Directtion make_square_relation(const Square sq1, const Square sq2);
 	BitBoard make_square_bb(Square sq);
