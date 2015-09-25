@@ -522,7 +522,7 @@ void BitBoardns::print(BitBoard &bb)
 	for (int r = Rank9; r < RankNum; r++){
 		std::cout << (9 - r) << " ";
 		for (int f = FileA; FileI <= f; f--){
-			sq = make_square(f, r);
+			sq = make_square(File(f), Rank(r));
 			__m128i sq_m = _mm_set_epi64x((SQUARE_BB[sq].p(1)), SQUARE_BB[sq].p(0));
 			std::cout << (!(_mm_testz_si128(m, sq_m)) ? " *" : " .") << " ";
 		}
@@ -631,7 +631,7 @@ TEST(bitboard, make_square_bb)
 	EXPECT_EQ(make_square_bb(Square(sq)).p(0), 0x00);
 	EXPECT_EQ(make_square_bb(Square(sq)).p(1), 0x200);
 }
-TEST(position, make_square_relation)
+TEST(bitboard, make_square_relation)
 {
 	using BitBoardns::make_square_relation;
 	//enum Directtion{
