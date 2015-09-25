@@ -57,25 +57,7 @@ const extern char EDGE;
 //const extern char NOT_PMOTO;
 
 */
-//File,Rank座標からsq座標を計算
-inline int make_square(int File,int Rank)
-{
-    return File*9+Rank;
-}
 
-/*
-sq盤座標からcol,row座標に変換
-*/
-/*
-inline void make_col_row(int sq,int *col,int *row)
-{
-    *row = sq/16;   //整数の割り算は小数点は切り捨て
-    *col = sq - *row*16;
-    *row = *row - 1;
-}
-
-
-*/
 /*
 駒コードを与えて成っていないか判定する
 成っていなかったらtrue,成駒ならfalse
