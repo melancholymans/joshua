@@ -2513,7 +2513,7 @@ TEST(bitboard, is_bit_on)
 	EXPECT_FALSE(bb.is_bit_on(B2));
 	EXPECT_FALSE(bb.is_bit_on(B1));
 }
-TEST(bitboard_case, bitboard)
+TEST(bitboard, bitboard)
 {
 	//pop_count function
 	uint64_t b0 = 0xCB87;

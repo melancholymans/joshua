@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, SyncCout sc)
 }
 
 #ifdef _DEBUG
-TEST(misc_case,ptime_init_ptime_now)
+TEST(misc,ptime_init_ptime_now)
 {
     ptime_t aPT;
 
