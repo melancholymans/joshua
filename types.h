@@ -115,14 +115,17 @@ inline File make_file(const Square sq)
 {
 	return SQUARE_FILE[sq];
 }
+//ランクが正常値かチエックして、正常であればtrueを返す
 inline bool is_rank(Rank r)
 {
 	return (0 <= r) && (r < RankNum);
 }
+//ファイルが正常値かチエックして、正常であればtrueを返す
 inline bool is_file(File f)
 {
 	return (0 <= f) && (f < RankNum);
 }
+//File,Rank座標からsq座標を計算 TEST OK
 inline Square make_square(File f, Rank r)
 {
 	return Square(f * 9 + r);
