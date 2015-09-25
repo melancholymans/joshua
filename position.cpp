@@ -68,7 +68,7 @@ const int hand_masking[] = {
 //局所変数宣言
 
 //局所関数宣言
-
+//＜ここからPositionクラスの定義領域＞
 //Position classのコンストラクタから呼ばれる
 //sfen文字列からPosition内部の局面情報をセットする。
 //標準初期sfen文字列はこう->"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
@@ -137,6 +137,7 @@ void Position::position_from_sfen(const string &sfen)
         }
 	} while (uip >> token && !isspace(token));
     //持ち駒の次は手数が入っているが無視してよい
+	//このあといろいろ設定する必要があるが準備ができていないのでここまで
 }
 
 void Position::clear()
@@ -144,67 +145,6 @@ void Position::clear()
 	memset(this, 0, sizeof(Position));
 }
 
-/*
-string to_sfen(const Position &pos)
-{
-    string result;
-    int skip;
-    char p;
-
-    for(int row = 1;row < 10;row++){
-        skip = 0;
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            p = pos.board[sq];
-            if(p != EMPTY){
-                if(skip > 0){
-                    result += (char)skip + '0';
-                }
-                result += piece_letters[p];
-                skip = 0;
-            }
-            else{
-                skip++;
-            }
-        }
-        if(skip > 0){ 
-            result += (char)skip + '0';
-        }
-        result += row < 9 ? '/' : ' ';
-    }
-    result += (pos.turn == WHITE) ? 'w'  : 'b';
-    result += ' ';
-    //ここは駒台の処理
-    bool is_stand = false;
-    for(int sq = 208;sq < 215;sq++){
-        int num = pos.board[sq];
-        if(num > 0){
-            is_stand = true;
-            if(num >1){
-                result += (char)num + '0';
-            }
-            result += piece_letters[sq - 199];
-        }
-    }
-    for(int sq = 215;sq < 222;sq++){
-        int num = pos.board[sq];
-        if(num > 0){
-            is_stand = true;
-            if(num >1){
-                result += (char)num + '0';
-            }
-            result += piece_letters[sq - 222];
-        }
-    }
-    if(!is_stand){
-        //持ち駒がなかった場合
-        result += '-';
-    }
-    result += ' ';
-    result += '1';
-    return result;
-}
-*/
 //sfen文字列から局面の盤上を設定
 void Position::put_piece(Piece piece,int sq)
 {
@@ -261,6 +201,7 @@ bool Position::is_hand(Color c,PieceType pt)
 {
 	return bool(hand[c] & hand_masking[pt]);
 }
+//＜ここからnamespace Positionnsの定義領域＞
 void Positionns::init()
 {
 }
@@ -551,123 +492,13 @@ TEST(position,piece_type)
     EXPECT_EQ(B_ROOK,do_black(W_ROOK));
 }
 */
+
 /*
-TEST(position,to_sfen)
-{
-    from_sfen(start_position);
-    EXPECT_STREQ("lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1",to_sfen(root_position).c_str());
-
-    for(int sq = 0;sq < 222;sq++){
-        root_position.board[sq] = EMPTY;
-    }
-    root_position.board[SQ_4A] = W_GOLD;
-    root_position.board[SQ_3A] = W_KING;
-
-    root_position.board[SQ_9B] = BP_PAWN;
-    root_position.board[SQ_8B] = BP_LANCE;
-    root_position.board[SQ_7B] = BP_KNIGHT;
-    root_position.board[SQ_6B] = BP_SILVER;
-
-    root_position.board[SQ_9C] = W_PAWN;
-    root_position.board[SQ_8C] = W_PAWN;
-    root_position.board[SQ_7C] = W_PAWN;
-    root_position.board[SQ_6C] = W_PAWN;
-    root_position.board[SQ_5C] = W_PAWN;
-    root_position.board[SQ_4C] = W_PAWN;
-    root_position.board[SQ_3C] = W_PAWN;
-
-    root_position.board[SQ_9G] = B_PAWN;
-    root_position.board[SQ_8G] = B_PAWN;
-    root_position.board[SQ_7G] = B_PAWN;
-    root_position.board[SQ_6G] = B_PAWN;
-
-    root_position.board[SQ_4H] = WP_SILVER;
-    root_position.board[SQ_3H] = WP_KNIGHT;
-    root_position.board[SQ_2H] = WP_LANCE;
-    root_position.board[SQ_1H] = WP_PAWN;
-
-    root_position.board[SQ_7I] = B_KING;
-    root_position.board[SQ_6I] = B_GOLD;
-
-    root_position.board[208] = 0;   //B_GOLD
-    root_position.board[209] = 1;   //B_PAWN
-    root_position.board[210] = 1;   //B_LANCE
-    root_position.board[211] = 0;   //B_KNIGHT
-    root_position.board[212] = 2;   //B_SILVER
-    root_position.board[213] = 1;   //B_BISHOP
-    root_position.board[214] = 1;   //B_ROOK
-
-    root_position.board[215] = 2;   //W_GOLD
-    root_position.board[216] = 4;   //W_PAWN
-    root_position.board[217] = 1;   //W_LANCE
-    root_position.board[218] = 2;   //W_KNIGHT
-    root_position.board[219] = 0;   //W_SILVER
-    root_position.board[220] = 1;   //W_BISHOP
-    root_position.board[221] = 1;   //W_ROOK
-
-    EXPECT_STREQ("5gk2/+P+L+N+S5/ppppppp2/9/9/9/PPPP5/5+s+n+l+p/2KG5 b PL2SBR2g4pl2nbr 1",to_sfen(root_position).c_str());
-}
-
-TEST(position,make_square)
-{
-    //make_square(col,row)で指定
-    EXPECT_EQ(166,make_square(6,9));
-    EXPECT_EQ(72,make_square(8,3));
-    EXPECT_EQ(116,make_square(4,6));
-    EXPECT_EQ(41,make_square(9,1));
-    EXPECT_EQ(33,make_square(1,1));
-    EXPECT_EQ(169,make_square(9,9));
-    EXPECT_EQ(161,make_square(1,9));
-    EXPECT_EQ(101,make_square(5,5));
-    EXPECT_EQ(120,make_square(8,6));
-    EXPECT_EQ(68,make_square(4,3));
-}
-
-TEST(position,make_col_row)
-{
-    int col,row;
-
-    make_col_row(SQ_9A,&col,&row);
-    EXPECT_EQ(1,col);
-    EXPECT_EQ(1,row);
-
-    make_col_row(SQ_8B,&col,&row);
-    EXPECT_EQ(2,col);
-    EXPECT_EQ(2,row);
-
-    make_col_row(SQ_7C,&col,&row);
-    EXPECT_EQ(3,col);
-    EXPECT_EQ(3,row);
-
-    make_col_row(SQ_6D,&col,&row);
-    EXPECT_EQ(4,col);
-    EXPECT_EQ(4,row);
-
-    make_col_row(SQ_5E,&col,&row);
-    EXPECT_EQ(5,col);
-    EXPECT_EQ(5,row);
-
-    make_col_row(SQ_4F,&col,&row);
-    EXPECT_EQ(6,col);
-    EXPECT_EQ(6,row);
-
-    make_col_row(SQ_3G,&col,&row);
-    EXPECT_EQ(7,col);
-    EXPECT_EQ(7,row);
-
-    make_col_row(SQ_2H,&col,&row);
-    EXPECT_EQ(8,col);
-    EXPECT_EQ(8,row);
-
-    make_col_row(SQ_1I,&col,&row);
-    EXPECT_EQ(9,col);
-    EXPECT_EQ(9,row);
-}
-
 int update_board(USIInputParser &uip);      //TESTのヘルパー関数
 int update_board_material(USIInputParser &uip,int material[],int row,int col);
 void is_eq_board(void);                     //TESTのヘルパー関数
-
+*/
+/*
 TEST(position,undo_move)
 {
     int ply = 0;
