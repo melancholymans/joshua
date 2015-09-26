@@ -3,57 +3,64 @@
 
 #include "types.h"
 
-/*
-Move構造体からfrom情報を取出す
-*/
-inline int move_from(Move m)
-{
-    return (m >> 8) & 0xFF;
+namespace Movens{
+	// xxxxxxxx xxxxxxxx xxxxxxxx x1111111 移動先(7bit=127) to
+	// xxxxxxxx xxxxxxxx xx111111 1xxxxxxx 移動元(7bit=127) from 駒打ちのときはPieceType + SquareNum - 1 (81->87)
+	// xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx １なら成 pmoto
+	// xxxxxxxx xxxx1111 xxxxxxxx xxxxxxxx 移動する駒の駒種(4bit=15) piece
+	// xxxxxxxx 1111xxxx xxxxxxxx xxxxxxxx 獲られた駒の駒種(4bit=15) cap_piece
+
+	//Moveからfrom情報を取出す
+	inline Square move_from(Move m)
+	{
+		return Square((m >> 7) & 0x7F);
+	}
+	//Moveからto情報を取出す
+	inline Square move_to(Move m)
+	{
+		return Square(m & 0x7F);
+	}
+	//Moveからpiece情報を取出す
+	inline PieceType move_piece(Move m)
+	{
+		return PieceType((m >> 16) & 0x0F);
+	}
+	//Moveからcap_piece情報を取出す
+	inline PieceType move_cap_piece(Move m)
+	{
+		return PieceType((m >> 20) & 0X0F);
+	}
+	//打つ駒の駒種を取り出す
+	inline PieceType move_drop_piece(Move m)
+	{
+		return PieceType(move_from(m) - SquareNum + 1);
+	}
+	//Moveからpmoto情報を取出す
+	inline bool is_pmoto(Move m)
+	{
+		return bool(m & 0x4000);
+	}
+	//Moveから打ち手なのか判定する
+	inline bool is_drop(Move m)
+	{
+		return move_from(m) > (SquareNum -1);
+	}
+	//Moveから駒を獲る手なのか判定する
+	inline bool is_capture(Move m)
+	{
+		return bool(m & 0xF00000);
+	}
+	//打ち駒の駒種からfromに変換する
+	inline Square make_drop(PieceType pt)
+	{
+		return Square(pt + SquareNum - 1);
+	}
+	//各引数からMoveを作る
+	inline Move make_move(Square from, Square to, int pmoto, PieceType piece, PieceType cap_piece)
+	{
+		return (uint32_t(to) | uint32_t(from) << 7 | uint32_t(pmoto) << 14 | uint32_t(piece & 0x0F) << 16 | uint32_t(cap_piece & 0x0F) << 20);
+	}
+	Move move_from_string(const Position &pos, const string &cmd);
+	string string_from_move(const Move m);
 }
-
-/*
-Move構造体からto情報を取出す
-*/
-inline int move_to(Move m)
-{
-    return m & 0xFF;
-}
-
-/*
-Move構造体からpiece情報を取出す
-Move構造体に格納されているpieceはColor情報を
-除去された駒種情報だけなので、盤上移動の時には
-使用されないが打つ手の時に使用する.
-打つ時Color情報を付与してboardを更新すること
-*/
-inline char move_piece(Move m)
-{
-    return (m >> 17) & 0x0F; 
-}
-
-/*
-Move構造体からcap_piece情報を取出す
-Move構造体に格納されているpieceはColor情報を
-除去された駒種情報だけ.
-*/
-inline char move_cap_piece(Move m)
-{
-    return (m >> 21) & 0X0F;
-}
-
-/*
-Move構造体からpmoto情報を取出す
-成るなら0x10000を返す（PMOTOで定義されている）
-成らないなら0を返す
-*/
-inline int move_pmoto(Move m)
-{
-    return m & 0x10000;
-}
-
-Move move_from_string(const Position &pos,const string &cmd);
-int square_from_string(const string sq);
-string string_from_move(const Move m);
-string string_from_square(int sq);
-
 #endif

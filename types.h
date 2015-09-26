@@ -43,7 +43,7 @@ enum SquareDelta{
 };
 
 enum PieceType{
-	AllPieces = 0,
+	AllPieces = 0,EmptyPiece = 0,
 	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King,
 	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
 	PieceTypeNum
@@ -90,6 +90,8 @@ const File SQUARE_FILE[SquareNum] = {
 	FileB, FileB, FileB, FileB, FileB, FileB, FileB, FileB, FileB,
 	FileA, FileA, FileA, FileA, FileA, FileA, FileA, FileA, FileA
 };
+//指し手データ定義
+typedef uint32_t Move;
 //駒コードから駒種を取り出す
 inline PieceType type_of_piece(Piece piece)
 {
