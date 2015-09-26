@@ -7,12 +7,45 @@
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
-
+//名前空間宣言
 using std::cout;
 using std::cin;
 using std::endl;
 using std::stringstream;
 using std::noskipws;
+
+const int hand_packed[8] = {
+	0,
+	1 << 0,		//HandPawn
+	1 << 5,		//HandLance
+	1 << 8,		//HandNight
+	1 << 11,	//HandSilver
+	1 << 14,	//HandBishop
+	1 << 16,	//HandRook
+	1 << 18		//HandGold
+};
+//unsigned int 32bitにパッキングされて駒数を元に戻すためのシフト数
+const int hand_shift[8] = {
+	0,
+	0,			//HandPawn
+	5,			//HandLance
+	8,			//HandNight
+	11,			//HandSilver
+	14,			//HandBishop
+	16,			//HandRook
+	18			//HandGold
+};
+//unsigned 32bitから駒台の枚数をマスキングするための定数
+const int hand_masking[8] = {
+	0,
+	0x1F,		//pawn
+	0xE0,		//lance
+	0x700,		//night
+	0x3800,		//silver
+	0xC000,		//bishop
+	0x30000,	//rook
+	0x1C0000,	//gold
+};
 
 //局所定数宣言・定義
 
@@ -33,38 +66,6 @@ using std::noskipws;
 	//Dragon..Z z
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
 //unsigned int 32bitに駒台の駒数をパッキングするための定数
-const int hand_packed[] = {
-	0,
-	1 << 0,		//HandPawn
-	1 << 5,		//HandLance
-	1 << 8,		//HandNight
-	1 << 11,	//HandSilver
-	1 << 14,	//HandBishop
-	1 << 16,	//HandRook
-	1 << 18		//HandGold
-};
-//unsigned int 32bitにパッキングされて駒数を元に戻すためのシフト数
-const int hand_shift[] = {
-	0,
-	0,			//HandPawn
-	5,			//HandLance
-	8,			//HandNight
-	11,			//HandSilver
-	14,			//HandBishop
-	16,			//HandRook
-	18			//HandGold
-};
-//unsigned 32bitから駒台の枚数をマスキングするための定数
-const int hand_masking[] = {
-	0,
-	0x1F,		//pawn
-	0xE0,		//lance
-	0x700,		//night
-	0x3800,		//silver
-	0xC000,		//bishop
-	0x30000,	//rook
-	0x1C0000,	//gold
-};
 //局所変数宣言
 
 //局所関数宣言
@@ -139,12 +140,6 @@ void Position::position_from_sfen(const string &sfen)
     //持ち駒の次は手数が入っているが無視してよい
 	//このあといろいろ設定する必要があるが準備ができていないのでここまで
 }
-
-void Position::clear()
-{
-	memset(this, 0, sizeof(Position));
-}
-
 //sfen文字列から局面の盤上を設定
 void Position::put_piece(Piece piece,int sq)
 {
@@ -167,40 +162,6 @@ void Position::put_hand(Piece piece,const int num)
 	}
 }
 
-void Position::set_color_turn(Color c)
-{
-	color_turn = c;
-}
-Color Position::get_color_turn(void)
-{
-	return Color(color_turn);
-}
-void Position::flip_color(void)
-{
-	color_turn = color_turn ^ 1;
-}
-int Position::get_board(int sq) const
-{
-	return board[sq];
-}
-//駒台の駒数を加減算する			駒種		マスクbit				シフトなしのマスクbit
-//xxxxxxxx xxxxxxxx xxx11111	pawn	0x1F					0x1F
-//xxxxxxxx xxxxxxxx 111xxxxx	lance	0x07(シフトしているので)	0xE0
-//xxxxxxxx xxxxx111 xxxxxxxx	night	0x07(シフトしているので)	0x700
-//xxxxxxxx xx111xxx xxxxxxxx	silver	0x07(シフトしているので)	0x3800
-//xxxxxxxx 11xxxxxx xxxxxxxx	bishop　0x03(シフトしているので)	0xC000
-//xxxxxx11 xxxxxxxx xxxxxxxx	rook	0x03(シフトしているので)	0x30000
-//xxx111xx xxxxxxxx xxxxxxxx	gold	0x07(シフトしているので)	0x1C0000
-//指定したカラー、駒種の駒数を取得
-int Position::get_hand(Color c,PieceType pt) const
-{
-	return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
-}
-//指定したカラー、駒種の有無を取得
-bool Position::is_hand(Color c,PieceType pt)
-{
-	return bool(hand[c] & hand_masking[pt]);
-}
 //＜ここからnamespace Positionnsの定義領域＞
 void Positionns::init()
 {
@@ -228,12 +189,8 @@ void Positionns::print_board(const Position& pos)
 	}
 	cout << endl;
 }
-
 /*
-BLACK,WHITEと分かれていることを忘れないように
-*/
-/*
-short *do_move_b(Position &pos,Move m,short *mf)
+void Position::do_move(Position &pos,Move m,short *mf)
 {
     int from = move_from(m);
     int to = move_to(m);
@@ -285,64 +242,7 @@ short *do_move_b(Position &pos,Move m,short *mf)
     pos.turn = ~pos.turn;
     return mf;
 }
-*/
 /*
-BLACK,WHITEと分かれていることを忘れないように
-*/
-/*
-short *do_move_w(Position &pos,Move m,short *mf)
-{
-    int from = move_from(m);
-    int to = move_to(m);
-    char cp;
-    char p;
-
-    if(from != 0){
-        //盤上の手
-        p = pos.board[from];
-        char pt = type_of_piece(p);
-        if(pt == KING){
-            *(mf++) = 222;;
-            *(mf++) = pos.board[222];
-            pos.board[222] = to;  //強制的にintからcharに入れている
-        }
-        if(pos.board[to] != EMPTY){
-            cp = pos.board[to] & 0x0F;
-            int of = 215 + (cp | 0x08) - 9;
-            *(mf++) = of;
-            *(mf++) = pos.board[of];
-            pos.board[of] += 1;
-            sech.material -= cap_piece_value[cp];
-        }
-        *(mf++) = to; 
-        *(mf++) = pos.board[to];    //変更を場所、内容の順に登録しておく
-        //成処理
-        if(m & 0x10000){
-            pos.board[to] = p-8;
-            sech.material -= pmoto_piece_value[(p-8) & 0x0F];
-        }
-        else{
-            pos.board[to] = p;
-        }
-        *(mf++) = from; 
-        *(mf++) = p;                //変更を場所、内容の順に登録しておく
-        pos.board[from] = EMPTY;
-    }
-    else{
-        //打つ手 打つ手はmaterialは変化しない（盤上の駒と駒台の駒の価値が一緒のためBonanza方式）
-        p = move_piece(m);  //打つ駒種を取り出す
-        *(mf++) = to; 
-        *(mf++) = EMPTY;    //変更を場所、内容の順に登録しておく
-        pos.board[to] = pos.turn ? 0xF0 | p : p;    //駒コードに変換
-        int of = 215 + p - 9;
-        *(mf++) = of;
-        *(mf++) = pos.board[of];
-        pos.board[of] -= 1;
-    }
-    pos.turn = ~pos.turn;
-    return mf;
-}
-
 void undo_move(Position &pos,int ply)
 {
     int sq;
@@ -353,7 +253,8 @@ void undo_move(Position &pos,int ply)
     }
     pos.turn = ~pos.turn;
 }
-
+*/
+/*
 void is_ok(Position &pos)
 {
     char p;
@@ -421,86 +322,6 @@ void is_ok(Position &pos)
     }
 }
 
-*/
-/*
-TEST(position,piece_type)
-{
-    //不成り、成り判定
-    EXPECT_FALSE(is_not_pmoto(BP_PAWN));  //BP_PAWNは成っていないよね->成っているのでFALSE
-    EXPECT_FALSE(is_not_pmoto(BP_LANCE));
-    EXPECT_FALSE(is_not_pmoto(BP_KNIGHT));
-    EXPECT_FALSE(is_not_pmoto(BP_SILVER));
-    EXPECT_FALSE(is_not_pmoto(BP_BISHOP));
-    EXPECT_FALSE(is_not_pmoto(BP_ROOK));
-    EXPECT_TRUE(is_not_pmoto(B_PAWN));    //B_PAWNは成っていないよね->成っていないのでTRUE
-    EXPECT_TRUE(is_not_pmoto(B_LANCE));
-    EXPECT_TRUE(is_not_pmoto(B_KNIGHT));
-    EXPECT_TRUE(is_not_pmoto(B_SILVER));
-    EXPECT_TRUE(is_not_pmoto(B_BISHOP));
-    EXPECT_TRUE(is_not_pmoto(B_ROOK));
-    
-    EXPECT_FALSE(is_not_pmoto(WP_PAWN));
-    EXPECT_FALSE(is_not_pmoto(WP_LANCE));
-    EXPECT_FALSE(is_not_pmoto(WP_KNIGHT));
-    EXPECT_FALSE(is_not_pmoto(WP_SILVER));
-    EXPECT_FALSE(is_not_pmoto(WP_BISHOP));
-    EXPECT_FALSE(is_not_pmoto(WP_ROOK));
-    EXPECT_TRUE(is_not_pmoto(W_PAWN));
-    EXPECT_TRUE(is_not_pmoto(W_LANCE));
-    EXPECT_TRUE(is_not_pmoto(W_KNIGHT));
-    EXPECT_TRUE(is_not_pmoto(W_SILVER));
-    EXPECT_TRUE(is_not_pmoto(W_BISHOP));
-    EXPECT_TRUE(is_not_pmoto(W_ROOK));
-    //先手、後手判別
-    char p;
-    p = BP_PAWN;
-    EXPECT_EQ(true,p > 1);  //先手判定
-    EXPECT_EQ(true,p > 1 || p == 0); //先手＆空白判定
-    p = WP_PAWN;
-    EXPECT_EQ(false,p > 1);  //先手判定
-    EXPECT_EQ(false,p > 1 || p == 0); //先手＆空白判定
-
-    p = BP_PAWN;
-    EXPECT_EQ(false,p < 0);  //後手判定
-    EXPECT_EQ(false,p <= 0);  //後手＆空白判定
-    p = WP_PAWN;
-    EXPECT_EQ(true,p < 0);  //後手判定
-    EXPECT_EQ(true,p <= 0);  //後手＆空白判定
-
-    //先手->後手
-    EXPECT_EQ(WP_PAWN,do_white(BP_PAWN));
-    EXPECT_EQ(WP_LANCE,do_white(BP_LANCE));
-    EXPECT_EQ(WP_KNIGHT,do_white(BP_KNIGHT));
-    EXPECT_EQ(WP_SILVER,do_white(BP_SILVER));
-    EXPECT_EQ(WP_SILVER,do_white(BP_SILVER));
-    EXPECT_EQ(WP_BISHOP,do_white(BP_BISHOP));
-    EXPECT_EQ(WP_ROOK,do_white(BP_ROOK));
-    EXPECT_EQ(W_KING,do_white(B_KING));
-    EXPECT_EQ(W_GOLD,do_white(B_GOLD));
-    EXPECT_EQ(W_PAWN,do_white(B_PAWN));
-    EXPECT_EQ(W_LANCE,do_white(B_LANCE));
-    EXPECT_EQ(W_KNIGHT,do_white(B_KNIGHT));
-    EXPECT_EQ(W_SILVER,do_white(B_SILVER));
-    EXPECT_EQ(W_BISHOP,do_white(B_BISHOP));
-    EXPECT_EQ(W_ROOK,do_white(B_ROOK));
-    //後手->先手
-    p = WP_PAWN;
-    EXPECT_EQ(BP_PAWN,do_black(WP_PAWN));
-    EXPECT_EQ(BP_LANCE,do_black(WP_LANCE));
-    EXPECT_EQ(BP_KNIGHT,do_black(WP_KNIGHT));
-    EXPECT_EQ(BP_SILVER,do_black(WP_SILVER));
-    EXPECT_EQ(BP_SILVER,do_black(WP_SILVER));
-    EXPECT_EQ(BP_BISHOP,do_black(WP_BISHOP));
-    EXPECT_EQ(BP_ROOK,do_black(WP_ROOK));
-    EXPECT_EQ(B_KING,do_black(W_KING));
-    EXPECT_EQ(B_GOLD,do_black(W_GOLD));
-    EXPECT_EQ(B_PAWN,do_black(W_PAWN));
-    EXPECT_EQ(B_LANCE,do_black(W_LANCE));
-    EXPECT_EQ(B_KNIGHT,do_black(W_KNIGHT));
-    EXPECT_EQ(B_SILVER,do_black(W_SILVER));
-    EXPECT_EQ(B_BISHOP,do_black(W_BISHOP));
-    EXPECT_EQ(B_ROOK,do_black(W_ROOK));
-}
 */
 
 /*

@@ -6,6 +6,10 @@
 
 using std::string;
 
+extern const int hand_packed[8];
+extern const int hand_shift[8];
+extern const int hand_masking[8];
+
 class Position{
 public:
 	Position(){}
@@ -16,26 +20,69 @@ public:
 		position_from_sfen(sfen);
 	}
 	void position_from_sfen(const string &sfen);
-	void set_color_turn(Color c);
-	Color get_color_turn();
-	void flip_color();
-	int get_board(int sq) const;
-	int get_hand(Color c,PieceType pt) const;
-	bool is_hand(Color c,PieceType pt);
+	//手番を設定
+	void set_color_turn(Color c)
+	{
+		color_turn = c;
+	}
+	//現在の手番
+	Color Position::get_color_turn(void)
+	{
+		return Color(color_turn);
+	}
+	//手番を変える
+	void flip_color(void)
+	{
+		color_turn = color_turn ^ 1;
+	}
+	//指定した座標の駒コードを返す
+	int get_board(int sq) const
+	{
+		return board[sq];
+	}
+	//駒台の駒数を加減算する			駒種		マスクbit				シフトなしのマスクbit
+	//xxxxxxxx xxxxxxxx xxx11111	pawn	0x1F					0x1F
+	//xxxxxxxx xxxxxxxx 111xxxxx	lance	0x07(シフトしているので)	0xE0
+	//xxxxxxxx xxxxx111 xxxxxxxx	night	0x07(シフトしているので)	0x700
+	//xxxxxxxx xx111xxx xxxxxxxx	silver	0x07(シフトしているので)	0x3800
+	//xxxxxxxx 11xxxxxx xxxxxxxx	bishop　0x03(シフトしているので)	0xC000
+	//xxxxxx11 xxxxxxxx xxxxxxxx	rook	0x03(シフトしているので)	0x30000
+	//xxx111xx xxxxxxxx xxxxxxxx	gold	0x07(シフトしているので)	0x1C0000
+	//指定したカラー、駒種の駒数を取得
+	int get_hand(Color c, PieceType pt) const
+	{
+		return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
+	}
+	//指定したカラー、駒種の有無を取得,駒数は不要
+	bool is_hand(Color c, PieceType pt)
+	{
+		return bool(hand[c] & hand_masking[pt]);
+	}
+	//カラー、駒種に関係なく、全ての局面bitboardを返す
 	BitBoard all_bb()
 	{
 		return by_type_bb[AllPieces];
 	}
+	//指定したカラーの局面bitboardを返す
 	BitBoard color_of_bb(const Color c)
 	{
 		return by_color_bb[c];
 	}
+	//カラーに関係なく指定した駒種の局面bitboardを返す
 	BitBoard piece_type_of_bb(const PieceType pt)
 	{
 		return by_type_bb[pt];
 	}
+	//局面を更新
+	void do_move();
+	//局面を復元
+	void undo_move();
 private:
-	void Position::clear();
+	//positionクラスをクリアにする
+	void Position::clear()
+	{
+		memset(this, 0, sizeof(Position));
+	}
 	void put_piece(Piece piece, int sq);
 	void put_hand(Piece pt, int num);
 	int board[SquareNum];
@@ -96,24 +143,6 @@ inline char do_white(char p)
 inline char do_black(char p)
 {
     return p & 0x0F;
-}
-*/
-/*
-Move
-31-30-29-28-27-26-25-24-23-22-21-20-19-18-17-16-15-14-13-12-11-10-09-08-07-06-05-04-03-02-01-00
-                     | cap piece |src piece |pm |       from square      |       to square    |
-
-cap piece 取った駒（colorはつかない駒種のみ　メモリ節約のため）     21-24bit
-from piece 動いた駒（colorはつかない駒種のみ　メモリ節約のため）    17-20bit
-pm->pmotoのフラグ１なら成り動作    1bit 16bit
-from square 移動元の座標 8bit 8-15bit
-to square 移動先の座標 8bit 0-7bit
-25-31bitは空き
-*/
-/*
-inline Move make_move(int from,int to,int pmoto,char piece,char cap_piece)
-{
-    return (unsigned int(to) | unsigned int(from) << 8 | unsigned int(pmoto) << 16 | unsigned int(piece & 0x0F) << 17 | unsigned int(cap_piece & 0x0F) << 21);
 }
 */
 
