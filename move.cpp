@@ -12,7 +12,6 @@ using std::endl;
 using namespace Movens;
 //局所関数宣言
 static string string_from_square(Square sq);
-static Square square_from_string(const string sq);
 
 //将棋所の説明　(http://www.geocities.jp/shogidokoro/usi.html)
 //次に、指し手の表記について解説します。筋(縦の方向)に関しては１から９までの数字で表記され、段（横の方向）に関してはaからiまでのアルファベット（１段目がa、２段目がb、・・・、９段目がi）というように表記されます。位置の表記は、この２つを組み合わせます。５一なら5a、１九なら1iとなります。
@@ -96,7 +95,7 @@ Move Movens::move_from_string(const Position &pos, const string &cmd)
 }
 
 //将棋所表記の座標文字列をapery座標に変換
-static Square square_from_string(const string sq)
+Square Movens::square_from_string(const string sq)
 {
 	//座標文字列を渡される(sample 7g)
 	File f;
@@ -140,6 +139,8 @@ TEST(move,move_from_string)
 {
     //平手初期局面を与え、駒を動かして、正しいMoveが返ってくるか調べる
 	Position pos(USI::start_sfen);
+	using Movens::square_from_string;
+
     string cmd;
     Move m,am;
 	Square from, to;
@@ -204,6 +205,8 @@ TEST(move,move_from_string)
 }
 TEST(move,square_from_string)
 {
+	using Movens::square_from_string;
+
     EXPECT_EQ(A9,square_from_string(string("9a")));
     EXPECT_EQ(B8,square_from_string(string("8b")));
     EXPECT_EQ(C7,square_from_string(string("7c")));

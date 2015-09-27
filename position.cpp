@@ -182,7 +182,9 @@ void Positionns::print_board(const Position& pos)
 //局面の更新(board,hand,king_square,color_turnだけ更新するdo_move)
 void Position::do_move(const Move m,StateInfo& st)
 {
-	_ASSERT(Positionns::is_ok(*this));
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
 	Key bod_key = get_board_key();
 	Key had_key = get_hand_key();
 
@@ -233,12 +235,16 @@ void Position::do_move(const Move m,StateInfo& st)
         }
     }
 	flip_color();
-	_ASSERT(Positionns::is_ok(*this));
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
 }
 //局面の復元
 void Position::undo_move(const Move m)
 {
-	_ASSERT(Positionns::is_ok(*this));
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
 	const Color them = get_color_turn();
 	const Color us = over_turn(them);
 	const Square to = move_to(m);
@@ -278,13 +284,16 @@ void Position::undo_move(const Move m)
 	}
 	//bitboardの処理
 	//StatInfo関係の処理
-	_ASSERT(Positionns::is_ok(*this));
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
 }
 
 //board,hand,bitboardのチエック
 #ifdef _DEBUG
-bool Positionns::is_ok(Position &pos)
+void Positionns::is_ok(Position &pos)
 {
+	int failded_step = 0;
     int p;
     int sq;
     int piece_count[16];
@@ -308,47 +317,46 @@ bool Positionns::is_ok(Position &pos)
         piece_count[hp] += pos.get_hand(Black,PieceType(hp));
     }
 	for (int hp = Pawn; hp < PieceTypeNum; hp++){
-        piece_count[hp] += pos.get_hand(White,hp);
+        piece_count[hp] += pos.get_hand(White,PieceType(hp));
     }
-
     int sum = 0;
     for(int i = 0;i < 16;i++){
         sum += piece_count[i];
     }
-	_ASSERT(sum == 40);
-    _ASSERT((piece_count[Pawn] + piece_count[ProPawn]) == 18);
-    _ASSERT((piece_count[Lance] + piece_count[ProLance]) == 4);
-    _ASSERT((piece_count[Night] + piece_count[ProNight]) == 4);
-    _ASSERT((piece_count[Silver] + piece_count[ProSilver]) == 4);
-    _ASSERT(piece_count[Gold] == 4);
-    _ASSERT((piece_count[Bishop] + piece_count[Horse]) == 2);
-    _ASSERT((piece_count[Rook] + piece_count[Dragon]) == 2);
-    _ASSERT(piece_count[King] == 2);
+	EXPECT_EQ(40,sum);
+	EXPECT_EQ(18,piece_count[Pawn] + piece_count[ProPawn]);
+	EXPECT_EQ(4,piece_count[Lance] + piece_count[ProLance]);
+	EXPECT_EQ(4, piece_count[Night] + piece_count[ProNight]);
+	EXPECT_EQ(4, piece_count[Silver] + piece_count[ProSilver]);
+	EXPECT_EQ(4, piece_count[Gold]);
+	EXPECT_EQ(2,piece_count[Bishop] + piece_count[Horse]);
+	EXPECT_EQ(2,piece_count[Rook] + piece_count[Dragon]);
+	EXPECT_EQ(2,piece_count[King]);
     //BLACK側死に駒の有無
     for(int sq = I9;sq <= A9;sq += 9){
         int p = pos.get_board(sq);
         if((p == BPawn) || (p == BLance) || (p == BNight)){
-            _ASSERT(false);
+			EXPECT_TRUE(false);
         }
     }
     for(int sq = I8;sq <= A8;sq += 9){
         char p = pos.get_board(sq);
         if(p == BNight){
-            _ASSERT(false);
+			EXPECT_TRUE(false);
         }
     }
     //WHITE側死に駒の有無
     for(int sq = I1;sq <= A1;sq += 9){
         int p = pos.get_board(sq);
         if((p == WPawn) || (p == WLance) || (p == WNight)){
-            _ASSERT(false);
+			EXPECT_TRUE(false);
         }
     }
     for(int sq = I2;sq <= A2;sq += 9){
         int p = pos.get_board(sq);
         if(p == WNight){
-            _ASSERT(false);
-        }
+			EXPECT_TRUE(false);
+		}
     }
 	//チエックできるものとしては2歩、kingがとられていないなどがあるが余力があったら実装する
 }
@@ -357,10 +365,21 @@ bool Positionns::is_ok(Position &pos)
 #ifdef _DEBUG
 TEST(position, do_move)
 {
+	Square from,to;
+	Move m;
+	StateInfo st;
+
 	//テスト問題は加藤一二三実践集より
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b  1");
 	Position pos(ss);
+
 	Positionns::print_board(pos);
+	from = square_from_string("1g");
+	to = square_from_string("1f");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);
+	pos.do_move(m,st);
+	Positionns::print_board(pos);
+
 }
 TEST(position, get_king_square)
 {

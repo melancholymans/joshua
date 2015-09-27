@@ -135,7 +135,7 @@ private:
 namespace Positionns
 {
 	void init();
-	bool is_ok(Position& pos);
+	void is_ok(Position& pos);
 	void print_board(const Position &pos);
 }
 //positionの定数
