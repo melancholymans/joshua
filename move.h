@@ -31,7 +31,7 @@ namespace Movens{
 		return PieceType((m >> 20) & 0X0F);
 	}
 	//打つ駒の駒種を取り出す
-	inline PieceType move_drop_piece(Move m)
+	inline PieceType drop_piece(Move m)
 	{
 		return PieceType(move_from(m) - SquareNum + 1);
 	}
@@ -51,7 +51,7 @@ namespace Movens{
 		return bool(m & 0xF00000);
 	}
 	//打ち駒の駒種からfromに変換する
-	inline Square make_drop(PieceType pt)
+	inline Square drop_piece_from(PieceType pt)
 	{
 		return Square(pt + SquareNum - 1);
 	}

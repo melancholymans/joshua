@@ -44,7 +44,7 @@ string Movens::string_from_move(const Move m)
 
     if(from > (SquareNum -1)){
         //打つ手
-		result = piece_string[move_drop_piece(m)];
+		result = piece_string[drop_piece(m)];
         result += "*" + string_from_square(to);
     }
     else{
@@ -119,7 +119,8 @@ static string string_from_square(Square sq)
 }
 
 
-TEST(move,string_from_move)
+#ifdef _DEBUG
+TEST(move, string_from_move)
 {
 	Move m;
 
@@ -129,7 +130,7 @@ TEST(move,string_from_move)
 	EXPECT_STREQ("7f6d",string_from_move(m).c_str());
 	m = make_move(B8, G8, 0, Rook, EmptyPiece);
 	EXPECT_STREQ("8b3b",string_from_move(m).c_str());
-	m = make_move(make_drop(Rook), E5, 0, EmptyPiece, EmptyPiece);
+	m = make_move(drop_piece_from(Rook), E5, 0, EmptyPiece, EmptyPiece);
 	EXPECT_STREQ("R*5e",string_from_move(m).c_str());
 	m = make_move(B8, B2, 1, Rook, EmptyPiece);
 	EXPECT_STREQ("8b8h+",string_from_move(m).c_str());
@@ -142,7 +143,7 @@ TEST(move,move_from_string)
     string cmd;
     Move m,am;
 	Square from, to;
-	PieceType pt,cap_pt;
+	PieceType pt;
 
 	cmd = "7g7f";   //第１手で77歩を76歩へ移動
     m = move_from_string(pos,cmd);
@@ -168,37 +169,37 @@ TEST(move,move_from_string)
     cmd = "P*9d";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Pawn), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Pawn), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 	cmd = "L*8e";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Lance), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Lance), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 	cmd = "N*7f";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Night), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Night), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 	cmd = "S*6d";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Silver), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Silver), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 	cmd = "B*5e";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Bishop), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Bishop), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 	cmd = "R*4f";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Rook), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Rook), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 	cmd = "G*3d";
 	m = move_from_string(pos, cmd);
 	to = square_from_string(cmd.substr(2, 2));
-	am = make_move(make_drop(Gold), to, 0, EmptyPiece, EmptyPiece);
+	am = make_move(drop_piece_from(Gold), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
 }
 TEST(move,square_from_string)
@@ -251,8 +252,8 @@ TEST(move, make_move)
 	EXPECT_FALSE(is_drop(m));
 	EXPECT_FALSE(is_capture(m));
 
-	m = make_move(Square(Pawn + SquareNum - 1), E5, 0, EmptyPiece, EmptyPiece);
-	EXPECT_EQ(Pawn, move_drop_piece(m));
+	m = make_move(drop_piece_from(Pawn), E5, 0, EmptyPiece, EmptyPiece);
+	EXPECT_EQ(Pawn, drop_piece(m));
 	EXPECT_EQ(E5, move_to(m));
 	EXPECT_EQ(EmptyPiece, move_piece(m));	//この行に意味はない、確認だけ
 	EXPECT_EQ(EmptyPiece, move_cap_piece(m));	//この行に意味はない、確認だけ
@@ -277,6 +278,70 @@ TEST(move, make_move)
 	EXPECT_TRUE(is_pmoto(m));
 	EXPECT_FALSE(is_drop(m));
 	EXPECT_FALSE(is_capture(m));
+}
+TEST(move, is_pmoto)
+{
+	Color us = Black;
+	Move m = make_move(B8, B1, 1, Rook, EmptyPiece);
+	EXPECT_EQ(1,is_pmoto(m));
+	PieceType pt_from = move_piece(m);
+	EXPECT_EQ(BDragon,(us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Bishop, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(BHorse, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Silver, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(BProSilver, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Night, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(BProNight, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Lance, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(BProLance, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Pawn, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(BProPawn, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	us = White;
+	m = make_move(B8, B1, 1, Rook, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(WDragon, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Bishop, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(WHorse, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Silver, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(WProSilver, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Night, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(WProNight, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Lance, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(WProLance, (us << 4) | pt_from | (is_pmoto(m) << 3));
+
+	m = make_move(B8, B1, 1, Pawn, EmptyPiece);
+	EXPECT_EQ(1, is_pmoto(m));
+	pt_from = move_piece(m);
+	EXPECT_EQ(WProPawn, (us << 4) | pt_from | (is_pmoto(m) << 3));
 }
 TEST(move, move_pmoto)
 {
@@ -305,3 +370,4 @@ TEST(move,move_from)
     Move m = B8 | E5 << 7 | Bishop << 16;
     EXPECT_EQ(E5,move_from(m));
 }
+#endif

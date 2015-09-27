@@ -150,6 +150,15 @@ int main_test(int argc,char *argv[])
     int result = RUN_ALL_TESTS();
     return result;
 }
+TEST(main, over_turn)
+{
+	Color c;
+	c = Black;
+	c = over_turn(c);
+	EXPECT_EQ(White, c);
+	c = over_turn(c);
+	EXPECT_EQ(Black, c);
+}
 TEST(main, is_rank)
 {
 	for (int r = Rank9; r < RankNum; r++){

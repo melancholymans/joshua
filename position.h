@@ -6,6 +6,22 @@
 
 using std::string;
 
+//do_moveによって変更された局面をundo_moveで復元するときに必要な情報
+struct StateInfo{
+public:
+	Key get_key()
+	{
+		return board_key + hand_key;
+	}
+	//ひとつ上のレベルへのリンク
+	StateInfo* previous;
+private:
+	//手番側のKINGにチエックをかけている敵側駒のbitboard
+	BitBoard checkers_bb;
+	Key board_key;
+	Key hand_key;
+};
+
 extern const int hand_packed[8];
 extern const int hand_shift[8];
 extern const int hand_masking[8];
@@ -40,6 +56,11 @@ public:
 	{
 		return board[sq];
 	}
+	//指定したカラーのKINGの座標を返す
+	Square get_king_square(Color c)
+	{
+		return king_square[c];
+	}
 	//駒台の駒数を加減算する			駒種		マスクbit				シフトなしのマスクbit
 	//xxxxxxxx xxxxxxxx xxx11111	pawn	0x1F					0x1F
 	//xxxxxxxx xxxxxxxx 111xxxxx	lance	0x07(シフトしているので)	0xE0
@@ -56,7 +77,7 @@ public:
 	//指定したカラー、駒種の有無を取得,駒数は不要
 	bool is_hand(Color c, PieceType pt)
 	{
-		return bool(hand[c] & hand_masking[pt]);
+		return static_cast<bool>(hand[c] & hand_masking[pt]);
 	}
 	//カラー、駒種に関係なく、全ての局面bitboardを返す
 	BitBoard all_bb()
@@ -74,19 +95,38 @@ public:
 		return by_type_bb[pt];
 	}
 	//局面を更新
-	void do_move();
+	void do_move(const Move m, StateInfo& st);
 	//局面を復元
-	void undo_move();
+	void undo_move(const Move m);
+	void add_hand(Color c, PieceType pt)
+	{
+		hand[c] += hand_packed[pt];
+	}
+	void sub_hand(Color c, PieceType pt)
+	{
+		hand[c] -=hand_packed[pt];
+	}
+	Key get_board_key() const
+	{
+		//TODO:仮
+		return Key(1);
+	}
+	Key get_hand_key() const
+	{
+		//TODO:仮
+		return Key(1);
+	}
 private:
 	//positionクラスをクリアにする
 	void Position::clear()
 	{
 		memset(this, 0, sizeof(Position));
 	}
-	void put_piece(Piece piece, int sq);
+	void put_piece(Piece piece, Square sq);
 	void put_hand(Piece pt, int num);
 	int board[SquareNum];
 	unsigned int hand[ColorNum];
+	Square king_square[ColorNum];
 	BitBoard by_type_bb[PieceTypeNum];
 	BitBoard by_color_bb[ColorNum];
 	int color_turn;
@@ -95,6 +135,7 @@ private:
 namespace Positionns
 {
 	void init();
+	bool is_ok(Position& pos);
 	void print_board(const Position &pos);
 }
 //positionの定数

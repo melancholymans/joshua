@@ -41,14 +41,14 @@ enum SquareDelta{
 	DeltaSW = DeltaS + DeltaW,
 	DeltaNW = DeltaN + DeltaW,
 };
-
+//駒種は1-14なので4bitまで
 enum PieceType{
 	AllPieces = 0,EmptyPiece = 0,
 	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King,
 	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
 	PieceTypeNum
 };
-
+//駒コードはblack側が1-14、white側が17-30なので5bit=>PieceType | 0x10で駒コードになる
 enum Piece{
 	PieceNone = 0,UnPromoted = 0, Promoted = 8,
 	BPawn = 1,BLance,BNight,BSilver,BBishop,BRook,BGold,BKing,
@@ -92,6 +92,7 @@ const File SQUARE_FILE[SquareNum] = {
 };
 //指し手データ定義
 typedef uint32_t Move;
+typedef uint64_t Key;	//boardの駒配置状態を一意に表す数値に使用されたりする
 //駒コードから駒種を取り出す
 inline PieceType type_of_piece(Piece piece)
 {
@@ -132,14 +133,17 @@ inline Square make_square(File f, Rank r)
 {
 	return Square(f * 9 + r);
 }
+//引数のカラーをひっくり返す
+inline Color over_turn(Color c)
+{
+	return Color(c ^ 1);
+}
 //
 //関数を呼び分けるマクロ群
 //#define DoMove(turn,pos,m,mf) ((turn) ? do_move_w(pos,m,mf) : do_move_b(pos,m,mf))
 
 //const int PLY_MAX = 1;//48; //bonanzaから 
 
-//typedef int Color;
-//typedef unsigned int Move;
 
 /*
 typedef struct Position{
