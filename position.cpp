@@ -698,11 +698,29 @@ TEST(position, do_move)
 	to = square_from_string("7g");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//15
 	//6e5g night pmoto
+	from = square_from_string("6g");
+	to = square_from_string("5g");
+	m = make_move(from, to, 1, Night, EmptyPiece);	//15
 	//6i5g night night
+	from = square_from_string("6i");
+	to = square_from_string("5g");
+	m = make_move(from, to, 0, Night, Night);	//15
 	//5f5g pawn pmoto night
+	from = square_from_string("5f");
+	to = square_from_string("5g");
+	m = make_move(from, to, 1, Pawn, Night);	//15
 	//4f5g silver proPawn
+	from = square_from_string("4f");
+	to = square_from_string("5g");
+	m = make_move(from, to, 0, Silver, ProPawn);	//15
 	//R*5e rook
+	from = square_from_string("4f");
+	to = square_from_string("5e");
+	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//15
 	//S*7c silver
+	from = square_from_string("4f");
+	to = square_from_string("7c");
+	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//15
 }
 TEST(position, get_king_square)
 {
