@@ -450,277 +450,277 @@ TEST(position, do_move)
 	//4c3c rook bishop
 	from = square_from_string("4c");
 	to = square_from_string("3c");
-	m = make_move(from, to, 0, Rook, Bishop);	//15
+	m = make_move(from, to, 0, Rook, Bishop);	//16
 	pos.do_move(m, st);
 	//2h2d rook pawn
 	from = square_from_string("2h");
 	to = square_from_string("2d");
-	m = make_move(from, to, 0, Rook, Pawn);	//15
+	m = make_move(from, to, 0, Rook, Pawn);	//17
 	pos.do_move(m, st);
 	//P*2c pawn
 	from = square_from_string("2h");
 	to = square_from_string("2c");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//18
 	pos.do_move(m, st);
 	//2d2f rook
 	from = square_from_string("2d");
 	to = square_from_string("2f");
-	m = make_move(from, to, 0, Rook, EmptyPiece);	//15
+	m = make_move(from, to, 0, Rook, EmptyPiece);	//19
 	pos.do_move(m, st);
 	//3e3f pawn
 	from = square_from_string("3e");
 	to = square_from_string("3f");
-	m = make_move(from, to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//20
 	pos.do_move(m, st);
 	//4g3f silver pawn
 	from = square_from_string("4g");
 	to = square_from_string("3f");
-	m = make_move(from, to, 0, Silver, Pawn);	//15
+	m = make_move(from, to, 0, Silver, Pawn);	//21
 	pos.do_move(m, st);
 	//6d6e pawn
 	from = square_from_string("6d");
 	to = square_from_string("6e");
-	m = make_move(from, to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//22
 	pos.do_move(m, st);
 	//P*3e pawn
 	to = square_from_string("3e");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//23
 	pos.do_move(m, st);
 	//3d4c silver
 	from = square_from_string("3d");
 	to = square_from_string("4c");
-	m = make_move(from, to, 0, Silver, EmptyPiece);	//15
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//24
 	pos.do_move(m, st);
 	//B*1a bishop
 	from = square_from_string("3d");
 	to = square_from_string("1a");
-	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//25
 	pos.do_move(m, st);
 	//5e5f pawn pawn
 	from = square_from_string("5e");
 	to = square_from_string("5f");
-	m = make_move(from, to, 0, Pawn, Pawn);	//15
+	m = make_move(from, to, 0, Pawn, Pawn);	//26
 	pos.do_move(m, st);
 	//P*2b pawn
 	from = square_from_string("3d");
 	to = square_from_string("2b");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//27
 	pos.do_move(m, st);
 	//4c5b silver
 	from = square_from_string("4c");
 	to = square_from_string("5b");
-	m = make_move(from, to, 0, Silver, EmptyPiece);	//15
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//28
 	pos.do_move(m, st);
 	//2b2a pawn pmoto Night
 	from = square_from_string("2b");
 	to = square_from_string("2a");
-	m = make_move(from, to, 1, Pawn, Night);	//15
+	m = make_move(from, to, 1, Pawn, Night);	//29
 	pos.do_move(m, st);
 	//3c5c rook
 	from = square_from_string("3c");
 	to = square_from_string("5c");
-	m = make_move(from, to, 0, Rook, EmptyPiece);	//15
+	m = make_move(from, to, 0, Rook, EmptyPiece);	//30
 	pos.do_move(m, st);
 	//1a4d bishop pmoto 
 	from = square_from_string("1a");
 	to = square_from_string("4d");
-	m = make_move(from, to, 1, Bishop, EmptyPiece);	//15
+	m = make_move(from, to, 1, Bishop, EmptyPiece);	//31
 	pos.do_move(m, st);
 	//7c6e night
 	from = square_from_string("7c");
 	to = square_from_string("6e");
-	m = make_move(from, to, 0, Night, EmptyPiece);	//15
+	m = make_move(from, to, 0, Night, EmptyPiece);	//32
 	pos.do_move(m, st);
 	//N*6i night
 	from = square_from_string("7c");
 	to = square_from_string("6i");
-	m = make_move(drop_piece_from(Night), to, 0, Night, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Night), to, 0, Night, EmptyPiece);	//33
 	pos.do_move(m, st);
 	//B*3i bishop
 	from = square_from_string("7c");
 	to = square_from_string("3i");
-	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//34
 	pos.do_move(m, st);
 	//4d5c Horse rook
 	from = square_from_string("4d");
 	to = square_from_string("5c");
-	m = make_move(from, to, 0, Horse, Rook);	//15
+	m = make_move(from, to, 0, Horse, Rook);	//35
 	pos.do_move(m, st);
 	//5b5c silver Horse
 	from = square_from_string("5b");
 	to = square_from_string("5c");
-	m = make_move(from, to, 0, Silver, Horse);	//15
+	m = make_move(from, to, 0, Silver, Horse);	//36
 	pos.do_move(m, st);
 	//2f2c rook pmoto pawn
 	from = square_from_string("2f");
 	to = square_from_string("2c");
-	m = make_move(from, to, 1, Rook, Pawn);	//15
+	m = make_move(from, to, 1, Rook, Pawn);	//37
 	pos.do_move(m, st);
 	//9d9e pawn
 	from = square_from_string("9d");
 	to = square_from_string("9e");
-	m = make_move(from, to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//38
 	pos.do_move(m, st);
 	//2c1b doragon lance 
 	from = square_from_string("2c");
 	to = square_from_string("1b");
-	m = make_move(from, to, 0, Dragon, Lance);	//15
+	m = make_move(from, to, 0, Dragon, Lance);	//39
 	//9e9f pawn pawn
 	from = square_from_string("9e");
 	to = square_from_string("9f");
-	m = make_move(from, to, 0, Pawn, Pawn);	//15
+	m = make_move(from, to, 0, Pawn, Pawn);	//40
 	//P*9h pawn
 	from = square_from_string("9e");
 	to = square_from_string("9h");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//41
 	//3i8d bishop pmoto 
 	from = square_from_string("3i");
 	to = square_from_string("8d");
-	m = make_move(from, to, 1, Bishop, EmptyPiece);	//15
+	m = make_move(from, to, 1, Bishop, EmptyPiece);	//42
 	//L*8f lance
 	from = square_from_string("3i");
 	to = square_from_string("8f");
-	m = make_move(drop_piece_from(Lance), to, 0, Lance, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Lance), to, 0, Lance, EmptyPiece);	//43
 	//8d9c Horse
 	from = square_from_string("8d");
 	to = square_from_string("9c");
-	m = make_move(from, to, 1, Horse, EmptyPiece);	//15
+	m = make_move(from, to, 1, Horse, EmptyPiece);	//44
 	//4e4d pawn
 	from = square_from_string("4e");
 	to = square_from_string("4d");
-	m = make_move(from, to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//45
 	//P*4b pawn
 	from = square_from_string("4e");
 	to = square_from_string("4b");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//46
 	//2g4e night
 	from = square_from_string("2g");
 	to = square_from_string("4e");
-	m = make_move(from, to, 0, Night, EmptyPiece);	//15
+	m = make_move(from, to, 0, Night, EmptyPiece);	//47
 	//5c6b silver
 	from = square_from_string("5c");
 	to = square_from_string("6b");
-	m = make_move(from, to, 0, Silver, EmptyPiece);	//15
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//48
 	//R*2c rook
 	from = square_from_string("5c");
 	to = square_from_string("2c");
-	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//49
 	//P*3g pawn
 	from = square_from_string("5c");
 	to = square_from_string("3g");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//50
 	//3f4g silver
 	from = square_from_string("3f");
 	to = square_from_string("4g");
-	m = make_move(from, to, 0, Silver, EmptyPiece);	//15
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//51
 	//B*4i bishop
 	from = square_from_string("3f");
 	to = square_from_string("4i");
-	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//52
 	//1b4b rook pawn
 	from = square_from_string("1b");
 	to = square_from_string("4b");
-	m = make_move(from, to, 0, Rook, Pawn);	//15
+	m = make_move(from, to, 0, Rook, Pawn);	//53
 	//3g3h pawn pmoto
 	from = square_from_string("3g");
 	to = square_from_string("3h");
-	m = make_move(from, to, 1, Pawn, EmptyPiece);	//15
+	m = make_move(from, to, 1, Pawn, EmptyPiece);	//54
 	//2c6c rook pmoto gold
 	from = square_from_string("2c");
 	to = square_from_string("6c");
-	m = make_move(from, to, 1, Rook, Gold);	//15
+	m = make_move(from, to, 1, Rook, Gold);	//55
 	//6b6c pawn silver rook
 	from = square_from_string("6b");
 	to = square_from_string("6c");
-	m = make_move(from, to, 0, Silver, Rook);	//15
+	m = make_move(from, to, 0, Silver, Rook);	//56
 	//4e5c night pmoto
 	from = square_from_string("4e");
 	to = square_from_string("5c");
-	m = make_move(from, to, 1, Night, EmptyPiece);	//15
+	m = make_move(from, to, 1, Night, EmptyPiece);	//57
 	//P*4a pawn
 	from = square_from_string("4e");
 	to = square_from_string("4a");
-	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//58
 	//4b2b dragon
 	from = square_from_string("4b");
 	to = square_from_string("2b");
-	m = make_move(from, to, 0, Dragon, EmptyPiece);	//15
+	m = make_move(from, to, 0, Dragon, EmptyPiece);	//59
 	//4i5h bishop pmoto gold
 	from = square_from_string("4i");
 	to = square_from_string("5h");
-	m = make_move(from, to, 1, Bishop, Gold);	//15
+	m = make_move(from, to, 1, Bishop, Gold);	//60
 	//4g5h silver bishop
 	from = square_from_string("4g");
 	to = square_from_string("5h");
-	m = make_move(from, to, 1, Silver, Bishop);	//15
+	m = make_move(from, to, 1, Silver, Bishop);	//61
 	//5c6c ProNight silver
 	from = square_from_string("5c");
 	to = square_from_string("6c");
-	m = make_move(from, to, 0, ProNight, Silver);	//15
+	m = make_move(from, to, 0, ProNight, Silver);	//62
 	//7b6c silver ProNight
 	from = square_from_string("7b");
 	to = square_from_string("6c");
-	m = make_move(from, to, 0, ProNight, EmptyPiece);	//15
+	m = make_move(from, to, 0, ProNight, EmptyPiece);	//63
 	//2b3b dragon pawn
 	from = square_from_string("2b");
 	to = square_from_string("3b");
-	m = make_move(from, to, 0, Dragon, Pawn);	//15
+	m = make_move(from, to, 0, Dragon, Pawn);	//64
 	//R*5b
 	from = square_from_string("2b");
 	to = square_from_string("5b");
-	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//65
 	//3b4a dragon pawn
 	from = square_from_string("3b");
 	to = square_from_string("4a");
-	m = make_move(from, to, 0, Dragon, Pawn);	//15
+	m = make_move(from, to, 0, Dragon, Pawn);	//66
 	//G*4a
 	from = square_from_string("3b");
 	to = square_from_string("4a");
-	m = make_move(drop_piece_from(Gold), to, 0, Dragon, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Gold), to, 0, Dragon, EmptyPiece);	//67
 	//4a5b dragon rook
 	from = square_from_string("4a");
 	to = square_from_string("5b");
-	m = make_move(from, to, 0, Dragon, Rook);	//15
+	m = make_move(from, to, 0, Dragon, Rook);	//68
 	//6c5b silver dragon
 	from = square_from_string("6c");
 	to = square_from_string("5b");
-	m = make_move(from, to, 0, Silver, Dragon);	//15
+	m = make_move(from, to, 0, Silver, Dragon);	//69
 	//B*4e bishop
 	from = square_from_string("6c");
 	to = square_from_string("4e");
-	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//70
 	//6a7b gold 
 	from = square_from_string("6a");
 	to = square_from_string("7b");
-	m = make_move(from, to, 0, Gold, EmptyPiece);	//15
+	m = make_move(from, to, 0, Gold, EmptyPiece);	//71
 	//8i7g night 
 	from = square_from_string("8i");
 	to = square_from_string("7g");
-	m = make_move(from, to, 0, Night, EmptyPiece);	//15
+	m = make_move(from, to, 0, Night, EmptyPiece);	//72
 	//6e5g night pmoto
 	from = square_from_string("6g");
 	to = square_from_string("5g");
-	m = make_move(from, to, 1, Night, EmptyPiece);	//15
+	m = make_move(from, to, 1, Night, EmptyPiece);	//73
 	//6i5g night night
 	from = square_from_string("6i");
 	to = square_from_string("5g");
-	m = make_move(from, to, 0, Night, Night);	//15
+	m = make_move(from, to, 0, Night, Night);	//74
 	//5f5g pawn pmoto night
 	from = square_from_string("5f");
 	to = square_from_string("5g");
-	m = make_move(from, to, 1, Pawn, Night);	//15
+	m = make_move(from, to, 1, Pawn, Night);	//75
 	//4f5g silver proPawn
 	from = square_from_string("4f");
 	to = square_from_string("5g");
-	m = make_move(from, to, 0, Silver, ProPawn);	//15
+	m = make_move(from, to, 0, Silver, ProPawn);	//76
 	//R*5e rook
 	from = square_from_string("4f");
 	to = square_from_string("5e");
-	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//77
 	//S*7c silver
 	from = square_from_string("4f");
 	to = square_from_string("7c");
-	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//15
+	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//78
 }
 TEST(position, get_king_square)
 {
