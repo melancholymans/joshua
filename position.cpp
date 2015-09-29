@@ -368,6 +368,7 @@ TEST(position, do_move)
 	Square from,to;
 	Move m;
 	StateInfo st;
+	using Positionns::print_board;
 
 	//テスト問題は加藤一二三実践集より
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b  1");
@@ -387,6 +388,9 @@ TEST(position, do_move)
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//3
 	pos.do_move(m, st);
+	print_board(pos);
+
+	/*
 	//5b6c gold
 	from = square_from_string("5b");
 	to = square_from_string("6c");
@@ -407,6 +411,8 @@ TEST(position, do_move)
 	to = square_from_string("3e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);		//7
 	pos.do_move(m, st);
+	*/
+	/*
 	//3d3e pawn
 	from = square_from_string("3d");
 	to = square_from_string("3e");
@@ -721,6 +727,7 @@ TEST(position, do_move)
 	from = square_from_string("4f");
 	to = square_from_string("7c");
 	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//78
+	*/
 }
 TEST(position, get_king_square)
 {
