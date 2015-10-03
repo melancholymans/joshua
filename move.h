@@ -58,7 +58,11 @@ namespace Movens{
 	//各引数からMoveを作る
 	inline Move make_move(Square from, Square to, int pmoto, PieceType piece, PieceType cap_piece)
 	{
-		return (uint32_t(to) | uint32_t(from) << 7 | uint32_t(pmoto) << 14 | uint32_t(piece & 0x0F) << 16 | uint32_t(cap_piece & 0x0F) << 20);
+		_ASSERT(cap_piece != King);
+		_ASSERT(to < 81);
+
+		//cap_pieceに0x07を bit andしているのは成り駒bitを削る必要があるから
+		return (uint32_t(to & 0x7F) | uint32_t(from & 0x7F) << 7 | uint32_t(pmoto & 0x01) << 14 | uint32_t(piece & 0x0F) << 16 | uint32_t(cap_piece & 0x07) << 20);
 	}
 	Move move_from_string(const Position &pos, const string &cmd);
 	string string_from_move(const Move m);

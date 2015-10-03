@@ -313,10 +313,10 @@ void Positionns::is_ok(Position &pos)
             piece_count[type_of_piece(Piece(p))]++;
         }
     }
-	for (int hp = Pawn; hp < PieceTypeNum; hp++){
+	for (int hp = Pawn; hp < King; hp++){
         piece_count[hp] += pos.get_hand(Black,PieceType(hp));
     }
-	for (int hp = Pawn; hp < PieceTypeNum; hp++){
+	for (int hp = Pawn; hp < King; hp++){
         piece_count[hp] += pos.get_hand(White,PieceType(hp));
     }
     int sum = 0;
@@ -383,14 +383,11 @@ TEST(position, do_move)
 	to = square_from_string("7c");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//2
 	pos.do_move(m, st);
-	//3h4g silver
-	from = square_from_string("3h");
+	//4h4g silver
+	from = square_from_string("4h");
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//3
 	pos.do_move(m, st);
-	print_board(pos);
-
-	/*
 	//5b6c gold
 	from = square_from_string("5b");
 	to = square_from_string("6c");
@@ -411,8 +408,6 @@ TEST(position, do_move)
 	to = square_from_string("3e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);		//7
 	pos.do_move(m, st);
-	*/
-	/*
 	//3d3e pawn
 	from = square_from_string("3d");
 	to = square_from_string("3e");
@@ -483,9 +478,9 @@ TEST(position, do_move)
 	to = square_from_string("3f");
 	m = make_move(from, to, 0, Silver, Pawn);	//21
 	pos.do_move(m, st);
-	//6d6e pawn
-	from = square_from_string("6d");
-	to = square_from_string("6e");
+	//5d5e pawn
+	from = square_from_string("5d");
+	to = square_from_string("5e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//22
 	pos.do_move(m, st);
 	//P*3e pawn
@@ -557,6 +552,8 @@ TEST(position, do_move)
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Silver, Horse);	//36
 	pos.do_move(m, st);
+
+
 	//2f2c rook pmoto pawn
 	from = square_from_string("2f");
 	to = square_from_string("2c");
@@ -571,163 +568,248 @@ TEST(position, do_move)
 	from = square_from_string("2c");
 	to = square_from_string("1b");
 	m = make_move(from, to, 0, Dragon, Lance);	//39
+	pos.do_move(m, st);
 	//9e9f pawn pawn
 	from = square_from_string("9e");
 	to = square_from_string("9f");
 	m = make_move(from, to, 0, Pawn, Pawn);	//40
+	pos.do_move(m, st);
 	//P*9h pawn
 	from = square_from_string("9e");
 	to = square_from_string("9h");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//41
+	pos.do_move(m, st);
 	//3i8d bishop pmoto 
 	from = square_from_string("3i");
 	to = square_from_string("8d");
 	m = make_move(from, to, 1, Bishop, EmptyPiece);	//42
+	pos.do_move(m, st);
 	//L*8f lance
 	from = square_from_string("3i");
 	to = square_from_string("8f");
 	m = make_move(drop_piece_from(Lance), to, 0, Lance, EmptyPiece);	//43
+	pos.do_move(m, st);
 	//8d9c Horse
 	from = square_from_string("8d");
 	to = square_from_string("9c");
 	m = make_move(from, to, 1, Horse, EmptyPiece);	//44
+	pos.do_move(m, st);
 	//4e4d pawn
 	from = square_from_string("4e");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//45
+	pos.do_move(m, st);
 	//P*4b pawn
 	from = square_from_string("4e");
 	to = square_from_string("4b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//46
-	//2g4e night
-	from = square_from_string("2g");
+	pos.do_move(m, st);
+	//3g4e night
+	from = square_from_string("3g");
 	to = square_from_string("4e");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//47
+	pos.do_move(m, st);
 	//5c6b silver
 	from = square_from_string("5c");
 	to = square_from_string("6b");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//48
+	pos.do_move(m, st);
 	//R*2c rook
 	from = square_from_string("5c");
 	to = square_from_string("2c");
 	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//49
+	pos.do_move(m, st);
 	//P*3g pawn
 	from = square_from_string("5c");
 	to = square_from_string("3g");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//50
+	pos.do_move(m, st);
 	//3f4g silver
 	from = square_from_string("3f");
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//51
+	pos.do_move(m, st);
 	//B*4i bishop
 	from = square_from_string("3f");
 	to = square_from_string("4i");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//52
+	pos.do_move(m, st);
 	//1b4b rook pawn
 	from = square_from_string("1b");
 	to = square_from_string("4b");
 	m = make_move(from, to, 0, Rook, Pawn);	//53
+	pos.do_move(m, st);
 	//3g3h pawn pmoto
 	from = square_from_string("3g");
 	to = square_from_string("3h");
 	m = make_move(from, to, 1, Pawn, EmptyPiece);	//54
+	pos.do_move(m, st);
 	//2c6c rook pmoto gold
 	from = square_from_string("2c");
 	to = square_from_string("6c");
 	m = make_move(from, to, 1, Rook, Gold);	//55
+	pos.do_move(m, st);
 	//6b6c pawn silver rook
 	from = square_from_string("6b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Silver, Rook);	//56
+	pos.do_move(m, st);
 	//4e5c night pmoto
 	from = square_from_string("4e");
 	to = square_from_string("5c");
 	m = make_move(from, to, 1, Night, EmptyPiece);	//57
+	pos.do_move(m, st);
 	//P*4a pawn
 	from = square_from_string("4e");
 	to = square_from_string("4a");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//58
+	pos.do_move(m, st);
 	//4b2b dragon
 	from = square_from_string("4b");
 	to = square_from_string("2b");
 	m = make_move(from, to, 0, Dragon, EmptyPiece);	//59
+	pos.do_move(m, st);
 	//4i5h bishop pmoto gold
 	from = square_from_string("4i");
 	to = square_from_string("5h");
 	m = make_move(from, to, 1, Bishop, Gold);	//60
+	pos.do_move(m, st);
 	//4g5h silver bishop
 	from = square_from_string("4g");
 	to = square_from_string("5h");
-	m = make_move(from, to, 1, Silver, Bishop);	//61
-	//5c6c ProNight silver
+	m = make_move(from, to, 0, Silver, Horse);	//61
+	pos.do_move(m, st);
+	//P*3b Pawn
+	from = square_from_string("5c");
+	to = square_from_string("3b");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//62
+	pos.do_move(m, st);
+	//5c6c PRoNight Silver
 	from = square_from_string("5c");
 	to = square_from_string("6c");
-	m = make_move(from, to, 0, ProNight, Silver);	//62
-	//7b6c silver ProNight
+	m = make_move(from, to, 0, ProNight, Silver);	//63
+	pos.do_move(m, st);	
+	//7b6c Silver PRoNight
 	from = square_from_string("7b");
 	to = square_from_string("6c");
-	m = make_move(from, to, 0, ProNight, EmptyPiece);	//63
+	m = make_move(from, to, 0, Silver, ProNight);	//64
+	pos.do_move(m, st);
+
 	//2b3b dragon pawn
 	from = square_from_string("2b");
 	to = square_from_string("3b");
-	m = make_move(from, to, 0, Dragon, Pawn);	//64
+	m = make_move(from, to, 0, Dragon, Pawn);	//65
+	pos.do_move(m, st);
 	//R*5b
 	from = square_from_string("2b");
 	to = square_from_string("5b");
-	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//65
+	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//66
+	pos.do_move(m, st);
 	//3b4a dragon pawn
 	from = square_from_string("3b");
 	to = square_from_string("4a");
-	m = make_move(from, to, 0, Dragon, Pawn);	//66
-	//G*4a
+	m = make_move(from, to, 0, Dragon, Pawn);	//67
+	pos.do_move(m, st);
+	//G*5a
 	from = square_from_string("3b");
-	to = square_from_string("4a");
-	m = make_move(drop_piece_from(Gold), to, 0, Dragon, EmptyPiece);	//67
+	to = square_from_string("5a");
+	m = make_move(drop_piece_from(Gold), to, 0, Gold, EmptyPiece);	//68
+	pos.do_move(m, st);
 	//4a5b dragon rook
 	from = square_from_string("4a");
 	to = square_from_string("5b");
-	m = make_move(from, to, 0, Dragon, Rook);	//68
+	m = make_move(from, to, 0, Dragon, Rook);	//69
+	pos.do_move(m, st);	
 	//6c5b silver dragon
 	from = square_from_string("6c");
 	to = square_from_string("5b");
-	m = make_move(from, to, 0, Silver, Dragon);	//69
+	m = make_move(from, to, 0, Silver, Dragon);	//70
+	pos.do_move(m, st);
 	//B*4e bishop
 	from = square_from_string("6c");
 	to = square_from_string("4e");
-	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//70
-	//6a7b gold 
+	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//71
+	pos.do_move(m, st);
+
+	//6a7b gold
 	from = square_from_string("6a");
 	to = square_from_string("7b");
-	m = make_move(from, to, 0, Gold, EmptyPiece);	//71
-	//8i7g night 
+	m = make_move(from, to, 0, Gold, EmptyPiece);	//72
+	pos.do_move(m, st);
+	//8i7g night
 	from = square_from_string("8i");
 	to = square_from_string("7g");
-	m = make_move(from, to, 0, Night, EmptyPiece);	//72
+	m = make_move(from, to, 0, Night, EmptyPiece);	//73
+	pos.do_move(m, st);	
 	//6e5g night pmoto
-	from = square_from_string("6g");
+	from = square_from_string("6e");
 	to = square_from_string("5g");
-	m = make_move(from, to, 1, Night, EmptyPiece);	//73
+	m = make_move(from, to, 1, Night, EmptyPiece);	//74
+	pos.do_move(m, st);
 	//6i5g night night
 	from = square_from_string("6i");
 	to = square_from_string("5g");
-	m = make_move(from, to, 0, Night, Night);	//74
+	m = make_move(from, to, 0, Night, Night);	//75
+	pos.do_move(m, st);
 	//5f5g pawn pmoto night
 	from = square_from_string("5f");
 	to = square_from_string("5g");
-	m = make_move(from, to, 1, Pawn, Night);	//75
+	m = make_move(from, to, 1, Pawn, Night);	//76
+	pos.do_move(m, st);
 	//4f5g silver proPawn
 	from = square_from_string("4f");
 	to = square_from_string("5g");
-	m = make_move(from, to, 0, Silver, ProPawn);	//76
+	m = make_move(from, to, 0, Silver, ProPawn);	//77
+	pos.do_move(m, st);
 	//R*5e rook
 	from = square_from_string("4f");
 	to = square_from_string("5e");
-	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//77
+	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//78
+	pos.do_move(m, st);
 	//S*7c silver
 	from = square_from_string("4f");
 	to = square_from_string("7c");
-	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//78
-	*/
+	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//79
+	pos.do_move(m, st);
+	print_board(pos);
+	EXPECT_EQ(WLance, pos.get_board(A9));
+	EXPECT_EQ(WGold, pos.get_board(E9));
+	EXPECT_EQ(BProPawn, pos.get_board(H9));
+	EXPECT_EQ(WKing, pos.get_board(B8));
+	EXPECT_EQ(WGold, pos.get_board(C8));
+	EXPECT_EQ(WSilver, pos.get_board(E8));
+	EXPECT_EQ(WHorse, pos.get_board(A7));
+	EXPECT_EQ(WPawn, pos.get_board(B7));
+	EXPECT_EQ(BSilver, pos.get_board(C7));
+	EXPECT_EQ(WPawn, pos.get_board(C6));
+	EXPECT_EQ(WPawn, pos.get_board(D6));
+	EXPECT_EQ(BPawn, pos.get_board(F6));
+	EXPECT_EQ(WPawn, pos.get_board(I6));
+	EXPECT_EQ(WRook, pos.get_board(E5));
+	EXPECT_EQ(BBishop, pos.get_board(F5));
+	EXPECT_EQ(BPawn, pos.get_board(G5));
+	EXPECT_EQ(WPawn, pos.get_board(A4));
+	EXPECT_EQ(BLance, pos.get_board(B4));
+	EXPECT_EQ(BPawn, pos.get_board(C4));
+	EXPECT_EQ(BPawn, pos.get_board(I4));
+	EXPECT_EQ(BPawn, pos.get_board(B3));
+	EXPECT_EQ(BNight, pos.get_board(C3));
+	EXPECT_EQ(BPawn, pos.get_board(D3));
+	EXPECT_EQ(BSilver, pos.get_board(E3));
+	EXPECT_EQ(BPawn, pos.get_board(A2));
+	EXPECT_EQ(BKing, pos.get_board(C2));
+	EXPECT_EQ(BGold, pos.get_board(D2));
+	EXPECT_EQ(BSilver, pos.get_board(E2));
+	EXPECT_EQ(WProPawn, pos.get_board(G2));
+	EXPECT_EQ(BLance, pos.get_board(A1));
+	EXPECT_EQ(BLance, pos.get_board(I1));
+
+	EXPECT_EQ(1, pos.get_hand(Black,Rook));
+	EXPECT_EQ(1, pos.get_hand(Black, Gold));
+	EXPECT_EQ(1, pos.get_hand(Black, Night));
+	EXPECT_EQ(4, pos.get_hand(Black, Pawn));
+	EXPECT_EQ(2, pos.get_hand(White, Night));
+	/*ここにbitboardのテストを書く予定*/
 }
 TEST(position, get_king_square)
 {
@@ -1119,7 +1201,7 @@ TEST(position, color_turn)
 TEST(position, PieceToChar)
 {
 	/*
-	駒文字（PieceToChar）のインデックスと駒コードが一致することを確認している
+	駒文字（PieceToChar）のインデックスと駒]コードが一致することを確認している
 	Pawn..P p
 	Lance..L l
 	Night..N n
