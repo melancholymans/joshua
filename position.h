@@ -54,6 +54,7 @@ public:
 	//指定した座標の駒コードを返す
 	int get_board(int sq) const
 	{
+		_ASSERT(sq < 81);
 		return board[sq];
 	}
 	//指定したカラーのKINGの座標を返す
@@ -72,11 +73,13 @@ public:
 	//指定したカラー、駒種の駒数を取得
 	int get_hand(Color c, PieceType pt) const
 	{
+		_ASSERT(pt < 8);
 		return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
 	}
 	//指定したカラー、駒種の有無を取得,駒数は不要
 	bool is_hand(Color c, PieceType pt)
 	{
+		_ASSERT(pt < 8);
 		return static_cast<bool>(hand[c] & hand_masking[pt]);
 	}
 	//カラー、駒種に関係なく、全ての局面bitboardを返す
@@ -100,11 +103,13 @@ public:
 	void undo_move(const Move m);
 	void add_hand(Color c, PieceType pt)
 	{
+		_ASSERT(pt < 8);
 		hand[c] += hand_packed[pt];
 	}
 	void sub_hand(Color c, PieceType pt)
 	{
-		hand[c] -=hand_packed[pt];
+		_ASSERT(pt < 8);
+		hand[c] -= hand_packed[pt];
 	}
 	Key get_board_key() const
 	{
@@ -189,13 +194,6 @@ inline char do_black(char p)
 
 /*
 string to_sfen(const Position &pos);
-void print_board(const Position &pos);
-*/
-/*
-short *do_move_b(Position &pos,Move m,short *mf);
-short *do_move_w(Position &pos,Move m,short *mf);
-void undo_move(Position &pos,int ply);
-void is_ok(Position &pos);
 */
 #endif
 
