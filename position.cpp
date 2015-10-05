@@ -358,7 +358,97 @@ void Positionns::is_ok(Position &pos)
 			EXPECT_TRUE(false);
 		}
     }
-	//チエックできるものとしては2歩、kingがとられていないなどがあるが余力があったら実装する
+	//2歩をチエック
+	int count[2] = {0,0};
+	for (int sq = A9; sq <= A1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = B9; sq <= B1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = C9; sq <= C1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = D9; sq <= D1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = E9; sq <= E1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = F9; sq <= F1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = G9; sq <= G1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = H9; sq <= H1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
+	count[0] = 0; count[1] = 0;
+	for (int sq = I9; sq <= I1; sq++){
+		Piece p = Piece(pos.get_board(sq));
+		if (type_of_piece(p) == Pawn){
+			count[color_of_piece(p)]++;
+		}
+	}
+	if (count[Black] > 1 || count[White] > 1){
+		EXPECT_TRUE(false);
+	}
 }
 #endif
 
@@ -447,7 +537,6 @@ TEST(postion, undo_move)
 	pos.undo_move(m);
 	print_board(pos);
 
-/*
 	//8i7g night
 	from = square_from_string("8i");
 	to = square_from_string("7g");
@@ -868,7 +957,6 @@ TEST(postion, undo_move)
 	EXPECT_EQ(0, pos.get_hand(White, Gold));
 	EXPECT_EQ(0, pos.get_hand(White, Bishop));
 	EXPECT_EQ(0, pos.get_hand(White, Rook));
-	*/
 }
 TEST(position, do_move)
 {
