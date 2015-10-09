@@ -151,6 +151,27 @@ void Position::put_hand(Piece piece,const int num)
 		hand[c] += hand_packed[pt];
 	}
 }
+//指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（打ち駒）
+inline void Position::drop_piece_bb(const PieceType pt, const Square sq, const Color c)
+{
+	by_type_bb[AllPieces].xor_bit(sq);
+	by_type_bb[pt].xor_bit(sq);
+	by_color_bb[c].xor_bit(sq);
+}
+//指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（移動の表現）
+inline void Position::move_piece_bb(const PieceType pt_from, const PieceType pt_to, const Square from, const Square to, const Color c)
+{
+	by_type_bb[AllPieces].xor_bit(from,to);
+	by_type_bb[pt_from].xor_bit(from);
+	by_type_bb[pt_to].xor_bit(to);
+	by_color_bb[c].xor_bit(from, to);
+}
+//指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（移動の表現）
+inline void Position::cap_piece_bb(const PieceType pt, const Square sq,const Color c)
+{
+	by_type_bb[pt].xor_bit(sq);
+	by_color_bb[c].xor_bit(sq);
+}
 
 //＜ここからnamespace Positionnsの定義領域＞
 void Positionns::init()
@@ -199,7 +220,7 @@ void Position::do_move(const Move m,StateInfo& st)
 		//いろいろわからない処理が続いている
 		const int hand_num = get_hand(us, pt_to);	//一時的に現手駒数が必要
 		sub_hand(us, pt_to);
-		//ここでbitboardを更新
+		drop_piece_bb(pt_to, to, us);
 		board[to] = (us << 4) | pt_to;    //駒コードに変換（駒種は4bitまで）
 		//ここでもいろいろ処理、不明
 		//この打ち駒によって詰みが発生した場合の処理
@@ -207,20 +228,21 @@ void Position::do_move(const Move m,StateInfo& st)
 	else{				//盤上の手
 		const Square from = move_from(m);
 		const PieceType pt_from = move_piece(m);
-		//ここでbitboardを更新している
 		board[from] = EmptyPiece;
-		board[to] = (us << 4) | pt_from | (is_pmoto(m) << 3);
+		pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
+		board[to] = int((us << 4) | pt_to);
 		//ここでboard keyなど更新
 		if (pt_cap){
 			//駒をとった場合の処理
 			Color them = over_turn(us);
 			//ここでboard keyなどの処理
-			//ここでbitboardの処理
+			cap_piece_bb(pt_cap,to,them);
 			add_hand(us, PieceType(pt_cap & 0x07));	//pt_capが成り駒だと正常に手駒に登録されないので成りbitを削っている
 			//ここでいろいろな処理、不明
 			const int hand_num = get_hand(us, PieceType(pt_cap & 0x07));	//一時的に更新後の手駒数が必要？
 			//ここでいろいろ処理、不明
 		}
+		move_piece_bb(pt_from, pt_to, from, to, us);
 		//ここでbitboardの更新
         if(pt_from == King){
 			king_square[us] = to;
@@ -252,7 +274,7 @@ void Position::undo_move(const Move m)
 	flip_color();
 	if (is_drop(m)){	//打つ手の戻し
 		const PieceType pt_to = drop_piece(m);
-		//ここでbitboardの戻し
+		drop_piece_bb(pt_to, to,us);
 		board[to] = EmptyPiece;
 		add_hand(us, pt_to);
 		const int hand_num = get_hand(us, pt_to);	//一時的に更新後のhand?numは必要
@@ -261,16 +283,18 @@ void Position::undo_move(const Move m)
 	else{				//盤上の手の戻し
 		const Square from = move_from(m);
 		const PieceType pt_from = move_piece(m);
+		const PieceType pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
 		const PieceType pt_cap = move_cap_piece(m);
-
 		if (pt_from == King){	//移動させた駒がkingなら
 			king_square[us] = from;
 		}
 		else{	//king以外の駒
 			//いろいろとわからない処理
 		}
+		move_piece_bb(pt_from,pt_to,from,to,us);
 		if (pt_cap){	//駒をとっていたときの戻し
 			//bitboardの処理
+			cap_piece_bb(pt_cap,to,them);
 			board[to] = (them << 4) | pt_cap;
 			const int hand_num = get_hand(us, PieceType(pt_cap & 0x07));	//一時的に現手駒数を取得
 			//いろいろわからない処理
@@ -279,10 +303,8 @@ void Position::undo_move(const Move m)
 		else{
 			board[to] = EmptyPiece;
 		}
-		//bitboardの戻し
 		board[from] = (us << 4) | pt_from;
 	}
-	//bitboardの処理
 	//StatInfo関係の処理
 #ifdef _DEBUG
 	Positionns::is_ok(*this);

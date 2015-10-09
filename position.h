@@ -129,6 +129,12 @@ private:
 	}
 	void put_piece(Piece piece, Square sq);
 	void put_hand(Piece pt, int num);
+	//指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（打ち駒）
+	void drop_piece_bb(const PieceType pt, const Square sq, const Color c);
+	//指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（盤上の移動）
+	void Position::move_piece_bb(const PieceType pt_from, const PieceType pt_to, const Square from, const Square to, const Color c);
+	//指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（駒の捕獲）
+	void Position::cap_piece_bb(const PieceType,const Square sq,const Color c);
 	int board[SquareNum];
 	unsigned int hand[ColorNum];
 	Square king_square[ColorNum];
