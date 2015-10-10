@@ -121,10 +121,12 @@ public:
 		//TODO:仮
 		return Key(1);
 	}
-	bool get_color_bit(const Color c,const Square sq);
+#ifdef _DEBUG
+	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);
-	void print_color_bb(Color c);
-	void print_piece_bb(PieceType pt);
+	void print_color_bb(Color c,string msg);
+	void print_piece_bb(PieceType pt,string msg);
+#endif
 private:
 	//positionクラスをクリアにする
 	void Position::clear()
