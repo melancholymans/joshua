@@ -137,7 +137,6 @@ void Position::put_piece(Piece piece,Square sq)
 	if (piece == WKing){
 		king_square[White] = sq;
 	}
-
 	by_type_bb[AllPieces].set_bit(sq);
 	by_type_bb[pt].set_bit(sq);
 	by_color_bb[c].set_bit(sq);
@@ -169,10 +168,29 @@ inline void Position::move_piece_bb(const PieceType pt_from, const PieceType pt_
 //指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（移動の表現）
 inline void Position::cap_piece_bb(const PieceType pt, const Square sq,const Color c)
 {
+	by_type_bb[AllPieces].xor_bit(sq);
 	by_type_bb[pt].xor_bit(sq);
 	by_color_bb[c].xor_bit(sq);
 }
 
+#ifdef _DEBUG
+bool Position::get_piece_bit(const PieceType pt, const Square sq)
+{
+	return by_type_bb[pt].is_bit_on(sq);
+}
+bool Position::get_color_bit(const Color c, const Square sq)
+{
+	return by_color_bb[c].is_bit_on(sq);
+}
+void Position::print_piece_bb(const PieceType pt)
+{
+	BitBoardns::print(by_type_bb[pt]);
+}
+void Position::print_color_bb(Color c)
+{
+	BitBoardns::print(by_color_bb[c]);
+}
+#endif
 //＜ここからnamespace Positionnsの定義領域＞
 void Positionns::init()
 {
@@ -243,8 +261,7 @@ void Position::do_move(const Move m,StateInfo& st)
 			//ここでいろいろ処理、不明
 		}
 		move_piece_bb(pt_from, pt_to, from, to, us);
-		//ここでbitboardの更新
-        if(pt_from == King){
+		if (pt_from == King){
 			king_square[us] = to;
         }
 		else{	//king以外の駒の場合
@@ -320,8 +337,52 @@ void Positionns::is_ok(Position &pos)
     int sq;
     int piece_count[16];
 
-	//ここにbitboard関係のチエックが入る,そのうち実装（do_moveにbitboardを更新するコードを書いたら
-	//駒数のカウント
+	//Black側とWhite側の＆をとって0にならなければエラー
+	EXPECT_EQ(false, (pos.color_of_bb(Black) & pos.color_of_bb(White)).is_not_zero());
+	//Black Whiteを合算したものと駒種を合算したもの(AllPiece)が同じでなければエラー
+	EXPECT_EQ(false, (pos.color_of_bb(Black) | pos.color_of_bb(White)) != pos.piece_type_of_bb(AllPieces));
+	BitBoard all_piece = pos.piece_type_of_bb(Pawn) | pos.piece_type_of_bb(Lance) | pos.piece_type_of_bb(Night) | pos.piece_type_of_bb(Silver) |
+		pos.piece_type_of_bb(Bishop) | pos.piece_type_of_bb(Rook) | pos.piece_type_of_bb(Gold) | pos.piece_type_of_bb(King) | pos.piece_type_of_bb(ProPawn) |
+		pos.piece_type_of_bb(ProLance) | pos.piece_type_of_bb(ProNight) | pos.piece_type_of_bb(ProSilver) | pos.piece_type_of_bb(Horse) | pos.piece_type_of_bb(Dragon);
+	EXPECT_EQ(false,all_piece != pos.piece_type_of_bb(AllPieces));
+	//王の数が２である
+	EXPECT_EQ(2, pos.piece_type_of_bb(King).pop_count());
+	EXPECT_EQ(1, (pos.piece_type_of_bb(King) & pos.color_of_bb(Black)).pop_count());
+	EXPECT_EQ(1, (pos.piece_type_of_bb(King) & pos.color_of_bb(White)).pop_count());
+	//駒数のカウント(bitboard側）
+	for (int i = 0; i < 16; i++){
+		piece_count[i] = 0;
+	}
+	for (int p = Pawn; p < PieceTypeNum; p++){
+		piece_count[p] = pos.piece_type_of_bb(PieceType(p)).pop_count();
+	}
+	for (int hp = Pawn; hp < King; hp++){
+		piece_count[hp] += pos.get_hand(Black, PieceType(hp));
+	}
+	for (int hp = Pawn; hp < King; hp++){
+		piece_count[hp] += pos.get_hand(White, PieceType(hp));
+	}
+	int sum = 0;
+	for (int i = 0; i < 16; i++){
+		sum += piece_count[i];
+	}
+	EXPECT_EQ(40, sum);
+	EXPECT_EQ(18, piece_count[Pawn] + piece_count[ProPawn]);
+	EXPECT_EQ(4, piece_count[Lance] + piece_count[ProLance]);
+	EXPECT_EQ(4, piece_count[Night] + piece_count[ProNight]);
+	EXPECT_EQ(4, piece_count[Silver] + piece_count[ProSilver]);
+	EXPECT_EQ(4, piece_count[Gold]);
+	EXPECT_EQ(2, piece_count[Bishop] + piece_count[Horse]);
+	EXPECT_EQ(2, piece_count[Rook] + piece_count[Dragon]);
+	EXPECT_EQ(2, piece_count[King]);
+	//2歩をチエック
+	for (int f = FileI; f < FileNum; f++){
+		EXPECT_EQ(true, (pos.piece_type_of_bb(Pawn) & pos.color_of_bb(Black) & BitBoardns::FILE_MASK[f]).pop_count() < 2);
+	}
+	for (int f = FileI; f < FileNum; f++){
+		EXPECT_EQ(true, (pos.piece_type_of_bb(Pawn) & pos.color_of_bb(White) & BitBoardns::FILE_MASK[f]).pop_count() < 2);
+	}
+	//駒数のカウント（board側）
     for(int i = 0;i < 16;i++){
         piece_count[i] = 0;
     }
@@ -341,7 +402,7 @@ void Positionns::is_ok(Position &pos)
 	for (int hp = Pawn; hp < King; hp++){
         piece_count[hp] += pos.get_hand(White,PieceType(hp));
     }
-    int sum = 0;
+    sum = 0;
     for(int i = 0;i < 16;i++){
         sum += piece_count[i];
     }
@@ -484,7 +545,7 @@ TEST(postion, undo_move)
 
 	string ss("l3g2X1/1kg1s4/jpS6/2pp1P2p/4rBP2/pLP5P/1PNPS4/P1KGS1x2/L7L w RGN4P2n 1");
 	Position pos(ss);
-
+	
 	EXPECT_EQ(WLance, pos.get_board(A9));
 	EXPECT_EQ(WGold, pos.get_board(E9));
 	EXPECT_EQ(BProPawn, pos.get_board(H9));
@@ -652,10 +713,10 @@ TEST(postion, undo_move)
 	to = square_from_string("3h");
 	m = make_move(from, to, 1, Pawn, EmptyPiece);	//54
 	pos.undo_move(m);
-	//1b4b rook pawn
+	//1b4b dragon pawn
 	from = square_from_string("1b");
 	to = square_from_string("4b");
-	m = make_move(from, to, 0, Rook, Pawn);	//53
+	m = make_move(from, to, 0, dragon, Pawn);	//53
 	pos.undo_move(m);
 	//B*4i bishop
 	from = square_from_string("3f");
@@ -976,6 +1037,7 @@ TEST(postion, undo_move)
 	EXPECT_EQ(0, pos.get_hand(White, Gold));
 	EXPECT_EQ(0, pos.get_hand(White, Bishop));
 	EXPECT_EQ(0, pos.get_hand(White, Rook));
+	
 }
 TEST(position, do_move)
 {
@@ -987,6 +1049,100 @@ TEST(position, do_move)
 	//テスト問題は加藤一二三実践集より
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
 	Position pos(ss);
+
+	EXPECT_EQ(1, pos.get_color_bit(Black, A1));
+	EXPECT_EQ(1, pos.get_color_bit(Black, B1));
+	EXPECT_EQ(1, pos.get_color_bit(Black, I1));
+	EXPECT_EQ(1, pos.get_color_bit(Black, B2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, C2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, D2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, E2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, F2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, H2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, B3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, D3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, E3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, G3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, I3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, A4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, C4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, E4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, G4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, F5));
+	EXPECT_EQ(1, pos.get_color_bit(Black, H5));
+
+	EXPECT_EQ(1, pos.get_color_bit(White, A9));
+	EXPECT_EQ(1, pos.get_color_bit(White, B9));
+	EXPECT_EQ(1, pos.get_color_bit(White, D9));
+	EXPECT_EQ(1, pos.get_color_bit(White, H9));
+	EXPECT_EQ(1, pos.get_color_bit(White, B8));
+	EXPECT_EQ(1, pos.get_color_bit(White, C8));
+	EXPECT_EQ(1, pos.get_color_bit(White, E8));
+	EXPECT_EQ(1, pos.get_color_bit(White, F8));
+	EXPECT_EQ(1, pos.get_color_bit(White, I8));
+	EXPECT_EQ(1, pos.get_color_bit(White, B7));
+	EXPECT_EQ(1, pos.get_color_bit(White, F7));
+	EXPECT_EQ(1, pos.get_color_bit(White, G7));
+	EXPECT_EQ(1, pos.get_color_bit(White, H7));
+	EXPECT_EQ(1, pos.get_color_bit(White, A6));
+	EXPECT_EQ(1, pos.get_color_bit(White, C6));
+	EXPECT_EQ(1, pos.get_color_bit(White, D6));
+	EXPECT_EQ(1, pos.get_color_bit(White, E6));
+	EXPECT_EQ(1, pos.get_color_bit(White, F6));
+	EXPECT_EQ(1, pos.get_color_bit(White, G6));
+	EXPECT_EQ(1, pos.get_color_bit(White, I6));
+
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A1));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B1));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I1));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, H2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F5));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, H5));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, H9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, H7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I6));
+	/*
+	他の駒種は目視で確認
+	pos.print_piece_bb(Pawn);
+	pos.print_piece_bb(Lance);
+	pos.print_piece_bb(Night);
+	pos.print_piece_bb(Silver);
+	pos.print_piece_bb(Bishop);
+	pos.print_piece_bb(Rook);
+	pos.print_piece_bb(Gold);
+	pos.print_piece_bb(King);
+	*/
 	//1g1f
 	from = square_from_string("1g");
 	to = square_from_string("1f");
@@ -1246,10 +1402,10 @@ TEST(position, do_move)
 	to = square_from_string("4i");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//52
 	pos.do_move(m, st);
-	//1b4b rook pawn
+	//1b4b dragon pawn
 	from = square_from_string("1b");
 	to = square_from_string("4b");
-	m = make_move(from, to, 0, Rook, Pawn);	//53
+	m = make_move(from, to, 0, Dragon, Pawn);	//53
 	pos.do_move(m, st);
 	//3g3h pawn pmoto
 	from = square_from_string("3g");
@@ -1418,8 +1574,90 @@ TEST(position, do_move)
 	EXPECT_EQ(1, pos.get_hand(Black, Night));
 	EXPECT_EQ(4, pos.get_hand(Black, Pawn));
 	EXPECT_EQ(2, pos.get_hand(White, Night));
-
+	
 	/*ここにbitboardのテストを書く予定*/
+	EXPECT_EQ(1, pos.get_color_bit(Black, H9));
+	EXPECT_EQ(1, pos.get_color_bit(Black, C7));
+	EXPECT_EQ(1, pos.get_color_bit(Black, F6));
+	EXPECT_EQ(1, pos.get_color_bit(Black, F5));
+	EXPECT_EQ(1, pos.get_color_bit(Black, G5));
+	EXPECT_EQ(1, pos.get_color_bit(Black, B4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, C4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, I4));
+	EXPECT_EQ(1, pos.get_color_bit(Black, B3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, C3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, D3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, E3));
+	EXPECT_EQ(1, pos.get_color_bit(Black, A2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, C2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, D2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, E2));
+	EXPECT_EQ(1, pos.get_color_bit(Black, A1));
+	EXPECT_EQ(1, pos.get_color_bit(Black, I1));
+
+	EXPECT_EQ(1, pos.get_color_bit(White, A9));
+	EXPECT_EQ(1, pos.get_color_bit(White, E9));
+	EXPECT_EQ(1, pos.get_color_bit(White, B8));
+	EXPECT_EQ(1, pos.get_color_bit(White, C8));
+	EXPECT_EQ(1, pos.get_color_bit(White, E8));
+	EXPECT_EQ(1, pos.get_color_bit(White, A7));
+	EXPECT_EQ(1, pos.get_color_bit(White, B7));
+	EXPECT_EQ(1, pos.get_color_bit(White, C6));
+	EXPECT_EQ(1, pos.get_color_bit(White, D6));
+	EXPECT_EQ(1, pos.get_color_bit(White, I6));
+	EXPECT_EQ(1, pos.get_color_bit(White, E5));
+	EXPECT_EQ(1, pos.get_color_bit(White, A4));
+	EXPECT_EQ(1, pos.get_color_bit(White, G2));
+
+
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, H9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F5));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G5));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E3));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E2));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A1));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I1));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E9));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E8));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B7));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I6));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E5));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A4));
+	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G2));
+	/*
+	//他の駒種は目視で確認
+	pos.print_piece_bb(Pawn);
+	pos.print_piece_bb(Lance);
+	pos.print_piece_bb(Night);
+	pos.print_piece_bb(Silver);
+	pos.print_piece_bb(Bishop);
+	pos.print_piece_bb(Rook);
+	pos.print_piece_bb(Gold);
+	pos.print_piece_bb(King);
+	pos.print_piece_bb(ProPawn);
+	pos.print_piece_bb(ProLance);
+	pos.print_piece_bb(ProNight);
+	pos.print_piece_bb(ProSilver);
+	pos.print_piece_bb(Horse);
+	pos.print_piece_bb(Dragon);
+	*/
 }
 TEST(position, get_king_square)
 {
