@@ -184,12 +184,12 @@ bool Position::get_color_bit(const Color c, const Square sq)
 }
 void Position::print_piece_bb(const PieceType pt,string msg)
 {
-	printf("mssage: %s\n", msg);
+	printf("mssage: %s\n", msg.c_str());
 	BitBoardns::print(by_type_bb[pt]);
 }
 void Position::print_color_bb(Color c,string msg)
 {
-	printf("mssage: %s\n", msg);
+	printf("mssage:%s\n", msg.c_str());
 	BitBoardns::print(by_color_bb[c]);
 }
 #endif
@@ -612,24 +612,24 @@ TEST(postion, undo_move)
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E5));
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A4));
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G2));
-	
+	/*
 	//他の駒種は目視で確認
 	printf("");
-	pos.print_piece_bb(Pawn);
-	pos.print_piece_bb(Lance);
-	pos.print_piece_bb(Night);
-	pos.print_piece_bb(Silver);
-	pos.print_piece_bb(Bishop);
-	pos.print_piece_bb(Rook);
-	pos.print_piece_bb(Gold);
-	pos.print_piece_bb(King);
-	pos.print_piece_bb(ProPawn);
-	pos.print_piece_bb(ProLance);
-	pos.print_piece_bb(ProNight);
-	pos.print_piece_bb(ProSilver);
-	pos.print_piece_bb(Horse);
-	pos.print_piece_bb(Dragon);
-	
+	pos.print_piece_bb(Pawn,"Pawn");
+	pos.print_piece_bb(Lance,"Lance");
+	pos.print_piece_bb(Night,"Night");
+	pos.print_piece_bb(Silver,"Silver");
+	pos.print_piece_bb(Bishop,"Bishop");
+	pos.print_piece_bb(Rook,"Rook");
+	pos.print_piece_bb(Gold,"Gold");
+	pos.print_piece_bb(King,"King");
+	pos.print_piece_bb(ProPawn,"ProPawn");
+	pos.print_piece_bb(ProLance,"ProLance");
+	pos.print_piece_bb(ProNight,"ProNight");
+	pos.print_piece_bb(ProSilver,"ProSilver");
+	pos.print_piece_bb(Horse,"Horse");
+	pos.print_piece_bb(Dragon,"Dragon");
+	*/
 
 	EXPECT_EQ(WLance, pos.get_board(A9));
 	EXPECT_EQ(WGold, pos.get_board(E9));
@@ -1206,15 +1206,15 @@ TEST(postion, undo_move)
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G6));
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I6));
 	/*
-	他の駒種は目視で確認
-	pos.print_piece_bb(Pawn);
-	pos.print_piece_bb(Lance);
-	pos.print_piece_bb(Night);
-	pos.print_piece_bb(Silver);
-	pos.print_piece_bb(Bishop);
-	pos.print_piece_bb(Rook);
-	pos.print_piece_bb(Gold);
-	pos.print_piece_bb(King);
+	//他の駒種は目視で確認
+	pos.print_piece_bb(Pawn,"Pawn");
+	pos.print_piece_bb(Lance,"Lance");
+	pos.print_piece_bb(Night,"Night");
+	pos.print_piece_bb(Silver,"Silver");
+	pos.print_piece_bb(Bishop,"Bishop");
+	pos.print_piece_bb(Rook,"Rook");
+	pos.print_piece_bb(Gold,"Gold");
+	pos.print_piece_bb(King,"King");
 	*/
 }
 TEST(position, do_move)
@@ -1310,16 +1310,16 @@ TEST(position, do_move)
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F6));
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G6));
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I6));
-	/*
+	/*	
 	他の駒種は目視で確認
-	pos.print_piece_bb(Pawn);
-	pos.print_piece_bb(Lance);
-	pos.print_piece_bb(Night);
-	pos.print_piece_bb(Silver);
-	pos.print_piece_bb(Bishop);
-	pos.print_piece_bb(Rook);
-	pos.print_piece_bb(Gold);
-	pos.print_piece_bb(King);
+	pos.print_piece_bb(Pawn,"Pawn");
+	pos.print_piece_bb(Lance,"Lance");
+	pos.print_piece_bb(Night,"Night");
+	pos.print_piece_bb(Silver,"Silver");
+	pos.print_piece_bb(Bishop,"Bishop");
+	pos.print_piece_bb(Rook,"Rook");
+	pos.print_piece_bb(Gold,"Gold");
+	pos.print_piece_bb(King,"King");
 	*/
 	//1g1f
 	from = square_from_string("1g");
@@ -1821,20 +1821,20 @@ TEST(position, do_move)
 	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G2));
 	/*
 	//他の駒種は目視で確認
-	pos.print_piece_bb(Pawn);
-	pos.print_piece_bb(Lance);
-	pos.print_piece_bb(Night);
-	pos.print_piece_bb(Silver);
-	pos.print_piece_bb(Bishop);
-	pos.print_piece_bb(Rook);
-	pos.print_piece_bb(Gold);
-	pos.print_piece_bb(King);
-	pos.print_piece_bb(ProPawn);
-	pos.print_piece_bb(ProLance);
-	pos.print_piece_bb(ProNight);
-	pos.print_piece_bb(ProSilver);
-	pos.print_piece_bb(Horse);
-	pos.print_piece_bb(Dragon);
+	pos.print_piece_bb(Pawn,"Pawn");
+	pos.print_piece_bb(Lance,"Lance");
+	pos.print_piece_bb(Night,"Night");
+	pos.print_piece_bb(Silver,"Silver");
+	pos.print_piece_bb(Bishop,"Bishop");
+	pos.print_piece_bb(Rook,"Rook");
+	pos.print_piece_bb(Gold,"Gold");
+	pos.print_piece_bb(King,"King");
+	pos.print_piece_bb(ProPawn,"PRoPawn");
+	pos.print_piece_bb(ProLance,"ProLance");
+	pos.print_piece_bb(ProNight,"ProNight");
+	pos.print_piece_bb(ProSilver,"ProSilver");
+	pos.print_piece_bb(Horse,"Horse");
+	pos.print_piece_bb(Dragon,"Dragon");
 	*/
 }
 TEST(position, get_king_square)
