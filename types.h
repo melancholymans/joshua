@@ -46,7 +46,7 @@ enum PieceType{
 	AllPieces = 0,EmptyPiece = 0,
 	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King=8,
 	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
-	PieceTypeNum
+	PieceTypeNum, HandPieceNum = 8
 };
 //駒コードはblack側が1-14、white側が17-30なので5bit=>PieceType | 0x10で駒コードになる
 enum Piece{
@@ -56,10 +56,6 @@ enum Piece{
 	WPawn = 17, WLance, WNight, WSilver, WBishop, WRook, WGold, WKing,
 	WProPawn, WProLance, WProNight, WProSilver, WHorse, WDragon,
 	PieceNum = 31
-};
-//手駒を入れておくための配列のindexの定義、駒種ではないので注意
-enum HandIndex{
-	HandPawn, HandLance, HandNight, HandSilver, HandBishop, HandRook, HandGold, HandPieceNum = 7
 };
 //方向子、方向を決めているだけで座標の移動には使用しない。
 enum Directtion{
