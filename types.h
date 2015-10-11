@@ -44,7 +44,7 @@ enum SquareDelta{
 //駒種は1-14なので4bitまで
 enum PieceType{
 	AllPieces = 0,EmptyPiece = 0,
-	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,HandPieceNum=7,King=8,
+	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King=8,
 	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
 	PieceTypeNum
 };
@@ -56,6 +56,10 @@ enum Piece{
 	WPawn = 17, WLance, WNight, WSilver, WBishop, WRook, WGold, WKing,
 	WProPawn, WProLance, WProNight, WProSilver, WHorse, WDragon,
 	PieceNum = 31
+};
+//手駒を入れておくための配列のindexの定義、駒種ではないので注意
+enum HandIndex{
+	HandPiece, HandLance, HandNight, HandSilver, HandBishop, HandRook, HandGold, HandPieceNum = 7
 };
 //方向子、方向を決めているだけで座標の移動には使用しない。
 enum Directtion{
