@@ -1,5 +1,6 @@
 ﻿#include <string>
 #include <sstream>
+#include <array>	//do_move TEST
 
 #include "position.h"
 #include "bitboard.h"
@@ -17,8 +18,12 @@ using std::endl;
 using std::stringstream;
 using std::noskipws;
 using namespace Movens;
+using Positionns::get_zobrist;
+using Positionns::get_zob_hand;
+using Positionns::get_zob_turn;
 
 //局所定数宣言・定義
+//駒の枚数をunsigned int 32bitにパッキンするための駒１つの定数
 const int hand_packed[8] = {
 	0,
 	1 << 0,		//HandPawn
@@ -54,7 +59,7 @@ const int hand_masking[8] = {
 //駒文字(先手大文字、後手小文字）
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
 static Key zobrist[PieceNum][SquareNum][ColorNum];
-static Key zob_hand[HandPieceNum][ColorNum];
+static Key zob_hand[HandPieceNum][ColorNum];	//zob_hand配列の大きさは8とする。zob_hand[0]は使わない。配列へのindexをPieceTypeで統一するため
 static Key zob_turn;
 
 //＜ここからPositionクラスの定義領域＞
@@ -126,9 +131,9 @@ void Position::position_from_sfen(const string &sfen)
         }
 	} while (uip >> token && !isspace(token));
     //持ち駒の次は手数が入っているが無視してよい
-	//このあといろいろ設定する必要があるが準備ができていないのでここまで
 	m_st->board_key = Positionns::make_board_key(*this);
 	m_st->hand_key = Positionns::make_hand_key(*this);
+	//このあといろいろ設定する必要があるが準備ができていないのでここまで
 }
 //sfen文字列から局面の盤上を設定
 void Position::put_piece(Piece piece,Square sq)
@@ -186,15 +191,19 @@ void Position::do_move(const Move m, StateInfo& st)
 #endif
 	Key bod_key = get_board_key();
 	Key had_key = get_hand_key();
-
+	bod_key ^= get_zob_turn();	
 	const Color us = get_color_turn();
 	const Square to = move_to(m);
 	const PieceType pt_cap = move_cap_piece(m);
 	PieceType pt_to;
 
+	memcpy(&st, m_st, sizeof(StateInfo));
+	st.previous = m_st;
+	m_st = &st;
 	if (is_drop(m)){	//打つ手		
 		pt_to = drop_piece(m);  //打つ駒種を取り出す
-		//hand key || board keyの更新
+		had_key -= get_zob_hand(pt_to, us);
+		bod_key += get_zobrist(pt_to, to, us);
 		//いろいろわからない処理が続いている
 		const int hand_num = get_hand(us, pt_to);	//一時的に現手駒数が必要
 		sub_hand(us, pt_to);
@@ -209,11 +218,13 @@ void Position::do_move(const Move m, StateInfo& st)
 		board[from] = EmptyPiece;
 		pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
 		board[to] = int((us << 4) | pt_to);
-		//ここでboard keyなど更新
+		bod_key -= get_zobrist(pt_from, from, us);
+		bod_key += get_zobrist(pt_to, to, us);
 		if (pt_cap){
 			//駒をとった場合の処理
 			Color them = over_turn(us);
-			//ここでboard keyなどの処理
+			bod_key -= get_zobrist(pt_cap, to, them);
+			had_key += get_zob_hand(PieceType(pt_cap & 0x07), us);	//pt_capが成り駒だと正常に手駒に登録されないので成りbitを削っている
 			cap_piece_bb(pt_cap, to, them);
 			add_hand(us, PieceType(pt_cap & 0x07));	//pt_capが成り駒だと正常に手駒に登録されないので成りbitを削っている
 			//ここでいろいろな処理、不明
@@ -233,6 +244,8 @@ void Position::do_move(const Move m, StateInfo& st)
 		else{
 		}
 	}
+	m_st->board_key = bod_key;
+	m_st->hand_key = had_key;
 	flip_color();
 #ifdef _DEBUG
 	Positionns::is_ok(*this);
@@ -321,7 +334,7 @@ void Positionns::init()
 			}
 		}
 	}
-	for (int hp = 0; hp < HandPieceNum; hp++){
+	for (int hp = Pawn; hp < HandPieceNum; hp++){
 		zob_hand[hp][Black] = mt64.random() & 0x7FFFFFFFFFFFFFFE;
 		zob_hand[hp][White] = mt64.random() & 0x7FFFFFFFFFFFFFFE;
 	}
@@ -350,26 +363,44 @@ void Positionns::print_board(const Position& pos)
 	}
 	cout << endl;
 }
+Key Positionns::get_zobrist(const PieceType pt, const Square sq, const Color c)
+{
+	return zobrist[pt][sq][c];
+}
+Key Positionns::get_zob_hand(const PieceType hp, const Color c)
+{
+	return zob_hand[hp][c];
+}
+Key Positionns::get_zob_turn()
+{
+	return zob_turn;
+}
 //局面のハッシュキーの初期化
 Key Positionns::make_board_key(const Position& pos)
 {
 	
 	Key result = 0;
-	/*
+	
 	for (int sq = I9; sq < SquareNum; sq++){
 		if (pos.get_board(sq) != EmptyPiece){
-			result += zobrist();
+			result += get_zobrist(type_of_piece(Piece(pos.get_board(sq))), Square(sq),color_of_piece(Piece(pos.get_board(sq))));
 		}
 	}
 	if (pos.get_color_turn() == White){
-		result ^= zob_turn();
+		result ^= get_zob_turn();
 	}
-	*/
 	return result;
 }
 Key Positionns::make_hand_key(const Position& pos)
 {
-	return Key(0);
+	Key result = 0;
+	for (int hp = Pawn; hp < HandPieceNum; hp++){
+		for (int c = Black; c < ColorNum; c++){
+			const int hand_num = pos.get_hand(Color(c), PieceType(hp));
+			result += get_zob_hand(PieceType(hp), Color(c));
+		}
+	}
+	return result;
 }
 //board,hand,bitboardのチエック
 #ifdef _DEBUG
@@ -1266,6 +1297,7 @@ TEST(position, do_move)
 	using Positionns::print_board;
 
 	//テスト問題は加藤一二三実践集より
+	Positionns::init();		//StateInfoのテストのため
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
 	Position pos(ss);
 
@@ -1362,400 +1394,637 @@ TEST(position, do_move)
 	pos.print_piece_bb(Gold,"Gold");
 	pos.print_piece_bb(King,"King");
 	*/
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
 	//1g1f
 	from = square_from_string("1g");
 	to = square_from_string("1f");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//1
-	pos.do_move(m,st);
+	pos.do_move(m, st_stack[index]);
+	index++;
 	//8a7c night
 	from = square_from_string("8a");
 	to = square_from_string("7c");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//2
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4h4g silver
 	from = square_from_string("4h");
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//3
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5b6c gold
 	from = square_from_string("5b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Gold, EmptyPiece);	//4
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
 	//2e2d pawn
 	from = square_from_string("2e");
 	to = square_from_string("2d");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);		//5
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
 	//2c2d pawn
 	from = square_from_string("2c");
 	to = square_from_string("2d");
 	m = make_move(from, to, 0, Pawn, Pawn);		//6
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3f3e pawn
 	from = square_from_string("3f");
 	to = square_from_string("3e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);		//7
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3d3e pawn
 	from = square_from_string("3d");
 	to = square_from_string("3e");
 	m = make_move(from, to, 0, Pawn, Pawn);		//8
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4e4d pawn
 	from = square_from_string("4e");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Pawn, Pawn);		//9
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4c3d silver
 	from = square_from_string("4c");
 	to = square_from_string("3d");
 	m = make_move(from, to, 0, Silver, EmptyPiece);		//10
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5g4f silver
 	from = square_from_string("5g");
 	to = square_from_string("4f");
 	m = make_move(from, to, 0, Silver, EmptyPiece);		//11
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4b4d rook
 	from = square_from_string("4b");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Rook, Pawn);		//12
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*4e pawn
 	from = square_from_string("4b");
 	to = square_from_string("4e");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//13
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4d4c rook
 	from = square_from_string("4d");
 	to = square_from_string("4c");
 	m = make_move(from, to, 0, Rook, EmptyPiece);	//14
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//8h3c bishop bishop
 	from = square_from_string("8h");
 	to = square_from_string("3c");
 	m = make_move(from, to, 0, Bishop, Bishop);	//15
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4c3c rook bishop
 	from = square_from_string("4c");
 	to = square_from_string("3c");
 	m = make_move(from, to, 0, Rook, Bishop);	//16
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2h2d rook pawn
 	from = square_from_string("2h");
 	to = square_from_string("2d");
 	m = make_move(from, to, 0, Rook, Pawn);	//17
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*2c pawn
 	from = square_from_string("2h");
 	to = square_from_string("2c");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//18
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2d2f rook
 	from = square_from_string("2d");
 	to = square_from_string("2f");
 	m = make_move(from, to, 0, Rook, EmptyPiece);	//19
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
+	
 	//3e3f pawn
 	from = square_from_string("3e");
 	to = square_from_string("3f");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//20
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4g3f silver pawn
 	from = square_from_string("4g");
 	to = square_from_string("3f");
 	m = make_move(from, to, 0, Silver, Pawn);	//21
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5d5e pawn
 	from = square_from_string("5d");
 	to = square_from_string("5e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//22
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*3e pawn
 	to = square_from_string("3e");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//23
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3d4c silver
 	from = square_from_string("3d");
 	to = square_from_string("4c");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//24
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//B*1a bishop
 	from = square_from_string("3d");
 	to = square_from_string("1a");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//25
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5e5f pawn pawn
 	from = square_from_string("5e");
 	to = square_from_string("5f");
 	m = make_move(from, to, 0, Pawn, Pawn);	//26
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*2b pawn
 	from = square_from_string("3d");
 	to = square_from_string("2b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//27
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4c5b silver
 	from = square_from_string("4c");
 	to = square_from_string("5b");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//28
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2b2a pawn pmoto Night
 	from = square_from_string("2b");
 	to = square_from_string("2a");
 	m = make_move(from, to, 1, Pawn, Night);	//29
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3c5c rook
 	from = square_from_string("3c");
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Rook, EmptyPiece);	//30
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//1a4d bishop pmoto 
 	from = square_from_string("1a");
 	to = square_from_string("4d");
 	m = make_move(from, to, 1, Bishop, EmptyPiece);	//31
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//7c6e night
 	from = square_from_string("7c");
 	to = square_from_string("6e");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//32
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//N*6i night
 	from = square_from_string("7c");
 	to = square_from_string("6i");
 	m = make_move(drop_piece_from(Night), to, 0, Night, EmptyPiece);	//33
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//B*3i bishop
 	from = square_from_string("7c");
 	to = square_from_string("3i");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//34
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4d5c Horse rook
 	from = square_from_string("4d");
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Horse, Rook);	//35
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5b5c silver Horse
 	from = square_from_string("5b");
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Silver, Horse);	//36
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2f2c rook pmoto pawn
 	from = square_from_string("2f");
 	to = square_from_string("2c");
 	m = make_move(from, to, 1, Rook, Pawn);	//37
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//9d9e pawn
 	from = square_from_string("9d");
 	to = square_from_string("9e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//38
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2c1b doragon lance 
 	from = square_from_string("2c");
 	to = square_from_string("1b");
 	m = make_move(from, to, 0, Dragon, Lance);	//39
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//9e9f pawn pawn
 	from = square_from_string("9e");
 	to = square_from_string("9f");
 	m = make_move(from, to, 0, Pawn, Pawn);	//40
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*9h pawn
 	from = square_from_string("9e");
 	to = square_from_string("9h");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//41
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3i8d bishop pmoto 
 	from = square_from_string("3i");
 	to = square_from_string("8d");
 	m = make_move(from, to, 1, Bishop, EmptyPiece);	//42
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//L*8f lance
 	from = square_from_string("3i");
 	to = square_from_string("8f");
 	m = make_move(drop_piece_from(Lance), to, 0, Lance, EmptyPiece);	//43
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//8d9c Horse
 	from = square_from_string("8d");
 	to = square_from_string("9c");
 	m = make_move(from, to, 1, Horse, EmptyPiece);	//44
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4e4d pawn
 	from = square_from_string("4e");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//45
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*4b pawn
 	from = square_from_string("4e");
 	to = square_from_string("4b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//46
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3g4e night
 	from = square_from_string("3g");
 	to = square_from_string("4e");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//47
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5c6b silver
 	from = square_from_string("5c");
 	to = square_from_string("6b");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//48
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//R*2c rook
 	from = square_from_string("5c");
 	to = square_from_string("2c");
 	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//49
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*3g pawn
 	from = square_from_string("5c");
 	to = square_from_string("3g");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//50
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3f4g silver
 	from = square_from_string("3f");
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//51
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//B*4i bishop
 	from = square_from_string("3f");
 	to = square_from_string("4i");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//52
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//1b4b dragon pawn
 	from = square_from_string("1b");
 	to = square_from_string("4b");
 	m = make_move(from, to, 0, Dragon, Pawn);	//53
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3g3h pawn pmoto
 	from = square_from_string("3g");
 	to = square_from_string("3h");
 	m = make_move(from, to, 1, Pawn, EmptyPiece);	//54
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2c6c rook pmoto gold
 	from = square_from_string("2c");
 	to = square_from_string("6c");
 	m = make_move(from, to, 1, Rook, Gold);	//55
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//6b6c silver Dragon
 	from = square_from_string("6b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Silver, Dragon);	//56
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4e5c night pmoto
 	from = square_from_string("4e");
 	to = square_from_string("5c");
 	m = make_move(from, to, 1, Night, EmptyPiece);	//57
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*4a pawn
 	from = square_from_string("4e");
 	to = square_from_string("4a");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//58
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4b2b dragon
 	from = square_from_string("4b");
 	to = square_from_string("2b");
 	m = make_move(from, to, 0, Dragon, EmptyPiece);	//59
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4i5h bishop pmoto gold
 	from = square_from_string("4i");
 	to = square_from_string("5h");
 	m = make_move(from, to, 1, Bishop, Gold);	//60
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4g5h silver bishop
 	from = square_from_string("4g");
 	to = square_from_string("5h");
 	m = make_move(from, to, 0, Silver, Horse);	//61
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//P*3b Pawn
 	from = square_from_string("5c");
 	to = square_from_string("3b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//62
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5c6c PRoNight Silver
 	from = square_from_string("5c");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, ProNight, Silver);	//63
-	pos.do_move(m, st);	
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//7b6c Silver PRoNight
 	from = square_from_string("7b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Silver, ProNight);	//64
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//2b3b dragon pawn
 	from = square_from_string("2b");
 	to = square_from_string("3b");
 	m = make_move(from, to, 0, Dragon, Pawn);	//65
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//R*5b
 	from = square_from_string("2b");
 	to = square_from_string("5b");
 	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//66
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//3b4a dragon pawn
 	from = square_from_string("3b");
 	to = square_from_string("4a");
 	m = make_move(from, to, 0, Dragon, Pawn);	//67
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//G*5a
 	from = square_from_string("3b");
 	to = square_from_string("5a");
 	m = make_move(drop_piece_from(Gold), to, 0, Gold, EmptyPiece);	//68
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4a5b dragon rook
 	from = square_from_string("4a");
 	to = square_from_string("5b");
 	m = make_move(from, to, 0, Dragon, Rook);	//69
-	pos.do_move(m, st);	
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//6c5b silver dragon
 	from = square_from_string("6c");
 	to = square_from_string("5b");
 	m = make_move(from, to, 0, Silver, Dragon);	//70
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//B*4e bishop
 	from = square_from_string("6c");
 	to = square_from_string("4e");
 	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//71
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//6a7b gold
 	from = square_from_string("6a");
 	to = square_from_string("7b");
 	m = make_move(from, to, 0, Gold, EmptyPiece);	//72
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//8i7g night
 	from = square_from_string("8i");
 	to = square_from_string("7g");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//73
-	pos.do_move(m, st);	
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//6e5g night pmoto
 	from = square_from_string("6e");
 	to = square_from_string("5g");
 	m = make_move(from, to, 1, Night, EmptyPiece);	//74
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//6i5g night night
 	from = square_from_string("6i");
 	to = square_from_string("5g");
 	m = make_move(from, to, 0, Night, ProNight);	//75
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//5f5g pawn pmoto night
 	from = square_from_string("5f");
 	to = square_from_string("5g");
 	m = make_move(from, to, 1, Pawn, Night);	//76
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//4f5g silver proPawn
 	from = square_from_string("4f");
 	to = square_from_string("5g");
 	m = make_move(from, to, 0, Silver, ProPawn);	//77
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//R*5e rook
 	from = square_from_string("4f");
 	to = square_from_string("5e");
 	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//78
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	index++;
 	//S*7c silver
 	from = square_from_string("4f");
 	to = square_from_string("7c");
 	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//79
-	pos.do_move(m, st);
+	pos.do_move(m, st_stack[index]);
+	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
+	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	
 	EXPECT_EQ(WLance, pos.get_board(A9));
 	EXPECT_EQ(WGold, pos.get_board(E9));
 	EXPECT_EQ(BProPawn, pos.get_board(H9));
@@ -1793,8 +2062,6 @@ TEST(position, do_move)
 	EXPECT_EQ(1, pos.get_hand(Black, Night));
 	EXPECT_EQ(4, pos.get_hand(Black, Pawn));
 	EXPECT_EQ(2, pos.get_hand(White, Night));
-	
-	/*ここにbitboardのテストを書く予定*/
 	EXPECT_EQ(1, pos.get_color_bit(Black, H9));
 	EXPECT_EQ(1, pos.get_color_bit(Black, C7));
 	EXPECT_EQ(1, pos.get_color_bit(Black, F6));

@@ -9,10 +9,6 @@ using std::string;
 //do_moveによって変更された局面をundo_moveで復元するときに必要な情報
 struct StateInfo{
 public:
-	Key get_key()
-	{
-		return board_key + hand_key;
-	}
 	//ひとつ上のレベルへのリンク
 	StateInfo* previous;
 	//手番側のKINGにチエックをかけている敵側駒のbitboard
@@ -41,7 +37,7 @@ public:
 		color_turn = c;
 	}
 	//現在の手番
-	Color Position::get_color_turn(void)
+	Color get_color_turn(void) const
 	{
 		return Color(color_turn);
 	}
@@ -112,13 +108,11 @@ public:
 	}
 	Key get_board_key() const
 	{
-		//TODO:仮
-		return Key(1);
+		return m_st->board_key;
 	}
 	Key get_hand_key() const
 	{
-		//TODO:仮
-		return Key(1);
+		return m_st->hand_key;
 	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
@@ -148,7 +142,7 @@ private:
 	BitBoard by_color_bb[ColorNum];
 	int color_turn;
 	StateInfo start_state;
-	StateInfo *m_st;
+	StateInfo* m_st;
 };
 
 namespace Positionns
@@ -158,6 +152,9 @@ namespace Positionns
 	void print_board(const Position &pos);
 	Key make_board_key(const Position& pos);
 	Key make_hand_key(const Position& pos);
+	Key get_zobrist(const PieceType pt, const Square sq, const Color c);
+	Key get_zob_hand(const PieceType hp, const Color c);
+	Key get_zob_turn();
 }
 #endif
 
