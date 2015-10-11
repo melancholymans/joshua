@@ -59,7 +59,7 @@ enum Piece{
 };
 //手駒を入れておくための配列のindexの定義、駒種ではないので注意
 enum HandIndex{
-	HandPiece, HandLance, HandNight, HandSilver, HandBishop, HandRook, HandGold, HandPieceNum = 7
+	HandPawn, HandLance, HandNight, HandSilver, HandBishop, HandRook, HandGold, HandPieceNum = 7
 };
 //方向子、方向を決めているだけで座標の移動には使用しない。
 enum Directtion{
