@@ -5,6 +5,7 @@
 #include "bitboard.h"
 #include "usi.h"
 #include "move.h"
+#include "mt64bit.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
@@ -52,6 +53,9 @@ const int hand_masking[8] = {
 };
 //駒文字(先手大文字、後手小文字）
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
+static Key zobrist[PieceNum][SquareNum][ColorNum];
+static Key zob_hand[HandPieceNum][ColorNum];
+static Key zob_turn;
 
 //＜ここからPositionクラスの定義領域＞
 //Position classのコンストラクタから呼ばれる
@@ -123,6 +127,8 @@ void Position::position_from_sfen(const string &sfen)
 	} while (uip >> token && !isspace(token));
     //持ち駒の次は手数が入っているが無視してよい
 	//このあといろいろ設定する必要があるが準備ができていないのでここまで
+	m_st->board_key = Positionns::make_board_key(*this);
+	m_st->hand_key = Positionns::make_hand_key(*this);
 }
 //sfen文字列から局面の盤上を設定
 void Position::put_piece(Piece piece,Square sq)
@@ -172,6 +178,115 @@ inline void Position::cap_piece_bb(const PieceType pt, const Square sq,const Col
 	by_type_bb[pt].xor_bit(sq);
 	by_color_bb[c].xor_bit(sq);
 }
+//局面の更新(board,hand,king_square,color_turnだけ更新するdo_move)
+void Position::do_move(const Move m, StateInfo& st)
+{
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
+	Key bod_key = get_board_key();
+	Key had_key = get_hand_key();
+
+	const Color us = get_color_turn();
+	const Square to = move_to(m);
+	const PieceType pt_cap = move_cap_piece(m);
+	PieceType pt_to;
+
+	if (is_drop(m)){	//打つ手		
+		pt_to = drop_piece(m);  //打つ駒種を取り出す
+		//hand key || board keyの更新
+		//いろいろわからない処理が続いている
+		const int hand_num = get_hand(us, pt_to);	//一時的に現手駒数が必要
+		sub_hand(us, pt_to);
+		drop_piece_bb(pt_to, to, us);
+		board[to] = (us << 4) | pt_to;    //駒コードに変換（駒種は4bitまで）
+		//ここでもいろいろ処理、不明
+		//この打ち駒によって詰みが発生した場合の処理
+	}
+	else{				//盤上の手
+		const Square from = move_from(m);
+		const PieceType pt_from = move_piece(m);
+		board[from] = EmptyPiece;
+		pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
+		board[to] = int((us << 4) | pt_to);
+		//ここでboard keyなど更新
+		if (pt_cap){
+			//駒をとった場合の処理
+			Color them = over_turn(us);
+			//ここでboard keyなどの処理
+			cap_piece_bb(pt_cap, to, them);
+			add_hand(us, PieceType(pt_cap & 0x07));	//pt_capが成り駒だと正常に手駒に登録されないので成りbitを削っている
+			//ここでいろいろな処理、不明
+			const int hand_num = get_hand(us, PieceType(pt_cap & 0x07));	//一時的に更新後の手駒数が必要？
+			//ここでいろいろ処理、不明
+		}
+		move_piece_bb(pt_from, pt_to, from, to, us);
+		if (pt_from == King){
+			king_square[us] = to;
+		}
+		else{	//king以外の駒の場合
+			//わからない処理
+		}
+		//王手がかかっているときの処理
+		if (1){
+		}
+		else{
+		}
+	}
+	flip_color();
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
+}
+//局面の復元
+void Position::undo_move(const Move m)
+{
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
+	const Color them = get_color_turn();
+	const Color us = over_turn(them);
+	const Square to = move_to(m);
+
+	flip_color();
+	if (is_drop(m)){	//打つ手の戻し
+		const PieceType pt_to = drop_piece(m);
+		drop_piece_bb(pt_to, to, us);
+		board[to] = EmptyPiece;
+		add_hand(us, pt_to);
+		const int hand_num = get_hand(us, pt_to);	//一時的に更新後のhand?numは必要
+		//いろいろわからない処理
+	}
+	else{				//盤上の手の戻し
+		const Square from = move_from(m);
+		const PieceType pt_from = move_piece(m);
+		const PieceType pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
+		const PieceType pt_cap = move_cap_piece(m);
+		if (pt_from == King){	//移動させた駒がkingなら
+			king_square[us] = from;
+		}
+		else{	//king以外の駒
+			//いろいろとわからない処理
+		}
+		move_piece_bb(pt_from, pt_to, from, to, us);
+		if (pt_cap){	//駒をとっていたときの戻し
+			//bitboardの処理
+			cap_piece_bb(pt_cap, to, them);
+			board[to] = (them << 4) | pt_cap;
+			const int hand_num = get_hand(us, PieceType(pt_cap & 0x07));	//一時的に現手駒数を取得
+			//いろいろわからない処理
+			sub_hand(us, PieceType(pt_cap & 0x07));
+		}
+		else{
+			board[to] = EmptyPiece;
+		}
+		board[from] = (us << 4) | pt_from;
+	}
+	//StatInfo関係の処理
+#ifdef _DEBUG
+	Positionns::is_ok(*this);
+#endif
+}
 
 #ifdef _DEBUG
 bool Position::get_piece_bit(const PieceType pt, const Square sq)
@@ -196,6 +311,21 @@ void Position::print_color_bb(Color c,string msg)
 //＜ここからnamespace Positionnsの定義領域＞
 void Positionns::init()
 {
+	MT64bit mt64;	//シード固定でクラス生成
+
+	//zobrist初期化,zob_trun用にbit0番目はあけておくということらしい
+	for (int pt = 0; pt < PieceNum; pt++){
+		for (int sq = I9; sq < SquareNum; sq++){
+			for (int c = Black; c < ColorNum; c++){
+				zobrist[pt][sq][c] = mt64.random() & 0x7FFFFFFFFFFFFFFE;
+			}
+		}
+	}
+	for (int hp = 0; hp < HandPieceNum; hp++){
+		zob_hand[hp][Black] = mt64.random() & 0x7FFFFFFFFFFFFFFE;
+		zob_hand[hp][White] = mt64.random() & 0x7FFFFFFFFFFFFFFE;
+	}
+	zob_turn = 1ULL;
 }
 
 void Positionns::print_board(const Position& pos)
@@ -220,116 +350,27 @@ void Positionns::print_board(const Position& pos)
 	}
 	cout << endl;
 }
-//局面の更新(board,hand,king_square,color_turnだけ更新するdo_move)
-void Position::do_move(const Move m,StateInfo& st)
+//局面のハッシュキーの初期化
+Key Positionns::make_board_key(const Position& pos)
 {
-#ifdef _DEBUG
-	Positionns::is_ok(*this);
-#endif
-	Key bod_key = get_board_key();
-	Key had_key = get_hand_key();
-
-	const Color us = get_color_turn();
-    const Square to = move_to(m);
-	const PieceType pt_cap = move_cap_piece(m);
-	PieceType pt_to;
 	
-	if (is_drop(m)){	//打つ手		
-		pt_to = drop_piece(m);  //打つ駒種を取り出す
-		//hand key || board keyの更新
-		//いろいろわからない処理が続いている
-		const int hand_num = get_hand(us, pt_to);	//一時的に現手駒数が必要
-		sub_hand(us, pt_to);
-		drop_piece_bb(pt_to, to, us);
-		board[to] = (us << 4) | pt_to;    //駒コードに変換（駒種は4bitまで）
-		//ここでもいろいろ処理、不明
-		//この打ち駒によって詰みが発生した場合の処理
+	Key result = 0;
+	/*
+	for (int sq = I9; sq < SquareNum; sq++){
+		if (pos.get_board(sq) != EmptyPiece){
+			result += zobrist();
+		}
 	}
-	else{				//盤上の手
-		const Square from = move_from(m);
-		const PieceType pt_from = move_piece(m);
-		board[from] = EmptyPiece;
-		pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
-		board[to] = int((us << 4) | pt_to);
-		//ここでboard keyなど更新
-		if (pt_cap){
-			//駒をとった場合の処理
-			Color them = over_turn(us);
-			//ここでboard keyなどの処理
-			cap_piece_bb(pt_cap,to,them);
-			add_hand(us, PieceType(pt_cap & 0x07));	//pt_capが成り駒だと正常に手駒に登録されないので成りbitを削っている
-			//ここでいろいろな処理、不明
-			const int hand_num = get_hand(us, PieceType(pt_cap & 0x07));	//一時的に更新後の手駒数が必要？
-			//ここでいろいろ処理、不明
-		}
-		move_piece_bb(pt_from, pt_to, from, to, us);
-		if (pt_from == King){
-			king_square[us] = to;
-        }
-		else{	//king以外の駒の場合
-			//わからない処理
-		}
-        //王手がかかっているときの処理
-        if(1){
-        }
-        else{
-        }
-    }
-	flip_color();
-#ifdef _DEBUG
-	Positionns::is_ok(*this);
-#endif
+	if (pos.get_color_turn() == White){
+		result ^= zob_turn();
+	}
+	*/
+	return result;
 }
-//局面の復元
-void Position::undo_move(const Move m)
+Key Positionns::make_hand_key(const Position& pos)
 {
-#ifdef _DEBUG
-	Positionns::is_ok(*this);
-#endif
-	const Color them = get_color_turn();
-	const Color us = over_turn(them);
-	const Square to = move_to(m);
-
-	flip_color();
-	if (is_drop(m)){	//打つ手の戻し
-		const PieceType pt_to = drop_piece(m);
-		drop_piece_bb(pt_to, to,us);
-		board[to] = EmptyPiece;
-		add_hand(us, pt_to);
-		const int hand_num = get_hand(us, pt_to);	//一時的に更新後のhand?numは必要
-		//いろいろわからない処理
-	}
-	else{				//盤上の手の戻し
-		const Square from = move_from(m);
-		const PieceType pt_from = move_piece(m);
-		const PieceType pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
-		const PieceType pt_cap = move_cap_piece(m);
-		if (pt_from == King){	//移動させた駒がkingなら
-			king_square[us] = from;
-		}
-		else{	//king以外の駒
-			//いろいろとわからない処理
-		}
-		move_piece_bb(pt_from,pt_to,from,to,us);
-		if (pt_cap){	//駒をとっていたときの戻し
-			//bitboardの処理
-			cap_piece_bb(pt_cap,to,them);
-			board[to] = (them << 4) | pt_cap;
-			const int hand_num = get_hand(us, PieceType(pt_cap & 0x07));	//一時的に現手駒数を取得
-			//いろいろわからない処理
-			sub_hand(us, PieceType(pt_cap & 0x07));
-		}
-		else{
-			board[to] = EmptyPiece;
-		}
-		board[from] = (us << 4) | pt_from;
-	}
-	//StatInfo関係の処理
-#ifdef _DEBUG
-	Positionns::is_ok(*this);
-#endif
+	return Key(0);
 }
-
 //board,hand,bitboardのチエック
 #ifdef _DEBUG
 void Positionns::is_ok(Position &pos)

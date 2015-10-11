@@ -16,10 +16,14 @@ Shogidokoro shogi playing engin
 		ストリームで表示させる方法もある。
 		cout << hex;
 		cout << vv << "," << uu << "," << "test" << "," << "words" << endl;
+	むやみと名前空間を導入しない、使用するときは限定的に導入する
+	× using namespace std;
+	○ using std::cout;
 */
 #include <stdio.h>
 #include <cstdlib>
 #include <iostream>
+
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
@@ -30,8 +34,10 @@ Shogidokoro shogi playing engin
 #include "bitboard.h"
 #include "position.h"
 #include "usi.h"
+#include "mt64bit.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 /*
 #include "usioption.h"
 #include "evaluate.h"
@@ -150,6 +156,26 @@ int main_test(int argc,char *argv[])
     int result = RUN_ALL_TESTS();
     return result;
 }
+TEST(mt64bit, mt64bit)
+{
+	//mt64bitはヘッダだけなのでmain.cppでテスト(動作確認)
+	//http://elephnote.com/blog/archives/768 このライブラリの使い方
+	cout << "seed固定でいつも同じ乱数を返してくれる" << endl;
+	
+	MT64bit r;
+	for (int i = 0; i < 10; i++){
+		cout << r.random() << endl;
+	}
+	//cppref.githubのサンプルコード、random_deviceは予測不可能な乱数を生成してくれるクラス、擬似乱数生成エンジンのシードとして使用される
+	cout << "seed変動でいつも違う乱数を返してくれる" << endl;
+	std::random_device seed_gen;
+	std::mt19937_64 engine(seed_gen());
+	for (int i = 0; i < 10; i++){
+		uint64_t result = engine();
+		cout << result << endl;
+	}
+}
+
 TEST(main, over_turn)
 {
 	Color c;
