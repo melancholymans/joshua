@@ -15,7 +15,6 @@ public:
 	}
 	//ひとつ上のレベルへのリンク
 	StateInfo* previous;
-private:
 	//手番側のKINGにチエックをかけている敵側駒のbitboard
 	BitBoard checkers_bb;
 	Key board_key;
@@ -132,6 +131,7 @@ private:
 	void Position::clear()
 	{
 		memset(this, 0, sizeof(Position));
+		m_st = &start_state;
 	}
 	void put_piece(Piece piece, Square sq);
 	void put_hand(Piece pt, int num);
@@ -147,6 +147,8 @@ private:
 	BitBoard by_type_bb[PieceTypeNum];
 	BitBoard by_color_bb[ColorNum];
 	int color_turn;
+	StateInfo start_state;
+	StateInfo *m_st;
 };
 
 namespace Positionns
@@ -154,58 +156,8 @@ namespace Positionns
 	void init();
 	void is_ok(Position& pos);
 	void print_board(const Position &pos);
+	Key make_board_key(const Position& pos);
+	Key make_hand_key(const Position& pos);
 }
-//positionの定数
-/*
-const int BOARD_UPPER = 16*13;
-const int STAND_BLACK_START = 16*13;
-const int STAND_WHITE_START = 16*13 + 7;
-const int LIMIT = 16*13 + 7*2 + 2;  //16*13は盤上7*2は駒台、最後の２はKING用の座標
-
-extern string start_position;
-extern position_t root_position;
-extern const int BLACK;
-extern const int WHITE;
-extern const int NO_COLOR;
-extern int turn;
-
-const extern char EMPTY;
-const extern char EDGE;
-//const extern char NOT_PMOTO;
-
-*/
-
-/*
-駒コードを与えて成っていないか判定する
-成っていなかったらtrue,成駒ならfalse
-*/
-/*
-inline int is_not_pmoto(char p)
-{
-    return p & 8;
-}
-*/
-/*
-先手駒コードを強制的に後手駒コードにする
-*/
-/*
-inline char do_white(char p)
-{
-    return p | 0xF0;
-}
-*/
-/*
-後手駒コードを強制的に先手駒コードにする
-*/
-/*
-inline char do_black(char p)
-{
-    return p & 0x0F;
-}
-*/
-
-/*
-string to_sfen(const Position &pos);
-*/
 #endif
 
