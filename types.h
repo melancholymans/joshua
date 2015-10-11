@@ -44,7 +44,7 @@ enum SquareDelta{
 //駒種は1-14なので4bitまで
 enum PieceType{
 	AllPieces = 0,EmptyPiece = 0,
-	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,King,
+	Pawn = 1,Lance,Night,Silver,Bishop,Rook,Gold,HandPieceNum=7,King=8,
 	ProPawn,ProLance,ProNight,ProSilver,Horse,Dragon,
 	PieceTypeNum
 };
