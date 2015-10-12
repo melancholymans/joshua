@@ -437,6 +437,8 @@ namespace BitBoardns
 	BitBoard make_rook_attack(const Square sq, const BitBoard& occ);
 	BitBoard make_gold_attack(const Color c, const Square sq);
 	BitBoard make_king_attack(const Square sq);
+	BitBoard make_horse_attack(const Square sq, const BitBoard& occ);
+	BitBoard make_dragon_attack(const Square sq, const BitBoard& occ);
 	Directtion make_square_relation(const Square sq1, const Square sq2);
 	BitBoard make_square_bb(Square sq);
 	BitBoard make_between_bb(const Square sq1, const Square sq2);

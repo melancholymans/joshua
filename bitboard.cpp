@@ -302,6 +302,18 @@ BitBoard BitBoardns::make_king_attack(const Square sq)
 {
 	return king_attack[sq];
 }
+BitBoard BitBoardns::make_horse_attack(const Square sq, const BitBoard& occ)
+{
+	const BitBoard line(occ & bishop_mask[sq]);
+
+	return bishop_attack[bishop_attack_index[sq] + occupied_to_index(line, bishop_mask[sq], BISHOP_OFFSET[sq])] | king_attack[sq];
+}
+BitBoard BitBoardns::make_dragon_attack(const Square sq, const BitBoard& occ)
+{
+	const BitBoard line(occ & rook_mask[sq]);
+
+	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq], ROOK_OFFSET[sq])] | king_attack[sq];
+}
 //指定した座標sq1,sq2間に成立する方向子を返す
 Directtion BitBoardns::make_square_relation(const Square sq1, const Square sq2)
 {
@@ -1476,8 +1488,6 @@ TEST(bitboard, bishop_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	/*using BitBoardns::index_to_occupied;*/
-	/*using BitBoardns::occupied_to_index;*/
 	using BitBoardns::make_bishop_attack;
 	using BitBoardns::print;
 	int sq;
@@ -1520,6 +1530,90 @@ TEST(bitboard, bishop_attack)
 	sq = F1;
 	ack = make_bishop_attack(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80002008020);
+	EXPECT_EQ(ack.p(1), 0x00);
+}
+TEST(bitboard, horse_attack)
+{
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	//	A  B  C  D  E  F  G  H  I
+	//9  *  *  .  *  .  *  .  * .
+	//8  .  .  .  *  *  .  *  . .
+	//7  .  .  *  .  *  .  *  . *
+	//6  *  .  .  *  .  *  .  . .
+	//5  .  *  *  .  .  .  *  . .
+	//4  *  *  *  .  *  .  .  . .
+	//3  .  *  .  *  *  .  *  . *
+	//2	 .  .  .  .  *  .  .  . .
+	//1  *  .  *  .  .  .  *  * *
+	using BitBoardns::make_horse_attack;
+	using BitBoardns::print;
+	int sq;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	BitBoard ack;
+
+	BitBoardns::init();
+	sq = C9;
+	ack = make_horse_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x80600000000000);
+	EXPECT_EQ(ack.p(1), 0x803);
+	sq = I8;
+	ack = make_horse_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x20080200E05);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F7;
+	ack = make_horse_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x80200E050382020);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C6;
+	ack = make_horse_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x503822000000000);
+	EXPECT_EQ(ack.p(1), 0x41C);
+	sq = E5;
+	ack = make_horse_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x10070281C1000000);
+	EXPECT_EQ(ack.p(1), 0x20080);
+}
+TEST(bitboard, dragon_attack)
+{
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
+	//	A  B  C  D  E  F  G  H  I
+	//9  *  *  .  *  .  *  .  * .
+	//8  .  .  .  *  *  .  *  . .
+	//7  .  .  *  .  *  .  *  . *
+	//6  *  .  .  *  .  *  .  . .
+	//5  .  *  *  .  .  .  *  . .
+	//4  *  *  *  .  *  .  .  . .
+	//3  .  *  .  *  *  .  *  . *
+	//2	 .  .  .  .  *  .  .  . .
+	//1  *  .  *  .  .  .  *  * *
+	using BitBoardns::make_dragon_attack;
+	using BitBoardns::print;
+	int sq;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	BitBoard ack;
+
+	BitBoardns::init();
+	sq = C9;
+	ack = make_dragon_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x180600000000000);
+	EXPECT_EQ(ack.p(1), 0x03);
+	sq = I8;
+	ack = make_dragon_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x80E05);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F7;
+	ack = make_dragon_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0xE058380000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C6;
+	ack = make_dragon_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x503800000000000);
+	EXPECT_EQ(ack.p(1), 0x101C);
+	sq = E5;
+	ack = make_dragon_attack(Square(sq), occ);
+	EXPECT_EQ(ack.p(0), 0x40702C1C0400000);
 	EXPECT_EQ(ack.p(1), 0x00);
 }
 TEST(bitboard, occupied_to_index)
