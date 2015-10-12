@@ -316,7 +316,7 @@ BitBoard Position::attacks_from(const Color c, const Square sq, const PieceType 
 	case ProLance:
 	case ProNight:
 	case ProSilver:
-		return make_rook_attack(sq, occ);
+		return make_gold_attack(c,sq);
 	case King:return make_king_attack(sq);
 	case Horse:return make_horse_attack(sq, occ);
 	case Dragon:return make_dragon_attack(sq, occ);
@@ -644,12 +644,93 @@ void Positionns::is_ok(Position &pos)
 #ifdef _DEBUG
 TEST(position, attacks_from)
 {
-	//テスト問題は加藤一二三実践集より
-	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
+	//テストはbitboard.cppと同じ
+	int sq;
+	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
 	Position pos(ss);
-	BitBoard bb;
 
-	pos.attackers_from<Pawn>(Black, B3, bb);
+	BitBoardns::init();
+	//black
+	Color c = Black;
+	sq = I9;
+	ack = pos.attackers_from<Pawn>(c, Square(sq),occ);
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	/*
+	sq = H8;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x80000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B2;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x40);
+	sq = A1;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x10000);
+
+	c = White;
+	sq = I9;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x02);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x80000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000000000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B2;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x100);
+	sq = A1;
+	ack = make_pawn_attack(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	*/
 }
 TEST(position, inver_bit_bb)
 {
@@ -658,10 +739,7 @@ TEST(position, inver_bit_bb)
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
 	Position pos(ss);
 
-	pos.print_piece_bb(AllPieces,"AllPiece");
 	BitBoard bb = pos.inver_bit_bb();
-	pos.print_bb(bb, "inver bb");
-
 	EXPECT_EQ(false, bb.is_bit_on(A9));
 	EXPECT_EQ(false, bb.is_bit_on(B9));
 	EXPECT_EQ(true, bb.is_bit_on(C9));

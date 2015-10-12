@@ -109,79 +109,37 @@ public:
 	}
 	//座標sqに移動可能な局面bitboardを返す
 	BitBoard attackers_to(const Square sq, const BitBoard& occ) const;
-	//座標sqにいる駒種ptからの利きbitboardを返す
-	template<PieceType PT>
-	BitBoard attackers_from(const Color c, Square sq, BitBoard& occ) const;
-	template<>
-	BitBoard attackers_from<Pawn>(const Color c, Square sq, BitBoard& occ) const
+	//座標sqにいる駒種ptからの利きbitboardを返す。bitboardクラスに直接アクセスできない場合このラッパー関数群を呼び出す
+	BitBoard attackers_from_pawn(const Color c, Square sq) const {return make_pawn_attack(c, sq);}
+	BitBoard attackers_from_lance(const Color c, Square sq, BitBoard& occ) const { return make_lance_attack(c, sq, occ); }
+	BitBoard attackers_from_night(const Color c, Square sq) const{return make_night_attack(c, sq);}
+	BitBoard attackers_from_silver(const Color c, Square sq) const{return make_silver_attack(c, sq);}
+	BitBoard attackers_from_bishop(Square sq) const
 	{
-		return make_pawn_attack(c, sq);
+		return make_bishop_attack(sq,all_bb());
 	}
-	template<>
-	BitBoard attackers_from<Lance>(const Color c, Square sq, BitBoard& occ) const
+	BitBoard attackers_from_bishop(Square sq, BitBoard& occ) const{ return make_bishop_attack(sq, occ); }
+	BitBoard attackers_from_rook(Square sq) const
+	{ 
+		return make_rook_attack(sq, all_bb()); 
+	}
+	BitBoard attackers_from_rook(Square sq, BitBoard& occ) const{ return make_rook_attack(sq, occ); }
+	BitBoard attackers_from_gold(const Color c, Square sq) const{return make_gold_attack(c,sq);}
+	BitBoard attackers_from_king(Square sq) const{return make_king_attack(sq);}
+	BitBoard attackers_from_propawn(const Color c, Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_prolance(const Color c, Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_pronight(const Color c, Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_prosilver(const Color c, Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_horse(Square sq) const
 	{
-		return make_lance_attack(c, sq, occ);
+		return make_horse_attack(sq, all_bb()); 
 	}
-	template<>
-	BitBoard attackers_from<Night>(const Color c, Square sq, BitBoard& occ) const
+	BitBoard attackers_from_horse(Square sq, BitBoard& occ) const{ return make_horse_attack(sq, occ); }
+	BitBoard attackers_from_dragon(Square sq) const
 	{
-		return make_night_attack(c, sq);
+		return make_dragon_attack(sq, all_bb());
 	}
-	template<>
-	BitBoard attackers_from<Silver>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_silver_attack(c, sq);
-	}
-	template<>
-	BitBoard attackers_from<Bishop>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_bishop_attack(sq,occ);
-	}
-	template<>
-	BitBoard attackers_from<Rook>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_rook_attack(sq,occ);
-	}
-	template<>
-	BitBoard attackers_from<Gold>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_gold_attack(c,sq);
-	}
-	template<>
-	BitBoard attackers_from<King>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_king_attack(sq);
-	}
-	template<>
-	BitBoard attackers_from<ProPawn>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_gold_attack(c, sq);
-	}
-	template<>
-	BitBoard attackers_from<ProLance>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_gold_attack(c, sq);
-	}
-	template<>
-	BitBoard attackers_from<ProNight>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_gold_attack(c, sq);
-	}
-	template<>
-	BitBoard attackers_from<ProSilver>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_gold_attack(c, sq);
-	}
-	template<>
-	BitBoard attackers_from<Horse>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_horse_attack(sq, occ);
-	}
-	template<>
-	BitBoard attackers_from<Dragon>(const Color c, Square sq, BitBoard& occ) const
-	{
-		return make_dragon_attack(sq, occ);
-	}
+	BitBoard attackers_from_dragon(Square sq, BitBoard& occ) const{ return make_dragon_attack(sq, occ); }
 	//全ての駒種に対応するattacks_from関数(汎用）
 	BitBoard attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ);
 	//局面を更新
