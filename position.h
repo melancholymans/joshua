@@ -3,8 +3,18 @@
 
 #include "types.h"
 #include "bitboard.h"
-
+//ヘッダファイルで名前空間を宣言しているが例外として認める
 using std::string;
+using BitBoardns::make_pawn_attack;
+using BitBoardns::make_lance_attack;
+using BitBoardns::make_night_attack;
+using BitBoardns::make_silver_attack;
+using BitBoardns::make_bishop_attack;
+using BitBoardns::make_rook_attack;
+using BitBoardns::make_gold_attack;
+using BitBoardns::make_king_attack;
+using BitBoardns::make_horse_attack;
+using BitBoardns::make_dragon_attack;
 
 //do_moveによって変更された局面をundo_moveで復元するときに必要な情報
 struct StateInfo{
@@ -78,20 +88,102 @@ public:
 		return static_cast<bool>(hand[c] & hand_masking[pt]);
 	}
 	//カラー、駒種に関係なく、全ての局面bitboardを返す
-	BitBoard all_bb()
+	BitBoard all_bb() const
 	{
 		return by_type_bb[AllPieces];
 	}
 	//指定したカラーの局面bitboardを返す
-	BitBoard color_of_bb(const Color c)
+	BitBoard color_of_bb(const Color c) const
 	{
 		return by_color_bb[c];
 	}
 	//カラーに関係なく指定した駒種の局面bitboardを返す
-	BitBoard piece_type_of_bb(const PieceType pt)
+	BitBoard piece_type_of_bb(const PieceType pt) const
 	{
 		return by_type_bb[pt];
 	}
+	//駒がない座標のbitをonにして駒がある座標のbitをoffにする
+	BitBoard inver_bit_bb() const
+	{
+		return ~all_bb();
+	}
+	//座標sqに移動可能な局面bitboardを返す
+	BitBoard attackers_to(const Square sq, const BitBoard& occ) const;
+	//座標sqにいる駒種ptからの利きbitboardを返す
+	template<PieceType PT>
+	BitBoard attackers_from(const Color c, Square sq, BitBoard& occ) const;
+	template<>
+	BitBoard attackers_from<Pawn>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_pawn_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<Lance>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_lance_attack(c, sq, occ);
+	}
+	template<>
+	BitBoard attackers_from<Night>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_night_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<Silver>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_silver_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<Bishop>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_bishop_attack(sq,occ);
+	}
+	template<>
+	BitBoard attackers_from<Rook>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_rook_attack(sq,occ);
+	}
+	template<>
+	BitBoard attackers_from<Gold>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_gold_attack(c,sq);
+	}
+	template<>
+	BitBoard attackers_from<King>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_king_attack(sq);
+	}
+	template<>
+	BitBoard attackers_from<ProPawn>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_gold_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<ProLance>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_gold_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<ProNight>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_gold_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<ProSilver>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_gold_attack(c, sq);
+	}
+	template<>
+	BitBoard attackers_from<Horse>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_horse_attack(sq, occ);
+	}
+	template<>
+	BitBoard attackers_from<Dragon>(const Color c, Square sq, BitBoard& occ) const
+	{
+		return make_dragon_attack(sq, occ);
+	}
+	//全ての駒種に対応するattacks_from関数(汎用）
+	BitBoard attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ);
 	//局面を更新
 	void do_move(const Move m, StateInfo& st);
 	//局面を復元
@@ -119,6 +211,7 @@ public:
 	bool get_piece_bit(const PieceType pt, const Square sq);
 	void print_color_bb(Color c,string msg);
 	void print_piece_bb(PieceType pt,string msg);
+	void print_bb(BitBoard& bb, string msg);
 #endif
 private:
 	//positionクラスをクリアにする

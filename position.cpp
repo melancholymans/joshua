@@ -11,7 +11,7 @@
 	#include <gtest\gtest.h>
 #endif
 
-//名前空間宣言
+//名前空間宣言(名前空間宣言はcppファイルでのみ）
 using std::cout;
 using std::cin;
 using std::endl;
@@ -21,7 +21,9 @@ using namespace Movens;
 using Positionns::get_zobrist;
 using Positionns::get_zob_hand;
 using Positionns::get_zob_turn;
-
+using BitBoardns::make_square_relation;
+using BitBoardns::make_square_bb;
+using BitBoardns::make_between_bb;
 //局所定数宣言・定義
 //駒の枚数をunsigned int 32bitにパッキンするための駒１つの定数
 const int hand_packed[8] = {
@@ -300,25 +302,55 @@ void Position::undo_move(const Move m)
 	Positionns::is_ok(*this);
 #endif
 }
-
+BitBoard Position::attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ)
+{
+	switch (pt){
+	case Pawn:return make_pawn_attack(c, sq);
+	case Lance:return make_lance_attack(c, sq, occ);
+	case Night:return make_night_attack(c, sq);
+	case Silver:return make_silver_attack(c, sq);
+	case Bishop:return make_bishop_attack(sq, occ);
+	case Rook:return make_rook_attack(sq, occ);
+	case Gold:
+	case ProPawn:
+	case ProLance:
+	case ProNight:
+	case ProSilver:
+		return make_rook_attack(sq, occ);
+	case King:return make_king_attack(sq);
+	case Horse:return make_horse_attack(sq, occ);
+	case Dragon:return make_dragon_attack(sq, occ);
+	default:_ASSERT(false);
+	}
+}
 #ifdef _DEBUG
+//Postionクラスの指定した駒種の指定した座標のbitがonになっていればtrueを返す
 bool Position::get_piece_bit(const PieceType pt, const Square sq)
 {
 	return by_type_bb[pt].is_bit_on(sq);
 }
+//Postionクラスの指定したカラーの指定した座標のbitがonになっていればtrueを返す
 bool Position::get_color_bit(const Color c, const Square sq)
 {
 	return by_color_bb[c].is_bit_on(sq);
 }
-void Position::print_piece_bb(const PieceType pt,string msg)
+//Postionクラスの指定した駒種のbitboardを表示する
+void Position::print_piece_bb(const PieceType pt, string msg)
 {
 	printf("mssage: %s\n", msg.c_str());
 	BitBoardns::print(by_type_bb[pt]);
 }
+//Postionクラスの指定したカラーのbitboardを表示する
 void Position::print_color_bb(Color c,string msg)
 {
 	printf("mssage:%s\n", msg.c_str());
 	BitBoardns::print(by_color_bb[c]);
+}
+//指定したBitBoardを表示する
+void Position::print_bb(BitBoard& bb,string msg)
+{
+	printf("mssage:%s\n", msg.c_str());
+	BitBoardns::print(bb);
 }
 #endif
 //＜ここからnamespace Positionnsの定義領域＞
@@ -610,6 +642,108 @@ void Positionns::is_ok(Position &pos)
 #endif
 
 #ifdef _DEBUG
+TEST(position, attacks_from)
+{
+	//テスト問題は加藤一二三実践集より
+	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
+	Position pos(ss);
+	BitBoard bb;
+
+	pos.attackers_from<Pawn>(Black, B3, bb);
+}
+TEST(position, inver_bit_bb)
+{
+	//bitboardのbit反転する関数
+	//テスト問題は加藤一二三実践集より
+	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
+	Position pos(ss);
+
+	pos.print_piece_bb(AllPieces,"AllPiece");
+	BitBoard bb = pos.inver_bit_bb();
+	pos.print_bb(bb, "inver bb");
+
+	EXPECT_EQ(false, bb.is_bit_on(A9));
+	EXPECT_EQ(false, bb.is_bit_on(B9));
+	EXPECT_EQ(true, bb.is_bit_on(C9));
+	EXPECT_EQ(false, bb.is_bit_on(D9));
+	EXPECT_EQ(true, bb.is_bit_on(E9));
+	EXPECT_EQ(true, bb.is_bit_on(F9));
+	EXPECT_EQ(true, bb.is_bit_on(G9));
+	EXPECT_EQ(false, bb.is_bit_on(H9));
+	EXPECT_EQ(true, bb.is_bit_on(I9));
+	EXPECT_EQ(true, bb.is_bit_on(A8));
+	EXPECT_EQ(false, bb.is_bit_on(B8));
+	EXPECT_EQ(false, bb.is_bit_on(C8));
+	EXPECT_EQ(true, bb.is_bit_on(D8));
+	EXPECT_EQ(false, bb.is_bit_on(E8));
+	EXPECT_EQ(false, bb.is_bit_on(F8));
+	EXPECT_EQ(true, bb.is_bit_on(G8));
+	EXPECT_EQ(true, bb.is_bit_on(H8));
+	EXPECT_EQ(false, bb.is_bit_on(I8));
+	EXPECT_EQ(true, bb.is_bit_on(A7));
+	EXPECT_EQ(false, bb.is_bit_on(B7));
+	EXPECT_EQ(true, bb.is_bit_on(C7));
+	EXPECT_EQ(true, bb.is_bit_on(D7));
+	EXPECT_EQ(true, bb.is_bit_on(E7));
+	EXPECT_EQ(false, bb.is_bit_on(F7));
+	EXPECT_EQ(false, bb.is_bit_on(G7));
+	EXPECT_EQ(false, bb.is_bit_on(H7));
+	EXPECT_EQ(true, bb.is_bit_on(I7));
+	EXPECT_EQ(false, bb.is_bit_on(A6));
+	EXPECT_EQ(true, bb.is_bit_on(B6));
+	EXPECT_EQ(false, bb.is_bit_on(C6));
+	EXPECT_EQ(false, bb.is_bit_on(D6));
+	EXPECT_EQ(false, bb.is_bit_on(E6));
+	EXPECT_EQ(false, bb.is_bit_on(F6));
+	EXPECT_EQ(false, bb.is_bit_on(G6));
+	EXPECT_EQ(true, bb.is_bit_on(H6));
+	EXPECT_EQ(false, bb.is_bit_on(I6));
+	EXPECT_EQ(true, bb.is_bit_on(A5));
+	EXPECT_EQ(true, bb.is_bit_on(B5));
+	EXPECT_EQ(true, bb.is_bit_on(C5));
+	EXPECT_EQ(true, bb.is_bit_on(D5));
+	EXPECT_EQ(true, bb.is_bit_on(E5));
+	EXPECT_EQ(false, bb.is_bit_on(F5));
+	EXPECT_EQ(true, bb.is_bit_on(G5));
+	EXPECT_EQ(false, bb.is_bit_on(H5));
+	EXPECT_EQ(true, bb.is_bit_on(I5));
+	EXPECT_EQ(false, bb.is_bit_on(A4));
+	EXPECT_EQ(true, bb.is_bit_on(B4));
+	EXPECT_EQ(false, bb.is_bit_on(C4));
+	EXPECT_EQ(true, bb.is_bit_on(D4));
+	EXPECT_EQ(false, bb.is_bit_on(E4));
+	EXPECT_EQ(true, bb.is_bit_on(F4));
+	EXPECT_EQ(false, bb.is_bit_on(G4));
+	EXPECT_EQ(true, bb.is_bit_on(H4));
+	EXPECT_EQ(true, bb.is_bit_on(I4));
+	EXPECT_EQ(true, bb.is_bit_on(A3));
+	EXPECT_EQ(false, bb.is_bit_on(B3));
+	EXPECT_EQ(true, bb.is_bit_on(C3));
+	EXPECT_EQ(false, bb.is_bit_on(D3));
+	EXPECT_EQ(false, bb.is_bit_on(E3));
+	EXPECT_EQ(true, bb.is_bit_on(F3));
+	EXPECT_EQ(false, bb.is_bit_on(G3));
+	EXPECT_EQ(true, bb.is_bit_on(H3));
+	EXPECT_EQ(false, bb.is_bit_on(I3));
+	EXPECT_EQ(true, bb.is_bit_on(A2));
+	EXPECT_EQ(false, bb.is_bit_on(B2));
+	EXPECT_EQ(false, bb.is_bit_on(C2));
+	EXPECT_EQ(false, bb.is_bit_on(D2));
+	EXPECT_EQ(false, bb.is_bit_on(E2));
+	EXPECT_EQ(false, bb.is_bit_on(F2));
+	EXPECT_EQ(true, bb.is_bit_on(G2));
+	EXPECT_EQ(false, bb.is_bit_on(H2));
+	EXPECT_EQ(true, bb.is_bit_on(I2));
+	EXPECT_EQ(false, bb.is_bit_on(A1));
+	EXPECT_EQ(false, bb.is_bit_on(B1));
+	EXPECT_EQ(true, bb.is_bit_on(C1));
+	EXPECT_EQ(true, bb.is_bit_on(D1));
+	EXPECT_EQ(true, bb.is_bit_on(E1));
+	EXPECT_EQ(true, bb.is_bit_on(F1));
+	EXPECT_EQ(true, bb.is_bit_on(G1));
+	EXPECT_EQ(true, bb.is_bit_on(H1));
+	EXPECT_EQ(false, bb.is_bit_on(I1));
+}
 TEST(postion, undo_move)
 {
 	Square from, to;

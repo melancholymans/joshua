@@ -2,7 +2,7 @@
 #define MT64BIT_H_INCLUDE
 
 #include <random>
-
+//ヘッダファイルで名前空間を宣言しているが例外として認める
 using std::mt19937_64;
 
 //64bitのランダムな値を返すためのクラス,aperyのソース丸写し
