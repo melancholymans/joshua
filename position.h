@@ -110,6 +110,7 @@ public:
 	//座標sqに移動可能な局面bitboardを返す
 	BitBoard attackers_to(const Square sq, const BitBoard& occ) const;
 	//座標sqにいる駒種ptからの利きbitboardを返す。bitboardクラスに直接アクセスできない場合このラッパー関数群を呼び出す
+	//飛び駒用の関数は２とうりの実装がある。occ bitboardを引数にする関数と、positionクラスのby_type_bb[AllPiece]を使い引数はとらない関数
 	BitBoard attackers_from_pawn(const Color c, Square sq) const {return make_pawn_attack(c, sq);}
 	BitBoard attackers_from_lance(const Color c, Square sq, BitBoard& occ) const { return make_lance_attack(c, sq, occ); }
 	BitBoard attackers_from_night(const Color c, Square sq) const{return make_night_attack(c, sq);}
