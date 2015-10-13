@@ -729,453 +729,457 @@ TEST(position, attackers_from_pawn)
 	ack = pos.attackers_from_pawn(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
-	
 }
-
-
-
-
-/*
-
-
-テストを書き換える
-*/
-TEST(bitboard, night_attack)
+TEST(position, attackers_from_night)
 {
-//サンプルでテスト
-using BitBoardns::print;
-using BitBoardns::make_night_attack;
-int sq;
-BitBoard ack;
-
-BitBoardns::init();
-//black
-Color c = Black;
-sq = G7;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x8000200);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = F6;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x2000080000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = E5;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x800020000000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = D4;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x200008000000000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = C3;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x2000000000000);
-EXPECT_EQ(ack.p(1), 0x10);
-sq = B2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x800000000000000);
-EXPECT_EQ(ack.p(1), 0x4000);
-sq = A1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x40);
-//できないことを再確認
-sq = I9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = H9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = G9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = F9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = E9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = D9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = C9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = B9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = A9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-
-sq = I8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = H8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = G8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = F8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = E8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = D8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = C8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = B8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = A8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-//white
-c = White;
-sq = I9;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x800);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = H8;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x200008);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = G7;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x80002000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = F6;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x20000800000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = E5;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x8000200000000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = D4;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x2000080000000000);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = C3;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x20000000000000);
-EXPECT_EQ(ack.p(1), 0x100);
-//できないことを再確認
-sq = I2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = H2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = G2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = F2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = E2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = D2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = C2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = B2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = A2;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-
-sq = I1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = H1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = G1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = F1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = E1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = D1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = C1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = B1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-sq = A1;
-ack = make_night_attack(c, Square(sq));
-EXPECT_EQ(ack.p(0), 0x00);
-EXPECT_EQ(ack.p(1), 0x00);
-}
-TEST(bitboard, silver_attack)
-{
-	//サンプルでテスト
-	using BitBoardns::make_silver_attack;
+	//テストはbitboard.cppと同じ
 	int sq;
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
+
+	BitBoardns::init();
+	//black
+	Color c = Black;
+	sq = G7;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000200);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000080000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800020000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200008000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000000000000);
+	EXPECT_EQ(ack.p(1), 0x10);
+	sq = B2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800000000000000);
+	EXPECT_EQ(ack.p(1), 0x4000);
+	sq = A1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x40);
+	//できないことを再確認
+	sq = I9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+
+	sq = I8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	//white
+	c = White;
+	sq = I9;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x800);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H8;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x200008);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G7;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x80002000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F6;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000800000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E5;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x8000200000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D4;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x2000080000000000);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C3;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x20000000000000);
+	EXPECT_EQ(ack.p(1), 0x100);
+	//できないことを再確認
+	sq = I2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A2;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+
+	sq = I1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = H1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = G1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = F1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = E1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = D1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = C1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = B1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+	sq = A1;
+	ack = pos.attackers_from_night(c, Square(sq));
+	EXPECT_EQ(ack.p(0), 0x00);
+	EXPECT_EQ(ack.p(1), 0x00);
+}
+TEST(bitboard, attackers_from_silver)
+{
+	//テストはbitboard.cppと同じ
+	int sq;
+	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	//black
 	Color c = Black;
 	sq = I9;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x400);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = H8;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x140205);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G7;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x50081400);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F6;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x14020500000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x5008140000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = D4;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x1402050000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C3;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x814000000000000);
 	EXPECT_EQ(ack.p(1), 0xA0);
 	sq = B2;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x5000000000000000);
 	EXPECT_EQ(ack.p(1), 0x28040);
 	sq = A1;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x10080);
 	//white
 	c = White;
 	sq = I9;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x402);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = H8;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x140805);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G7;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x50201400);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F6;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x14080500000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x5020140000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = D4;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x1408050000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C3;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x2014000000000000);
 	EXPECT_EQ(ack.p(1), 0xA0);
 	sq = B2;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x5000000000000000);
 	EXPECT_EQ(ack.p(1), 0x28100);
 	sq = A1;
-	ack = make_silver_attack(c, Square(sq));
+	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x80);
 }
-TEST(bitboard, gold_attacks)
+/*
+テストを書き換える
+*/
+
+TEST(bitboard, attackers_from_gold)
 {
-	//サンプルでテスト
-	using BitBoardns::make_gold_attack;
+	//テストはbitboard.cppと同じ
 	int sq;
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	//black
 	Color c = Black;
 	sq = I9;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x202);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = H8;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0xC0A03);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G7;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x30280C00);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F6;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0xC0A0300000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x30280C0000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = D4;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0xC0A030000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C3;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x280C000000000000);
 	EXPECT_EQ(ack.p(1), 0x60);
 	sq = B2;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x3000000000000000);
 	EXPECT_EQ(ack.p(1), 0x18140);
 	sq = A1;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x10180);
 	//white
 	c = White;
 	sq = I9;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x602);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = H8;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x180A06);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G7;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x60281800);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F6;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x180A0600000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x6028180000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = D4;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x180A060000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C3;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x2818000000000000);
 	EXPECT_EQ(ack.p(1), 0xC0);
 	sq = B2;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x6000000000000000);
 	EXPECT_EQ(ack.p(1), 0x30140);
 	sq = A1;
-	ack = make_gold_attack(c, Square(sq));
+	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x10100);
 }
-TEST(bitboard, king_attack)
+TEST(bitboard, attackers_from_king)
 {
-	//サンプルでテスト
-	using BitBoardns::print;
-	using BitBoardns::make_king_attack;
+	//テストはbitboard.cppと同じ
 	int sq;
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	//kingにはblack/whiteは関係ない
 	sq = I9;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x602);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = H8;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x1C0A07);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G7;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x70281C00);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F6;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x1C0A0700000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x70281C0000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = D4;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x1C0A070000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C3;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x281C000000000000);
 	EXPECT_EQ(ack.p(1), 0xE0);
 	sq = B2;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x7000000000000000);
 	EXPECT_EQ(ack.p(1), 0x38140);
 	sq = A1;
-	ack = make_king_attack(Square(sq));
+	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x10180);
 }
-TEST(bitboard, lance_attack)
+TEST(bitboard, attackers_from_lance)
 {
 	//lance_attack配列はlance_mask配列,lance_attack_index配列から作られる最終成果物で
 	//局面bitboardの指定した座標にlanceをおいた時得られる利きbitboardを持っている
@@ -1192,205 +1196,91 @@ TEST(bitboard, lance_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::make_lance_attack;
-	using BitBoardns::print;
+	//テストはbitboard.cppと同じ
 	int sq;
-	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	//lance black
 	sq = C9;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = I8;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x01);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x18000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C6;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x100000000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0xC000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G4;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x400000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = A3;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x4000);
 	sq = C2;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x1800000000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F1;
-	ack = make_lance_attack(Black, Square(sq), occ);
+	ack = pos.attackers_from_lance(Black, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x7C0000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	//lance white
 	sq = C9;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x180000000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = I8;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x04);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x40000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C6;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x400000000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = E5;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x20000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G4;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x1000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = A3;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x30000);
 	sq = C2;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x4000000000000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F1;
-	ack = make_lance_attack(White, Square(sq), occ);
+	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
 }
-TEST(bitboard, one_direction_attack)
-{
-	BitBoard occ(0x00, 0x00), bb;
-	using BitBoardns::print;
-
-	//lance black
-	bb = one_direction_attack(I1, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xFF);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(H2, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xFE00);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(G3, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xFC0000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(F4, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xF8000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(E5, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xF000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(D6, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xE00000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(C7, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xC0000000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(B8, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x01);
-	bb = one_direction_attack(A9, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(I9, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(H8, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x200);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(G7, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xC0000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(F6, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x38000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(E5, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xF000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(D4, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x3E00000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(C3, occ, Black);
-	EXPECT_EQ(bb.p(0), 0xFC0000000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(B2, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x7F);
-	bb = one_direction_attack(A1, occ, Black);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x1FE00);
-	//lance white
-	bb = one_direction_attack(I9, occ, White);
-	EXPECT_EQ(bb.p(0), 0x1FE);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(H8, occ, White);
-	EXPECT_EQ(bb.p(0), 0x3F800);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(G7, occ, White);
-	EXPECT_EQ(bb.p(0), 0x7E00000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(F6, occ, White);
-	EXPECT_EQ(bb.p(0), 0xF80000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(E5, occ, White);
-	EXPECT_EQ(bb.p(0), 0x1E0000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(D4, occ, White);
-	EXPECT_EQ(bb.p(0), 0x38000000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(C3, occ, White);
-	EXPECT_EQ(bb.p(0), 0x6000000000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(B2, occ, White);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x100);
-	bb = one_direction_attack(A1, occ, White);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(I1, occ, White);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(H2, occ, White);
-	EXPECT_EQ(bb.p(0), 0x20000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(G3, occ, White);
-	EXPECT_EQ(bb.p(0), 0x6000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(F4, occ, White);
-	EXPECT_EQ(bb.p(0), 0xE00000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(E5, occ, White);
-	EXPECT_EQ(bb.p(0), 0x1E0000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(D6, occ, White);
-	EXPECT_EQ(bb.p(0), 0x3E000000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(C7, occ, White);
-	EXPECT_EQ(bb.p(0), 0x7E00000000000000);
-	EXPECT_EQ(bb.p(1), 0x00);
-	bb = one_direction_attack(B8, occ, White);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x1FC);
-	bb = one_direction_attack(A9, occ, White);
-	EXPECT_EQ(bb.p(0), 0x00);
-	EXPECT_EQ(bb.p(1), 0x3FC00);
-}
-TEST(bitboard, rook_attack)
+TEST(bitboard, attackers_from_rook)
 {
 	//rook_attack配列はrook_mask配列,rook_attack_index配列から作られる最終成果物で
 	//局面bitboardの指定した座標にrookをおいた時得られる利きbitboardを持っている
@@ -1407,51 +1297,53 @@ TEST(bitboard, rook_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::make_rook_attack;
-	using BitBoardns::print;
+	//テストはbitboard.cppと同じ
 	int sq;
-	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	sq = C9;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x180200000000000);
 	EXPECT_EQ(ack.p(1), 0x01);
 	sq = I8;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80405);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x4058100000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C6;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x501000000000000);
 	EXPECT_EQ(ack.p(1), 0x1008);
 	sq = E5;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x40202C080400000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = G4;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x20101404020);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = A3;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x34040);
 	sq = C2;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x5810080000000000);
 	EXPECT_EQ(ack.p(1), 0x10080);
 	sq = F1;
-	ack = make_rook_attack(Square(sq), occ);
+	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x40201007C4000000);
 	EXPECT_EQ(ack.p(1), 0x00);
 }
-TEST(bitboard, bishop_attack)
+TEST(bitboard, attackers_from_bishop)
 {
 	//bishop_attack配列はbishop_mask配列,bishop_attack_index配列から作られる最終成果物で
 	//局面bitboardの指定した座標にbishopをおいた時得られる利きbitboardを持っている
@@ -1468,51 +1360,53 @@ TEST(bitboard, bishop_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::make_bishop_attack;
-	using BitBoardns::print;
+	//テストはbitboard.cppと同じ
 	int sq;
-	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	sq = C9;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x400000000000);
 	EXPECT_EQ(ack.p(1), 0x802);
 	sq = I8;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x20080200A00);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80200A000282020);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C6;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x2822000000000);
 	EXPECT_EQ(ack.p(1), 0x414);
 	sq = E5;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x1005000141000000);
 	EXPECT_EQ(ack.p(1), 0x20080);
 	sq = G4;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x8088828000A088);
 	EXPECT_EQ(ack.p(1), 0x01);
 	sq = A3;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x4000000000000000);
 	EXPECT_EQ(ack.p(1), 0xA0);
 	sq = C2;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x28000000000000);
 	EXPECT_EQ(ack.p(1), 0x140);
 	sq = F1;
-	ack = make_bishop_attack(Square(sq), occ);
+	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80002008020);
 	EXPECT_EQ(ack.p(1), 0x00);
 }
-TEST(bitboard, horse_attack)
+TEST(bitboard, attackers_from_horse)
 {
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
 	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
@@ -1526,35 +1420,37 @@ TEST(bitboard, horse_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::make_horse_attack;
-	using BitBoardns::print;
+	//テストはbitboard.cppと同じ
 	int sq;
-	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	sq = C9;
-	ack = make_horse_attack(Square(sq), occ);
+	ack = pos.attackers_from_horse(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80600000000000);
 	EXPECT_EQ(ack.p(1), 0x803);
 	sq = I8;
-	ack = make_horse_attack(Square(sq), occ);
+	ack = pos.attackers_from_horse(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x20080200E05);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
-	ack = make_horse_attack(Square(sq), occ);
+	ack = pos.attackers_from_horse(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80200E050382020);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C6;
-	ack = make_horse_attack(Square(sq), occ);
+	ack = pos.attackers_from_horse(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x503822000000000);
 	EXPECT_EQ(ack.p(1), 0x41C);
 	sq = E5;
-	ack = make_horse_attack(Square(sq), occ);
+	ack = pos.attackers_from_horse(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x10070281C1000000);
 	EXPECT_EQ(ack.p(1), 0x20080);
 }
-TEST(bitboard, dragon_attack)
+TEST(bitboard, attackers_from_dragon)
 {
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
 	//-+-- + -- + -- + -- + -- + -- + -- + -- + -- +
@@ -1568,31 +1464,33 @@ TEST(bitboard, dragon_attack)
 	//3  .  *  .  *  *  .  *  . *
 	//2	 .  .  .  .  *  .  .  . .
 	//1  *  .  *  .  .  .  *  * *
-	using BitBoardns::make_dragon_attack;
-	using BitBoardns::print;
+	//テストはbitboard.cppと同じ
 	int sq;
-	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
 
 	BitBoardns::init();
 	sq = C9;
-	ack = make_dragon_attack(Square(sq), occ);
+	ack = pos.attackers_from_dragon(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x180600000000000);
 	EXPECT_EQ(ack.p(1), 0x03);
 	sq = I8;
-	ack = make_dragon_attack(Square(sq), occ);
+	ack = pos.attackers_from_dragon(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80E05);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = F7;
-	ack = make_dragon_attack(Square(sq), occ);
+	ack = pos.attackers_from_dragon(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0xE058380000);
 	EXPECT_EQ(ack.p(1), 0x00);
 	sq = C6;
-	ack = make_dragon_attack(Square(sq), occ);
+	ack = pos.attackers_from_dragon(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x503800000000000);
 	EXPECT_EQ(ack.p(1), 0x101C);
 	sq = E5;
-	ack = make_dragon_attack(Square(sq), occ);
+	ack = pos.attackers_from_dragon(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x40702C1C0400000);
 	EXPECT_EQ(ack.p(1), 0x00);
 }
