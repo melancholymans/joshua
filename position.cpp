@@ -11,7 +11,7 @@
 	#include <gtest\gtest.h>
 #endif
 
-//名前空間宣言(名前空間宣言はcppファイルでのみ）
+//名前空間宣言
 using std::cout;
 using std::cin;
 using std::endl;
