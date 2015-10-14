@@ -323,6 +323,17 @@ BitBoard Position::attacks_from(const Color c, const Square sq, const PieceType 
 	default:_ASSERT(false);
 	}
 }
+BitBoard Position::attackers_to(const Square sq, const BitBoard& occ) const
+{
+	BitBoard gold_bb = piece_type_of_bb(Gold) | piece_type_of_bb(ProPawn) | piece_type_of_bb(ProLance) | piece_type_of_bb(ProNight) | piece_type_of_bb(ProSilver);
+	//aperyではgoldsBBという変数が定義されておりdoMove関数でも管理されており一つの局面bitboardで全てのGold系が一括で処理できるようになっているが、現在全て把握できていないのでこの関数内だけでまとめておくにとどめ将来の改造ネタとする
+	return (((make_pawn_attack(Black, sq) & piece_type_of_bb(Pawn)) |
+		(make_lance_attack(Black, sq, occ) & piece_type_of_bb(Lance)) |
+		(make_night_attack(Black, sq) & piece_type_of_bb(Night)) |
+		(make_silver_attack(Black, sq) & piece_type_of_bb(Silver)) |
+		(make_gold_attack(Black, sq) & gold_bb)) & color_of_bb(White)) |
+
+}
 #ifdef _DEBUG
 //Postionクラスの指定した駒種の指定した座標のbitがonになっていればtrueを返す
 bool Position::get_piece_bit(const PieceType pt, const Square sq)

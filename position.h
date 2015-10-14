@@ -111,36 +111,36 @@ public:
 	BitBoard attackers_to(const Square sq, const BitBoard& occ) const;
 	//座標sqにいる駒種ptからの利きbitboardを返す。bitboardクラスに直接アクセスできない場合このラッパー関数群を呼び出す
 	//飛び駒用の関数は２とうりの実装がある。occ bitboardを引数にする関数と、positionクラスのby_type_bb[AllPiece]を使い引数はとらない関数
-	BitBoard attackers_from_pawn(const Color c, Square sq) const {return make_pawn_attack(c, sq);}
-	BitBoard attackers_from_lance(const Color c, Square sq, BitBoard& occ) const { return make_lance_attack(c, sq, occ); }
-	BitBoard attackers_from_night(const Color c, Square sq) const{return make_night_attack(c, sq);}
-	BitBoard attackers_from_silver(const Color c, Square sq) const{return make_silver_attack(c, sq);}
-	BitBoard attackers_from_bishop(Square sq) const
+	BitBoard attackers_from_pawn(const Color c, const Square sq) const {return make_pawn_attack(c, sq);}
+	BitBoard attackers_from_lance(const Color c, const Square sq, const BitBoard& occ) const { return make_lance_attack(c, sq, occ); }
+	BitBoard attackers_from_night(const Color c, const Square sq) const{return make_night_attack(c, sq);}
+	BitBoard attackers_from_silver(const Color c, const Square sq) const{return make_silver_attack(c, sq);}
+	BitBoard attackers_from_bishop(const Square sq) const
 	{
 		return make_bishop_attack(sq,all_bb());
 	}
-	BitBoard attackers_from_bishop(Square sq, BitBoard& occ) const{ return make_bishop_attack(sq, occ); }
-	BitBoard attackers_from_rook(Square sq) const
+	BitBoard attackers_from_bishop(const Square sq, const BitBoard& occ) const{ return make_bishop_attack(sq, occ); }
+	BitBoard attackers_from_rook(const Square sq) const
 	{ 
 		return make_rook_attack(sq, all_bb()); 
 	}
-	BitBoard attackers_from_rook(Square sq, BitBoard& occ) const{ return make_rook_attack(sq, occ); }
-	BitBoard attackers_from_gold(const Color c, Square sq) const{return make_gold_attack(c,sq);}
-	BitBoard attackers_from_king(Square sq) const{return make_king_attack(sq);}
-	BitBoard attackers_from_propawn(const Color c, Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_prolance(const Color c, Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_pronight(const Color c, Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_prosilver(const Color c, Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_horse(Square sq) const
+	BitBoard attackers_from_rook(const Square sq, const BitBoard& occ) const{ return make_rook_attack(sq, occ); }
+	BitBoard attackers_from_gold(const Color c, const Square sq) const{return make_gold_attack(c,sq);}
+	BitBoard attackers_from_king(const Square sq) const{return make_king_attack(sq);}
+	BitBoard attackers_from_propawn(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_prolance(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_pronight(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_prosilver(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
+	BitBoard attackers_from_horse(const Square sq) const
 	{
 		return make_horse_attack(sq, all_bb()); 
 	}
-	BitBoard attackers_from_horse(Square sq, BitBoard& occ) const{ return make_horse_attack(sq, occ); }
-	BitBoard attackers_from_dragon(Square sq) const
+	BitBoard attackers_from_horse(const Square sq, const BitBoard& occ) const{ return make_horse_attack(sq, occ); }
+	BitBoard attackers_from_dragon(const Square sq) const
 	{
 		return make_dragon_attack(sq, all_bb());
 	}
-	BitBoard attackers_from_dragon(Square sq, BitBoard& occ) const{ return make_dragon_attack(sq, occ); }
+	BitBoard attackers_from_dragon(const Square sq, const BitBoard& occ) const{ return make_dragon_attack(sq, occ); }
 	//全ての駒種に対応するattacks_from関数(汎用）
 	BitBoard attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ);
 	//局面を更新
