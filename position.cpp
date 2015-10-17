@@ -332,66 +332,43 @@ BitBoard Position::attackers_to(const Square sq, const BitBoard& occ) const
 		(make_night_attack(Black, sq) & piece_type_of_bb(Night)) |
 		(make_silver_attack(Black, sq) & piece_type_of_bb(Silver)) |
 		(make_gold_attack(Black, sq) & gold_bb)) & color_of_bb(White)) |
+
 		(((make_pawn_attack(White, sq) & piece_type_of_bb(Pawn)) |
-		(make_lance_attack(White, sq, occ) & piece_type_of_bb(Lance) |
-		(make_night_attack(White, sq) & piece_type_of_bb(Night) |
-		(make_silver_attack(White, sq) & piece_type_of_bb(Silver) |
-		(make_silver_attack(White, sq) & gold_bb)) & color_of_bb(Black) |
-		(make_bishop_attack(sq, occ) & piece_type_of_bb(Bishop) &piece_type_of_bb(Horse))
-		(make_rook_attack(sq, occ) & piece_type_of_bb(Rook) & piece_type_of_bb(Dragon))
-		(make_king_attack(sq) & piece_type_of_bb(King) & piece_type_of_bb(Horse) & piece_type_of_bb(Dragon)))));
+		(make_lance_attack(White, sq, occ) & piece_type_of_bb(Lance)) |
+		(make_night_attack(White, sq) & piece_type_of_bb(Night)) |
+		(make_silver_attack(White, sq) & piece_type_of_bb(Silver)) |
+		(make_gold_attack(White, sq) & gold_bb)) & color_of_bb(Black)) |
+
+		(make_bishop_attack(sq, occ) & piece_type_of_bb(Bishop) & piece_type_of_bb(Horse)) | 
+		(make_rook_attack(sq, occ) & piece_type_of_bb(Rook) & piece_type_of_bb(Dragon)) |
+		(make_king_attack(sq) & piece_type_of_bb(King) & piece_type_of_bb(Horse) & piece_type_of_bb(Dragon));
+}
+BitBoard Position::attackers_to(const Color c, const Square sq, const BitBoard& occ) const
+{
+	const Color them = over_turn(c);
+	return ((make_pawn_attack(them, sq) & piece_type_of_bb(Pawn)) |
+		(make_lance_attack(them, sq, occ) & piece_type_of_bb(Lance)) |
+		(make_night_attack(them, sq) & piece_type_of_bb(Night)) |
+		(make_silver_attack(them, sq) & piece_type_of_bb(Silver)) |
+		(make_gold_attack(them, sq) & piece_type_of_bb(Gold)) |
+		(make_bishop_attack(sq, occ) & piece_type_of_bb(Bishop) & piece_type_of_bb(Horse)) |
+		(make_rook_attack(sq, occ) & piece_type_of_bb(Rook) & piece_type_of_bb(Dragon)) | 
+		(make_king_attack(sq)& piece_type_of_bb(King))) &
+		color_of_bb(c);
+}
+BitBoard Position::attackers_to_excluded_of_king(const Color c, const Square sq, const BitBoard& occ) const
+{
+	const Color them = over_turn(c);
+	return ((make_pawn_attack(them, sq) & piece_type_of_bb(Pawn)) |
+		(make_lance_attack(them, sq, occ) & piece_type_of_bb(Lance)) |
+		(make_night_attack(them, sq) & piece_type_of_bb(Night)) |
+		(make_silver_attack(them, sq) & piece_type_of_bb(Silver)) |
+		(make_gold_attack(them, sq) & piece_type_of_bb(Gold)) |
+		(make_bishop_attack(sq, occ) & piece_type_of_bb(Bishop) & piece_type_of_bb(Horse)) |
+		(make_rook_attack(sq, occ) & piece_type_of_bb(Rook) & piece_type_of_bb(Dragon))) &
+		color_of_bb(c);
 }
 
-
-/*
-// 先手、後手に関わらず、sq へ移動可能な Bitboard を返す。
-Bitboard Position::attackersTo(const Square sq, const Bitboard& occupied) const {
-const Bitboard golds = goldsBB();
-return (((attacksFrom<Pawn  >(Black, sq          ) & bbOf(Pawn  ))
-| (attacksFrom<Lance >(Black, sq, occupied) & bbOf(Lance ))
-| (attacksFrom<Knight>(Black, sq          ) & bbOf(Knight))
-| (attacksFrom<Silver>(Black, sq          ) & bbOf(Silver))
-| (attacksFrom<Gold  >(Black, sq          ) & golds       ))
-& bbOf(White))
-| (((attacksFrom<Pawn  >(White, sq          ) & bbOf(Pawn  ))
-| (attacksFrom<Lance >(White, sq, occupied) & bbOf(Lance ))
-| (attacksFrom<Knight>(White, sq          ) & bbOf(Knight))
-| (attacksFrom<Silver>(White, sq          ) & bbOf(Silver))
-| (attacksFrom<Gold  >(White, sq          ) & golds))
-& bbOf(Black))
-| (attacksFrom<Bishop>(sq, occupied) & bbOf(Bishop, Horse        ))
-| (attacksFrom<Rook  >(sq, occupied) & bbOf(Rook  , Dragon       ))
-| (attacksFrom<King  >(sq          ) & bbOf(King  , Horse, Dragon));
-}
-
-// occupied を Position::occupiedBB() 以外のものを使用する場合に使用する。
-指定した座標に利きを利かしてくる全ての駒の自陣側の局面bitboardを返す
-Bitboard Position::attackersTo(const Color c, const Square sq, const Bitboard& occupied) const {
-	const Color opposite = oppositeColor(c);
-	return ((attacksFrom<Pawn  >(opposite, sq) & bbOf(Pawn))
-		| (attacksFrom<Lance >(opposite, sq, occupied) & bbOf(Lance))
-		| (attacksFrom<Knight>(opposite, sq) & bbOf(Knight))
-		| (attacksFrom<Silver>(opposite, sq) & bbOf(Silver))
-		| (attacksFrom<Gold  >(opposite, sq) & goldsBB())
-		| (attacksFrom<Bishop>(sq, occupied) & bbOf(Bishop, Horse))
-		| (attacksFrom<Rook  >(sq, occupied) & bbOf(Rook, Dragon))
-		| (attacksFrom<King  >(sq) & bbOf(King, Horse, Dragon)))
-		& bbOf(c);
-}
-
-// 玉以外で sq へ移動可能な c 側の駒の Bitboard を返す。
-Bitboard Position::attackersToExceptKing(const Color c, const Square sq) const {
-	const Color opposite = oppositeColor(c);
-	return ((attacksFrom<Pawn  >(opposite, sq) & bbOf(Pawn))
-		| (attacksFrom<Lance >(opposite, sq) & bbOf(Lance))
-		| (attacksFrom<Knight>(opposite, sq) & bbOf(Knight))
-		| (attacksFrom<Silver>(opposite, sq) & bbOf(Silver, Dragon))
-		| (attacksFrom<Gold  >(opposite, sq) & (goldsBB() | bbOf(Horse)))
-		| (attacksFrom<Bishop>(sq) & bbOf(Bishop, Horse))
-		| (attacksFrom<Rook  >(sq) & bbOf(Rook, Dragon)))
-		& bbOf(c);
-}
-*/
 #ifdef _DEBUG
 //Postionクラスの指定した駒種の指定した座標のbitがonになっていればtrueを返す
 bool Position::get_piece_bit(const PieceType pt, const Square sq)
