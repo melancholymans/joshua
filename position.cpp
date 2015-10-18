@@ -64,6 +64,16 @@ static Key zobrist[PieceNum][SquareNum][ColorNum];
 static Key zob_hand[HandPieceNum][ColorNum];	//zob_hand配列の大きさは8とする。zob_hand[0]は使わない。配列へのindexをPieceTypeで統一するため
 static Key zob_turn;
 
+//＜ここからCheckInfoクラスの定義域＞
+/*
+CheckInfo::CheckInfo(const Position& pos)
+{
+	const Color them = over_turn(pos.get_color_turn());
+	const Square ksq = pos.get_king_square(them);
+
+	pinned = pos.
+}
+*/
 //＜ここからPositionクラスの定義領域＞
 //Position classのコンストラクタから呼ばれる
 //sfen文字列からPosition内部の局面情報をセットする。
@@ -697,7 +707,6 @@ void Positionns::is_ok(Position &pos)
 #ifdef _DEBUG
 TEST(position, attackers_to)
 {
-	int sq;
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
@@ -848,7 +857,6 @@ TEST(position, attackers_to)
 }
 TEST(position, attackers_to2)
 {
-	int sq;
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
@@ -999,7 +1007,6 @@ TEST(position, attackers_to2)
 }
 TEST(position, attackers_to_excluded_of_king)
 {
-	int sq;
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より

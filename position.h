@@ -16,6 +16,12 @@ using BitBoardns::make_king_attack;
 using BitBoardns::make_horse_attack;
 using BitBoardns::make_dragon_attack;
 
+//check関係のクラス
+struct CheckInfo{
+	//CheckInfo(const Position&);
+	BitBoard pinned;
+	BitBoard check_bb[PieceTypeNum];
+};
 //do_moveによって変更された局面をundo_moveで復元するときに必要な情報
 struct StateInfo{
 public:
@@ -63,7 +69,7 @@ public:
 		return board[sq];
 	}
 	//指定したカラーのKINGの座標を返す
-	Square get_king_square(Color c)
+	Square get_king_square(Color c) const
 	{
 		return king_square[c];
 	}
@@ -168,6 +174,23 @@ public:
 	Key get_hand_key() const
 	{
 		return m_st->hand_key;
+	}
+	//us側でpinされている駒の局面bitboardを返す
+	//動けない駒のことをpin,kingとpin駒を射抜いている駒をpierceと呼称する
+	BitBoard pinned_us_bb() const
+	{
+		BitBoard result(0x00, 0x00);
+		const Color us = Color(color_turn);
+		const Color them = over_turn(us);
+
+		BitBoard pierce = by_color_bb[them];
+		const Square ksq = king_square[us];
+		//pierce &= 
+
+	}
+	BitBoard pinned_them_bb() const
+	{
+
 	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
