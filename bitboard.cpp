@@ -598,7 +598,30 @@ TEST(bishop, get_rook_attack_no_occ)
 	ask = get_rook_attack_no_occ(A1);
 	EXPECT_EQ(ask.p(0), 0x4020100804020100);
 	EXPECT_EQ(ask.p(1), 0x1FF00);
-
+	ask = get_rook_attack_no_occ(B2);
+	EXPECT_EQ(ask.p(0), 0x2010080402010080);
+	EXPECT_EQ(ask.p(1), 0x1017F);
+	ask = get_rook_attack_no_occ(C3);
+	EXPECT_EQ(ask.p(0), 0x6FC8040201008040);
+	EXPECT_EQ(ask.p(1), 0x8040);
+	ask = get_rook_attack_no_occ(D4);
+	EXPECT_EQ(ask.p(0), 0x83BE20100804020);
+	EXPECT_EQ(ask.p(1), 0x4020);
+	ask = get_rook_attack_no_occ(E5);
+	EXPECT_EQ(ask.p(0), 0x4021EF080402010);
+	EXPECT_EQ(ask.p(1), 0x2010);
+	ask = get_rook_attack_no_occ(F6);
+	EXPECT_EQ(ask.p(0), 0x201008FB8201008);
+	EXPECT_EQ(ask.p(1), 0x1008);
+	ask = get_rook_attack_no_occ(G7);
+	EXPECT_EQ(ask.p(0), 0x100804027EC0804);
+	EXPECT_EQ(ask.p(1), 0x804);
+	ask = get_rook_attack_no_occ(H8);
+	EXPECT_EQ(ask.p(0), 0x804020100BFA02);
+	EXPECT_EQ(ask.p(1), 0x402);
+	ask = get_rook_attack_no_occ(I9);
+	EXPECT_EQ(ask.p(0), 0x402010080403FE);
+	EXPECT_EQ(ask.p(1), 0x201);
 }
 TEST(bitboard, get_bishop_attack_no_occ)
 {
@@ -662,7 +685,7 @@ TEST(bitboard, get_lance_attack_no_occ)
 	EXPECT_EQ(ask.p(0), 0xC0000);
 	EXPECT_EQ(ask.p(1), 0x00);
 	ask = get_lance_attack_no_occ(Black, H8);
-	EXPECT_EQ(ask.p(0), 0x400);
+	EXPECT_EQ(ask.p(0), 0x200);
 	EXPECT_EQ(ask.p(1), 0x00);
 	ask = get_lance_attack_no_occ(White, I9);
 	EXPECT_EQ(ask.p(0), 0x1FE);
@@ -687,7 +710,7 @@ TEST(bitboard, get_lance_attack_no_occ)
 	EXPECT_EQ(ask.p(1), 0x00);
 	ask = get_lance_attack_no_occ(White, B2);
 	EXPECT_EQ(ask.p(0), 0x00);
-	EXPECT_EQ(ask.p(1), 0x80);
+	EXPECT_EQ(ask.p(1), 0x100);
 	ask = get_lance_attack_no_occ(White, A1);
 	EXPECT_EQ(ask.p(0), 0x00);
 	EXPECT_EQ(ask.p(1), 0x00);
