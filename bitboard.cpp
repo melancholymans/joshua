@@ -188,6 +188,9 @@ static BitBoard king_attack[SquareNum];
 static BitBoard gold_attack[ColorNum][SquareNum];
 static BitBoard between_bb[SquareNum][SquareNum];
 static Directtion square_relation[SquareNum][SquareNum];
+static BitBoard lance_attack_no_occ[ColorNum][SquareNum];
+static BitBoard bishop_attack_no_occ[SquareNum];
+static BitBoard rook_attack_no_occ[SquareNum];
 //局所関数宣言
 static BitBoard sliding_attack(Square sq, BitBoard occ, bool is_bishop);
 static BitBoard one_direction_attack(Square square, BitBoard occ, Color c);
@@ -503,6 +506,34 @@ static void init_between_bb()
 		}
 	}	
 }
+//lanceの利きを記録しておくbitboard配列を初期化、boardの端も記録しておく
+static void init_lance_attack_no_occ()
+{
+	BitBoard zero_bb(0x00, 0x00);
+
+	for (int sq = I9; sq < SquareNum; sq++){
+		lance_attack_no_occ[Black][sq] = one_direction_attack(Square(sq), zero_bb, Black);
+		lance_attack_no_occ[White][sq] = one_direction_attack(Square(sq), zero_bb, White);
+	}
+}
+//bishopの利きを記録しておくbitboard配列を初期化、boardの端も記録しておく
+static void init_bishop_attack_no_occ()
+{
+	BitBoard zero_bb(0x00, 0x00);
+
+	for (int sq = I9; sq < SquareNum; sq++){
+		bishop_attack_no_occ[sq] = sliding_attack(Square(sq), zero_bb, true);
+	}
+}
+//rookの利きを記録しておくbitboard配列を初期化、boardの端も記録しておく
+static void init_rook_attack_no_occ()
+{
+	BitBoard zero_bb(0x00, 0x00);
+
+	for (int sq = I9; sq < SquareNum; sq++){
+		rook_attack_no_occ[sq] = sliding_attack(Square(sq), zero_bb, false);
+	}
+}
 //BitBoardの初期化
 void BitBoardns::init()
 {
@@ -521,6 +552,9 @@ void BitBoardns::init()
 	init_king_attacks();		//kingはbishopとrookが完成していることが前提なので順番の変更厳禁
 	init_square_relation();
 	init_between_bb();			//betweenはsquare_relation配列が初期化してあることが前提なので順番の変更厳禁
+	init_lance_attack_no_occ();
+	init_bishop_attack_no_occ();
+	init_rook_attack_no_occ();
 }
 //bitboardのprint、人間が見やすいように上側が後手、下側が先手とbitboardを９０度傾けた表示
 void BitBoardns::print(BitBoard &bb)
@@ -542,8 +576,122 @@ void BitBoardns::print(BitBoard &bb)
 	}
 	std::cout << "-+--+--+--+--+--+--+--+--+--+" << sync_endl;
 }
-
+BitBoard BitBoardns::get_lance_attack_no_occ(const Color c,const Square sq)
+{
+	return lance_attack_no_occ[c][sq];
+}
+BitBoard BitBoardns::get_bishop_attack_no_occ(const Square sq)
+{
+	return bishop_attack_no_occ[sq];
+}
+BitBoard BitBoardns::get_rook_attack_no_occ(const Square sq)
+{
+	return rook_attack_no_occ[sq];
+}
 #ifdef _DEBUG
+TEST(bishop, get_rook_attack_no_occ)
+{
+	using BitBoardns::get_rook_attack_no_occ;
+	BitBoard ask;
+
+	BitBoardns::init();
+	ask = get_rook_attack_no_occ(A1);
+	EXPECT_EQ(ask.p(0), 0x4020100804020100);
+	EXPECT_EQ(ask.p(1), 0x1FF00);
+
+}
+TEST(bitboard, get_bishop_attack_no_occ)
+{
+	using BitBoardns::get_bishop_attack_no_occ;
+	BitBoard ask;
+
+	BitBoardns::init();
+	ask = get_bishop_attack_no_occ(A1);
+	EXPECT_EQ(ask.p(0), 0x1004010040100401);
+	EXPECT_EQ(ask.p(1), 0x80);
+	ask = get_bishop_attack_no_occ(B2);
+	EXPECT_EQ(ask.p(0), 0x5004010040100401);
+	EXPECT_EQ(ask.p(1), 0x28000);
+	ask = get_bishop_attack_no_occ(C3);
+	EXPECT_EQ(ask.p(0), 0x14110040100401);
+	EXPECT_EQ(ask.p(1), 0x220A0);
+	ask = get_bishop_attack_no_occ(D4);
+	EXPECT_EQ(ask.p(0), 0x1400050444100401);
+	EXPECT_EQ(ask.p(1), 0x20888);
+	ask = get_bishop_attack_no_occ(E5);
+	EXPECT_EQ(ask.p(0), 0x1105000141110501);
+	EXPECT_EQ(ask.p(1), 0x20282);
+	ask = get_bishop_attack_no_occ(F6);
+	EXPECT_EQ(ask.p(0), 0x1044414000504441);
+	EXPECT_EQ(ask.p(1), 0x20080);
+	ask = get_bishop_attack_no_occ(G7);
+	EXPECT_EQ(ask.p(0), 0x1004011050001411);
+	EXPECT_EQ(ask.p(1), 0x20080);
+	ask = get_bishop_attack_no_occ(H8);
+	EXPECT_EQ(ask.p(0), 0x1004010040140005);
+	EXPECT_EQ(ask.p(1), 0x20080);
+	ask = get_bishop_attack_no_occ(I9);
+	EXPECT_EQ(ask.p(0), 0x1004010040100400);
+	EXPECT_EQ(ask.p(1), 0x20080);
+}
+TEST(bitboard, get_lance_attack_no_occ)
+{
+	using BitBoardns::get_lance_attack_no_occ;
+	BitBoard ask;
+
+	BitBoardns::init();
+	ask = get_lance_attack_no_occ(Black, A1);
+	EXPECT_EQ(ask.p(0), 0x00);
+	EXPECT_EQ(ask.p(1), 0x1FE00);
+	ask = get_lance_attack_no_occ(Black, B2);
+	EXPECT_EQ(ask.p(0), 0x00);
+	EXPECT_EQ(ask.p(1), 0x7F);
+	ask = get_lance_attack_no_occ(Black, C3);
+	EXPECT_EQ(ask.p(0), 0xFC0000000000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(Black, D4);
+	EXPECT_EQ(ask.p(0), 0x3E00000000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(Black, E5);
+	EXPECT_EQ(ask.p(0), 0xF000000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(Black, F6);
+	EXPECT_EQ(ask.p(0), 0x38000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(Black, G7);
+	EXPECT_EQ(ask.p(0), 0xC0000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(Black, H8);
+	EXPECT_EQ(ask.p(0), 0x400);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, I9);
+	EXPECT_EQ(ask.p(0), 0x1FE);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, H8);
+	EXPECT_EQ(ask.p(0), 0x3F800);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, G7);
+	EXPECT_EQ(ask.p(0), 0x7E00000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, F6);
+	EXPECT_EQ(ask.p(0), 0xF80000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, E5);
+	EXPECT_EQ(ask.p(0), 0x1E0000000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, D4);
+	EXPECT_EQ(ask.p(0), 0x38000000000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, C3);
+	EXPECT_EQ(ask.p(0), 0x6000000000000000);
+	EXPECT_EQ(ask.p(1), 0x00);
+	ask = get_lance_attack_no_occ(White, B2);
+	EXPECT_EQ(ask.p(0), 0x00);
+	EXPECT_EQ(ask.p(1), 0x80);
+	ask = get_lance_attack_no_occ(White, A1);
+	EXPECT_EQ(ask.p(0), 0x00);
+	EXPECT_EQ(ask.p(1), 0x00);
+}
 TEST(bitboard, make_between_bb)
 {
 	using BitBoardns::make_between_bb;
