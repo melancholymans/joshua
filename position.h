@@ -15,10 +15,16 @@ using BitBoardns::make_gold_attack;
 using BitBoardns::make_king_attack;
 using BitBoardns::make_horse_attack;
 using BitBoardns::make_dragon_attack;
-
+using BitBoardns::make_between_bb;
+using BitBoardns::get_lance_attack_no_occ;
+using BitBoardns::get_bishop_attack_no_occ;
+using BitBoardns::get_rook_attack_no_occ;
+//Positionクラスの前方宣言
+class Position;
 //check関係のクラス
 struct CheckInfo{
-	//CheckInfo(const Position&);
+	explicit CheckInfo(const Position&);
+	BitBoard dc_bb;
 	BitBoard pinned;
 	BitBoard check_bb[PieceTypeNum];
 };
@@ -176,21 +182,46 @@ public:
 		return m_st->hand_key;
 	}
 	//us側でpinされている駒の局面bitboardを返す
-	//動けない駒のことをpin,kingとpin駒を射抜いている駒をpierceと呼称する
+	//動けない駒のことをpin,kingとpin駒を射抜いている駒をpierce(them側)と呼称する
 	BitBoard pinned_us_bb() const
 	{
-		BitBoard result(0x00, 0x00);
+		BitBoard pin(0x00, 0x00);
 		const Color us = Color(color_turn);
 		const Color them = over_turn(us);
 
-		BitBoard pierce = by_color_bb[them];
 		const Square ksq = king_square[us];
-		//pierce &= 
-
+		BitBoard pierce = ((by_type_bb[Lance] & get_lance_attack_no_occ(us, ksq)) |
+			((by_type_bb[Bishop] | by_type_bb[Horse]) & get_bishop_attack_no_occ(ksq)) |
+			((by_type_bb[Rook] | by_type_bb[Dragon]) & get_rook_attack_no_occ(ksq))) & by_color_bb[them];
+		while (pierce.is_not_zero()){
+			const Square sq = pierce.first_one();
+			const BitBoard between = make_between_bb(sq, ksq) & by_type_bb[AllPieces];
+			if (between.is_one_bit()){
+				pin |= between & color_of_bb(us);
+			}
+		}
+		return pin;
 	}
+	//us側駒(pin駒と呼称）が動くとthem kingに王手できるpin駒の局面bitboardを返す
+	//動けない駒のことをpin(us),kingとpin駒を射抜いている駒をpierce(us)と呼称する
 	BitBoard pinned_them_bb() const
 	{
+		BitBoard pin(0x00,0x00);
+		const Color us = Color(color_turn);
+		const Color them = over_turn(us);
 
+		const Square ksq = king_square[them];
+		BitBoard pierce = ((by_type_bb[Lance] & get_lance_attack_no_occ(them, ksq)) |
+			((by_type_bb[Bishop] | by_type_bb[Horse]) & get_bishop_attack_no_occ(ksq)) |
+			((by_type_bb[Rook] | by_type_bb[Dragon]) & get_rook_attack_no_occ(ksq))) & by_color_bb[us];
+		while(pierce.is_not_zero()){
+			const Square sq = pierce.first_one();
+			const BitBoard between = make_between_bb(sq, ksq) & by_type_bb[AllPieces];
+			if (between.is_one_bit()){
+				pin |= between & by_color_bb[us];
+			}
+		}
+		return pin;
 	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);

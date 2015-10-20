@@ -156,6 +156,7 @@ public:
 		this->p_[1] &= p_[1] - 1;
 		return Square(index + 63);
 	}
+	//LSB側からスキャンしてbit onになっているインデックスを返す
 	Square first_one()
 	{
 		if (this->p_[0]){

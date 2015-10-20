@@ -65,15 +65,34 @@ static Key zob_hand[HandPieceNum][ColorNum];	//zob_hand配列の大きさは8と
 static Key zob_turn;
 
 //＜ここからCheckInfoクラスの定義域＞
-/*
 CheckInfo::CheckInfo(const Position& pos)
 {
 	const Color them = over_turn(pos.get_color_turn());
 	const Square ksq = pos.get_king_square(them);
+	BitBoard zero_bb(0x00, 0x00);
 
-	pinned = pos.
+	//us側のpinされている駒のbitboardを返す
+	pinned = pos.pinned_us_bb();
+	//us側の駒が動いたらthem kingに王手をかけられる（空き王手）駒を探している
+	dc_bb = pos.pinned_them_bb();
+	//them kingに王手かけられるかもしれない利きbitboardを駒種ごど配列に格納している。
+	//具体的な使い方としては指し手リストのto座標と、このcheck_bb配列の座標が合致していればその指し手は王手として有効
+	//つまりこの配列は王手候補bitboardである。
+	check_bb[Pawn] = pos.attackers_from_pawn(them, ksq);
+	check_bb[Lance] = pos.attackers_from_lance(them, ksq,pos.all_bb());
+	check_bb[Night] = pos.attackers_from_night(them, ksq);
+	check_bb[Silver] = pos.attackers_from_silver(them, ksq);
+	check_bb[Bishop] = pos.attackers_from_bishop(ksq, pos.all_bb());
+	check_bb[Rook] = pos.attackers_from_rook(ksq, pos.all_bb());
+	check_bb[Gold] = pos.attackers_from_gold(them, ksq);
+	check_bb[King] = zero_bb;
+	check_bb[ProPawn] = check_bb[Gold];
+	check_bb[ProLance] = check_bb[Gold];
+	check_bb[ProNight] = check_bb[Gold];
+	check_bb[ProSilver] = check_bb[Gold];
+	check_bb[Horse] = check_bb[Bishop] | pos.attackers_from_king(ksq);
+	check_bb[Dragon] = check_bb[Rook] | pos.attackers_from_king(ksq);
 }
-*/
 //＜ここからPositionクラスの定義領域＞
 //Position classのコンストラクタから呼ばれる
 //sfen文字列からPosition内部の局面情報をセットする。
@@ -705,6 +724,66 @@ void Positionns::is_ok(Position &pos)
 #endif
 
 #ifdef _DEBUG
+TEST(position, pinned_us_bb)
+{
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	Position pos(ss);
+
+	CheckInfo cib(pos);
+	EXPECT_EQ(cib.pinned.p(0), 0x10000008000);
+	EXPECT_EQ(cib.pinned.p(1), 0x00);
+	EXPECT_EQ(cib.dc_bb.p(0), 0x10000000);
+	EXPECT_EQ(cib.dc_bb.p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Pawn].p(0), 0x2000000000);
+	EXPECT_EQ(cib.check_bb[Pawn].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Lance].p(0), 0x2000000000);
+	EXPECT_EQ(cib.check_bb[Lance].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Night].p(0), 0x800020000000);
+	EXPECT_EQ(cib.check_bb[Night].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Silver].p(0), 0x402010000000);
+	EXPECT_EQ(cib.check_bb[Silver].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Bishop].p(0), 0x100400010000000);
+	EXPECT_EQ(cib.check_bb[Bishop].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Rook].p(0), 0x40202008040201);
+	EXPECT_EQ(cib.check_bb[Rook].p(1), 0x201);
+	EXPECT_EQ(cib.check_bb[Gold].p(0), 0x602018000000);
+	EXPECT_EQ(cib.check_bb[Gold].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Horse].p(0), 0x100602018000000);
+	EXPECT_EQ(cib.check_bb[Horse].p(1), 0x00);
+	EXPECT_EQ(cib.check_bb[Dragon].p(0), 0x40602018040201);
+	EXPECT_EQ(cib.check_bb[Dragon].p(1), 0x201);
+
+	pos.flip_color();
+	CheckInfo ciw(pos);
+	EXPECT_EQ(ciw.pinned.p(0), 0x2000000000);
+	EXPECT_EQ(ciw.pinned.p(1), 0x00);
+	EXPECT_EQ(ciw.dc_bb.p(0), 0x10000000);
+	EXPECT_EQ(ciw.dc_bb.p(1), 0x00);
+	Positionns::print
+	EXPECT_EQ(ciw.check_bb[Pawn].p(0), 0x8000);
+	EXPECT_EQ(ciw.check_bb[Pawn].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Lance].p(0), 0x8000);
+	EXPECT_EQ(ciw.check_bb[Lance].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Night].p(0), 0x800020);
+	EXPECT_EQ(ciw.check_bb[Night].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Silver].p(0), 0x1008040);
+	EXPECT_EQ(ciw.check_bb[Silver].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Bishop].p(0), 0x10105000140);
+	EXPECT_EQ(ciw.check_bb[Bishop].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Rook].p(0), 0x402028080);
+	EXPECT_EQ(ciw.check_bb[Rook].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Gold].p(0), 0x30280C0);
+	EXPECT_EQ(ciw.check_bb[Gold].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Horse].p(0), 0x101070281C0);
+	EXPECT_EQ(ciw.check_bb[Horse].p(1), 0x00);
+	EXPECT_EQ(ciw.check_bb[Dragon].p(0), 0x4070281C0);
+	EXPECT_EQ(ciw.check_bb[Dragon].p(1), 0x00);
+}
+TEST(position, pinned_them_bb)
+{
+	EXPECT_EQ(1, 1);
+}
 TEST(position, attackers_to)
 {
 	BitBoard ack;
