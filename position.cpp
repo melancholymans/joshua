@@ -758,17 +758,17 @@ TEST(position, pinned_us_bb)
 	CheckInfo ciw(pos);
 	EXPECT_EQ(ciw.pinned.p(0), 0x2000000000);
 	EXPECT_EQ(ciw.pinned.p(1), 0x00);
-	EXPECT_EQ(ciw.dc_bb.p(0), 0x10000000);
+	EXPECT_EQ(ciw.dc_bb.p(0), 0x400000000);
 	EXPECT_EQ(ciw.dc_bb.p(1), 0x00);
-	Positionns::print
 	EXPECT_EQ(ciw.check_bb[Pawn].p(0), 0x8000);
 	EXPECT_EQ(ciw.check_bb[Pawn].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Lance].p(0), 0x8000);
 	EXPECT_EQ(ciw.check_bb[Lance].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Night].p(0), 0x800020);
 	EXPECT_EQ(ciw.check_bb[Night].p(1), 0x00);
-	EXPECT_EQ(ciw.check_bb[Silver].p(0), 0x1008040);
+	EXPECT_EQ(ciw.check_bb[Silver].p(0), 0x5008140);
 	EXPECT_EQ(ciw.check_bb[Silver].p(1), 0x00);
+	//BitBoardns::print(ciw.check_bb[Silver]);
 	EXPECT_EQ(ciw.check_bb[Bishop].p(0), 0x10105000140);
 	EXPECT_EQ(ciw.check_bb[Bishop].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Rook].p(0), 0x402028080);
