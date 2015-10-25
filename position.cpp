@@ -17,7 +17,16 @@ using std::cin;
 using std::endl;
 using std::stringstream;
 using std::noskipws;
-using namespace Movens;
+using Movens::move_from;
+using Movens::move_to;
+using Movens::move_piece;
+using Movens::move_cap_piece;
+using Movens::is_pmoto;
+using Movens::drop_piece_from;
+using Movens::drop_piece;
+using Movens::is_drop;
+using Movens::square_from_string;
+using Movens::make_move;
 using Positionns::get_zobrist;
 using Positionns::get_zob_hand;
 using Positionns::get_zob_turn;
@@ -75,8 +84,8 @@ CheckInfo::CheckInfo(const Position& pos)
 	pinned = pos.pinned_us_bb();
 	//us側の駒が動いたらthem kingに王手をかけられる（空き王手）駒を探している
 	dc_bb = pos.pinned_them_bb();
-	//them kingに王手かけられるかもしれない利きbitboardを駒種ごど配列に格納している。
-	//具体的な使い方としては指し手リストのto座標と、このcheck_bb配列の座標が合致していればその指し手は王手として有効
+	//them kingに王手をかけられるかもしれない利きbitboardを駒種ごと配列に格納している。
+	//具体的な使い方としてはdo_move()関数で指し手リストのto座標と、このcheck_bb配列の座標が合致していればその指し手は王手として有効
 	//つまりこの配列は王手候補bitboardである。
 	check_bb[Pawn] = pos.attackers_from_pawn(them, ksq);
 	check_bb[Lance] = pos.attackers_from_lance(them, ksq,pos.all_bb());
@@ -93,6 +102,7 @@ CheckInfo::CheckInfo(const Position& pos)
 	check_bb[Horse] = check_bb[Bishop] | pos.attackers_from_king(ksq);
 	check_bb[Dragon] = check_bb[Rook] | pos.attackers_from_king(ksq);
 }
+
 //＜ここからPositionクラスの定義領域＞
 //Position classのコンストラクタから呼ばれる
 //sfen文字列からPosition内部の局面情報をセットする。
@@ -227,10 +237,12 @@ void Position::do_move(const Move m, StateInfo& st)
 	const Square to = move_to(m);
 	const PieceType pt_cap = move_cap_piece(m);
 	PieceType pt_to;
-
 	memcpy(&st, m_st, sizeof(StateInfo));
 	st.previous = m_st;
 	m_st = &st;
+	const CheckInfo ci(*this);
+
+	
 	if (is_drop(m)){	//打つ手		
 		pt_to = drop_piece(m);  //打つ駒種を取り出す
 		had_key -= get_zob_hand(pt_to, us);
@@ -330,6 +342,36 @@ void Position::undo_move(const Move m)
 #ifdef _DEBUG
 	Positionns::is_ok(*this);
 #endif
+}
+//指定されたMoveが王手となる手ならtrueを返す（あくまで王手、詰めではない）
+bool Position::move_gives_check(const Move m, const CheckInfo& ci) const
+{
+	const Square to = move_to(m);
+	if (is_drop(m)){
+		const PieceType pt_to = drop_piece(m);
+		//to座標とcheck_bbの座標が一致していれば王手をかけれる座標に打った
+		if (ci.check_bb[pt_to].is_bit_on(to)){
+			return true;
+		}
+	}
+	else{
+		const Square from = move_from(m);
+		PieceType pt_from = move_piece(m);
+		PieceType pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
+		if (ci.check_bb[pt_to].is_bit_on(to)){
+			return true;
+		}
+		//開き王手を検出
+		const Square ksq = king_square[over_turn(Color(color_turn))];
+		if (is_discovered_check(from, to, ksq, ci.dc_bb)){
+			return true;
+		}
+	}
+	return false;
+}
+bool Position::is_discovered_check(const Square from,const Square to,const Square ksq,const BitBoard& dc_bb) const
+{
+	return dc_bb.is_bit_on(from);
 }
 BitBoard Position::attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ)
 {

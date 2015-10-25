@@ -223,6 +223,10 @@ public:
 		}
 		return pin;
 	}
+	//指定されたMoveが王手となる手ならtrueを返す
+	bool move_gives_check(const Move m, const CheckInfo& ci) const;
+	//指定されたさし手が開き王手ならtrueを返す
+	bool is_discovered_check(const Square from, const Square to, const Square ksq, const BitBoard& dc_bb) const;
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);
