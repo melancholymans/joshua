@@ -317,10 +317,15 @@ BitBoard BitBoardns::make_dragon_attack(const Square sq, const BitBoard& occ)
 
 	return rook_attack[rook_attack_index[sq] + occupied_to_index(line, rook_mask[sq], ROOK_OFFSET[sq])] | king_attack[sq];
 }
-//指定した座標sq1,sq2間に成立する方向子を返す
+//指定した座標sq1,sq2間に成立する方向子を返す,あまりbitBoardns名前空間にいるのがふさわしくないが、他の配列の初期化に必要
 Directtion BitBoardns::make_square_relation(const Square sq1, const Square sq2)
 {
 	return square_relation[sq1][sq2];
+}
+//
+bool BitBoardns::is_aligned(const Square from, const Square to, const Square ksq)
+{
+	const Directtion dir = make_square_relation(from, to);
 }
 //指定した座標だけがonになったbitboardを返す
 BitBoard BitBoardns::make_square_bb(const Square sq)

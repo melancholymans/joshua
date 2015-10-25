@@ -373,6 +373,7 @@ bool Position::is_discovered_check(const Square from,const Square to,const Squar
 {
 	return dc_bb.is_bit_on(from);
 }
+
 BitBoard Position::attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ)
 {
 	switch (pt){
