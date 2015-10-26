@@ -322,10 +322,11 @@ Directtion BitBoardns::make_square_relation(const Square sq1, const Square sq2)
 {
 	return square_relation[sq1][sq2];
 }
-//
+//駒の指し手方向が王座標に向かっていればtrue、でなければfalse、開き王手の条件判定に使用、この関数の判定がfalseであれば開き王手OKとなる
 bool BitBoardns::is_aligned(const Square from, const Square to, const Square ksq)
 {
-	const Directtion dir = make_square_relation(from, to);
+	const Directtion dir = make_square_relation(from, ksq);
+	return dir == make_square_relation(from, to);
 }
 //指定した座標だけがonになったbitboardを返す
 BitBoard BitBoardns::make_square_bb(const Square sq)

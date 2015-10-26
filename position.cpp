@@ -33,6 +33,7 @@ using Positionns::get_zob_turn;
 using BitBoardns::make_square_relation;
 using BitBoardns::make_square_bb;
 using BitBoardns::make_between_bb;
+using BitBoardns::is_aligned;
 //局所定数宣言・定義
 //駒の枚数をunsigned int 32bitにパッキンするための駒１つの定数
 const int hand_packed[8] = {
@@ -369,9 +370,10 @@ bool Position::move_gives_check(const Move m, const CheckInfo& ci) const
 	}
 	return false;
 }
+//開き王手を判定している(do_move->move_give_check->is_discovered_check->is_aligned)と関数の呼び出しチエーンが長いので注意
 bool Position::is_discovered_check(const Square from,const Square to,const Square ksq,const BitBoard& dc_bb) const
 {
-	return dc_bb.is_bit_on(from);
+	return dc_bb.is_bit_on(from) && !is_aligned(from, to, ksq);
 }
 
 BitBoard Position::attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ)
