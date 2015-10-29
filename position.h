@@ -16,6 +16,7 @@ using BitBoardns::make_king_attack;
 using BitBoardns::make_horse_attack;
 using BitBoardns::make_dragon_attack;
 using BitBoardns::make_between_bb;
+using BitBoardns::make_square_bb;
 using BitBoardns::get_lance_attack_no_occ;
 using BitBoardns::get_bishop_attack_no_occ;
 using BitBoardns::get_rook_attack_no_occ;
@@ -24,8 +25,8 @@ class Position;
 //check関係のクラス
 struct CheckInfo{
 	explicit CheckInfo(const Position&);
-	BitBoard dc_bb;
-	BitBoard pinned;
+	std::pair<BitBoard, BitBoard> dc_bb;		//王手を止めているus側の駒（開き王手）と射抜いている駒の両方を保持
+	BitBoard pinned_bb;	//pinされているus側の駒
 	BitBoard check_bb[PieceTypeNum];
 };
 //do_moveによって変更された局面をundo_moveで復元するときに必要な情報
@@ -203,10 +204,11 @@ public:
 		return pin;
 	}
 	//us側駒(pin駒と呼称）が動くとthem kingに王手できるpin駒の局面bitboardを返す。開き王手(discovered check)のこと
-	//動けない駒のことをpin(us),kingとpin駒を射抜いている駒をpierce(us)と呼称する
-	BitBoard discovered_bb() const
+	//動けない駒のことをpin(us),kingとpin駒を射抜いている駒をpierce(us)と呼称する.このpin駒(pair.first)とpierce駒(pair.second)を同時に返す
+	std::pair<BitBoard, BitBoard> discovered_bb() const
 	{
-		BitBoard pin(0x00,0x00);
+		BitBoard a(0x00, 0x00); BitBoard b(0x00, 0x00);
+		std::pair<BitBoard, BitBoard> pin_pierce(a,b);
 		const Color us = Color(color_turn);
 		const Color them = over_turn(us);
 
@@ -216,17 +218,24 @@ public:
 			((by_type_bb[Rook] | by_type_bb[Dragon]) & get_rook_attack_no_occ(ksq))) & by_color_bb[us];
 		while(pierce.is_not_zero()){
 			const Square sq = pierce.first_one();
-			const BitBoard between = make_between_bb(sq, ksq) & by_type_bb[AllPieces];
+			const BitBoard between = make_between_bb(sq, ksq) & by_color_bb[us];
 			if (between.is_one_bit()){
-				pin |= between & by_color_bb[us];
+				pin_pierce.first |= between;
+				pin_pierce.second |= make_square_bb(sq);
 			}
+
 		}
-		return pin;
+		return pin_pierce;
 	}
 	//指定されたMoveが王手となる手ならtrueを返す
 	bool move_gives_check(const Move m, const CheckInfo& ci) const;
 	//指定されたさし手が開き王手ならtrueを返す
 	bool is_discovered_check(const Square from, const Square to, const Square ksq, const BitBoard& dc_bb) const;
+	//do_move関数で検出した王手をかけている駒のbitboardを返す
+	BitBoard checker_bb() const
+	{
+		return m_st->checkers_bb;
+	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);

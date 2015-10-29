@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <sstream>
 #include <array>	//do_move TEST
+#include <utility>	//CheckInfoのdc_bbのため
 
 #include "position.h"
 #include "bitboard.h"
@@ -35,6 +36,7 @@ using BitBoardns::make_square_bb;
 using BitBoardns::make_between_bb;
 using BitBoardns::is_aligned;
 using BitBoardns::allon;
+using BitBoardns::print;
 //局所定数宣言・定義
 //駒の枚数をunsigned int 32bitにパッキンするための駒１つの定数
 const int hand_packed[8] = {
@@ -83,8 +85,8 @@ CheckInfo::CheckInfo(const Position& pos)
 	BitBoard zero_bb(0x00, 0x00);
 
 	//us側のpinされている駒のbitboardを返す
-	pinned = pos.pinned_bb();
-	//us側の駒が動いたらthem kingに王手をかけられる（空き王手）駒を探している
+	pinned_bb = pos.pinned_bb();
+	//us側の駒が動いたらthem kingに王手をかけられる（空き王手）駒を探している.firstがpin駒secondが射抜いている駒
 	dc_bb = pos.discovered_bb();
 	//them kingに王手をかけられるかもしれない利きbitboardを駒種ごと配列に格納している。
 	//具体的な使い方としてはdo_move()関数で指し手リストのto座標と、このcheck_bb配列の座標が合致していればその指し手は王手として有効
@@ -288,9 +290,13 @@ void Position::do_move(const Move m, StateInfo& st)
 		else{	//king以外の駒の場合
 			//わからない処理
 		}
-		//王手がかかっているときの処理
-		if (move_is_check){
-			m_st->checkers_bb.set_bit(to);
+		//王手がかかっているときの処理,王手をかけてきた駒の位置（to座標にいる）をm_st->checkers_bbに記録して後で利用する（王手の有無、王手回避手生成等）
+		if (move_is_check){		
+			const Square them_ksq = king_square[over_turn(us)];
+			BitBoard bb = ci.dc_bb.second; Square sq = bb.first_one();
+			BitBoard zero_bb(0x00, 0x00);
+			bool f = (make_between_bb(sq, them_ksq) & by_type_bb[AllPieces]).is_not_zero();
+			m_st->checkers_bb |= (ci.check_bb[pt_to] & make_square_bb(to)) | (f ? zero_bb : ci.dc_bb.second);
 		}
 		else{
 			m_st->checkers_bb.clear_bits(allon);
@@ -352,7 +358,8 @@ void Position::undo_move(const Move m)
 	Positionns::is_ok(*this);
 #endif
 }
-//指定されたMoveが王手となる手ならtrueを返す（あくまで王手、詰めではない）
+//指定されたMoveが王手となる手ならtrueを返す。そうでなければfalseを返す。直接駒の利きがkingにあたって王手なのか、開き王手による王手なのか
+//あるいは同時発生なのかの3パターンあるが王手がかかっていればtrue（あくまで王手、詰めではない）
 bool Position::move_gives_check(const Move m, const CheckInfo& ci) const
 {
 	const Square to = move_to(m);
@@ -364,17 +371,19 @@ bool Position::move_gives_check(const Move m, const CheckInfo& ci) const
 		}
 	}
 	else{
+		bool result = false;
 		const Square from = move_from(m);
 		PieceType pt_from = move_piece(m);
 		PieceType pt_to = PieceType(pt_from | (is_pmoto(m) << 3));
 		if (ci.check_bb[pt_to].is_bit_on(to)){
-			return true;
+			result = true;
 		}
 		//開き王手を検出
 		const Square ksq = king_square[over_turn(Color(color_turn))];
-		if (is_discovered_check(from, to, ksq, ci.dc_bb)){
-			return true;
+		if (is_discovered_check(from, to, ksq, ci.dc_bb.first)){
+			result = true;
 		}
+		return result;
 	}
 	return false;
 }
@@ -777,10 +786,67 @@ void Positionns::is_ok(Position &pos)
 #endif
 
 #ifdef _DEBUG
+TEST(position, do_move_m_st)
+{
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
+	BitBoardns::init();
+	Position pos(ss);
+	Move m;
+	StateInfo st;
+
+	//F8 pawn -> F9 pmoto
+	m = make_move(F8, F9, true, type_of_piece(Piece(pos.get_board(F8))), type_of_piece(Piece(pos.get_board(F9))));
+	memset(&st, 0, sizeof(StateInfo));
+	pos.do_move(m, st);
+	EXPECT_EQ(pos.checker_bb().p(0), 0x8100000);
+	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
+	pos.undo_move(m);
+	pos.flip_color();
+	//Positionns::print_board(pos);
+	//print(pos.all_bb());
+	//F2 ProNight -> G2
+	m = make_move(F2, G2, true, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(G2))));
+	memset(&st, 0, sizeof(StateInfo));
+	pos.do_move(m, st);
+	//print(pos.checker_bb());
+	EXPECT_EQ(pos.checker_bb().p(0), 0x2000000);
+	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
+	pos.undo_move(m);
+	//F2 ProNight -> E1
+	m = make_move(F2, E1, true, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(E1))));
+	memset(&st, 0, sizeof(StateInfo));
+	pos.do_move(m, st);
+	//print(pos.checker_bb());
+	EXPECT_EQ(pos.checker_bb().p(0), 0x2000000000000000);
+	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
+	pos.undo_move(m);
+	//F2 ProNight -> F1
+	m = make_move(F2, F1, true, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(F1))));
+	memset(&st, 0, sizeof(StateInfo));
+	pos.do_move(m, st);
+	EXPECT_EQ(pos.checker_bb().p(0), 0x2000000000000000);
+	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
+	pos.undo_move(m);
+	//F2 ProNight -> G1
+	m = make_move(F2, G1, true, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(G1))));
+	memset(&st, 0, sizeof(StateInfo));
+	pos.do_move(m, st);
+	EXPECT_EQ(pos.checker_bb().p(0), 0x2000000000000000);
+	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
+	pos.undo_move(m);
+	//F2 ProNight -> G3	本当はありえない動き
+	m = make_move(F2, G3, true, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(G3))));
+	memset(&st, 0, sizeof(StateInfo));
+	pos.do_move(m, st);
+	EXPECT_EQ(pos.checker_bb().p(0), 0x2000000001000000);
+	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
+	pos.undo_move(m);
+}
 TEST(position, move_give_check)
 {
 	//問題図は自作
-	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	BitBoardns::init();
 	Position pos(ss);
 	Move m;
@@ -808,26 +874,26 @@ TEST(position, move_give_check)
 TEST(position, is_discovered_check)
 {
 	//問題図は自作
-	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	BitBoardns::init();
 	Position pos(ss);
 
 	CheckInfo cib(pos);
-	EXPECT_EQ(pos.is_discovered_check(F8, F9, E9, cib.dc_bb),true);
-	EXPECT_EQ(pos.is_discovered_check(C4, C5, E9, cib.dc_bb), false);
+	EXPECT_EQ(pos.is_discovered_check(F8, F9, E9, cib.dc_bb.first),true);
+	EXPECT_EQ(pos.is_discovered_check(C4, C5, E9, cib.dc_bb.first), false);
 	pos.flip_color();
 	CheckInfo ciw(pos);
-	EXPECT_EQ(pos.is_discovered_check(F2, G2, H2, ciw.dc_bb), false);
-	EXPECT_EQ(pos.is_discovered_check(F2, E2, H2, ciw.dc_bb), false);
-	EXPECT_EQ(pos.is_discovered_check(F2, E1, H2, ciw.dc_bb), true);
-	EXPECT_EQ(pos.is_discovered_check(F2, F1, H2, ciw.dc_bb), true);
-	EXPECT_EQ(pos.is_discovered_check(F2, G1, H2, ciw.dc_bb), true);
-	EXPECT_EQ(pos.is_discovered_check(F2, F3, H2, ciw.dc_bb), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, G2, H2, ciw.dc_bb.first), false);
+	EXPECT_EQ(pos.is_discovered_check(F2, E2, H2, ciw.dc_bb.first), false);
+	EXPECT_EQ(pos.is_discovered_check(F2, E1, H2, ciw.dc_bb.first), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, F1, H2, ciw.dc_bb.first), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, G1, H2, ciw.dc_bb.first), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, F3, H2, ciw.dc_bb.first), true);
 }
 TEST(position, is_aligned)
 {
 	//問題図は自作
-	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	BitBoardns::init();
 
 	Position pos(ss);
@@ -844,7 +910,7 @@ TEST(position, is_aligned)
 TEST(position, check_bb)
 {
 	//問題図は自作
-	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	Position pos(ss);
 
 	CheckInfo cib(pos);
@@ -891,32 +957,32 @@ TEST(position, check_bb)
 TEST(position, dc_bb)
 {
 	//問題図は自作
-	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	Position pos(ss);
 
 	CheckInfo cib(pos);
-	EXPECT_EQ(cib.dc_bb.p(0), 0x10000000);
-	EXPECT_EQ(cib.dc_bb.p(1), 0x00);
+	EXPECT_EQ(cib.dc_bb.first.p(0), 0x10000000);
+	EXPECT_EQ(cib.dc_bb.first.p(1), 0x00);
 
 	pos.flip_color();
 	CheckInfo ciw(pos);
-	EXPECT_EQ(ciw.dc_bb.p(0), 0x400000000);
-	EXPECT_EQ(ciw.dc_bb.p(1), 0x00);
+	EXPECT_EQ(ciw.dc_bb.first.p(0), 0x400000000);
+	EXPECT_EQ(ciw.dc_bb.first.p(1), 0x00);
 }
 TEST(position, pinned_bb)
 {
 	//問題図は自作
-	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	Position pos(ss);
 
 	CheckInfo cib(pos);
-	EXPECT_EQ(cib.pinned.p(0), 0x10000008000);
-	EXPECT_EQ(cib.pinned.p(1), 0x00);
+	EXPECT_EQ(cib.pinned_bb.p(0), 0x10000008000);
+	EXPECT_EQ(cib.pinned_bb.p(1), 0x00);
 
 	pos.flip_color();
 	CheckInfo ciw(pos);
-	EXPECT_EQ(ciw.pinned.p(0), 0x2000000000);
-	EXPECT_EQ(ciw.pinned.p(1), 0x00);
+	EXPECT_EQ(ciw.pinned_bb.p(0), 0x2000000000);
+	EXPECT_EQ(ciw.pinned_bb.p(1), 0x00);
 }
 TEST(position, attackers_to)
 {
