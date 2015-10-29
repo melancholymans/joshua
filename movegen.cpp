@@ -1,10 +1,10 @@
 ﻿#include <string>
 
-using namespace std;
-
-#include "gtest\gtest.h"
 #include "position.h"
 #include "movegen.h"
+#ifdef _DEBUG
+#include <gtest\gtest.h>
+#endif
 
 Move mlist[16384];  //bonanzaもこれくらい取っている2^14
 next_move_t next_move[256];
