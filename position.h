@@ -183,7 +183,7 @@ public:
 	}
 	//us側でpinされている駒の局面bitboardを返す
 	//動けない駒のことをpin,kingとpin駒を射抜いている駒をpierce(them側)と呼称する
-	BitBoard pinned_us_bb() const
+	BitBoard pinned_bb() const
 	{
 		BitBoard pin(0x00, 0x00);
 		const Color us = Color(color_turn);
@@ -202,9 +202,9 @@ public:
 		}
 		return pin;
 	}
-	//us側駒(pin駒と呼称）が動くとthem kingに王手できるpin駒の局面bitboardを返す
+	//us側駒(pin駒と呼称）が動くとthem kingに王手できるpin駒の局面bitboardを返す。開き王手(discovered check)のこと
 	//動けない駒のことをpin(us),kingとpin駒を射抜いている駒をpierce(us)と呼称する
-	BitBoard pinned_them_bb() const
+	BitBoard discovered_bb() const
 	{
 		BitBoard pin(0x00,0x00);
 		const Color us = Color(color_turn);

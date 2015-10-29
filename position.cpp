@@ -34,6 +34,7 @@ using BitBoardns::make_square_relation;
 using BitBoardns::make_square_bb;
 using BitBoardns::make_between_bb;
 using BitBoardns::is_aligned;
+using BitBoardns::allon;
 //局所定数宣言・定義
 //駒の枚数をunsigned int 32bitにパッキンするための駒１つの定数
 const int hand_packed[8] = {
@@ -82,9 +83,9 @@ CheckInfo::CheckInfo(const Position& pos)
 	BitBoard zero_bb(0x00, 0x00);
 
 	//us側のpinされている駒のbitboardを返す
-	pinned = pos.pinned_us_bb();
+	pinned = pos.pinned_bb();
 	//us側の駒が動いたらthem kingに王手をかけられる（空き王手）駒を探している
-	dc_bb = pos.pinned_them_bb();
+	dc_bb = pos.discovered_bb();
 	//them kingに王手をかけられるかもしれない利きbitboardを駒種ごと配列に格納している。
 	//具体的な使い方としてはdo_move()関数で指し手リストのto座標と、このcheck_bb配列の座標が合致していればその指し手は王手として有効
 	//つまりこの配列は王手候補bitboardである。
@@ -242,7 +243,7 @@ void Position::do_move(const Move m, StateInfo& st)
 	st.previous = m_st;
 	m_st = &st;
 	const CheckInfo ci(*this);
-
+	bool move_is_check = move_gives_check(m, ci);	//この指し手により王手が発生するようであればtrue
 	
 	if (is_drop(m)){	//打つ手		
 		pt_to = drop_piece(m);  //打つ駒種を取り出す
@@ -254,7 +255,12 @@ void Position::do_move(const Move m, StateInfo& st)
 		drop_piece_bb(pt_to, to, us);
 		board[to] = (us << 4) | pt_to;    //駒コードに変換（駒種は4bitまで）
 		//ここでもいろいろ処理、不明
-		//この打ち駒によって詰みが発生した場合の処理
+		if (move_is_check){
+			m_st->checkers_bb.set_bit(to);
+		}
+		else{
+			m_st->checkers_bb.clear_bits(allon);
+		}
 	}
 	else{				//盤上の手
 		const Square from = move_from(m);
@@ -283,9 +289,11 @@ void Position::do_move(const Move m, StateInfo& st)
 			//わからない処理
 		}
 		//王手がかかっているときの処理
-		if (1){
+		if (move_is_check){
+			m_st->checkers_bb.set_bit(to);
 		}
 		else{
+			m_st->checkers_bb.clear_bits(allon);
 		}
 	}
 	m_st->board_key = bod_key;
@@ -769,17 +777,77 @@ void Positionns::is_ok(Position &pos)
 #endif
 
 #ifdef _DEBUG
-TEST(position, pinned_us_bb)
+TEST(position, move_give_check)
+{
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	BitBoardns::init();
+	Position pos(ss);
+	Move m;
+
+	CheckInfo cib(pos);
+	m = make_move(F8, F9, true, type_of_piece(Piece(pos.get_board(F8))), type_of_piece(Piece(pos.get_board(F9))));
+	EXPECT_EQ(pos.move_gives_check(m, cib), true);
+	m = make_move(C4, C5, false, type_of_piece(Piece(pos.get_board(C4))), type_of_piece(Piece(pos.get_board(C5))));
+	EXPECT_EQ(pos.move_gives_check(m, cib), false);
+	pos.flip_color();
+	CheckInfo ciw(pos);
+	m = make_move(F2, G2, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(G2))));
+	EXPECT_EQ(pos.move_gives_check(m, ciw),true);
+	m = make_move(F2, E2, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(E2))));
+	EXPECT_EQ(pos.move_gives_check(m, ciw), false);
+	m = make_move(F2, E1, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(E1))));
+	EXPECT_EQ(pos.move_gives_check(m, ciw), true);
+	m = make_move(F2, F1, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(F1))));
+	EXPECT_EQ(pos.move_gives_check(m, ciw), true);
+	m = make_move(F2, G1, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(G1))));
+	EXPECT_EQ(pos.move_gives_check(m, ciw), true);
+	m = make_move(F2, F3, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(F3))));
+	EXPECT_EQ(pos.move_gives_check(m, ciw), true);
+}
+TEST(position, is_discovered_check)
+{
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	BitBoardns::init();
+	Position pos(ss);
+
+	CheckInfo cib(pos);
+	EXPECT_EQ(pos.is_discovered_check(F8, F9, E9, cib.dc_bb),true);
+	EXPECT_EQ(pos.is_discovered_check(C4, C5, E9, cib.dc_bb), false);
+	pos.flip_color();
+	CheckInfo ciw(pos);
+	EXPECT_EQ(pos.is_discovered_check(F2, G2, H2, ciw.dc_bb), false);
+	EXPECT_EQ(pos.is_discovered_check(F2, E2, H2, ciw.dc_bb), false);
+	EXPECT_EQ(pos.is_discovered_check(F2, E1, H2, ciw.dc_bb), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, F1, H2, ciw.dc_bb), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, G1, H2, ciw.dc_bb), true);
+	EXPECT_EQ(pos.is_discovered_check(F2, F3, H2, ciw.dc_bb), true);
+}
+TEST(position, is_aligned)
+{
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	BitBoardns::init();
+
+	Position pos(ss);
+	using BitBoardns::is_aligned;
+
+	EXPECT_EQ(is_aligned(F8, F9, E9),false);
+	EXPECT_EQ(is_aligned(F2, G2, H2),true);
+	EXPECT_EQ(is_aligned(F2, E2, H2), true);
+	EXPECT_EQ(is_aligned(F2, E1, H2), false);
+	EXPECT_EQ(is_aligned(F2, F1, H2), false);
+	EXPECT_EQ(is_aligned(F2, G1, H2), false);
+	EXPECT_EQ(is_aligned(F2, F3, H2), false);
+}
+TEST(position, check_bb)
 {
 	//問題図は自作
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
 	Position pos(ss);
 
 	CheckInfo cib(pos);
-	EXPECT_EQ(cib.pinned.p(0), 0x10000008000);
-	EXPECT_EQ(cib.pinned.p(1), 0x00);
-	EXPECT_EQ(cib.dc_bb.p(0), 0x10000000);
-	EXPECT_EQ(cib.dc_bb.p(1), 0x00);
 	EXPECT_EQ(cib.check_bb[Pawn].p(0), 0x2000000000);
 	EXPECT_EQ(cib.check_bb[Pawn].p(1), 0x00);
 	EXPECT_EQ(cib.check_bb[Lance].p(0), 0x2000000000);
@@ -801,10 +869,6 @@ TEST(position, pinned_us_bb)
 
 	pos.flip_color();
 	CheckInfo ciw(pos);
-	EXPECT_EQ(ciw.pinned.p(0), 0x2000000000);
-	EXPECT_EQ(ciw.pinned.p(1), 0x00);
-	EXPECT_EQ(ciw.dc_bb.p(0), 0x400000000);
-	EXPECT_EQ(ciw.dc_bb.p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Pawn].p(0), 0x8000);
 	EXPECT_EQ(ciw.check_bb[Pawn].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Lance].p(0), 0x8000);
@@ -813,7 +877,6 @@ TEST(position, pinned_us_bb)
 	EXPECT_EQ(ciw.check_bb[Night].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Silver].p(0), 0x5008140);
 	EXPECT_EQ(ciw.check_bb[Silver].p(1), 0x00);
-	//BitBoardns::print(ciw.check_bb[Silver]);
 	EXPECT_EQ(ciw.check_bb[Bishop].p(0), 0x10105000140);
 	EXPECT_EQ(ciw.check_bb[Bishop].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Rook].p(0), 0x402028080);
@@ -825,9 +888,35 @@ TEST(position, pinned_us_bb)
 	EXPECT_EQ(ciw.check_bb[Dragon].p(0), 0x4070281C0);
 	EXPECT_EQ(ciw.check_bb[Dragon].p(1), 0x00);
 }
-TEST(position, pinned_them_bb)
+TEST(position, dc_bb)
 {
-	EXPECT_EQ(1, 1);
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	Position pos(ss);
+
+	CheckInfo cib(pos);
+	EXPECT_EQ(cib.dc_bb.p(0), 0x10000000);
+	EXPECT_EQ(cib.dc_bb.p(1), 0x00);
+
+	pos.flip_color();
+	CheckInfo ciw(pos);
+	EXPECT_EQ(ciw.dc_bb.p(0), 0x400000000);
+	EXPECT_EQ(ciw.dc_bb.p(1), 0x00);
+}
+TEST(position, pinned_bb)
+{
+	//問題図は自作
+	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4Pg2s2 1");
+	Position pos(ss);
+
+	CheckInfo cib(pos);
+	EXPECT_EQ(cib.pinned.p(0), 0x10000008000);
+	EXPECT_EQ(cib.pinned.p(1), 0x00);
+
+	pos.flip_color();
+	CheckInfo ciw(pos);
+	EXPECT_EQ(ciw.pinned.p(0), 0x2000000000);
+	EXPECT_EQ(ciw.pinned.p(1), 0x00);
 }
 TEST(position, attackers_to)
 {

@@ -114,6 +114,7 @@ public:
 		return !(_mm_testz_si128(m_, SQUARE_BB[sq].m_));
 	}
 	//mask‚ªon‚É‚È‚Á‚Ä‚¢‚é‚Æ‚±‚ë‚ðƒNƒŠƒA‚·‚é
+	//_mm_andnot_si128(a,b) => (~a) & b
 	BitBoard clear_bits(const BitBoard& mask)
 	{
 		_mm_store_si128(&m_, _mm_andnot_si128(mask.m_, m_));

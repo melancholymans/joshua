@@ -57,7 +57,7 @@ int main(int argc,char *argv[])
 	main_test(argc, argv);
 #endif
 	BitBoardns::init();
-	Positionns::init();		//Positionns::init()はBitBoardで初期化しているので順序変更禁止
+	Positionns::init();		//Positionns::init()はBitBoardの設定値を使用して初期化しているので順序変更禁止
     //init_usi_options();
     USI::usi_main_loop();
     return 0;
