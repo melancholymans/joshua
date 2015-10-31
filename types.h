@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <string>
 
+const int MAX_LEGAL_MOVE = 1024;	//局面の最大合法手数が593手なので一番近い２のべき乗
+
 enum Color
 {
 	Black,White,ColorNum

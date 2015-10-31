@@ -1,11 +1,11 @@
-﻿#include <string>
-
+﻿
 #include "position.h"
 #include "movegen.h"
 #ifdef _DEBUG
-#include <gtest\gtest.h>
+	#include <gtest\gtest.h>
 #endif
 
+/*
 Move mlist[16384];  //bonanzaもこれくらい取っている2^14
 next_move_t next_move[256];
 short modifylist[1024];    //do_moveでおこなった変更を記録し、undo_moveでこの情報を使ってboardを復元する
@@ -853,25 +853,24 @@ Move *generate_evasions(const Position &pos,Move *ml)
     return ml;
 }
 
-/*
-Move *generate_captures(const Position &pos,Move *ml)
-{
-    Move *m = NULL;
-    return m;
-}
+//Move *generate_captures(const Position &pos,Move *ml)
+//{
+//    Move *m = NULL;
+//    return m;
+//}
+//
+//Move *generate_checks(const Position &pos,Move *ml)
+//{
+//    Move *m = NULL;
+//    return m;
+//}
+//
+//Move *generate_drop(const Position &pos,Move *ml)
+//{
+//    Move *m = NULL;
+//    return m;
+//}
 
-Move *generate_checks(const Position &pos,Move *ml)
-{
-    Move *m = NULL;
-    return m;
-}
-
-Move *generate_drop(const Position &pos,Move *ml)
-{
-    Move *m = NULL;
-    return m;
-}
-*/
 
 bool array_check(Move anser,Move *m,int n);
 
@@ -1387,3 +1386,4 @@ bool array_check(Move anser,Move *m,int n)
     }
     return flag;
 }
+*/

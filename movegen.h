@@ -2,7 +2,18 @@
 #define MOVEGEN_H_INCLUDE
 
 #include "types.h"
+#include "move.h"
 
+enum MoveType{
+	Capture,			//駒を取る手
+	NonCapture,			//駒を取らない手
+	Drop,				//駒打ち
+	Evasion,			//王手回避
+	Legal				//合法手
+};
+
+
+/*
 extern Move mlist[16384];
 extern next_move_t next_move[256];
 extern short modifylist[1024];
@@ -58,7 +69,7 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml);
 bool is_checkmate_b(const Position &pos);
 
 Move *generate_evasions(const Position &pos,Move *ml);
-
+*/
 /*
 2014/7/7時点での問題点
 KINGが敵の利き領域に進む
