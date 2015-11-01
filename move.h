@@ -2,6 +2,7 @@
 #define MOVE_H_INCLUDE
 
 #include "types.h"
+#include "position.h"
 
 namespace Movens{
 	// xxxxxxxx xxxxxxxx xxxxxxxx x1111111 移動先(7bit=127) to

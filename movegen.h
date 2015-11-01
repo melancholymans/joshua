@@ -14,8 +14,14 @@ enum MoveType{
 
 namespace MoveGeneratens
 {
+	/*
+	//王手回避手を生成
+	template <Color US>
+	MoveStack* generate_evasions(MoveStack* ml, const Position &pos);
+	//ここから全ての指し手生成関数を呼び出してMoveStackを返す。
 	template <MoveType MT, PieceType PT, Color US>
 	MoveStack* generate_moves(MoveStack* ml, const Position &pos);
+	*/
 }
 
 /*

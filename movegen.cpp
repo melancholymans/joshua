@@ -1,4 +1,5 @@
-﻿
+﻿#include "types.h"
+#include "bitboard.h"
 #include "position.h"
 #include "movepicker.h"
 #include "movegen.h"
@@ -6,6 +7,8 @@
 	#include <gtest\gtest.h>
 #endif
 
+using BitBoardns::alloff;
+using BitBoardns::IN_FRONT_MASK;
 /*
 
 
@@ -42,20 +45,6 @@ Move *generate_gold_moves_w(const Position &pos,Move *ml,int from)
     return ml;
 }
 
-Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-    
-    p = pos.board[from];
-    to = from + DIRECT_WHITE[PAWN][0];
-    cp = pos.board[to];
-    if(cp > 1 || cp == 0){
-        pmoto = is_pmoto_w(to);
-        *(ml++) = make_move(from,to,pmoto,p,cp);
-    }
-    return ml;
-}
 
 Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
 {
@@ -345,21 +334,6 @@ Move *generate_gold_moves_b(const Position &pos,Move *ml,int from)
     return ml;
 }
 
-Move *generate_pawn_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-    
-    p = pos.board[from];
-    to = from + DIRECT_BLACK[PAWN][0];
-    cp = pos.board[to];
-    if(cp <= 0){
-        pmoto = is_pmoto_b(to);
-        *(ml++) = make_move(from,to,pmoto,p,cp);
-    }
-    return ml;
-}
-
 Move *generate_lance_moves_b(const Position &pos,Move *ml,int from)
 {
     int to,pmoto,i;
@@ -639,7 +613,24 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
 bool array_check(Move anser,Move *m,int n);
 */
 template <Color US>
-Move *generate_evasions(const Position &pos, Move *ml)
+MoveStack* generate_pawn_moves(MoveStack* ml,const Position &pos, BitBoard& tar, Square ksq)
+{
+	
+	BitBoard to_bb = pos.attackers_from_pawn;
+
+	p = pos.board[from];
+	to = from + DIRECT_WHITE[PAWN][0];
+	cp = pos.board[to];
+	if (cp > 1 || cp == 0){
+		pmoto = is_pmoto_w(to);
+		*(ml++) = make_move(from, to, pmoto, p, cp);
+	}
+	
+	return ml;
+}
+
+template <Color US>
+MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position &pos)
 {
 	//今はなにもしない
 	for (int i = 0; i < 8; i++){
@@ -647,86 +638,60 @@ Move *generate_evasions(const Position &pos, Move *ml)
 	return ml;
 }
 
+
 template <MoveType MT,PieceType PT ,Color US>
 MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position &pos)
 {
-	char p;
-	Color c;
+	const Color us = US;
+	const Color them = over_turn(US);
+	const Square ksq = pos.get_king_square(them);
+	const Rank rank6 = (us == Black) ? Rank6 : Rank4;	//them陣のひとつ手前のランク
+	const Rank rank7 = (us == Black) ? Rank7 : Rabk3;	//them陣の最上層ランク
+	const Rank rank8 = (us == Black) ? Rank8 : Rank2;	//them陣の中間層ランク
+	const BitBoard rank_789_bb = IN_FRONT_MASK[us][rank6];
+	const BitBoard rank_123456_bb = IN_FRONT_MASK[them][rank7];
+	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];
+	const BitBoard tar1 =
+		(MT == Capture) ? pos.color_of_bb(them) :
+		(MT == NonCapture) ? pos.inver_bit_bb() : allof;
+	const BitBoard tar2 =
+		(MT == Capture) ? tar1 :
+		(MT == NonCapture) ? tar1 : alloff;
+	const BitBoard tar3 =
+		(MT == Capture) ? tar2 :
+		(MT == NonCapture) ? tar2 : alloff;
 
 	if (MT == Evasion){
 		//自王に王手がかかっているなら王手回避手を生成して返す
-		generate_evasions<pos.get_color_turn()>(pos, ml);
+		generate_evasions<us>(pos, ml);
 		return ml;
 	}
-	for (int sq = SQ_9A; sq < SQ_LIMIT; sq++){
-		p = pos.board[sq];
-		c = color_of_piece(p);
-		if (c != pos.turn){
-			continue;
-		}
-		if (WHITE == pos.turn){
-			switch (type_of_piece(p)){
-			case KING:ml = generate_king_moves_w(pos, ml, sq); break;
-			case GOLD:case PPAWN:case PLANCE:case PKNIGHT:case PSILVER:ml = generate_gold_moves_w(pos, ml, sq); break;
-			case PAWN:ml = generate_pawn_moves_w(pos, ml, sq); break;
-			case LANCE:ml = generate_lance_moves_w(pos, ml, sq); break;
-			case KNIGHT:ml = generate_knight_moves_w(pos, ml, sq); break;
-			case SILVER:ml = generate_silver_moves_w(pos, ml, sq); break;
-			case BISHOP:ml = generate_bishop_moves_w(pos, ml, sq); break;
-			case ROOK:ml = generate_rook_moves_w(pos, ml, sq); break;
-			case PBISHOP:ml = generate_pbishop_moves_w(pos, ml, sq); break;
-			case PROOK:ml = generate_prook_moves_w(pos, ml, sq); break;
-			}
-		}
-		else if (BLACK == pos.turn){
-			switch (type_of_piece(p)){
-			case KING:ml = generate_king_moves_b(pos, ml, sq); break;
-			case GOLD:ml = generate_gold_moves_b(pos, ml, sq); break;
-			case PAWN:ml = generate_pawn_moves_b(pos, ml, sq); break;
-			case LANCE:ml = generate_lance_moves_b(pos, ml, sq); break;
-			case KNIGHT:ml = generate_knight_moves_b(pos, ml, sq); break;
-			case SILVER:ml = generate_silver_moves_b(pos, ml, sq); break;
-			case BISHOP:ml = generate_bishop_moves_b(pos, ml, sq); break;
-			case ROOK:ml = generate_rook_moves_b(pos, ml, sq); break;
-			case PBISHOP:ml = generate_pbishop_moves_b(pos, ml, sq); break;
-			case PROOK:ml = generate_prook_moves_b(pos, ml, sq); break;
-			}
-		}
+	else if(MT != DROP){
+		//王手回避手,打つ手以外(capture promoto noncapture recapture)
+		ml = generate_pawn_moves<us>(ml,pos, tar2,ksq);
+		ml = generate_lance_moves<us>(ml,pos, tar3,ksq);
+		ml = generate_knight_moves<us>(ml,pos, tar3,ksq);
+		ml = generate_silver_moves<us>(ml,pos, tar1,ksq);
+		ml = generate_bishop_moves<us>(ml,pos, tar2,ksq);
+		ml = generate_rook_moves<us>(ml,pos, tar2,ksq);
+		ml = generate_gold_moves<us>(ml,pos, tar1,ksq);
+		ml = generate_king_moves<us>(ml.pos,  tar1,ksq);
+		ml = generate_horse_moves<us>(ml,pos, tar1,ksq);
+		ml = generate_dragon_moves<us>(ml,pos, tar1,ksq);
 	}
 	//打つ手
-	if (WHITE == pos.turn){
-		for (int sq = 215; sq < 222; sq++){
-			if (pos.board[sq] > 0){
-				switch (sq){
-				case 215:ml = generate_gold_drop_w(pos, ml); break;
-				case 216:ml = generate_pawn_drop_w(pos, ml); break;
-				case 217:ml = generate_lance_drop_w(pos, ml); break;
-				case 218:ml = generate_knight_drop_w(pos, ml); break;
-				case 219:ml = generate_silver_drop_w(pos, ml); break;
-				case 220:ml = generate_bishop_drop_w(pos, ml); break;
-				case 221:ml = generate_rook_drop_w(pos, ml); break;
-				}
-			}
-		}
+	else{
+		ml = generate_gold_drop<us>(ml,pos);
+		ml = generate_pawn_drop<us>(ml, pos);
+		ml = generate_lance_drop<us>(ml, pos);
+		ml = generate_knight_drop<us>(ml, pos);
+		ml = generate_silver_drop<us>(ml, pos);
+		ml = generate_bishop_drop<us>(ml, pos);
+		ml = generate_rook_drop<us>(ml, pos);
 	}
-	else if (BLACK == pos.turn){
-		for (int sq = 208; sq < 215; sq++){
-			if (pos.board[sq] > 0){
-				switch (sq){
-				case 208:ml = generate_gold_drop_b(pos, ml); break;
-				case 209:ml = generate_pawn_drop_b(pos, ml); break;
-				case 210:ml = generate_lance_drop_b(pos, ml); break;
-				case 211:ml = generate_knight_drop_b(pos, ml); break;
-				case 212:ml = generate_silver_drop_b(pos, ml); break;
-				case 213:ml = generate_bishop_drop_b(pos, ml); break;
-				case 214:ml = generate_rook_drop_b(pos, ml); break;
-				}
-			}
-		}
-	}
-
 	return ml;
 }
+
 /*
 TEST(movegen,generate_moves)
 {
