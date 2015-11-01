@@ -1,20 +1,64 @@
 #if !defined(MOVEPICKER_H_INCLUDE)
 #define MOVEPICKER_H_INCLUDE
 
+#include "move.h"
+#include "position.h"
+
 //指し手呼び出し
 enum GenerateMovePhase{
 	MainSearch,
-	EvasionSearch
+		PhTacticalMove0,
+		PhKiller,
+		PhNonTactionMove0,
+		PhNonTactionMove1,
+		PhBadCapture,
+	EvasionSearch,
+		PhEvasion,
+	QSearch,
+		PhQCapture0,
+	QEvasionSearch,
+		PhQEvasion,
+	ProCut,
+		PhTacticalMove1,
+	QRecapture,
+		PhQCapture1,
+	PhStop
+};
+
+//指し手情報を入れておくクラス
+struct MoveStack{
+	Move move;
+	int score;
 };
 
 class MovePicker{
 public:
-	MovePicker(const Position& pos, int depth);
+	MovePicker(const Position& pos, const int depth);
+	Move next_move();
+	template<typename T>
+	//インサート降順ソート(本当にMovestackのソートができるのか不安)
+	void insert_sort(T first, T last)
+	{
+		if (first == last){
+			return;
+		}
+		for (T curr = first + 1; curr != last; curr++){
+			if (*(curr - 1) < *curr){
+				T tmp = std::move(*curr);
+				do{
+					*curr = *(curr - 1);
+					curr--;
+				} while (curr != first && *(curr - 1) < tmp);
+				*curr = std::move(tmp);
+			}
+		}
+		return;
+	}
 private:
 	void go_next_phase();
 	MoveStack* get_first_move()
 	{
-		return lega_moves[1];
+		return &lega_moves[1];
 	}
 	MoveStack* get_curr_move()
 	{
@@ -24,10 +68,10 @@ private:
 	{
 		return last_move;
 	}
-	GenerateMovePhase phase;
+	int phase;
 	MoveStack* curr_move;
 	MoveStack* last_move;
-
+	const Position& m_pos;
 	MoveStack lega_moves[MAX_LEGAL_MOVE];
 };
 #endif

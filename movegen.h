@@ -2,7 +2,7 @@
 #define MOVEGEN_H_INCLUDE
 
 #include "types.h"
-#include "move.h"
+#include "movepicker.h"
 
 enum MoveType{
 	Capture,			//駒を取る手
@@ -12,12 +12,13 @@ enum MoveType{
 	Legal				//合法手
 };
 
+namespace MoveGeneratens
+{
+	template <MoveType MT, PieceType PT, Color US>
+	MoveStack* generate_moves(MoveStack* ml, const Position &pos);
+}
 
 /*
-extern Move mlist[16384];
-extern next_move_t next_move[256];
-extern short modifylist[1024];
-extern next_modify_t next_modify[256];
 
 inline int is_pmoto_w(int to)
 {
@@ -29,7 +30,6 @@ inline int is_pmoto_b(int to)
     return to < SQ_9D ? 1 : 0;
 }
 
-Move *generate_moves(const Position &pos,Move *ml);
 Move *generate_king_moves_w(const Position &pos,Move *ml,int from);
 Move *generate_gold_moves_w(const Position &pos,Move *ml,int from);
 Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from);

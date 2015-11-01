@@ -67,9 +67,4 @@ namespace Movens{
 	string string_from_move(const Move m);
 	Square square_from_string(const string sq);
 }
-//指し手情報を入れておくクラス
-struct MoveStack{
-	Move move;
-	int score;
-};
 #endif
