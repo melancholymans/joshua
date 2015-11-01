@@ -88,6 +88,14 @@ public:
 	{
 		return BitBoard(*this) ^= rhs;
 	}
+	BitBoard operator << (const int i) const
+	{
+		return BitBoard(*this) <<= i;
+	}
+	BitBoard operator >> (const int i) const
+	{
+		return BitBoard(*this) >>= i;
+	}
 	//_mm_testz_si128‚Íˆø”“¯m‚ğbit AND‰‰Z‚µ‚ÄŒ‹‰Ê‚ªƒ[ƒ‚É‚È‚ê‚Î1‚ğ•Ô‚·
 	//‚±‚Ìis_not_zeroŠÖ”‚ÍBitBoardƒNƒ‰ƒX‚Ìbitboard‚ª‚·‚×‚Äƒ[ƒ‚É‚È‚Á‚½‚çFALSE‚ğ•Ô‚·
 	bool is_not_zero() const

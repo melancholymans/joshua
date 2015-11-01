@@ -786,6 +786,34 @@ void Positionns::is_ok(Position &pos)
 #endif
 
 #ifdef _DEBUG
+TEST(position, oper_shift_bit_right)
+{
+	// >>=演算子
+	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
+
+	ack = pos.piece_type_of_bb(Pawn) & pos.color_of_bb(White);
+	ack = pos.attackers_from_pawns(White, ack);
+	EXPECT_EQ(ack.p(0), 0x210008010800008);
+	EXPECT_EQ(ack.p(1), 0x2000);
+}
+TEST(position, oper_shift_bit_left)
+{
+	// <<=演算子
+	BitBoard ack;
+	BitBoard occ(0x4D096E604D5A0344, 0x25271);
+	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
+	Position pos(ss);
+
+	ack = pos.piece_type_of_bb(Pawn) & pos.color_of_bb(Black);
+	ack = pos.attackers_from_pawns(Black,ack);
+	EXPECT_EQ(ack.p(0), 0x400020000800020);
+	EXPECT_EQ(ack.p(1), 0x2020);
+}
 TEST(position, do_move_m_st)
 {
 	//問題図は自作
