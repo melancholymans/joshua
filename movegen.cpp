@@ -612,21 +612,11 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
 
 bool array_check(Move anser,Move *m,int n);
 */
+/**/
 template <Color US>
 MoveStack* generate_pawn_moves(MoveStack* ml,const Position &pos, BitBoard& tar, Square ksq)
 {
-	
-	BitBoard to_bb = pos.attackers_from_pawn;
-
-	p = pos.board[from];
-	to = from + DIRECT_WHITE[PAWN][0];
-	cp = pos.board[to];
-	if (cp > 1 || cp == 0){
-		pmoto = is_pmoto_w(to);
-		*(ml++) = make_move(from, to, pmoto, p, cp);
-	}
-	
-	return ml;
+	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US,Pawn)
 }
 
 template <Color US>
@@ -637,8 +627,8 @@ MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position &pos)
 	}
 	return ml;
 }
-
-
+/**/
+/**/
 template <MoveType MT,PieceType PT ,Color US>
 MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position &pos)
 {
@@ -691,7 +681,7 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position &pos)
 	}
 	return ml;
 }
-
+/**/
 /*
 TEST(movegen,generate_moves)
 {

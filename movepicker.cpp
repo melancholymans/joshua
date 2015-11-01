@@ -4,7 +4,7 @@
 	#include <gtest\gtest.h>
 #endif
 
-using MoveGeneratens::generate_moves;
+//using MoveGeneratens::generate_moves;
 
 MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
 {
@@ -28,7 +28,7 @@ MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
 
 void MovePicker::go_next_phase()
 {
-	
+	/**/
 	curr_move = get_first_move();
 	phase++;
 	switch (phase){
@@ -74,7 +74,7 @@ void MovePicker::go_next_phase()
 	default:
 		_ASSERT(false);
 	}
-	
+	/**/
 }
 
 Move MovePicker::next_move()

@@ -115,6 +115,10 @@ public:
 	{
 		return by_type_bb[pt];
 	}
+	BitBoard color_type_of_bb(const Color c, const PieceType pt) const
+	{
+		return by_color_bb[c] & by_type_bb[pt];
+	}
 	//駒がない座標のbitをonにして駒がある座標のbitをoffにする
 	BitBoard inver_bit_bb() const
 	{
