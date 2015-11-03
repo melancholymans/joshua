@@ -1,6 +1,7 @@
 ﻿#include "types.h"
 #include "bitboard.h"
 #include "position.h"
+#include "move.h"
 #include "movepicker.h"
 #include "movegen.h"
 #ifdef _DEBUG
@@ -9,9 +10,8 @@
 
 using BitBoardns::alloff;
 using BitBoardns::IN_FRONT_MASK;
+
 /*
-
-
 Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
 {
     int to;
@@ -612,11 +612,78 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
 
 bool array_check(Move anser,Move *m,int n);
 */
-/**/
-template <Color US>
+void foo()
+{
+	BitBoard on_789_bb;
+	Square to;
+	const SquareDelta delta = DeltaN;
+
+
+
+
+
+
+		while (on_789_bb.p(0)) {
+			to = on_789_bb.first_one_right();
+			{
+				const Square from = to + TDeltaS;
+				(*moveStackList++).move = makePromoteMove<MT>(Pawn, from, to, pos);
+				if (MT == NonEvasion || ALL) {
+					const Rank TRank9 = (US == Black ? Rank9 : Rank1);
+					if (makeRank(to) != TRank9) {
+						(*moveStackList++).move = makeNonPromoteMove<MT>(Pawn, from, to, pos);
+					}
+				}
+			};
+		}		
+		while (on_789_bb.p(1)) {
+			to = on_789_bb.first_one_right();
+			{
+				const Square from = to + TDeltaS;
+				(*moveStackList++).move = makePromoteMove<MT>(Pawn, from, to, pos);
+				if (MT == NonEvasion || ALL) {
+					const Rank TRank9 = (US == Black ? Rank9 : Rank1);
+					if (makeRank(to) != TRank9) {
+						(*moveStackList++).move = makeNonPromoteMove<MT>(Pawn, from, to, pos);
+					}
+				}
+			};
+		}
+}
+template <MoveType MT,Color US>
 MoveStack* generate_pawn_moves(MoveStack* ml,const Position &pos, BitBoard& tar, Square ksq)
 {
-	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US,Pawn)
+	const Rank rank6 = US == Black ? Rank6 : Rank4;
+	const BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
+	const SquareDelta delta = US == Black ? DeltaS : DeltaN;
+	int to;
+
+	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US, Pawn) & tar;
+	//不成り
+	while (to_bb.p(0)){
+		to = to_bb.first_one_right();
+		const from = to + delta;
+		(*ml++).move = make_move(from, to, 0, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
+	}
+	while (to_bb.p(1)){
+		to = to_bb.first_one_left();
+		const from = to + delta;
+		(*ml++).move = make_move(from, to, 0, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
+	}
+	//成り
+	if (MT == Promoto){
+		BitBoard on_789_bb = to_bb & rank789_bb;
+		if (!on_789_bb.is_not_zero()){			
+			return ml;
+		}
+		do{
+			while (on_789_bb.p(0)){
+				to = on_789_bb.first_one_right();
+				//const Square from = 
+			}
+		}
+	}
+	return ml;
 }
 
 template <Color US>
@@ -636,11 +703,11 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position &pos)
 	const Color them = over_turn(US);
 	const Square ksq = pos.get_king_square(them);
 	const Rank rank6 = (us == Black) ? Rank6 : Rank4;	//them陣のひとつ手前のランク
-	const Rank rank7 = (us == Black) ? Rank7 : Rabk3;	//them陣の最上層ランク
+	const Rank rank7 = (us == Black) ? Rank7 : Rank3;	//them陣の最上層ランク
 	const Rank rank8 = (us == Black) ? Rank8 : Rank2;	//them陣の中間層ランク
-	const BitBoard rank_789_bb = IN_FRONT_MASK[us][rank6];
-	const BitBoard rank_123456_bb = IN_FRONT_MASK[them][rank7];
-	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];
+	const BitBoard rank_789_bb = IN_FRONT_MASK[us][rank6];			//them陣全て
+	const BitBoard rank_123456_bb = IN_FRONT_MASK[them][rank7];		//them陣以外
+	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];	//us陣+中間+them陣最上層
 	const BitBoard tar1 =
 		(MT == Capture) ? pos.color_of_bb(them) :
 		(MT == NonCapture) ? pos.inver_bit_bb() : allof;
@@ -653,12 +720,12 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position &pos)
 
 	if (MT == Evasion){
 		//自王に王手がかかっているなら王手回避手を生成して返す
-		generate_evasions<us>(pos, ml);
+		//generate_evasions<us>(pos, ml);
 		return ml;
 	}
 	else if(MT != DROP){
 		//王手回避手,打つ手以外(capture promoto noncapture recapture)
-		ml = generate_pawn_moves<us>(ml,pos, tar2,ksq);
+		ml = generate_pawn_moves<MT,us>(ml,pos, tar2,ksq);
 		ml = generate_lance_moves<us>(ml,pos, tar3,ksq);
 		ml = generate_knight_moves<us>(ml,pos, tar3,ksq);
 		ml = generate_silver_moves<us>(ml,pos, tar1,ksq);

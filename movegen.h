@@ -7,9 +7,11 @@
 enum MoveType{
 	Capture,			//駒を取る手
 	NonCapture,			//駒を取らない手
+	Promoto,			//成る手
 	Drop,				//駒打ち
 	Evasion,			//王手回避
-	Legal				//合法手
+	Legal,				//合法手
+	MoveTypeNum
 };
 
 namespace MoveGeneratens
