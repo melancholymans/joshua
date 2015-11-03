@@ -21,9 +21,11 @@ namespace MoveGeneratens
 	template <Color US>
 	MoveStack* generate_evasions(MoveStack* ml, const Position &pos);
 	//ここから全ての指し手生成関数を呼び出してMoveStackを返す。
+	*/
+	template <MoveType MT, Color US>
+	MoveStack* generate_pawn_moves(MoveStack* ml, const Position &pos, BitBoard& tar, Square ksq);
 	template <MoveType MT, PieceType PT, Color US>
 	MoveStack* generate_moves(MoveStack* ml, const Position &pos);
-	*/
 }
 
 /*

@@ -4,7 +4,7 @@
 	#include <gtest\gtest.h>
 #endif
 
-//using MoveGeneratens::generate_moves;
+using MoveGeneratens::generate_moves;
 
 MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
 {
@@ -33,7 +33,7 @@ void MovePicker::go_next_phase()
 	phase++;
 	switch (phase){
 	case PhTacticalMove0: case PhTacticalMove1:
-		last_move = generate_moves<(curr_move, m_pos);
+		last_move = generate_moves<MoveType MT, PieceType PT, Color US>(curr_move, m_pos);
 		return;
 	case PhKiller:
 		//killer‚Ì€”õ‚ª‚Å‚«‚Ä‚¢‚È‚¢‚Ì‚Åreturn‚·‚é‚¾‚¯
