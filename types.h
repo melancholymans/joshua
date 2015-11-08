@@ -70,6 +70,17 @@ enum Directtion{
 	DirectDiag = 4			//斜め
 };
 
+enum MoveType{
+	Capture,			//駒を取る手
+	NonCapture,			//駒を取らない手
+	Promoto,			//成る手
+	Drop,				//駒打ち
+	Evasion,			//王手回避
+	Legal,				//合法手
+	MoveTypeNum
+};
+
+
 const Rank SQUARE_RANK[SquareNum] = {
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
@@ -95,6 +106,13 @@ const File SQUARE_FILE[SquareNum] = {
 //指し手データ定義
 typedef uint32_t Move;
 typedef uint64_t Key;	//boardの駒配置状態を一意に表す数値に使用されたりする
+
+//指し手情報を入れておくクラス
+struct MoveStack{
+	Move move;
+	int score;
+};
+
 //駒コードから駒種を取り出す
 inline PieceType type_of_piece(Piece piece)
 {

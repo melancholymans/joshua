@@ -134,7 +134,7 @@ public:
 	//飛び駒用の関数は２とうりの実装がある。occ bitboardを引数にする関数と、positionクラスのby_type_bb[AllPiece]を使い引数はとらない関数
 	BitBoard attackers_from_pawn(const Color c, const Square sq) const {return make_pawn_attack(c, sq);}
 	//Pawnのbitboardを一斉に動かす。Black側Pawnは左シフト、White側Pawnは右シフト
-	BitBoard attackers_from_pawns(const Color c, BitBoard& from_bb) { return (c == Black) ? (from_bb >> 1) : (from_bb << 1); }
+	BitBoard attackers_from_pawns(const Color c, BitBoard& from_bb) const { return (c == Black) ? (from_bb >> 1) : (from_bb << 1); }
 	BitBoard attackers_from_lance(const Color c, const Square sq, const BitBoard& occ) const { return make_lance_attack(c, sq, occ); }
 	BitBoard attackers_from_night(const Color c, const Square sq) const{return make_night_attack(c, sq);}
 	BitBoard attackers_from_silver(const Color c, const Square sq) const{return make_silver_attack(c, sq);}

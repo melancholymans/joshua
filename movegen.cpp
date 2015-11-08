@@ -1,593 +1,589 @@
-﻿#include "types.h"
-#include "bitboard.h"
-#include "position.h"
+﻿#include "bitboard.h"
 #include "move.h"
-#include "movepicker.h"
+#include "usi.h"
 #include "movegen.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
 
-using BitBoardns::alloff;
-using BitBoardns::IN_FRONT_MASK;
-
-/*
-Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 8;i++){
-        to = from + DIRECT_WHITE[KING][i];
-        cp = pos.board[to];
-        //KINGなので敵の利きのあるところにはいけないがまだそこまでのデータが揃ってないのでPASS
-        if(cp > 1 || cp == 0){
-            *(ml++) = make_move(from,to,0,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_gold_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto = 0;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 6;i++){
-        to = from + DIRECT_WHITE[GOLD][i];
-        cp = pos.board[to];
-        if(cp > 1 || cp == 0){
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
 
 
-Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 1;i++){
-        //loopを回す必要がないが他のこまのためにこうしている
-        do{
-            to = to + DIRECT_WHITE[LANCE][i];
-            cp = pos.board[to];
-            if(cp == 0 || cp > 1){ 
-                pmoto = is_pmoto_w(to);
-                *(ml++) = make_move(from,to,pmoto,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    return ml;
-}
-
-Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 2;i++){
-        to = from + DIRECT_WHITE[KNIGHT][i];
-        cp = pos.board[to];
-        if(cp > 1 || cp == 0){
-            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない,さらに桂馬は成る必須のラインがあることを忘れないように
-            pmoto = is_pmoto_w(to);
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 5;i++){
-        to = from + DIRECT_WHITE[SILVER][i];
-        cp = pos.board[to];
-        if(cp > 1 || cp == 0){
-            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない
-            pmoto = is_pmoto_w(to);
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_bishop_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_WHITE[BISHOP][i];
-            cp = pos.board[to];
-            if(cp == 0 || cp > 1){
-                pmoto = is_pmoto_w(to);
-                *(ml++) = make_move(from,to,pmoto,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    return ml;
-}
-
-Move *generate_rook_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_WHITE[ROOK][i];
-            cp = pos.board[to];
-            if(cp == 0 || cp > 1){
-                pmoto = is_pmoto_w(to);
-                *(ml++) = make_move(from,to,pmoto,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    return ml;
-}
-
-Move *generate_pbishop_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_WHITE[BISHOP][i];
-            cp = pos.board[to];
-            if(cp == 0 || cp > 1){
-                *(ml++) = make_move(from,to,0,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    for(i = 0;i < 4;i++){
-        to = from + DIRECT_WHITE[ROOK][i];
-        cp = pos.board[to];
-        if(cp == 0 || cp > 1){
-            *(ml++) = make_move(from,to,0,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_prook_moves_w(const Position &pos,Move *ml,int from)
-{
-    int to,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_WHITE[ROOK][i];
-            cp = pos.board[to];
-            if(cp == 0 || cp > 1){
-                *(ml++) = make_move(from,to,0,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    for(i = 0;i < 4;i++){
-        to = from + DIRECT_WHITE[BISHOP][i];
-        cp = pos.board[to];
-        if(cp > 1 || cp == 0){
-            *(ml++) = make_move(from,to,0,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_gold_drop_w(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_GOLD,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_pawn_drop_w(const Position &pos,Move *ml)
-{
-    //colごとに歩がいるかチエックしている、本当は常時局面を
-    //点検しているのいいのかもしれないがとても大変そうなので
-    //必要な時（drop_pawnの時）だけチエックする方法にする
-    int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
-
-    for(int col = 1;col < 10;col++){
-        for(int row = 1;row < 9;row++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == W_PAWN){
-                dpc[col] = 1;
-                break;
-            }
-        }
-    }
-    //筋に歩がすでにいるか判断する処理と、手を生成する
-    //処理は同時にはできない
-    //２歩判定ができていない、
-    for(int col = 1;col < 10;col++){ 
-        for(int row = 1;row < 9;row++){    //死駒対策
-            int sq = make_square(col,row);
-            if(dpc[col]){
-                break;
-            }
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_PAWN,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_lance_drop_w(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 9;row++){ //死駒対策
-        for(int col = 1;col < 10;col++){ 
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_LANCE,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_knight_drop_w(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 8;row++){ //死駒対策
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_KNIGHT,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_silver_drop_w(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_SILVER,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_bishop_drop_w(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_BISHOP,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_rook_drop_w(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,W_ROOK,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 8;i++){
-        to = from + DIRECT_BLACK[KING][i];
-        cp = pos.board[to];
-        //KINGなので敵の利きのあるところにはいけないがまだそこまでのデータが揃ってないのでPASS
-        if(cp <= 0){
-            *(ml++) = make_move(from,to,0,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_gold_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto = 0;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 6;i++){
-        to = from + DIRECT_BLACK[GOLD][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_lance_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 1;i++){
-        do{
-            to = to + DIRECT_BLACK[LANCE][i];
-            cp = pos.board[to];
-            if(cp <= 0){ 
-                pmoto = is_pmoto_b(to);
-                *(ml++) = make_move(from,to,pmoto,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    return ml;
-}
-
-Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 2;i++){
-        to = from + DIRECT_BLACK[KNIGHT][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない,さらに桂馬は成る必須のラインがあることを忘れないように
-            pmoto = is_pmoto_b(to);
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto;
-    char p,cp;
-
-    p = pos.board[from];
-    for(int i = 0;i < 5;i++){
-        to = from + DIRECT_BLACK[SILVER][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない
-            pmoto = is_pmoto_b(to);
-            *(ml++) = make_move(from,to,pmoto,p,cp);
-        }
-    }
-    return ml;
-}
-
-
-Move *generate_bishop_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_BLACK[BISHOP][i];
-            cp = pos.board[to];
-            if(cp <= 0){ 
-                pmoto = is_pmoto_b(to);
-                *(ml++) = make_move(from,to,pmoto,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    return ml;
-}
-
-
-Move *generate_rook_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,pmoto,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_BLACK[ROOK][i];
-            cp = pos.board[to];
-            if(cp <= 0){ 
-                pmoto = is_pmoto_b(to);
-                *(ml++) = make_move(from,to,pmoto,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    return ml;
-}
-
-Move *generate_pbishop_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_BLACK[BISHOP][i];
-            cp = pos.board[to];
-            if(cp <= 0){ 
-                *(ml++) = make_move(from,to,0,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    for(i = 0;i < 4;i++){
-        to = from + DIRECT_BLACK[ROOK][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            *(ml++) = make_move(from,to,0,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_prook_moves_b(const Position &pos,Move *ml,int from)
-{
-    int to,i;
-    char p,cp;
-
-    p = pos.board[from];
-    for(to = from,i = 0;i < 4;i++,to = from){
-        do{
-            to = to + DIRECT_BLACK[ROOK][i];
-            cp = pos.board[to];
-            if(cp <= 0){ 
-                *(ml++) = make_move(from,to,0,p,cp);
-            }
-        }while(cp == EMPTY);
-    }
-    for(int i = 0;i < 4;i++){
-        to = from + DIRECT_BLACK[BISHOP][i];
-        cp = pos.board[to];
-        if(cp <= 0){
-            *(ml++) = make_move(from,to,0,p,cp);
-        }
-    }
-    return ml;
-}
-
-Move *generate_gold_drop_b(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_GOLD,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_pawn_drop_b(const Position &pos,Move *ml)
-{
-    //colごとに歩がいるかチエックしている、本当は常時局面を
-    //点検しているのいいのかもしれないがとても大変そうなので
-    //必要な時（drop_pawnの時）だけチエックする方法にする
-    int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
-
-    for(int col = 1;col < 10;col++){
-        for(int row = 2;row < 10;row++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == B_PAWN){
-                dpc[col] = 1;
-                break;
-            }
-        }
-    }
-    //筋に歩がすでにいるか判断する処理と、手を生成する
-    //処理は同時にはできない
-    for(int col = 1;col < 10;col++){ 
-        for(int row = 2;row < 10;row++){    //死駒対策
-            int sq = make_square(col,row);
-            if(dpc[col]){
-                break;
-            }
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_PAWN,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_lance_drop_b(const Position &pos,Move *ml)
-{
-    for(int row = 2;row < 10;row++){ //死駒対策
-        for(int col = 1;col < 10;col++){ 
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_LANCE,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_knight_drop_b(const Position &pos,Move *ml)
-{
-    for(int row = 3;row < 10;row++){ //死駒対策
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_KNIGHT,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_silver_drop_b(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_SILVER,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_bishop_drop_b(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_BISHOP,0);
-            }
-        }
-    }
-    return ml;
-}
-
-Move *generate_rook_drop_b(const Position &pos,Move *ml)
-{
-    for(int row = 1;row < 10;row++){
-        for(int col = 1;col < 10;col++){
-            int sq = make_square(col,row);
-            if(pos.board[sq] == EMPTY){
-                *(ml++) = make_move(0,sq,0,B_ROOK,0);
-            }
-        }
-    }
-    return ml;
-}
+//Move *generate_king_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 8;i++){
+//        to = from + DIRECT_WHITE[KING][i];
+//        cp = pos.board[to];
+//        //KINGなので敵の利きのあるところにはいけないがまだそこまでのデータが揃ってないのでPASS
+//        if(cp > 1 || cp == 0){
+//            *(ml++) = make_move(from,to,0,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_gold_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto = 0;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 6;i++){
+//        to = from + DIRECT_WHITE[GOLD][i];
+//        cp = pos.board[to];
+//        if(cp > 1 || cp == 0){
+//            *(ml++) = make_move(from,to,pmoto,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//
+//Move *generate_lance_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 1;i++){
+//        //loopを回す必要がないが他のこまのためにこうしている
+//        do{
+//            to = to + DIRECT_WHITE[LANCE][i];
+//            cp = pos.board[to];
+//            if(cp == 0 || cp > 1){ 
+//                pmoto = is_pmoto_w(to);
+//                *(ml++) = make_move(from,to,pmoto,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    return ml;
+//}
+//
+//Move *generate_knight_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 2;i++){
+//        to = from + DIRECT_WHITE[KNIGHT][i];
+//        cp = pos.board[to];
+//        if(cp > 1 || cp == 0){
+//            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない,さらに桂馬は成る必須のラインがあることを忘れないように
+//            pmoto = is_pmoto_w(to);
+//            *(ml++) = make_move(from,to,pmoto,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_silver_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 5;i++){
+//        to = from + DIRECT_WHITE[SILVER][i];
+//        cp = pos.board[to];
+//        if(cp > 1 || cp == 0){
+//            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない
+//            pmoto = is_pmoto_w(to);
+//            *(ml++) = make_move(from,to,pmoto,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_bishop_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_WHITE[BISHOP][i];
+//            cp = pos.board[to];
+//            if(cp == 0 || cp > 1){
+//                pmoto = is_pmoto_w(to);
+//                *(ml++) = make_move(from,to,pmoto,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    return ml;
+//}
+//
+//Move *generate_rook_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_WHITE[ROOK][i];
+//            cp = pos.board[to];
+//            if(cp == 0 || cp > 1){
+//                pmoto = is_pmoto_w(to);
+//                *(ml++) = make_move(from,to,pmoto,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    return ml;
+//}
+//
+//Move *generate_pbishop_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_WHITE[BISHOP][i];
+//            cp = pos.board[to];
+//            if(cp == 0 || cp > 1){
+//                *(ml++) = make_move(from,to,0,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    for(i = 0;i < 4;i++){
+//        to = from + DIRECT_WHITE[ROOK][i];
+//        cp = pos.board[to];
+//        if(cp == 0 || cp > 1){
+//            *(ml++) = make_move(from,to,0,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_prook_moves_w(const Position &pos,Move *ml,int from)
+//{
+//    int to,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_WHITE[ROOK][i];
+//            cp = pos.board[to];
+//            if(cp == 0 || cp > 1){
+//                *(ml++) = make_move(from,to,0,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    for(i = 0;i < 4;i++){
+//        to = from + DIRECT_WHITE[BISHOP][i];
+//        cp = pos.board[to];
+//        if(cp > 1 || cp == 0){
+//            *(ml++) = make_move(from,to,0,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_gold_drop_w(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_GOLD,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_pawn_drop_w(const Position &pos,Move *ml)
+//{
+//    //colごとに歩がいるかチエックしている、本当は常時局面を
+//    //点検しているのいいのかもしれないがとても大変そうなので
+//    //必要な時（drop_pawnの時）だけチエックする方法にする
+//    int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
+//
+//    for(int col = 1;col < 10;col++){
+//        for(int row = 1;row < 9;row++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == W_PAWN){
+//                dpc[col] = 1;
+//                break;
+//            }
+//        }
+//    }
+//    //筋に歩がすでにいるか判断する処理と、手を生成する
+//    //処理は同時にはできない
+//    //２歩判定ができていない、
+//    for(int col = 1;col < 10;col++){ 
+//        for(int row = 1;row < 9;row++){    //死駒対策
+//            int sq = make_square(col,row);
+//            if(dpc[col]){
+//                break;
+//            }
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_PAWN,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_lance_drop_w(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 9;row++){ //死駒対策
+//        for(int col = 1;col < 10;col++){ 
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_LANCE,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_knight_drop_w(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 8;row++){ //死駒対策
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_KNIGHT,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_silver_drop_w(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_SILVER,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_bishop_drop_w(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_BISHOP,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_rook_drop_w(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,W_ROOK,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_king_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 8;i++){
+//        to = from + DIRECT_BLACK[KING][i];
+//        cp = pos.board[to];
+//        //KINGなので敵の利きのあるところにはいけないがまだそこまでのデータが揃ってないのでPASS
+//        if(cp <= 0){
+//            *(ml++) = make_move(from,to,0,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_gold_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto = 0;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 6;i++){
+//        to = from + DIRECT_BLACK[GOLD][i];
+//        cp = pos.board[to];
+//        if(cp <= 0){
+//            *(ml++) = make_move(from,to,pmoto,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_lance_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 1;i++){
+//        do{
+//            to = to + DIRECT_BLACK[LANCE][i];
+//            cp = pos.board[to];
+//            if(cp <= 0){ 
+//                pmoto = is_pmoto_b(to);
+//                *(ml++) = make_move(from,to,pmoto,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    return ml;
+//}
+//
+//Move *generate_knight_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 2;i++){
+//        to = from + DIRECT_BLACK[KNIGHT][i];
+//        cp = pos.board[to];
+//        if(cp <= 0){
+//            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない,さらに桂馬は成る必須のラインがあることを忘れないように
+//            pmoto = is_pmoto_b(to);
+//            *(ml++) = make_move(from,to,pmoto,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_silver_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(int i = 0;i < 5;i++){
+//        to = from + DIRECT_BLACK[SILVER][i];
+//        cp = pos.board[to];
+//        if(cp <= 0){
+//            //本来は成るで１手、成らないで１手なので、この決め打ちはよくない
+//            pmoto = is_pmoto_b(to);
+//            *(ml++) = make_move(from,to,pmoto,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//
+//Move *generate_bishop_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_BLACK[BISHOP][i];
+//            cp = pos.board[to];
+//            if(cp <= 0){ 
+//                pmoto = is_pmoto_b(to);
+//                *(ml++) = make_move(from,to,pmoto,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    return ml;
+//}
+//
+//
+//Move *generate_rook_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,pmoto,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_BLACK[ROOK][i];
+//            cp = pos.board[to];
+//            if(cp <= 0){ 
+//                pmoto = is_pmoto_b(to);
+//                *(ml++) = make_move(from,to,pmoto,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    return ml;
+//}
+//
+//Move *generate_pbishop_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_BLACK[BISHOP][i];
+//            cp = pos.board[to];
+//            if(cp <= 0){ 
+//                *(ml++) = make_move(from,to,0,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    for(i = 0;i < 4;i++){
+//        to = from + DIRECT_BLACK[ROOK][i];
+//        cp = pos.board[to];
+//        if(cp <= 0){
+//            *(ml++) = make_move(from,to,0,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_prook_moves_b(const Position &pos,Move *ml,int from)
+//{
+//    int to,i;
+//    char p,cp;
+//
+//    p = pos.board[from];
+//    for(to = from,i = 0;i < 4;i++,to = from){
+//        do{
+//            to = to + DIRECT_BLACK[ROOK][i];
+//            cp = pos.board[to];
+//            if(cp <= 0){ 
+//                *(ml++) = make_move(from,to,0,p,cp);
+//            }
+//        }while(cp == EMPTY);
+//    }
+//    for(int i = 0;i < 4;i++){
+//        to = from + DIRECT_BLACK[BISHOP][i];
+//        cp = pos.board[to];
+//        if(cp <= 0){
+//            *(ml++) = make_move(from,to,0,p,cp);
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_gold_drop_b(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_GOLD,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_pawn_drop_b(const Position &pos,Move *ml)
+//{
+//    //colごとに歩がいるかチエックしている、本当は常時局面を
+//    //点検しているのいいのかもしれないがとても大変そうなので
+//    //必要な時（drop_pawnの時）だけチエックする方法にする
+//    int dpc[10] = {0,0,0,0,0,0,0,0,0,0};
+//
+//    for(int col = 1;col < 10;col++){
+//        for(int row = 2;row < 10;row++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == B_PAWN){
+//                dpc[col] = 1;
+//                break;
+//            }
+//        }
+//    }
+//    //筋に歩がすでにいるか判断する処理と、手を生成する
+//    //処理は同時にはできない
+//    for(int col = 1;col < 10;col++){ 
+//        for(int row = 2;row < 10;row++){    //死駒対策
+//            int sq = make_square(col,row);
+//            if(dpc[col]){
+//                break;
+//            }
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_PAWN,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_lance_drop_b(const Position &pos,Move *ml)
+//{
+//    for(int row = 2;row < 10;row++){ //死駒対策
+//        for(int col = 1;col < 10;col++){ 
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_LANCE,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_knight_drop_b(const Position &pos,Move *ml)
+//{
+//    for(int row = 3;row < 10;row++){ //死駒対策
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_KNIGHT,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_silver_drop_b(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_SILVER,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_bishop_drop_b(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_BISHOP,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
+//
+//Move *generate_rook_drop_b(const Position &pos,Move *ml)
+//{
+//    for(int row = 1;row < 10;row++){
+//        for(int col = 1;col < 10;col++){
+//            int sq = make_square(col,row);
+//            if(pos.board[sq] == EMPTY){
+//                *(ml++) = make_move(0,sq,0,B_ROOK,0);
+//            }
+//        }
+//    }
+//    return ml;
+//}
 
 
 
@@ -609,155 +605,50 @@ Move *generate_rook_drop_b(const Position &pos,Move *ml)
 //    return m;
 //}
 
-
-bool array_check(Move anser,Move *m,int n);
-*/
-template <MoveType MT,Color US>
-MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position &pos, BitBoard& tar, Square ksq)
+//TESTのためのヘルパー関数
+bool array_check(Move anser, MoveStack *m)
 {
-	const Rank rank6 = US == Black ? Rank6 : Rank4;
-	const BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
-	const SquareDelta delta = US == Black ? DeltaS : DeltaN;
-	Square to;
+	for (int i=0; i < 256; i++){
+		if (m->move == anser){
+			return true;
+		}
+	}
+	return false;
+}
 
-	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US, Pawn) & tar;
-	//不成り
-	{
-		BitBoard on_123456_bb = to_bb & tar;
-		while (on_123456_bb.p(0)){
-			to = on_123456_bb.first_one_right();
-			const from = to + delta;
-			(*ml++).move = make_move(from, to, 0, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
-		}
-		while (on_123456_bb.p(1)){
-			to = on_123456_bb.first_one_left();
-			const from = to + delta;
-			(*ml++).move = make_move(from, to, 0, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
-		}
-	}
-	//成り
-	if (MT == Promoto){
-		BitBoard on_789_bb = to_bb & rank789_bb;
-		if (!on_789_bb.is_not_zero()){
-			return ml;
-		}
-		while (on_789_bb.p(0)){
-			to = on_789_bb.first_one_right();
-			const Square from = to + delta;
-			(*ml++).move = make_move(from, to, 1, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
-			const Rank rank9 = US == Black Rank9 : Rank1;
-			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら歩なりも生成する
-			if (make_rank(to) != rank9){
-				(*ml++).move = make_move(from, to, 0, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
-			}
-		}
-		while (on_789_bb.p(1)){
-			to = on_789_bb.first_one_left();
-			const Square from = to + delta;
-			(*ml++).move = make_move(from, to, 1, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
-			const Rank rank9 = US == Black Rank9 : Rank1;
-			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら歩なりも生成する
-			if (make_rank(to) != rank9){
-				(*ml++).move = make_move(from, to, 0, type_of_piece(pos.get_board(from)), type_of_piece(pos.get_board(to)));
-			}
-		}
-	}
-	return ml;
-}
-/*
-template <Color US>
-MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position &pos)
-{
-	//今はなにもしない
-	for (int i = 0; i < 8; i++){
-	}
-	return ml;
-}
-*/
-/**/
-template <MoveType MT,PieceType PT ,Color US>
-MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position &pos)
-{
-	const Color us = US;
-	const Color them = over_turn(US);
-	const Square ksq = pos.get_king_square(them);
-	const Rank rank6 = (us == Black) ? Rank6 : Rank4;	//them陣のひとつ手前のランク
-	const Rank rank7 = (us == Black) ? Rank7 : Rank3;	//them陣の最上層ランク
-	const Rank rank8 = (us == Black) ? Rank8 : Rank2;	//them陣の中間層ランク
-	const BitBoard rank_789_bb = IN_FRONT_MASK[us][rank6];			//them陣全て
-	const BitBoard rank_123456_bb = IN_FRONT_MASK[them][rank7];		//them陣以外
-	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];	//us陣+中間+them陣最上層
-	const BitBoard tar1 =
-		(MT == Capture) ? pos.color_of_bb(them) :
-		(MT == NonCapture) ? pos.inver_bit_bb() : allof;
-	const BitBoard tar2 =
-		(MT == Capture) ? tar1 :
-		(MT == NonCapture) ? tar1 : alloff;
-	const BitBoard tar3 =
-		(MT == Capture) ? tar2 :
-		(MT == NonCapture) ? tar2 : alloff;
 
-	if (MT == Evasion){
-		//自王に王手がかかっているなら王手回避手を生成して返す
-		//generate_evasions<us>(pos, ml);
-		return ml;
-	}
-	else if(MT != DROP){
-		//王手回避手,打つ手以外(capture promoto noncapture recapture)
-		ml = generate_pawn_moves<MT,us>(ml,pos, tar2,ksq);
-		//ml = generate_lance_moves<us>(ml,pos, tar3,ksq);
-		//ml = generate_knight_moves<us>(ml,pos, tar3,ksq);
-		//ml = generate_silver_moves<us>(ml,pos, tar1,ksq);
-		//ml = generate_bishop_moves<us>(ml,pos, tar2,ksq);
-		//ml = generate_rook_moves<us>(ml,pos, tar2,ksq);
-		//ml = generate_gold_moves<us>(ml,pos, tar1,ksq);
-		//ml = generate_king_moves<us>(ml.pos,  tar1,ksq);
-		//ml = generate_horse_moves<us>(ml,pos, tar1,ksq);
-		//ml = generate_dragon_moves<us>(ml,pos, tar1,ksq);
-	}
-	//打つ手
-	else{
-		ml = generate_gold_drop<us>(ml,pos);
-		ml = generate_pawn_drop<us>(ml, pos);
-		ml = generate_lance_drop<us>(ml, pos);
-		ml = generate_knight_drop<us>(ml, pos);
-		ml = generate_silver_drop<us>(ml, pos);
-		ml = generate_bishop_drop<us>(ml, pos);
-		ml = generate_rook_drop<us>(ml, pos);
-	}
-	return ml;
-}
-/**/
-/*
 TEST(movegen,generate_moves)
 {
     //指し手のテストは生成される手の数と生成された手そのものを比較する
-    from_sfen(start_position);
-    next_move[0].last_move = mlist;
-    Move *m = generate_moves(root_position,mlist);
-    int n = m - next_move[0].last_move;
-    EXPECT_EQ(30,n);
-    m = mlist;
-    //pawn
-    Move anser = make_move(SQ_9G,SQ_9F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_8G,SQ_8F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_7G,SQ_7F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_6G,SQ_6F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_5G,SQ_5F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_4G,SQ_4F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_3G,SQ_3F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_2G,SQ_2F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    anser = make_move(SQ_1G,SQ_1F,0,B_PAWN,EMPTY);
-    EXPECT_TRUE(array_check(anser,m,n));
-    //lance
+	Position pos(USI::start_sfen);
+	using namespace MoveGeneratens;
+	MoveStack ms[256];
+	MoveStack* ml = ms;
+	Move ans;
+
+	//pawn
+	ml = generate_moves<NonCapture>(ml, pos);
+	ans = make_move(I3, I4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H3, H4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G3, G4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F3, F4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, E4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(D3, D4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C3, C4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B3, B4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A3, A4, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	/*
+	//lance
     anser = make_move(SQ_9I,SQ_9H,0,B_LANCE,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(SQ_1I,SQ_1H,0,B_LANCE,EMPTY);
@@ -1228,18 +1119,5 @@ TEST(movegen,generate_moves)
     EXPECT_TRUE(array_check(anser,m,n));
     anser = make_move(0,SQ_1H,0,W_ROOK,EMPTY);
     EXPECT_TRUE(array_check(anser,m,n));
+	*/
 }
-
-bool array_check(Move anser,Move *m,int n)
-{
-    bool flag = false;
-
-    for(int i = 0;i < n;i++){
-        if(anser == *(m++)){
-            flag = true;
-        }
-    }
-    return flag;
-}
-*/
-

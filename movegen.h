@@ -2,88 +2,145 @@
 #define MOVEGEN_H_INCLUDE
 
 #include "types.h"
-#include "movepicker.h"
+#include "position.h"
+#include "move.h"
 
-enum MoveType{
-	Capture,			//駒を取る手
-	NonCapture,			//駒を取らない手
-	Promoto,			//成る手
-	Drop,				//駒打ち
-	Evasion,			//王手回避
-	Legal,				//合法手
-	MoveTypeNum
-};
+using BitBoardns::IN_FRONT_MASK;
+using BitBoardns::alloff;
+using Movens::make_move;
 
 namespace MoveGeneratens
 {
-	/*
 	//王手回避手を生成
 	template <Color US>
-	MoveStack* generate_evasions(MoveStack* ml, const Position &pos);
+	MoveStack* generate_evasions(MoveStack* ml, const Position& pos);
+	//本体呼び出し用のカラー切り替え関数
+	template <MoveType MT>
+	MoveStack* generate_moves(MoveStack* ml, const Position& pos);
 	//ここから全ての指し手生成関数を呼び出してMoveStackを返す。
-	*/
 	template <MoveType MT, Color US>
-	MoveStack* generate_pawn_moves(MoveStack* ml, const Position &pos, BitBoard& tar, Square ksq);
-	template <MoveType MT, PieceType PT, Color US>
-	MoveStack* generate_moves(MoveStack* ml, const Position &pos);
+	MoveStack* generate_moves(MoveStack* ml, const Position& pos);
+	template <MoveType MT, Color US>
+	MoveStack* generate_pawn_moves(MoveStack* ml, const Position &pos, const BitBoard& tar, Square ksq);
+
 }
-
-/*
-
-inline int is_pmoto_w(int to)
+//最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
+template<MoveType MT>
+MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 {
-    return to > SQ_1F ? 1 : 0;
+	return pos.get_color_turn() == Black ?
+		generate_moves<MT, Black>(ml, pos) : generate_moves<MT, White>(ml, pos);
 }
-
-inline int is_pmoto_b(int to)
+template <MoveType MT,Color US>
+MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 {
-    return to < SQ_9D ? 1 : 0;
+	const Color them = over_turn(US);
+	const Square ksq = pos.get_king_square(them);
+	const Rank rank6 = (US == Black) ? Rank6 : Rank4;	//them陣のひとつ手前のランク
+	const Rank rank7 = (US == Black) ? Rank7 : Rank3;	//them陣の最上層ランク
+	const Rank rank8 = (US == Black) ? Rank8 : Rank2;	//them陣の中間層ランク
+	const BitBoard rank_789_bb = IN_FRONT_MASK[US][rank6];			//them陣全て
+	const BitBoard rank_123456_bb = IN_FRONT_MASK[them][rank7];		//them陣以外
+	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];	//us陣+中間+them陣最上層
+	const BitBoard tar1 =
+	(MT == Capture) ? pos.color_of_bb(them) :
+	(MT == NonCapture) ? pos.inver_bit_bb() : alloff;
+	const BitBoard tar2 =
+	(MT == Capture) ? tar1 :
+	(MT == NonCapture) ? tar1 : alloff;
+	const BitBoard tar3 =
+	(MT == Capture) ? tar2 :
+	(MT == NonCapture) ? tar2 : alloff;
+
+	if (MT == Evasion){
+		//自王に王手がかかっているなら王手回避手を生成して返す
+		generate_evasions<US>(ml,pos);
+		return ml;
+	}
+	else if (MT != Drop){
+		//王手回避手,打つ手以外(capture promoto noncapture recapture)
+		ml = generate_pawn_moves<MT,US>(ml,pos, tar2,ksq);
+		//ml = generate_lance_moves<us>(ml,pos, tar3,ksq);
+		//ml = generate_knight_moves<us>(ml,pos, tar3,ksq);
+		//ml = generate_silver_moves<us>(ml,pos, tar1,ksq);
+		//ml = generate_bishop_moves<us>(ml,pos, tar2,ksq);
+		//ml = generate_rook_moves<us>(ml,pos, tar2,ksq);
+		//ml = generate_gold_moves<us>(ml,pos, tar1,ksq);
+		//ml = generate_king_moves<us>(ml.pos,  tar1,ksq);
+		//ml = generate_horse_moves<us>(ml,pos, tar1,ksq);
+		//ml = generate_dragon_moves<us>(ml,pos, tar1,ksq);
+	}
+	//打つ手
+	else{
+		printf("dummy\n");
+		//ml = generate_gold_drop<us>(ml,pos);
+		//ml = generate_pawn_drop<us>(ml, pos);
+		//ml = generate_lance_drop<us>(ml, pos);
+		//ml = generate_knight_drop<us>(ml, pos);
+		//ml = generate_silver_drop<us>(ml, pos);
+		//ml = generate_bishop_drop<us>(ml, pos);
+		//ml = generate_rook_drop<us>(ml, pos);
+	}
+	return ml;
 }
 
-Move *generate_king_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_gold_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_pawn_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_lance_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_knight_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_silver_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_bishop_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_rook_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_pbishop_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_prook_moves_w(const Position &pos,Move *ml,int from);
-Move *generate_gold_drop_w(const Position &pos,Move *ml);
-Move *generate_pawn_drop_w(const Position &pos,Move *ml);
-Move *generate_lance_drop_w(const Position &pos,Move *ml);
-Move *generate_knight_drop_w(const Position &pos,Move *ml);
-Move *generate_silver_drop_w(const Position &pos,Move *ml);
-Move *generate_bishop_drop_w(const Position &pos,Move *ml);
-Move *generate_rook_drop_w(const Position &pos,Move *ml);
-bool is_checkmate_w(const Position &pos);
+template <Color US>
+MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position& pos)
+{
+	MoveStack ss;
+	return &ss;
+}
 
-Move *generate_king_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_gold_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_pawn_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_lance_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_knight_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_silver_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_bishop_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_rook_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_pbishop_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_prook_moves_b(const Position &pos,Move *ml,int from);
-Move *generate_gold_drop_b(const Position &pos,Move *ml);
-Move *generate_pawn_drop_b(const Position &pos,Move *ml);
-Move *generate_lance_drop_b(const Position &pos,Move *ml);
-Move *generate_knight_drop_b(const Position &pos,Move *ml);
-Move *generate_silver_drop_b(const Position &pos,Move *ml);
-Move *generate_bishop_drop_b(const Position &pos,Move *ml);
-Move *generate_rook_drop_b(const Position &pos,Move *ml);
-bool is_checkmate_b(const Position &pos);
+template <MoveType MT, Color US>
+MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	const Rank rank6 = (US == Black) ? Rank6 : Rank4;
+	const BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
+	const int delta = (US == Black) ? DeltaS : DeltaN;
+	int to;
 
-Move *generate_evasions(const Position &pos,Move *ml);
-*/
-/*
-2014/7/7時点での問題点
-KINGが敵の利き領域に進む
-is_checkmate_XXで手生成時点で王手がかかっている判断しているが
-KING自身が動く時敵の利き領域に入るかどうかはまったくチエックしていない
-*/
+	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US, Pawn)) & tar;
+	//不成り
+	{
+		BitBoard on_123456_bb = to_bb & tar;
+		while (on_123456_bb.p(0)){
+			to = on_123456_bb.first_one_right();
+			const int from = to + delta;
+			(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+		}
+		while (on_123456_bb.p(1)){
+			to = on_123456_bb.first_one_left();
+			const int from = to + delta;
+			(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	//成り
+	if (MT == Promoto){
+		BitBoard on_789_bb = to_bb & rank789_bb;
+		if (!on_789_bb.is_not_zero()){
+			return ml;
+		}
+		while (on_789_bb.p(0)){
+			to = on_789_bb.first_one_right();
+			const int from = to + delta;
+			(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+			const Rank rank9 = (US == Black) ? Rank9 : Rank1;
+			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら歩なりも生成する
+			if (make_rank(Square(to)) != rank9){
+				(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+		while (on_789_bb.p(1)){
+			to = on_789_bb.first_one_left();
+			const int from = to + delta;
+			(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+			const Rank rank9 = (US == Black) ? Rank9 : Rank1;
+			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら歩なりも生成する
+			if (make_rank(Square(to)) != rank9){
+				(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+	}
+	return ml;
+}
 #endif

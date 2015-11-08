@@ -25,18 +25,13 @@ enum GenerateMovePhase{
 	PhStop
 };
 
-//指し手情報を入れておくクラス
-struct MoveStack{
-	Move move;
-	int score;
-};
 
 class MovePicker{
 public:
 	MovePicker(const Position& pos, const int depth);
 	Move next_move();
-	template<typename T>
 	//インサート降順ソート(本当にMovestackのソートができるのか不安)
+	template<typename T>
 	void insert_sort(T first, T last)
 	{
 		if (first == last){
@@ -71,7 +66,7 @@ private:
 	int phase;
 	MoveStack* curr_move;
 	MoveStack* last_move;
-	const Position& m_pos;
 	MoveStack lega_moves[MAX_LEGAL_MOVE];
+	const Position& m_pos;
 };
 #endif

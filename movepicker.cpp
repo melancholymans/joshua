@@ -28,23 +28,23 @@ MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
 
 void MovePicker::go_next_phase()
 {
-	/**/
 	curr_move = get_first_move();
+	Color us = m_pos.get_color_turn();
 	phase++;
 	switch (phase){
 	case PhTacticalMove0: case PhTacticalMove1:
-		last_move = generate_moves<MoveType MT, PieceType PT, Color US>(curr_move, m_pos);
+		last_move = generate_moves<Capture>(curr_move, m_pos);
 		return;
 	case PhKiller:
 		//killerの準備ができていないのでreturnするだけ
 		return;
 	case PhNonTactionMove0:
-		last_move = generate_moves<Capture,>(curr_move, m_pos);
-		curr_move = last_move;
-		last_move = generate_moves(curr_move, m_pos);
-		curr_move = get_first_move();
-		//std::partionアルゴリズムをつかったなにかがある
-		insertion_sort(curr_move, last_move);
+		//last_move = generate_moves<Capture,>(curr_move, m_pos);
+		//curr_move = last_move;
+		//last_move = generate_moves(curr_move, m_pos);
+		//curr_move = get_first_move();
+		////std::partionアルゴリズムをつかったなにかがある
+		//insertion_sort(curr_move, last_move);
 		return;
 	case PhNonTactionMove1:
 		curr_move = last_move;
@@ -55,15 +55,15 @@ void MovePicker::go_next_phase()
 		//わからない操作
 		return;
 	case PhEvasion:case PhQEvasion:
-		last_move = generate_moves(curr_move, m_pos);
+		//last_move = generate_moves(curr_move, m_pos);
 		//わからない操作
 		return;
 	case PhQCapture0:
-		last_move = generate_moves(curr_move, m_pos);
+		//last_move = generate_moves(curr_move, m_pos);
 		//わからない操作
 		return;
 	case PhQCapture1:
-		last_move = generate_moves(curr_move, m_pos);
+		//last_move = generate_moves(curr_move, m_pos);
 		//わからない操作
 		return;
 	case EvasionSearch:case QSearch:case QEvasionSearch:case QRecapture:case ProCut:
