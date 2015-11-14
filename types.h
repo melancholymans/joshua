@@ -157,6 +157,10 @@ inline Square make_square(File f, Rank r)
 {
 	return Square(f * 9 + r);
 }
+inline bool is_infront_rank(Color c, Rank base_rank, Rank tar_rank)
+{
+	return c == Black ? (tar_rank < base_rank) : (tar_rank > base_rank);
+}
 //引数のカラーをひっくり返す
 inline Color over_turn(Color c)
 {

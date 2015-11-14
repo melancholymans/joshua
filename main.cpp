@@ -176,6 +176,19 @@ TEST(mt64bit, mt64bit)
 	}
 }
 
+TEST(main, is_infront_rank)
+{
+	Color c = Black;
+	EXPECT_TRUE(is_infront_rank(c, Rank7, Rank9));
+	EXPECT_TRUE(is_infront_rank(c, Rank7, Rank8));
+	EXPECT_FALSE(is_infront_rank(c, Rank7, Rank7));
+	EXPECT_FALSE(is_infront_rank(c, Rank7, Rank6));
+	c = White;
+	EXPECT_TRUE(is_infront_rank(c, Rank3, Rank1));
+	EXPECT_TRUE(is_infront_rank(c, Rank3, Rank2));
+	EXPECT_FALSE(is_infront_rank(c, Rank3, Rank3));
+	EXPECT_FALSE(is_infront_rank(c, Rank3, Rank4));
+}
 TEST(main, over_turn)
 {
 	Color c;
