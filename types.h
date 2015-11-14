@@ -73,10 +73,14 @@ enum Directtion{
 enum MoveType{
 	Capture,			//駒を取る手
 	NonCapture,			//駒を取らない手
-	Promoto,			//成る手
 	Drop,				//駒打ち
-	Evasion,			//王手回避
-	Legal,				//合法手
+	CapturePlusPro,		//Capture+歩香桂飛角を取らない成る手
+	NonCaptureMinusPro,	//NonCapture-歩香桂飛角を取らない成る手-香の３段目への駒をとらない不成
+	Recapture,			//特定の位置への取り返しの手
+	Evasion,			//王手回避、歩飛角の不成は含まない
+	NonEvasion,			//王手がかかっていないときの合法手
+	Legal,				//合法手->王手がかかっていればEvasionを指定して指し手生成、王手がかかっていなければNonEvasionを指定して指し手生成
+	LegalAll,			//Legal+歩飛角の不成、香の２段目への不成、
 	MoveTypeNum
 };
 

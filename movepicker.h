@@ -7,21 +7,21 @@
 //éwÇµéËåƒÇ—èoÇµ
 enum GenerateMovePhase{
 	MainSearch,
-		PhTacticalMove0,
-		PhKiller,
-		PhNonTactionMove0,
-		PhNonTactionMove1,
-		PhBadCapture,
+	PhTacticalMove0,
+	PhKiller,
+	PhNonTactionMove0,
+	PhNonTactionMove1,
+	PhBadCapture,
 	EvasionSearch,
-		PhEvasion,
+	PhEvasion,
 	QSearch,
-		PhQCapture0,
+	PhQCapture0,
 	QEvasionSearch,
-		PhQEvasion,
+	PhQEvasion,
 	ProCut,
-		PhTacticalMove1,
+	PhTacticalMove1,
 	QRecapture,
-		PhQCapture1,
+	PhQCapture1,
 	PhStop
 };
 

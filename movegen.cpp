@@ -609,7 +609,7 @@
 bool array_check(Move anser, MoveStack *m)
 {
 	for (int i=0; i < 256; i++){
-		if (m->move == anser){
+		if (m++->move == anser){
 			return true;
 		}
 	}
