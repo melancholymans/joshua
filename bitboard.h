@@ -178,6 +178,11 @@ public:
 	{
 		return (pop_count() == 1);
 	}
+	//index‚ğw’è‚µ‚Ä64bit bitboard‚ğİ’è‚·‚é
+	void set_p(const int index, uint64_t val)
+	{
+		p_[index] = val;
+	}
 	uint64_t p(const int index) const
 	{
 		return p_[index];
