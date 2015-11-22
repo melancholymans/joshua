@@ -53,6 +53,10 @@ TEST(movegen, movegen_all)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I6, I9, 1, Lance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));	
+
+	ans = make_move(H1, G3, 0, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
 	//Capture
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
@@ -60,6 +64,7 @@ TEST(movegen, movegen_all)
 	ml = generate_moves<Capture>(ml, pos);
 	ans = make_move(H3, H4, 0, Pawn, Lance);
 	EXPECT_TRUE(array_check(ans, ms));
+
 	//CapturePlusPro
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
@@ -76,6 +81,12 @@ TEST(movegen, movegen_all)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I6, I9, 1, Lance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	
+	ans = make_move(B7, A9, 1, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B7, C9, 1, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
 	//NonCaptureMinusPro
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
@@ -90,6 +101,9 @@ TEST(movegen, movegen_all)
 	ans = make_move(C4, C5, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B5, B6, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(H1, G3, 0, Night, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 }
 
