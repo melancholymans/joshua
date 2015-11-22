@@ -2,6 +2,7 @@
 #define MOVEGEN_H_INCLUDE
 
 #include "types.h"
+#include "bitboard.h"
 #include "position.h"
 #include "move.h"
 
@@ -22,6 +23,8 @@ namespace MoveGeneratens
 	MoveStack* generate_moves(MoveStack* ml, const Position& pos);
 	template <MoveType MT, Color US,bool ALL>
 	MoveStack* generate_pawn_moves(MoveStack* ml, const Position &pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_lance_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 
 }
 //最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
@@ -45,11 +48,14 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 	//tar1,2,3でCapture,NonCaptureは同じターゲット（Captureはthem側駒がある座標,NonCaptureは駒がいない座標）
 	//CapturePlusPro（駒取＋駒を取らず成る手）ではtar1はCaptureとまったく同じで成る手の追加なし、tar2,3は駒取+駒のいない成れる座標
 	//NonCaptureMinusPro（駒取りしない-成る手）ではtar2はそのまま駒を取らない手と成る手を排除している。tar3では駒取しない＋７段目までは許容している
+
+	//promotoed king silver
 	const BitBoard tar1 =
 	(MT == Capture) ? pos.color_of_bb(them) :
 	(MT == NonCapture) ? pos.inver_bit_bb() :
 	(MT == CapturePlusPro) ? pos.color_of_bb(them):
 	(MT == NonCaptureMinusPro) ? pos.inver_bit_bb():alloff;
+	//pawn lance night bishop rook 
 	const BitBoard tar2 =
 	(MT == Capture) ? tar1 :
 	(MT == NonCapture) ? tar1 : 
@@ -70,7 +76,7 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 		if (MT != Drop){
 			//王手回避手,打つ手以外(capture promoto noncapture recapture)
 			ml = generate_pawn_moves<MT, US,ALL>(ml, pos, tar2, ksq);
-			//ml = generate_lance_moves<us>(ml,pos, tar3,ksq);
+			ml = generate_lance_moves<MT,US,ALL>(ml, pos, (ALL ? tar3:tar2), ksq);
 			//ml = generate_knight_moves<us>(ml,pos, tar3,ksq);
 			//ml = generate_silver_moves<us>(ml,pos, tar1,ksq);
 			//ml = generate_bishop_moves<us>(ml,pos, tar2,ksq);
@@ -109,9 +115,11 @@ MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& po
 	const BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
 	const int delta = (US == Black) ? DeltaS : DeltaN;
 	int to;
+	//BitBoard bb = tar;
+	//pos.print_bb(bb,"generate_pawn_moves");
 
 	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US, Pawn)) & tar;
-	//不成り
+	//不成り（them陣地内の不成はここでは生成しない）
 	{
 		BitBoard on_123456_bb = to_bb & tar;
 		while (on_123456_bb.p(0)){
@@ -125,7 +133,7 @@ MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& po
 			(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
-	//成り
+	//成り(them陣地内の不成はここで生成)
 	if (MT != NonCaptureMinusPro){
 		BitBoard on_789_bb = to_bb & rank789_bb;
 		if (!on_789_bb.is_not_zero()){
@@ -135,7 +143,7 @@ MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& po
 			to = on_789_bb.first_one_right();
 			const int from = to + delta;
 			(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
-			if (MT == NonEvasion || ALL){	//王手がかかっていない　または　ALL=trueのときは、通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら歩なりも生成する(TODO:pawnのときはon_78_bbでよいのでは）
+			if (MT == NonEvasion || ALL){	//王手がかかっていない　または　ALL=trueのときは、通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら不成も生成する(TODO:pawnのときはon_78_bbでよいのでは）
 				const Rank rank9 = (US == Black) ? Rank9 : Rank1;
 				if (make_rank(Square(to)) != rank9){
 					(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
@@ -147,11 +155,68 @@ MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& po
 			const int from = to + delta;
 			(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
 			const Rank rank9 = (US == Black) ? Rank9 : Rank1;
-			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら歩なりも生成する
+			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら不成も生成する
 			if (make_rank(Square(to)) != rank9){
 				(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
 			}
 		}
+	}
+	return ml;
+}
+
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_lance_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{	
+	BitBoard from_bb = pos.color_type_of_bb(US, Lance);
+	Square from;
+
+	auto make_move_lance = [&pos,&from,&tar,&ml](const int part)
+	{
+		BitBoard to_bb;
+		to_bb.set_p(part, pos.attackers_from_lance(US, from, pos.all_bb()).p(part) & tar.p(part));
+		while (to_bb.p(part)){
+			const Square to = to_bb.first_one_right();
+			if (MT == Capture || MT == NonCapture || MT == NonEvasion || MT == CapturePlusPro){
+				const Rank to_rank = make_rank(to);
+				//移動座標のランクがthem陣地内(7段目(3段目)は含まない）のときの成り、不成の場合分け
+				if (is_infront_rank(US, Rank7, to_rank)){
+					(*ml++).move = make_move(from, to, 1, Lance, type_of_piece(Piece(pos.get_board(to))));
+					if (MT == NonEvasion || ALL){
+						if (is_infront_rank(US, Rank8, to_rank)){
+							(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
+						}
+					}
+				}
+				//移動座標のランクがthem陣地内(7段目(3段目)含む）のときの成り、不成の場合分け
+				else if (is_infront_rank(US, Rank6, to_rank)){
+					(*ml++).move = make_move(from, to, 1, Lance, type_of_piece(Piece(pos.get_board(to))));	//成りはどの座標でも生成する
+					//MT == CapturePlusProなら駒取りがあれば不成を生成
+					if (MT == CapturePlusPro && pos.get_board(to) != EmptyPiece){
+						(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
+					}
+					else{	//CapturePlusPro以外のMoveTypeでは全ての不成を生成
+						(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
+					}
+				}
+				else{	//them陣地以外では全て不成を生成
+					(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
+				}
+			}
+			else if (MT == NonCaptureMinusPro){
+				(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+		return ml;
+	};	//make_move_lanceラムダ式終了
+
+	while (from_bb.p(0)){
+		from = from_bb.first_one_right();
+		//ml = make_move_lance<MT, US, ALL>(ml, pos, tar, ksq, 0, from);
+		ml = make_move_lance(0);
+	}
+	while (from_bb.p(1)){
+		from = from_bb.first_one_left();
+		//ml = make_move_lance<MT, US, ALL>(ml, pos, tar, ksq, 1, from);
 	}
 	return ml;
 }

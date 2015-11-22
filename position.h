@@ -247,7 +247,7 @@ public:
 	bool get_piece_bit(const PieceType pt, const Square sq);
 	void print_color_bb(Color c,string msg);
 	void print_piece_bb(PieceType pt,string msg);
-	void print_bb(BitBoard& bb, string msg);
+	void print_bb(BitBoard& bb, string msg) const;
 #endif
 private:
 	//positionクラスをクリアにする

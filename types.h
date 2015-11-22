@@ -74,8 +74,8 @@ enum MoveType{
 	Capture,			//駒を取る手
 	NonCapture,			//駒を取らない手
 	Drop,				//駒打ち
-	CapturePlusPro,		//Capture+歩香桂飛角を取らない成る手
-	NonCaptureMinusPro,	//NonCapture-歩香桂飛角を取らない成る手-香の３段目への駒をとらない不成
+	CapturePlusPro,		//Capture+歩香桂飛角（金銀王以外）で取る手＋取らずに成る手(aperyはここのコメントとプログラムの定義が異なる）
+	NonCaptureMinusPro,	//NonCapture-歩香桂飛角を取らない成る手-香の３段目への駒をとらない不成(移動不可の打ち駒は禁じ手ではあるがそれ以上移動不可能な進む手は禁じ手と明示してある資料がない）
 	Recapture,			//特定の位置への取り返しの手
 	Evasion,			//王手回避、歩飛角の不成は含まない
 	NonEvasion,			//王手がかかっていないときの合法手

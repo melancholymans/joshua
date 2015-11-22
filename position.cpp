@@ -491,7 +491,7 @@ void Position::print_color_bb(Color c,string msg)
 	BitBoardns::print(by_color_bb[c]);
 }
 //指定したBitBoardを表示する
-void Position::print_bb(BitBoard& bb,string msg)
+void Position::print_bb(BitBoard& bb,string msg) const
 {
 	printf("mssage:%s\n", msg.c_str());
 	BitBoardns::print(bb);
