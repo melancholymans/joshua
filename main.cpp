@@ -156,6 +156,28 @@ int main_test(int argc,char *argv[])
     int result = RUN_ALL_TESTS();
     return result;
 }
+TEST(main, is_promoto)
+{
+	EXPECT_TRUE(is_promoto(Black, Rank9));
+	EXPECT_TRUE(is_promoto(Black, Rank8));
+	EXPECT_TRUE(is_promoto(Black, Rank7));
+	EXPECT_FALSE(is_promoto(Black, Rank6));
+	EXPECT_FALSE(is_promoto(Black, Rank5));
+	EXPECT_FALSE(is_promoto(Black, Rank4));
+	EXPECT_FALSE(is_promoto(Black, Rank3));
+	EXPECT_FALSE(is_promoto(Black, Rank2));
+	EXPECT_FALSE(is_promoto(Black, Rank1));
+
+	EXPECT_TRUE(is_promoto(White, Rank1));
+	EXPECT_TRUE(is_promoto(White, Rank2));
+	EXPECT_TRUE(is_promoto(White, Rank3));
+	EXPECT_FALSE(is_promoto(White, Rank4));
+	EXPECT_FALSE(is_promoto(White, Rank5));
+	EXPECT_FALSE(is_promoto(White, Rank6));
+	EXPECT_FALSE(is_promoto(White, Rank7));
+	EXPECT_FALSE(is_promoto(White, Rank8));
+	EXPECT_FALSE(is_promoto(White, Rank9));
+}
 TEST(mt64bit, mt64bit)
 {
 	//mt64bitはヘッダだけなのでmain.cppでテスト(動作確認)

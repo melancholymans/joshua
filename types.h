@@ -166,5 +166,9 @@ inline Color over_turn(Color c)
 {
 	return Color(c ^ 1);
 }
-
+//それぞれのカラーで指定のランクがなれる領域か判定する black->rank789 while->rank321
+inline bool is_promoto(const Color c, const Rank r)
+{
+	return static_cast<bool>(0x1c00007u & (1u << ((c << 4) + r)));
+}
 #endif
