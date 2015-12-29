@@ -135,34 +135,51 @@ public:
 	BitBoard attackers_from_pawn(const Color c, const Square sq) const {return make_pawn_attack(c, sq);}
 	//Pawnのbitboardを一斉に動かす。Black側Pawnは左シフト、White側Pawnは右シフト
 	BitBoard attackers_from_pawns(const Color c, BitBoard& from_bb) const { return (c == Black) ? (from_bb >> 1) : (from_bb << 1); }
+	//指定したカラー指定した座標,指定した局面bitboardでのlanceの利きbitboardを返す
 	BitBoard attackers_from_lance(const Color c, const Square sq, const BitBoard& occ) const { return make_lance_attack(c, sq, occ); }
-	BitBoard attackers_from_night(const Color c, const Square sq) const{return make_night_attack(c, sq);}
+	//指定したカラー指定した座標,でのnightの利きbitboardを返す
+	BitBoard attackers_from_night(const Color c, const Square sq) const{ return make_night_attack(c, sq); }
+	//指定したカラー指定した座標,でのsilverの利きbitboardを返す
 	BitBoard attackers_from_silver(const Color c, const Square sq) const{return make_silver_attack(c, sq);}
+	//現在の局面で、指定した座標でのbishopの利きbitboardを返す
 	BitBoard attackers_from_bishop(const Square sq) const
 	{
 		return make_bishop_attack(sq,all_bb());
 	}
+	//指定した座標,指定した局面bitboardでのbishopの利きbitboardを返す
 	BitBoard attackers_from_bishop(const Square sq, const BitBoard& occ) const{ return make_bishop_attack(sq, occ); }
+	//現在の局面で、指定した座標でのrookの利きbitboardを返す
 	BitBoard attackers_from_rook(const Square sq) const
 	{ 
 		return make_rook_attack(sq, all_bb()); 
 	}
+	//指定した座標,指定した局面bitboardでのrookの利きbitboardを返す
 	BitBoard attackers_from_rook(const Square sq, const BitBoard& occ) const{ return make_rook_attack(sq, occ); }
-	BitBoard attackers_from_gold(const Color c, const Square sq) const{return make_gold_attack(c,sq);}
-	BitBoard attackers_from_king(const Square sq) const{return make_king_attack(sq);}
-	BitBoard attackers_from_propawn(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_prolance(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_pronight(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
-	BitBoard attackers_from_prosilver(const Color c, const Square sq) const{return make_gold_attack(c, sq);}
+	//指定したカラー指定した座標でのgoldの利きbitboardを返す
+	BitBoard attackers_from_gold(const Color c, const Square sq) const{ return make_gold_attack(c, sq); }
+	//指定した座標でのkingの利きbitboardを返す
+	BitBoard attackers_from_king(const Square sq) const{ return make_king_attack(sq); }
+	//指定したカラー指定した座標でのpropawnの利きbitboardを返す
+	BitBoard attackers_from_propawn(const Color c, const Square sq) const{ return make_gold_attack(c, sq); }
+	//指定したカラー指定した座標でのprolanceの利きbitboardを返す
+	BitBoard attackers_from_prolance(const Color c, const Square sq) const{ return make_gold_attack(c, sq); }
+	//指定したカラー指定した座標でのprolanceの利きbitboardを返す
+	BitBoard attackers_from_pronight(const Color c, const Square sq) const{ return make_gold_attack(c, sq); }
+	//指定したカラー指定した座標でのprosilverの利きbitboardを返す
+	BitBoard attackers_from_prosilver(const Color c, const Square sq) const{ return make_gold_attack(c, sq); }
+	//指定した座標でのhorseの利きbitboardを返す
 	BitBoard attackers_from_horse(const Square sq) const
 	{
 		return make_horse_attack(sq, all_bb()); 
 	}
+	//指定した座標,指定した局面bitboardでのhorseの利きbitboardを返す
 	BitBoard attackers_from_horse(const Square sq, const BitBoard& occ) const{ return make_horse_attack(sq, occ); }
+	//指定した座標でのdragonの利きbitboardを返す
 	BitBoard attackers_from_dragon(const Square sq) const
 	{
 		return make_dragon_attack(sq, all_bb());
 	}
+	//指定した座標,指定した局面bitboardでのdragonの利きbitboardを返す
 	BitBoard attackers_from_dragon(const Square sq, const BitBoard& occ) const{ return make_dragon_attack(sq, occ); }
 	//全ての駒種に対応するattacks_from関数(汎用）
 	BitBoard attacks_from(const Color c, const Square sq, const PieceType pt, const BitBoard& occ);

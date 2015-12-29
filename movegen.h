@@ -8,6 +8,7 @@
 
 using BitBoardns::IN_FRONT_MASK;
 using BitBoardns::alloff;
+using BitBoardns::print;
 using Movens::make_move;
 
 namespace MoveGeneratens
@@ -27,6 +28,10 @@ namespace MoveGeneratens
 	MoveStack* generate_lance_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 	template <MoveType MT, Color US, bool ALL>
 	MoveStack* generate_night_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_silver_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_bishop_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 }
 //最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
 template<MoveType MT>
@@ -47,26 +52,11 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 	const BitBoard rank_123456_bb = IN_FRONT_MASK[them][rank7];		//them陣以外
 	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];	//us陣+中間+them陣最上層
 	//tar1,2,3でCapture,NonCaptureは同じターゲット（Captureはthem側駒がある座標,NonCaptureは駒がいない座標）
-	//CapturePlusPro（駒取＋駒を取らず成る手）ではtar1はCaptureとまったく同じで成る手の追加なし、tar2,3は駒取+駒のいない成れる座標
-	//NonCaptureMinusPro（駒取りしない-成る手）ではtar2はそのまま駒を取らない手と成る手を排除している。tar3では駒取しない＋７段目までは許容している
 
 	//promotoed king silver
 	const BitBoard tar1 =
-	(MT == Capture) ? pos.color_of_bb(them) :
-	(MT == NonCapture) ? pos.inver_bit_bb() :
-	(MT == CapturePlusPro) ? pos.color_of_bb(them):
-	(MT == NonCaptureMinusPro) ? pos.inver_bit_bb():alloff;
-	//pawn lance night bishop rook 
-	const BitBoard tar2 =
-	(MT == Capture) ? tar1 :
-	(MT == NonCapture) ? tar1 : 
-	(MT == CapturePlusPro) ? pos.color_of_bb(them) | (pos.inver_bit_bb() & rank_789_bb):
-	(MT == NonCaptureMinusPro) ? pos.inver_bit_bb() & rank_123456_bb :alloff;
-	const BitBoard tar3 =
-	(MT == Capture) ? tar2 :
-	(MT == NonCapture) ? tar2 : 
-	(MT == CapturePlusPro) ? tar2:
-	(MT == NonCaptureMinusPro) ? pos.inver_bit_bb() & rank_1234567_bb:alloff;
+		(MT == Capture) ? pos.color_of_bb(them) :
+		(MT == NonCapture) ? pos.inver_bit_bb() : alloff;
 
 	if (MT == Evasion){
 		//自王に王手がかかっているなら王手回避手を生成して返す
@@ -75,13 +65,13 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 	}
 	else{
 		if (MT != Drop){
-			//王手回避手,打つ手以外(capture promoto noncapture recapture)
-			ml = generate_pawn_moves<MT, US,ALL>(ml, pos, tar2, ksq);
-			ml = generate_lance_moves<MT,US,ALL>(ml, pos, (ALL ? tar3:tar2), ksq);
-			ml = generate_night_moves<MT, US, ALL>(ml, pos, tar3, ksq);
-			//ml = generate_silver_moves<us>(ml,pos, tar1,ksq);
-			//ml = generate_bishop_moves<us>(ml,pos, tar2,ksq);
-			//ml = generate_rook_moves<us>(ml,pos, tar2,ksq);
+			//王手回避手,打つ手以外(capture noncapture)
+			ml = generate_pawn_moves<MT, US,ALL>(ml, pos, tar1, ksq);
+			ml = generate_lance_moves<MT,US,ALL>(ml, pos, tar1, ksq);
+			ml = generate_night_moves<MT, US, ALL>(ml, pos, tar1, ksq);
+			ml = generate_silver_moves<MT,US,ALL>(ml, pos, tar1, ksq);
+			ml = generate_bishop_moves<MT, US, ALL>(ml, pos, tar1, ksq);
+			ml = generate_rook_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			//ml = generate_gold_moves<us>(ml,pos, tar1,ksq);
 			//ml = generate_king_moves<us>(ml.pos,  tar1,ksq);
 			//ml = generate_horse_moves<us>(ml,pos, tar1,ksq);
@@ -116,13 +106,11 @@ MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& po
 	const BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
 	const int delta = (US == Black) ? DeltaS : DeltaN;
 	int to;
-	//BitBoard bb = tar;
-	//pos.print_bb(bb,"generate_pawn_moves");
-
 	BitBoard to_bb = pos.attackers_from_pawns(US, pos.color_type_of_bb(US, Pawn)) & tar;
 	//不成り（them陣地内の不成はここでは生成しない）
 	{
-		BitBoard on_123456_bb = to_bb & tar;
+		BitBoard on_123456_bb = to_bb;
+		on_123456_bb.clear_bits(rank789_bb);
 		while (on_123456_bb.p(0)){
 			to = on_123456_bb.first_one_right();
 			const int from = to + delta;
@@ -135,31 +123,29 @@ MoveStack* MoveGeneratens::generate_pawn_moves(MoveStack* ml, const Position& po
 		}
 	}
 	//成り(them陣地内の不成はここで生成)
-	if (MT != NonCaptureMinusPro){
-		BitBoard on_789_bb = to_bb & rank789_bb;
-		if (!on_789_bb.is_not_zero()){
-			return ml;
-		}
-		while (on_789_bb.p(0)){
-			to = on_789_bb.first_one_right();
-			const int from = to + delta;
-			(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
-			if (MT == NonEvasion || ALL){	//王手がかかっていない　または　ALL=trueのときは、通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら不成も生成する(TODO:pawnのときはon_78_bbでよいのでは）
-				const Rank rank9 = (US == Black) ? Rank9 : Rank1;
-				if (make_rank(Square(to)) != rank9){
-					(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
-				}
-			}
-		}
-		while (on_789_bb.p(1)){
-			to = on_789_bb.first_one_left();
-			const int from = to + delta;
-			(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+	BitBoard on_789_bb = to_bb & rank789_bb;
+	if (!on_789_bb.is_not_zero()){
+		return ml;
+	}
+	while (on_789_bb.p(0)){
+		to = on_789_bb.first_one_right();
+		const int from = to + delta;
+		(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+		if (ALL == true){	//ALL=trueのときは、通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら不成も生成する
 			const Rank rank9 = (US == Black) ? Rank9 : Rank1;
-			//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら不成も生成する
 			if (make_rank(Square(to)) != rank9){
 				(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
 			}
+		}
+	}
+	while (on_789_bb.p(1)){
+		to = on_789_bb.first_one_left();
+		const int from = to + delta;
+		(*ml++).move = make_move(Square(from), Square(to), 1, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
+		const Rank rank9 = (US == Black) ? Rank9 : Rank1;
+		//通常歩は敵陣に入れば無条件でなるが、to座標が78ランクなら不成も生成する
+		if (make_rank(Square(to)) != rank9){
+			(*ml++).move = make_move(Square(from), Square(to), 0, type_of_piece(Piece(pos.get_board(from))), type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
 	return ml;
@@ -173,37 +159,22 @@ MoveStack* MoveGeneratens::generate_lance_moves(MoveStack* ml, const Position& p
 
 	auto make_move_lance = [&pos,&from,&tar,&ml](const int part)
 	{
+		const Rank rank9 = (US == Black) ? Rank9 : Rank1;
 		BitBoard to_bb;
+
 		to_bb.set_p(part, pos.attackers_from_lance(US, from, pos.all_bb()).p(part) & tar.p(part));
 		while (to_bb.p(part)){
 			const Square to = to_bb.first_one_right();
-			if (MT == Capture || MT == NonCapture || MT == NonEvasion || MT == CapturePlusPro){
-				const Rank to_rank = make_rank(to);
-				//移動座標のランクがthem陣地内(7段目(3段目)は含まない）のときの成り、不成の場合分け
-				if (is_infront_rank(US, Rank7, to_rank)){
-					(*ml++).move = make_move(from, to, 1, Lance, type_of_piece(Piece(pos.get_board(to))));
-					if (MT == NonEvasion || ALL){
-						if (is_infront_rank(US, Rank8, to_rank)){
-							(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
-						}
-					}
-				}
-				//移動座標のランクがthem陣地内(7段目(3段目)含む）のときの成り、不成の場合分け
-				else if (is_infront_rank(US, Rank6, to_rank)){
-					(*ml++).move = make_move(from, to, 1, Lance, type_of_piece(Piece(pos.get_board(to))));	//成りはどの座標でも生成する
-					//MT == CapturePlusProなら駒取りがあれば不成を生成
-					if (MT == CapturePlusPro && pos.get_board(to) != EmptyPiece){
-						(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
-					}
-					else{	//CapturePlusPro以外のMoveTypeでは全ての不成を生成
-						(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
-					}
-				}
-				else{	//them陣地以外では全て不成を生成
+			const Rank to_rank = make_rank(to);
+			//移動座標のランクがthem陣地内(7段目含む）のときの成り、不成の場合分け
+			if (is_infront_rank(US, Rank6, to_rank)){
+				(*ml++).move = make_move(from, to, 1, Lance, type_of_piece(Piece(pos.get_board(to))));
+				if (to_rank != rank9){
 					(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
 				}
 			}
-			else if (MT == NonCaptureMinusPro){
+			//them陣地以外では全て不成を生成
+			else{	
 				(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
 			}
 		}
@@ -224,37 +195,89 @@ MoveStack* MoveGeneratens::generate_lance_moves(MoveStack* ml, const Position& p
 template <MoveType MT, Color US, bool ALL>
 MoveStack* MoveGeneratens::generate_night_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
 {
+	const Rank rank8 = (US == Black) ? Rank8 : Rank2;
+	const Rank rank9 = (US == Black) ? Rank9 : Rank1;
 	BitBoard from_bb = pos.color_type_of_bb(US, Night);
+
 	while (from_bb.is_not_zero()){
 		const Square from = from_bb.first_one();
 		BitBoard to_bb = pos.attackers_from_night(US, from) & tar;
 		while (to_bb.is_not_zero()){
 			const Square to = to_bb.first_one();
-			if (MT == Capture || MT == NonCapture || MT == CapturePlusPro || MT == NonEvasion || MT == Evasion){
-				const Rank to_rank = make_rank(to);
-				//移動座標のランクがthem陣地内(7段目(3段目)は含まない）のときの成り、不成の場合分け
-				if (is_infront_rank(US, Rank7, to_rank)){
-					(*ml++).move = make_move(from, to, 1, Night, type_of_piece(Piece(pos.get_board(to))));
-				}
-				else if (is_infront_rank(US, Rank6, to_rank)){
-					(*ml++).move = make_move(from, to, 1, Night, type_of_piece(Piece(pos.get_board(to))));
-					//MT == CapturePlusProなら駒取りがあれば不成を生成
-					if (MT == CapturePlusPro && pos.get_board(to) != EmptyPiece){
-						(*ml++).move = make_move(from, to, 0, Night, type_of_piece(Piece(pos.get_board(to))));
-					}
-					else{
-						(*ml++).move = make_move(from, to, 0, Night, type_of_piece(Piece(pos.get_board(to))));
-					}
-				}
-				else{
-					(*ml++).move = make_move(from, to, 0, Night, type_of_piece(Piece(pos.get_board(to))));
-				}
+			const Rank to_rank = make_rank(to);
+			//移動座標のランクがthem陣地内(7段目は含む）のときの成り、不成の場合分け
+			if (is_infront_rank(US, Rank6, to_rank)){
+				(*ml++).move = make_move(from, to, 1, Night, type_of_piece(Piece(pos.get_board(to))));
 			}
-			else if (MT == NonCaptureMinusPro){
+			if (to_rank != rank8 || to_rank != 9){
 				(*ml++).move = make_move(from, to, 0, Night, type_of_piece(Piece(pos.get_board(to))));
 			}
 		}
 	}
 	return ml;
 }
+//silver move 
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_silver_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	BitBoard from_bb = pos.color_type_of_bb(US, Silver);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		const bool from_can_promoto = is_promoto(US, make_rank(from));
+		BitBoard to_bb = pos.attackers_from_silver(US, from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_bb.first_one();
+			const bool to_can_promoto = is_promoto(US, make_rank(to));
+			if ((from_can_promoto || to_can_promoto)){
+				(*ml++).move = make_move(from, to, 1, Silver, type_of_piece(Piece(pos.get_board(to))));
+			}
+			(*ml++).move = make_move(from, to, 0, Silver, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+}
+//bishop move
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_bishop_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	const BitBoard rank789_bb = IN_FRONT_MASK[US][Rank6];
+	BitBoard from_bb = pos.color_type_of_bb(US, Bishop);
+	//Rank789（Rank321）にいる駒専用で、移動先には制限はない。ALL==trueなら不成も生成する
+	BitBoard from_on_rank789 = rank789_bb & from_bb;
+	while (from_on_rank789.is_not_zero()){
+		const Square from = from_on_rank789.first_one();
+		BitBoard to_bb = pos.attackers_from_bishop(from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_bb.first_one();
+			(*ml++).move = make_move(from, to, 1, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			if (ALL == true){
+				(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+	}
+	//Rank789(Ran321)以外にいる駒専用
+	from_bb.clear_bits(rank789_bb);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		BitBoard to_bb = pos.attackers_from_bishop(from) & tar;
+		//成り生成、ALL==trueなら不成も生成する
+		BitBoard to_on_rank789 = rank789_bb & to_bb;
+		while (to_on_rank789.is_not_zero()){
+			const Square to = to_on_rank789.first_one();
+			(*ml++).move = make_move(from, to, 1, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			if (ALL == true){
+				(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+		BitBoard to_on_rank654321 = to_bb.clear_bits(rank789_bb);
+		while (to_on_rank654321.is_not_zero()){
+			const Square to = to_on_rank654321.first_one();
+			(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+}
 #endif
+
+
+

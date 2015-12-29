@@ -74,13 +74,25 @@ enum MoveType{
 	Capture,			//駒を取る手
 	NonCapture,			//駒を取らない手
 	Drop,				//駒打ち
+	Evasion,			//王手回避
+	/*
+	定義内容がわからないので単純なMoveTypeを定義し直した。
+	Capture駒を取る手
+	NonCapture駒を取らない手
+	Drop打つ手
+	Evasion王手回避手
+	成る手、成らない手の指定はない、なれる手は基本なる。
+	ただし香車は移動先がRank7,8の場合は不成も生成する、不成は生成しないのはRank9のみ
+	桂馬は移動先がRank7は不成、成りとも生成する。Rank8,9は不成は生成しない
+	その他の駒については成れる座標では必ず成るがALLフラグがtrueなら不成も生成する
+
 	CapturePlusPro,		//Capture+歩香桂飛角（金銀王以外）で取る手＋取らずに成る手(aperyはここのコメントとプログラムの定義が異なる）
 	NonCaptureMinusPro,	//NonCapture-歩香桂飛角を取らない成る手-香の３段目への駒をとらない不成(移動不可の打ち駒は禁じ手ではあるがそれ以上移動不可能な進む手は禁じ手と明示してある資料がない）
 	Recapture,			//特定の位置への取り返しの手
-	Evasion,			//王手回避、歩飛角の不成は含まない
 	NonEvasion,			//王手がかかっていないときの合法手
 	Legal,				//合法手->王手がかかっていればEvasionを指定して指し手生成、王手がかかっていなければNonEvasionを指定して指し手生成
 	LegalAll,			//Legal+歩飛角の不成、香の２段目への不成、
+	*/
 	MoveTypeNum
 };
 
@@ -157,6 +169,7 @@ inline Square make_square(File f, Rank r)
 {
 	return Square(f * 9 + r);
 }
+//駒がbase_rankより進行方向側にいるならtrue,base_rank自体は含まない。
 inline bool is_infront_rank(Color c, Rank base_rank, Rank tar_rank)
 {
 	return c == Black ? (tar_rank < base_rank) : (tar_rank > base_rank);
