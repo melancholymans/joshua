@@ -32,6 +32,12 @@ namespace MoveGeneratens
 	MoveStack* generate_silver_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 	template <MoveType MT, Color US, bool ALL>
 	MoveStack* generate_bishop_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_rook_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_gold_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_king_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 }
 //最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
 template<MoveType MT>
@@ -72,9 +78,9 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 			ml = generate_silver_moves<MT,US,ALL>(ml, pos, tar1, ksq);
 			ml = generate_bishop_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			ml = generate_rook_moves<MT, US, ALL>(ml, pos, tar1, ksq);
-			//ml = generate_gold_moves<us>(ml,pos, tar1,ksq);
-			//ml = generate_king_moves<us>(ml.pos,  tar1,ksq);
-			//ml = generate_horse_moves<us>(ml,pos, tar1,ksq);
+			ml = generate_gold_moves<MT, US, ALL>(ml, pos, tar1, ksq);
+			ml = generate_king_moves<MT, US, ALL>(ml, pos, tar1, ksq);
+			ml = generate_horse_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			//ml = generate_dragon_moves<us>(ml,pos, tar1,ksq);
 		}
 		//打つ手
@@ -276,6 +282,119 @@ MoveStack* MoveGeneratens::generate_bishop_moves(MoveStack* ml, const Position& 
 		}
 	}
 	return ml;
+}
+//rook move
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_rook_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	const BitBoard rank789_bb = IN_FRONT_MASK[US][Rank6];
+	BitBoard from_bb = pos.color_type_of_bb(US, Rook);
+	//Rank789（Rank321）にいる駒専用で、移動先には制限はない。ALL==trueなら不成も生成する
+	BitBoard from_on_rank789 = rank789_bb & from_bb;
+	while (from_on_rank789.is_not_zero()){
+		const Square from = from_on_rank789.first_one();
+		BitBoard to_bb = pos.attackers_from_rook(from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_bb.first_one();
+			(*ml++).move = make_move(from, to, 1, Rook, type_of_piece(Piece(pos.get_board(to))));
+			if (ALL == true){
+				(*ml++).move = make_move(from, to, 0, Rook, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+	}
+	//Rank789(Ran321)以外にいる駒専用
+	from_bb.clear_bits(rank789_bb);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		BitBoard to_bb = pos.attackers_from_rook(from) & tar;
+		//成り生成、ALL==trueなら不成も生成する
+		BitBoard to_on_rank789 = rank789_bb & to_bb;
+		while (to_on_rank789.is_not_zero()){
+			const Square to = to_on_rank789.first_one();
+			(*ml++).move = make_move(from, to, 1, Rook, type_of_piece(Piece(pos.get_board(to))));
+			if (ALL == true){
+				(*ml++).move = make_move(from, to, 0, Rook, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+		BitBoard to_on_rank654321 = to_bb.clear_bits(rank789_bb);
+		while (to_on_rank654321.is_not_zero()){
+			const Square to = to_on_rank654321.first_one();
+			(*ml++).move = make_move(from, to, 0, Rook, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+}
+//gold move
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_gold_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	BitBoard from_bb = pos.color_type_of_bb(US, Gold);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		BitBoard to_bb = pos.attackers_from_gold(US, from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_bb.first_one();
+			(*ml++).move = make_move(from, to, 0, Gold, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+}
+//king move
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_king_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	BitBoard from_bb = pos.color_type_of_bb(US, King);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		BitBoard to_bb = pos.attackers_from_king(from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_bb.first_one();
+			(*ml++).move = make_move(from, to, 0, King, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+}
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_horse_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	/*
+	const BitBoard rank789_bb = IN_FRONT_MASK[US][Rank6];
+	BitBoard from_bb = pos.color_type_of_bb(US, Bishop);
+	//Rank789（Rank321）にいる駒専用で、移動先には制限はない。ALL==trueなら不成も生成する
+	BitBoard from_on_rank789 = rank789_bb & from_bb;
+	while (from_on_rank789.is_not_zero()){
+		const Square from = from_on_rank789.first_one();
+		BitBoard to_bb = pos.attackers_from_bishop(from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_bb.first_one();
+			(*ml++).move = make_move(from, to, 1, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			if (ALL == true){
+				(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+	}
+	//Rank789(Ran321)以外にいる駒専用
+	from_bb.clear_bits(rank789_bb);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		BitBoard to_bb = pos.attackers_from_bishop(from) & tar;
+		//成り生成、ALL==trueなら不成も生成する
+		BitBoard to_on_rank789 = rank789_bb & to_bb;
+		while (to_on_rank789.is_not_zero()){
+			const Square to = to_on_rank789.first_one();
+			(*ml++).move = make_move(from, to, 1, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			if (ALL == true){
+				(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			}
+		}
+		BitBoard to_on_rank654321 = to_bb.clear_bits(rank789_bb);
+		while (to_on_rank654321.is_not_zero()){
+			const Square to = to_on_rank654321.first_one();
+			(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+	*/
 }
 #endif
 

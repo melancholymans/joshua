@@ -105,9 +105,14 @@ TEST(movegen, movegen_all)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E6, A6, 0, Rook, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(E6, E7, 0, Rook, EmptyPiece);
+	ans = make_move(E6, E7, 1, Rook, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E6, E5, 0, Rook, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(I2, I3, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(I2, H2, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	//Capture ALL=false
 	memset(ms, 0, sizeof(ms));
@@ -124,7 +129,7 @@ TEST(movegen, movegen_all)
 
 	ans = make_move(E6, E8, 1, Rook, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(E6, E4, 1, Rook, Gold);
+	ans = make_move(E6, G6, 0, Rook, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 }
 
