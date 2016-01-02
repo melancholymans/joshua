@@ -38,6 +38,10 @@ namespace MoveGeneratens
 	MoveStack* generate_gold_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 	template <MoveType MT, Color US, bool ALL>
 	MoveStack* generate_king_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_horse_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <MoveType MT, Color US, bool ALL>
+	MoveStack* generate_dragon_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 }
 //最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
 template<MoveType MT>
@@ -59,11 +63,10 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 	const BitBoard rank_1234567_bb = IN_FRONT_MASK[them][rank8];	//us陣+中間+them陣最上層
 	//tar1,2,3でCapture,NonCaptureは同じターゲット（Captureはthem側駒がある座標,NonCaptureは駒がいない座標）
 
-	//promotoed king silver
 	const BitBoard tar1 =
 		(MT == Capture) ? pos.color_of_bb(them) :
 		(MT == NonCapture) ? pos.inver_bit_bb() : alloff;
-
+	
 	if (MT == Evasion){
 		//自王に王手がかかっているなら王手回避手を生成して返す
 		generate_evasions<US>(ml,pos);
@@ -81,13 +84,13 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 			ml = generate_gold_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			ml = generate_king_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			ml = generate_horse_moves<MT, US, ALL>(ml, pos, tar1, ksq);
-			//ml = generate_dragon_moves<us>(ml,pos, tar1,ksq);
+			ml = generate_dragon_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 		}
 		//打つ手
 		else{
-			printf("dummy\n");
-			//ml = generate_gold_drop<us>(ml,pos);
-			//ml = generate_pawn_drop<us>(ml, pos);
+			const BitBoard tar2 = inver_bit_bb();	//空いている座標をonにしてtar2に入れておきDropのターゲットにする
+			ml = generate_pawn_drop<US>(ml, pos, tar);
+			//ml = generate_gold_drop<US>(ml, pos);
 			//ml = generate_lance_drop<us>(ml, pos);
 			//ml = generate_knight_drop<us>(ml, pos);
 			//ml = generate_silver_drop<us>(ml, pos);
@@ -357,44 +360,35 @@ MoveStack* MoveGeneratens::generate_king_moves(MoveStack* ml, const Position& po
 template <MoveType MT, Color US, bool ALL>
 MoveStack* MoveGeneratens::generate_horse_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
 {
-	/*
-	const BitBoard rank789_bb = IN_FRONT_MASK[US][Rank6];
-	BitBoard from_bb = pos.color_type_of_bb(US, Bishop);
-	//Rank789（Rank321）にいる駒専用で、移動先には制限はない。ALL==trueなら不成も生成する
-	BitBoard from_on_rank789 = rank789_bb & from_bb;
-	while (from_on_rank789.is_not_zero()){
-		const Square from = from_on_rank789.first_one();
-		BitBoard to_bb = pos.attackers_from_bishop(from) & tar;
-		while (to_bb.is_not_zero()){
-			const Square to = to_bb.first_one();
-			(*ml++).move = make_move(from, to, 1, Bishop, type_of_piece(Piece(pos.get_board(to))));
-			if (ALL == true){
-				(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
-			}
-		}
-	}
-	//Rank789(Ran321)以外にいる駒専用
-	from_bb.clear_bits(rank789_bb);
+	BitBoard from_bb = pos.color_type_of_bb(US, Horse);
 	while (from_bb.is_not_zero()){
 		const Square from = from_bb.first_one();
-		BitBoard to_bb = pos.attackers_from_bishop(from) & tar;
-		//成り生成、ALL==trueなら不成も生成する
-		BitBoard to_on_rank789 = rank789_bb & to_bb;
-		while (to_on_rank789.is_not_zero()){
+		BitBoard to_bb = pos.attackers_from_horse(from) & tar;
+		while (to_bb.is_not_zero()){
 			const Square to = to_on_rank789.first_one();
-			(*ml++).move = make_move(from, to, 1, Bishop, type_of_piece(Piece(pos.get_board(to))));
-			if (ALL == true){
-				(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
-			}
-		}
-		BitBoard to_on_rank654321 = to_bb.clear_bits(rank789_bb);
-		while (to_on_rank654321.is_not_zero()){
-			const Square to = to_on_rank654321.first_one();
-			(*ml++).move = make_move(from, to, 0, Bishop, type_of_piece(Piece(pos.get_board(to))));
+			(*ml++).move = make_move(from, to, 0, Horse, type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
 	return ml;
-	*/
+}
+template <MoveType MT, Color US, bool ALL>
+MoveStack* MoveGeneratens::generate_dragon_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	BitBoard from_bb = pos.color_type_of_bb(US, Dragon);
+	while (from_bb.is_not_zero()){
+		const Square from = from_bb.first_one();
+		BitBoard to_bb = pos.attackers_from_dragon(from) & tar;
+		while (to_bb.is_not_zero()){
+			const Square to = to_on_rank789.first_one();
+			(*ml++).move = make_move(from, to, 0, Dragon, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	return ml;
+}
+template <Color US>
+MoveStack* MoveGeneratens::generate_pawn_drop<US>(MoveStack* ml, const Position& pos, const BitBoard& tar)
+{
+
 }
 #endif
 
