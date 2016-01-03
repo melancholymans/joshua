@@ -7,6 +7,7 @@
 #include "move.h"
 
 using BitBoardns::IN_FRONT_MASK;
+using BitBoardns::FILE_MASK;
 using BitBoardns::alloff;
 using BitBoardns::print;
 using Movens::make_move;
@@ -42,6 +43,8 @@ namespace MoveGeneratens
 	MoveStack* generate_horse_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 	template <MoveType MT, Color US, bool ALL>
 	MoveStack* generate_dragon_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <Color US>
+	MoveStack* generate_pawn_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 }
 //最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
 template<MoveType MT>
@@ -88,8 +91,8 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 		}
 		//打つ手
 		else{
-			const BitBoard tar2 = inver_bit_bb();	//空いている座標をonにしてtar2に入れておきDropのターゲットにする
-			ml = generate_pawn_drop<US>(ml, pos, tar);
+			const BitBoard tar2 = pos.inver_bit_bb();	//空いている座標をonにしてtar2に入れておきDropのターゲットにする
+			ml = generate_pawn_drop<US>(ml, pos, tar2, ksq);
 			//ml = generate_gold_drop<US>(ml, pos);
 			//ml = generate_lance_drop<us>(ml, pos);
 			//ml = generate_knight_drop<us>(ml, pos);
@@ -365,7 +368,7 @@ MoveStack* MoveGeneratens::generate_horse_moves(MoveStack* ml, const Position& p
 		const Square from = from_bb.first_one();
 		BitBoard to_bb = pos.attackers_from_horse(from) & tar;
 		while (to_bb.is_not_zero()){
-			const Square to = to_on_rank789.first_one();
+			const Square to = to_bb.first_one();
 			(*ml++).move = make_move(from, to, 0, Horse, type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
@@ -379,16 +382,38 @@ MoveStack* MoveGeneratens::generate_dragon_moves(MoveStack* ml, const Position& 
 		const Square from = from_bb.first_one();
 		BitBoard to_bb = pos.attackers_from_dragon(from) & tar;
 		while (to_bb.is_not_zero()){
-			const Square to = to_on_rank789.first_one();
+			const Square to = to_bb.first_one();
 			(*ml++).move = make_move(from, to, 0, Dragon, type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
 	return ml;
 }
 template <Color US>
-MoveStack* MoveGeneratens::generate_pawn_drop<US>(MoveStack* ml, const Position& pos, const BitBoard& tar)
+MoveStack* MoveGeneratens::generate_pawn_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
 {
-
+	if (!pos.is_hand(US,Pawn)){
+		return ml;
+	}
+	BitBoard to_bb = tar;
+	const Rank rank8 = (US == Black) ? Rank8 : Rank2;
+	const BitBoard rank9_bb = IN_FRONT_MASK[US][rank8];
+	//１段目には打てない
+	to_bb.clear_bits(rank9_bb);
+	while (to_bb.is_not_zero()){
+		const Square to = to_bb.first_one();
+		//２歩の回避
+		File f = make_file(to);
+		if ((FILE_MASK[f] & pos.color_type_of_bb(US, Pawn)).is_not_zero()){
+			to_bb.clear_bits(FILE_MASK[f]);	//pawnがいる列を全てクリアして２重にチエックさせない
+			continue;
+		}
+		//打歩詰の回避
+		if (pos.is_pawn_drop_checkmate(US, to,ksq)){
+			continue;
+		}
+		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
+		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+	}
 }
 #endif
 

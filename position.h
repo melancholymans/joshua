@@ -95,7 +95,7 @@ public:
 		return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
 	}
 	//指定したカラー、駒種の有無を取得,駒数は不要
-	bool is_hand(Color c, PieceType pt)
+	bool is_hand(Color c, PieceType pt) const
 	{
 		_ASSERT(pt < 8);
 		return static_cast<bool>(hand[c] & hand_masking[pt]);
@@ -259,6 +259,9 @@ public:
 	{
 		return m_st->checkers_bb;
 	}
+	//打歩詰のときtrueを返す
+	bool is_pawn_drop_checkmate(const Color c, const Square to, const Square ksq) const;
+
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);

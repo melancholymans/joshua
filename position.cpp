@@ -578,6 +578,33 @@ Key Positionns::make_hand_key(const Position& pos)
 	}
 	return result;
 }
+//打歩詰ならtrueを返す
+bool Position::is_pawn_drop_checkmate(const Color c, const Square to,const Square ksq) const
+{
+	const int delta = (c == Black) ? DeltaS : DeltaN;
+	const Rank rank1 = (c == Black) ? Rank1 : Rank9;
+	const Square pawn__drop_check_sq = Square(ksq + delta);
+
+	if (pawn__drop_check_sq != to){
+		return false;
+	}
+	const Color them = over_turn(c);
+	BitBoard from_bb = attackers_to_excluded_of_king(them, to, by_type_bb[AllPieces]);
+	//TODO:pinのことは考えてなくto座標にいるpawnをking以外の駒がいることだけで打歩詰なしと判定している
+	if (from_bb.is_not_zero()){
+		return false;
+	}
+	//kingで打歩詰のPawnを取るか、kingが逃げれるかチエック、kingの利きbitboardからking側(them)の駒を取り除いたものがkingの移動可能範囲(空白+US側駒)
+	BitBoard king_bb = attackers_from_king(ksq).clear_bits(by_color_bb[them]);
+	while (king_bb.is_not_zero()){
+		const Square to = king_bb.first_one();
+		if (!attackers_to(c, to, by_type_bb[AllPieces]).is_not_zero()){
+			return false;
+		}
+	}
+	//全てができなかったら打歩詰
+	return true;
+}
 //board,hand,bitboardのチエック
 #ifdef _DEBUG
 void Positionns::is_ok(Position &pos)
