@@ -135,7 +135,7 @@ TEST(movegen, movegen_all)
 	//Drop
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
-
+	
 	ml = generate_moves<Drop>(ml, pos);
 	ans = make_move(Square(Pawn + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));

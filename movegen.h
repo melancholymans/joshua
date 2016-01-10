@@ -394,13 +394,16 @@ MoveStack* MoveGeneratens::generate_pawn_drop(MoveStack* ml, const Position& pos
 	if (!pos.is_hand(US,Pawn)){
 		return ml;
 	}
-	BitBoard to_bb = tar;
+	BitBoard bb(0xFFFFFFFFFFFFFFFF, 0x3FFFF);
+	BitBoard to_bb = tar & bb;	//to_bbにto_bb[1]の領域に余分な1を立てさせないため
 	const Rank rank8 = (US == Black) ? Rank8 : Rank2;
 	const BitBoard rank9_bb = IN_FRONT_MASK[US][rank8];
+	print(to_bb);
 	//１段目には打てない
 	to_bb.clear_bits(rank9_bb);
 	while (to_bb.is_not_zero()){
 		const Square to = to_bb.first_one();
+		print(to_bb);
 		//２歩の回避
 		File f = make_file(to);
 		if ((FILE_MASK[f] & pos.color_type_of_bb(US, Pawn)).is_not_zero()){
@@ -414,6 +417,7 @@ MoveStack* MoveGeneratens::generate_pawn_drop(MoveStack* ml, const Position& pos
 		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
 		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
 	}
+	return ml;
 }
 #endif
 
