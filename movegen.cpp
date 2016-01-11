@@ -25,8 +25,30 @@ bool array_check(Move anser, MoveStack *m)
 	}
 	return false;
 }
-
-TEST(movegen, movegen_all)
+TEST(movegen, movegen_all_white)
+{
+	//問題図は自作
+	using namespace MoveGeneratens;
+	string ss("4k4/4gP3/pNbp1pB2/4R1ppL/1P5n1/lrP1P1PlP/2p1+nS1P1/5+s2K/7NL w G4P2g2sp 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	//NonCapture ALL=false
+	ml = generate_moves<NonCapture>(ml, pos);
+	ans = make_move(G6, G5, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F7, F6, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(D7, D6, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C3, C2, 1, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A7, A6, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, movegen_all_black)
 {
 	//問題図は自作
 	using namespace MoveGeneratens;
@@ -42,6 +64,8 @@ TEST(movegen, movegen_all)
 	Drop,				//駒打ち
 	Evasion,			//王手回避
 	*/
+	//TODO:全ての手生成がテストできていない。全ての手が生成できる局面ではないため。別の局面を用意すること
+	//Lance,Nightの打つ手、silverの打つ手など
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
 	ans = make_move(I4, I5, 0, Pawn, EmptyPiece);
@@ -162,6 +186,109 @@ TEST(movegen, movegen_all)
 	ans = make_move(Square(Pawn + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), D1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), I9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 }
 

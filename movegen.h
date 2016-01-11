@@ -45,6 +45,12 @@ namespace MoveGeneratens
 	MoveStack* generate_dragon_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 	template <Color US>
 	MoveStack* generate_pawn_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <Color US>
+	MoveStack* generate_lance_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <Color US>
+	MoveStack* generate_night_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
+	template <Color US>
+	MoveStack* generate_silver_gold_bishop_rook_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq);
 }
 //最初にこれを呼び出して本体のgenerate_moves関数を呼び出すのはテンプレート引数に変数が使えないためである。必ず定数で呼び出す必要がある
 template<MoveType MT>
@@ -91,14 +97,12 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 		}
 		//打つ手
 		else{
-			const BitBoard tar2 = pos.inver_bit_bb();	//空いている座標をonにしてtar2に入れておきDropのターゲットにする
+			BitBoard bb(0xFFFFFFFFFFFFFFFF, 0x3FFFF);	//inver_bit_bb関数によってto_bb[1]の領域に余分な1を立てさせないため
+			const BitBoard tar2 = pos.inver_bit_bb() & bb;	//空いている座標をonにしてtar2に入れておきDropのターゲットにする
 			ml = generate_pawn_drop<US>(ml, pos, tar2, ksq);
-			//ml = generate_gold_drop<US>(ml, pos);
-			//ml = generate_lance_drop<us>(ml, pos);
-			//ml = generate_knight_drop<us>(ml, pos);
-			//ml = generate_silver_drop<us>(ml, pos);
-			//ml = generate_bishop_drop<us>(ml, pos);
-			//ml = generate_rook_drop<us>(ml, pos);
+			ml = generate_lance_drop<US>(ml, pos, tar2, ksq);
+			ml = generate_night_drop<US>(ml, pos, tar2, ksq);
+			ml = generate_silver_gold_bishop_rook_drop<US>(ml, pos, tar2, ksq);
 		}
 	}
 	return ml;
@@ -176,7 +180,7 @@ MoveStack* MoveGeneratens::generate_lance_moves(MoveStack* ml, const Position& p
 
 		to_bb.set_p(part, pos.attackers_from_lance(US, from, pos.all_bb()).p(part) & tar.p(part));
 		while (to_bb.p(part)){
-			const Square to = to_bb.first_one_right();
+			const Square to = (0 == part) ? to_bb.first_one_right() : to_bb.first_one_left();
 			const Rank to_rank = make_rank(to);
 			//移動座標のランクがthem陣地内(7段目含む）のときの成り、不成の場合分け
 			if (is_infront_rank(US, Rank6, to_rank)){
@@ -394,16 +398,13 @@ MoveStack* MoveGeneratens::generate_pawn_drop(MoveStack* ml, const Position& pos
 	if (!pos.is_hand(US,Pawn)){
 		return ml;
 	}
-	BitBoard bb(0xFFFFFFFFFFFFFFFF, 0x3FFFF);
-	BitBoard to_bb = tar & bb;	//to_bbにto_bb[1]の領域に余分な1を立てさせないため
+	BitBoard to_bb = tar;
 	const Rank rank8 = (US == Black) ? Rank8 : Rank2;
 	const BitBoard rank9_bb = IN_FRONT_MASK[US][rank8];
-	print(to_bb);
 	//１段目には打てない
 	to_bb.clear_bits(rank9_bb);
 	while (to_bb.is_not_zero()){
 		const Square to = to_bb.first_one();
-		print(to_bb);
 		//２歩の回避
 		File f = make_file(to);
 		if ((FILE_MASK[f] & pos.color_type_of_bb(US, Pawn)).is_not_zero()){
@@ -416,6 +417,66 @@ MoveStack* MoveGeneratens::generate_pawn_drop(MoveStack* ml, const Position& pos
 		}
 		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
 		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+	}
+	return ml;
+}
+template <Color US>
+MoveStack* MoveGeneratens::generate_lance_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	//TODO:香車は離して打ての格言があるが、障害物（敵にしろ味方にしろ）がない場合は一番後ろに置き中間位置には置かない手の生成方法が考えられるが、現地点ではパス
+	if (!pos.is_hand(US, Lance)){
+		return ml;
+	}
+	BitBoard to_bb = tar;
+	const Rank rank8 = (US == Black) ? Rank8 : Rank2;
+	const BitBoard rank9_bb = IN_FRONT_MASK[US][rank8];
+	//１段目には打てない
+	to_bb.clear_bits(rank9_bb);
+	while (to_bb.is_not_zero()){
+		const Square to = to_bb.first_one();
+		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
+		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+	}
+	return ml;
+}
+template <Color US>
+MoveStack* MoveGeneratens::generate_night_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	if (!pos.is_hand(US, Night)){
+		return ml;
+	}
+	BitBoard to_bb = tar;
+	const Rank rank7 = (US == Black) ? Rank7 : Rank3;
+	const BitBoard rank89_bb = IN_FRONT_MASK[US][rank7];
+	//１,2段目には打てない
+	to_bb.clear_bits(rank89_bb);
+	while (to_bb.is_not_zero()){
+		const Square to = to_bb.first_one();
+		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
+		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+	}
+	return ml;
+}
+template <Color US>
+MoveStack* MoveGeneratens::generate_silver_gold_bishop_rook_drop(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
+{
+	//TODO:現在は座標をループでまわしているがこのループのなかで逐一is_hand関数で駒の有無を確認している。駒の有無の確認は１度だけしてループ中ではしないようにはできないか？
+	BitBoard to_bb = tar;
+	while (to_bb.is_not_zero()){
+		const Square to = to_bb.first_one();
+		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
+		if (pos.is_hand(US, Silver)){
+			(*ml++).move = make_move(Square(Silver + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+		}
+		if (pos.is_hand(US, Gold)){
+			(*ml++).move = make_move(Square(Gold + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+		}
+		if (pos.is_hand(US, Bishop)){
+			(*ml++).move = make_move(Square(Bishop + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+		}
+		if (pos.is_hand(US, Rook)){
+			(*ml++).move = make_move(Square(Rook + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+		}
 	}
 	return ml;
 }
