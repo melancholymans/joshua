@@ -47,6 +47,336 @@ TEST(movegen, movegen_all_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(A7, A6, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A4, A3, 1, Lance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A4, A3, 0, Lance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A4, A2, 1, Lance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A4, A2, 0, Lance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A4, A1, 1, Lance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H5, I3, 1, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H5, I3, 0, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H5, G3, 1, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H5, G3, 0, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E8, E7, 0, Gold, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E8, D8, 0, Gold, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, E2, 0, ProNight, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, D3, 0, ProNight, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, D2, 0, ProNight, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F2, G2, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F2, G1, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F2, F1, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F2, E1, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F2, E2, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, D6, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, E5, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, F4, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, G3, 1, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, H2, 1, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, B6, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, A5, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, D8, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, B8, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, A9, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, B3, 1, Rook, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, B2, 1, Rook, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, B1, 1, Rook, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E9, D8, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E9, D9, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E9, F9, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Capture ALL=false
+	memset(ms, 0, sizeof(ms));
+	ml = ms;	//初期化
+	ml = generate_moves<Capture>(ml, pos);
+	ans = make_move(H4, H3, 1, Lance, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H4, H3, 0, Lance, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E8, F8, 0, Gold, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, E4, 0, ProNight, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, F3, 0, ProNight, Silver);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F2, F3, 0, ProSilver, Silver);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C7, I1, 1, Bishop, Lance);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, C4, 0, Rook, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, B5, 0, Rook, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E9, F8, 0, King, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Drop
+	memset(ms, 0, sizeof(ms));
+	ml = ms;	//初期化
+	ml = generate_moves<Drop>(ml, pos);
+	ans = make_move(Square(Pawn + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), I7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), I9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), E1, 0, PieceType(0), EmptyPiece);
+	EXPECT_FALSE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), E2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), E5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), E7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), B3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), B6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), B8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), B9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), I7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), I9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), H2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), G1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), G2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), G5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), G9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), F1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), F4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), F5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), F6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), F9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), D1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), D9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), C1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), B1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), B3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), B6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), B8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), B9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Silver + SquareNum - 1), A1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), H2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), G1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), G9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), F1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), F9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), D1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), C1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), B1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+	ans = make_move(Square(Gold + SquareNum - 1), A1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
 }
 TEST(movegen, movegen_all_black)
 {
@@ -58,12 +388,7 @@ TEST(movegen, movegen_all_black)
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
 	Move ans;
-	/*
-	Capture,			//駒を取る手
-	NonCapture,			//駒を取らない手
-	Drop,				//駒打ち
-	Evasion,			//王手回避
-	*/
+
 	//TODO:全ての手生成がテストできていない。全ての手が生成できる局面ではないため。別の局面を用意すること
 	//Lance,Nightの打つ手、silverの打つ手など
 	//NonCapture ALL=false
@@ -80,7 +405,6 @@ TEST(movegen, movegen_all_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B5, B6, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(I6, I7, 0, Lance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I6, I7, 1, Lance, EmptyPiece);
@@ -91,7 +415,6 @@ TEST(movegen, movegen_all_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I6, I9, 1, Lance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));	
-
 	ans = make_move(H1, G3, 0, Night, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H1, I3, 0, Night, EmptyPiece);
@@ -100,14 +423,12 @@ TEST(movegen, movegen_all_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B7, C9, 1, Night, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(F3, F4, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F3, E2, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F3, G2, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(G7, H8, 1, Bishop, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(G7, I9, 1, Bishop, EmptyPiece);
@@ -118,7 +439,6 @@ TEST(movegen, movegen_all_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(G7, D4, 1, Bishop, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(E6, F6, 0, Rook, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E6, D6, 0, Rook, EmptyPiece);
@@ -133,7 +453,6 @@ TEST(movegen, movegen_all_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E6, E5, 0, Rook, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(I2, I3, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I2, H2, 0, King, EmptyPiece);
@@ -145,17 +464,14 @@ TEST(movegen, movegen_all_black)
 	ml = generate_moves<Capture>(ml, pos);
 	ans = make_move(H3, H4, 0, Pawn, Lance);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(G7, H6, 1, Bishop, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(G7, C3, 1, Bishop, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	ans = make_move(E6, E8, 1, Rook, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E6, G6, 0, Rook, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
-
 	//Drop
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化

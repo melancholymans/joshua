@@ -90,7 +90,7 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 			ml = generate_silver_moves<MT,US,ALL>(ml, pos, tar1, ksq);
 			ml = generate_bishop_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			ml = generate_rook_moves<MT, US, ALL>(ml, pos, tar1, ksq);
-			ml = generate_gold_moves<MT, US, ALL>(ml, pos, tar1, ksq);
+			ml = generate_gold_moves<MT, US, ALL>(ml, pos, tar1, ksq);	//ProPawn,ProLance,ProNight,ProSilverもここで生成
 			ml = generate_king_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			ml = generate_horse_moves<MT, US, ALL>(ml, pos, tar1, ksq);
 			ml = generate_dragon_moves<MT, US, ALL>(ml, pos, tar1, ksq);
@@ -256,7 +256,8 @@ MoveStack* MoveGeneratens::generate_silver_moves(MoveStack* ml, const Position& 
 template <MoveType MT, Color US, bool ALL>
 MoveStack* MoveGeneratens::generate_bishop_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
 {
-	const BitBoard rank789_bb = IN_FRONT_MASK[US][Rank6];
+	const Rank rank6 = (US == Black) ? Rank6 : Rank4;
+	BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
 	BitBoard from_bb = pos.color_type_of_bb(US, Bishop);
 	//Rank789（Rank321）にいる駒専用で、移動先には制限はない。ALL==trueなら不成も生成する
 	BitBoard from_on_rank789 = rank789_bb & from_bb;
@@ -297,7 +298,8 @@ MoveStack* MoveGeneratens::generate_bishop_moves(MoveStack* ml, const Position& 
 template <MoveType MT, Color US, bool ALL>
 MoveStack* MoveGeneratens::generate_rook_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
 {
-	const BitBoard rank789_bb = IN_FRONT_MASK[US][Rank6];
+	const Rank rank6 = (US == Black) ? Rank6 : Rank4;
+	const BitBoard rank789_bb = IN_FRONT_MASK[US][rank6];
 	BitBoard from_bb = pos.color_type_of_bb(US, Rook);
 	//Rank789（Rank321）にいる駒専用で、移動先には制限はない。ALL==trueなら不成も生成する
 	BitBoard from_on_rank789 = rank789_bb & from_bb;
@@ -338,13 +340,14 @@ MoveStack* MoveGeneratens::generate_rook_moves(MoveStack* ml, const Position& po
 template <MoveType MT, Color US, bool ALL>
 MoveStack* MoveGeneratens::generate_gold_moves(MoveStack* ml, const Position& pos, const BitBoard& tar, Square ksq)
 {
-	BitBoard from_bb = pos.color_type_of_bb(US, Gold);
+	BitBoard from_bb = pos.color_of_bb(US) & (pos.piece_type_of_bb(Gold) | pos.piece_type_of_bb(ProPawn) | pos.piece_type_of_bb(ProLance) | pos.piece_type_of_bb(ProNight) | pos.piece_type_of_bb(ProSilver));
 	while (from_bb.is_not_zero()){
 		const Square from = from_bb.first_one();
+		const PieceType pt = type_of_piece(Piece(pos.get_board(from)));
 		BitBoard to_bb = pos.attackers_from_gold(US, from) & tar;
 		while (to_bb.is_not_zero()){
 			const Square to = to_bb.first_one();
-			(*ml++).move = make_move(from, to, 0, Gold, type_of_piece(Piece(pos.get_board(to))));
+			(*ml++).move = make_move(from, to, 0, pt, type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
 	return ml;
