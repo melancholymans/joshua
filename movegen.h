@@ -438,7 +438,7 @@ MoveStack* MoveGeneratens::generate_lance_drop(MoveStack* ml, const Position& po
 	while (to_bb.is_not_zero()){
 		const Square to = to_bb.first_one();
 		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
-		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+		(*ml++).move = make_move(Square(Lance + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
 	}
 	return ml;
 }
@@ -456,7 +456,7 @@ MoveStack* MoveGeneratens::generate_night_drop(MoveStack* ml, const Position& po
 	while (to_bb.is_not_zero()){
 		const Square to = to_bb.first_one();
 		//from 駒打ちのときはPieceType + SquareNum - 1 (81->87)なのでわざわざPieceTypeは登録しなくてよい
-		(*ml++).move = make_move(Square(Pawn + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
+		(*ml++).move = make_move(Square(Night + SquareNum - 1), to, 0, PieceType(0), EmptyPiece);
 	}
 	return ml;
 }
