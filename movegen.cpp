@@ -1485,7 +1485,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C5, D6, 0, Gold, Silver);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(H6, G6, 0, King, Pawn);	//TODO:本当は合法手ではない
+	ans = make_move(H6, G6, 0, King, Pawn);	
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H6, I6, 0, King, Night);	//本当は合法手ではない
 	EXPECT_TRUE(array_check(ans, ms));
