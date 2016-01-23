@@ -31,6 +31,7 @@ using Movens::make_move;
 using Positionns::get_zobrist;
 using Positionns::get_zob_hand;
 using Positionns::get_zob_turn;
+using Positionns::is_ok;
 using BitBoardns::make_square_relation;
 using BitBoardns::make_square_bb;
 using BitBoardns::make_between_bb;
@@ -179,6 +180,7 @@ void Position::position_from_sfen(const string &sfen)
 	m_st->board_key = Positionns::make_board_key(*this);
 	m_st->hand_key = Positionns::make_hand_key(*this);
 	//このあといろいろ設定する必要があるが準備ができていないのでここまで
+	is_ok(*this);
 }
 //sfen文字列から局面の盤上を設定
 void Position::put_piece(Piece piece,Square sq)
@@ -258,10 +260,10 @@ void Position::do_move(const Move m, StateInfo& st)
 		board[to] = (us << 4) | pt_to;    //駒コードに変換（駒種は4bitまで）
 		//ここでもいろいろ処理、不明
 		if (move_is_check){
-			m_st->checkers_bb.set_bit(to);
+			m_st->checker_bb.set_bit(to);
 		}
 		else{
-			m_st->checkers_bb.clear_bits(allon);
+			m_st->checker_bb.clear_bits(allon);
 		}
 	}
 	else{				//盤上の手
@@ -296,10 +298,10 @@ void Position::do_move(const Move m, StateInfo& st)
 			BitBoard bb = ci.dc_bb.second; Square sq = bb.first_one();
 			BitBoard zero_bb(0x00, 0x00);
 			bool f = (make_between_bb(sq, them_ksq) & by_type_bb[AllPieces]).is_not_zero();
-			m_st->checkers_bb |= (ci.check_bb[pt_to] & make_square_bb(to)) | (f ? zero_bb : ci.dc_bb.second);
+			m_st->checker_bb |= (ci.check_bb[pt_to] & make_square_bb(to)) | (f ? zero_bb : ci.dc_bb.second);
 		}
 		else{
-			m_st->checkers_bb.clear_bits(allon);
+			m_st->checker_bb.clear_bits(allon);
 		}
 	}
 	m_st->board_key = bod_key;
@@ -3937,10 +3939,10 @@ TEST(position, get_king_square)
 }
 TEST(position, add_hand_sub_hand)
 {
-	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP15/1P1pP1P1P/9/2S3b+pL b GRBSNL2Pgn2p 1");
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP6/1P1pP1P1P/9/2S3b+pL b RGSNLPg3p 1");
 	Position pos(ss);
 
-	EXPECT_EQ(2, pos.get_hand(Black, Pawn));
+	EXPECT_EQ(1, pos.get_hand(Black, Pawn));
 	pos.add_hand(Black, Pawn);
 	pos.add_hand(Black, Pawn);
 	pos.add_hand(Black, Pawn);
@@ -3957,7 +3959,7 @@ TEST(position, add_hand_sub_hand)
 	pos.add_hand(Black, Pawn);
 	pos.add_hand(Black, Pawn);
 	pos.add_hand(Black, Pawn);
-	EXPECT_EQ(18, pos.get_hand(Black, Pawn));
+	EXPECT_EQ(17, pos.get_hand(Black, Pawn));
 
 	EXPECT_EQ(1, pos.get_hand(Black, Lance));
 	pos.add_hand(Black, Lance);
@@ -3977,9 +3979,9 @@ TEST(position, add_hand_sub_hand)
 	pos.add_hand(Black, Silver);
 	EXPECT_EQ(4, pos.get_hand(Black, Silver));
 
-	EXPECT_EQ(1, pos.get_hand(Black, Bishop));
+	EXPECT_EQ(0, pos.get_hand(Black, Bishop));
 	pos.add_hand(Black, Bishop);
-	EXPECT_EQ(2, pos.get_hand(Black, Bishop));
+	EXPECT_EQ(1, pos.get_hand(Black, Bishop));
 
 	EXPECT_EQ(1, pos.get_hand(Black, Rook));
 	pos.add_hand(Black, Rook);
@@ -3990,7 +3992,7 @@ TEST(position, add_hand_sub_hand)
 	EXPECT_EQ(2, pos.get_hand(Black, Gold));
 
 	pos.sub_hand(Black, Pawn);
-	EXPECT_EQ(17, pos.get_hand(Black, Pawn));
+	EXPECT_EQ(16, pos.get_hand(Black, Pawn));
 
 	pos.sub_hand(Black, Lance);
 	EXPECT_EQ(3, pos.get_hand(Black, Lance));
@@ -4002,7 +4004,7 @@ TEST(position, add_hand_sub_hand)
 	EXPECT_EQ(3, pos.get_hand(Black, Silver));
 
 	pos.sub_hand(Black, Bishop);
-	EXPECT_EQ(1, pos.get_hand(Black, Bishop));
+	EXPECT_EQ(0, pos.get_hand(Black, Bishop));
 
 	pos.sub_hand(Black, Rook);
 	pos.sub_hand(Black, Rook);

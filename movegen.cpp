@@ -34,7 +34,7 @@ TEST(movegen, movegen_POS3_white)
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
 	Move ans;
-	print_board(pos);
+
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
 	ans = make_move(F7, F6, 0, Pawn, EmptyPiece);
@@ -968,7 +968,7 @@ TEST(movegen, movegen_POS3_black)
 TEST(movegen, movegen_POS2_white)
 {
 	using namespace MoveGeneratens;
-	string ss("2s2g3/1G3g3/2L1Npp1l/2ps2pKn/2G2PPPS/PpPpp4/1PkPP3p/9/9 w RBSNLPrbnlp 1");
+	string ss("2s2g3/1G3g3/2L1Np2l/2ps2pKn/2G2PPPS/PpPpp4/1PkPP3p/9/9 w RBSNLPrbnl2p 1");
 	Position pos(ss);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
@@ -1426,8 +1426,7 @@ TEST(movegen, movegen_POS2_white)
 TEST(movegen, movegen_POS2_black)
 {
 	using namespace MoveGeneratens;
-	//本当は非合法局面（２歩か存在する）
-	string ss("2s2g3/1G3g3/2L1Npp1l/2ps2pKn/2G2PPPS/PpPpp4/1PkPP3p/9/9 b RBSNLPrbnlp 1");
+	string ss("2s2g3/1G3g3/2L1Np2l/2ps2pKn/2G2PPPS/PpPpp4/1PkPP3p/9/9 b RBSNLPrbnl2p 1");
 	Position pos(ss);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
@@ -1487,8 +1486,6 @@ TEST(movegen, movegen_POS2_black)
 	ans = make_move(C5, D6, 0, Gold, Silver);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H6, G6, 0, King, Pawn);	//TODO:本当は合法手ではない
-	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(H6, G7, 0, King, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H6, I6, 0, King, Night);	//本当は合法手ではない
 	EXPECT_TRUE(array_check(ans, ms));
