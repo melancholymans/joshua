@@ -355,7 +355,7 @@ void Position::undo_move(const Move m)
 		}
 		board[from] = (us << 4) | pt_from;
 	}
-	//StatInfo関係の処理
+	m_st = m_st->previous;
 #ifdef _DEBUG
 	Positionns::is_ok(*this);
 #endif

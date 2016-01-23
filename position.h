@@ -35,7 +35,7 @@ public:
 	//ひとつ上のレベルへのリンク
 	StateInfo* previous;
 	//手番側のKINGにチエックをかけている敵側駒のbitboard
-	BitBoard checkers_bb;
+	BitBoard checker_bb;
 	Key board_key;
 	Key hand_key;
 };
@@ -257,11 +257,15 @@ public:
 	//do_move関数で検出した王手をかけている駒のbitboardを返す
 	BitBoard checker_bb() const
 	{
-		return m_st->checkers_bb;
+		return m_st->checker_bb;
 	}
 	//打歩詰のときtrueを返す
 	bool is_pawn_drop_checkmate(const Color c, const Square to, const Square ksq) const;
-
+	//手番側のKingに王手をかけている駒のnitboard
+	BitBoard check_bb() const
+	{
+		return m_st->checker_bb;
+	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);
