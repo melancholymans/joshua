@@ -10,6 +10,7 @@ using BitBoardns::IN_FRONT_MASK;
 using BitBoardns::FILE_MASK;
 using BitBoardns::alloff;
 using BitBoardns::print;
+using BitBoardns::make_between_bb;
 using Movens::make_move;
 
 namespace MoveGeneratens
@@ -78,8 +79,7 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 	
 	if (MT == Evasion){
 		//自王に王手がかかっているなら王手回避手を生成して返す
-		generate_evasions<US>(ml,pos);
-		return ml;
+		return  generate_evasions<US>(ml,pos);
 	}
 	else{
 		if (MT != Drop){
@@ -111,8 +111,44 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 template <Color US>
 MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position& pos)
 {
-	MoveStack ss;
-	return &ss;
+	const Square ksq = pos.king_square(US);
+	const Colot them = over_turn(US);
+	BitBoard checker_bb = pos.checker_bb();
+	BitBoard bb = checker_bb;
+	Square check_sq;
+	Square to;
+	int checker_num = 0;
+
+	//checkerの数をカウントアップ
+	do{
+		check_sq = bb.first_one;
+		checker_num++;
+	} while (bb.is_not_zero());
+	//kingが逃げて王手を回避する。手番側のKingの移動可能bit boardを生成,その座標に敵の利きが利いていなかったら着手リストに加える
+	//TODO:attackers_to関数が重いようであれば別の方法を考える
+	BitBoard possible_bb = pos.attackers_from_king(ksq) & (pos.inver_bit_bb() | pos.by_color_bb(them));	//inver_bit_bbは現在の局面で空いている座標のbit_boardを返す | 相手の駒のbitboardのbit or
+	while (possible_bb.is_not_zero()){
+		to = possible_bb.first_one();
+		if (!pos.attackers_to(them, ksq, pos.allbb()).is_not_zero()){
+			(*ml++).move = make_move(ksq, Square(to), 0, King, type_of_piece(Piece(pos.get_board(to))));
+		}
+	}
+	//両王手ならばKingが回避するしかないので着手リスト生成はここで終了
+	if (checker_num > 1){
+		return ml;
+	}
+	BitBoard tar = checker_bb | make_between_bb(check_sq,ksq);
+	ml = generate_pawn_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_lance_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_night_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_silver_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_bishop_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_rook_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_gold_moves<MT, US, false>(ml, pos, tar, ksq);	//ProPawn,ProLance,ProNight,ProSilverもここで生成
+	ml = generate_king_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_horse_moves<MT, US, false>(ml, pos, tar, ksq);
+	ml = generate_dragon_moves<MT, US, false>(ml, pos, tar, ksq);
+	return ml;
 }
 
 template <MoveType MT, Color US,bool ALL>
