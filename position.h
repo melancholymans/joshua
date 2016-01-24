@@ -115,6 +115,7 @@ public:
 	{
 		return by_type_bb[pt];
 	}
+	//指定したカラー、指定した駒種の局面bitboardを返す
 	BitBoard color_type_of_bb(const Color c, const PieceType pt) const
 	{
 		return by_color_bb[c] & by_type_bb[pt];

@@ -25,6 +25,51 @@ bool array_check(Move anser, MoveStack *m)
 	}
 	return false;
 }
+TEST(movegen, generate_evasions)
+{
+	/*問題局面=受けとしのぎNo21*/
+	using namespace MoveGeneratens;
+	string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1Pb3G1/4P1N2/4G4/K3S3L b BGSNLP2s3p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+
+	print_board(pos);
+	//NonCapture ALL=false
+	ml = generate_moves<NonCapture>(ml, pos);
+	ans = make_move(A1, A2, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A1, B2, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A1, B1, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
 TEST(movegen, movegen_POS3_white)
 {
 	using namespace MoveGeneratens;

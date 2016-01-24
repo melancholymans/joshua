@@ -2402,130 +2402,410 @@ TEST(postion, undo_move)
 	StateInfo st;
 	using Positionns::print_board;
 
-	string ss("l3g2X1/1kg1s4/jpS6/2pp1P2p/4rBP2/pLP5P/1PNPS4/P1KGS1x2/L7L w RGN4P2n 1");
+	//テスト問題は加藤一二三実践集より
+	Positionns::init();		//StateInfoのテストのため
+	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
 	Position pos(ss);
-	
-	EXPECT_EQ(1, pos.get_color_bit(Black, H9));
-	EXPECT_EQ(1, pos.get_color_bit(Black, C7));
-	EXPECT_EQ(1, pos.get_color_bit(Black, F6));
-	EXPECT_EQ(1, pos.get_color_bit(Black, F5));
-	EXPECT_EQ(1, pos.get_color_bit(Black, G5));
-	EXPECT_EQ(1, pos.get_color_bit(Black, B4));
-	EXPECT_EQ(1, pos.get_color_bit(Black, C4));
-	EXPECT_EQ(1, pos.get_color_bit(Black, I4));
-	EXPECT_EQ(1, pos.get_color_bit(Black, B3));
-	EXPECT_EQ(1, pos.get_color_bit(Black, C3));
-	EXPECT_EQ(1, pos.get_color_bit(Black, D3));
-	EXPECT_EQ(1, pos.get_color_bit(Black, E3));
-	EXPECT_EQ(1, pos.get_color_bit(Black, A2));
-	EXPECT_EQ(1, pos.get_color_bit(Black, C2));
-	EXPECT_EQ(1, pos.get_color_bit(Black, D2));
-	EXPECT_EQ(1, pos.get_color_bit(Black, E2));
-	EXPECT_EQ(1, pos.get_color_bit(Black, A1));
-	EXPECT_EQ(1, pos.get_color_bit(Black, I1));
 
-	EXPECT_EQ(1, pos.get_color_bit(White, A9));
-	EXPECT_EQ(1, pos.get_color_bit(White, E9));
-	EXPECT_EQ(1, pos.get_color_bit(White, B8));
-	EXPECT_EQ(1, pos.get_color_bit(White, C8));
-	EXPECT_EQ(1, pos.get_color_bit(White, E8));
-	EXPECT_EQ(1, pos.get_color_bit(White, A7));
-	EXPECT_EQ(1, pos.get_color_bit(White, B7));
-	EXPECT_EQ(1, pos.get_color_bit(White, C6));
-	EXPECT_EQ(1, pos.get_color_bit(White, D6));
-	EXPECT_EQ(1, pos.get_color_bit(White, I6));
-	EXPECT_EQ(1, pos.get_color_bit(White, E5));
-	EXPECT_EQ(1, pos.get_color_bit(White, A4));
-	EXPECT_EQ(1, pos.get_color_bit(White, G2));
-
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, H9));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C7));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F6));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, F5));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G5));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B4));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C4));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I4));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B3));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C3));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D3));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E3));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A2));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C2));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D2));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E2));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A1));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I1));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A9));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E9));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B8));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C8));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E8));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A7));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, B7));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, C6));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, D6));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, I6));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, E5));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, A4));
-	EXPECT_EQ(1, pos.get_piece_bit(AllPieces, G2));
-	/*
-	//他の駒種は目視で確認
-	printf("");
-	pos.print_piece_bb(Pawn,"Pawn");
-	pos.print_piece_bb(Lance,"Lance");
-	pos.print_piece_bb(Night,"Night");
-	pos.print_piece_bb(Silver,"Silver");
-	pos.print_piece_bb(Bishop,"Bishop");
-	pos.print_piece_bb(Rook,"Rook");
-	pos.print_piece_bb(Gold,"Gold");
-	pos.print_piece_bb(King,"King");
-	pos.print_piece_bb(ProPawn,"ProPawn");
-	pos.print_piece_bb(ProLance,"ProLance");
-	pos.print_piece_bb(ProNight,"ProNight");
-	pos.print_piece_bb(ProSilver,"ProSilver");
-	pos.print_piece_bb(Horse,"Horse");
-	pos.print_piece_bb(Dragon,"Dragon");
-	*/
-
-	EXPECT_EQ(WLance, pos.get_board(A9));
-	EXPECT_EQ(WGold, pos.get_board(E9));
-	EXPECT_EQ(BProPawn, pos.get_board(H9));
-	EXPECT_EQ(WKing, pos.get_board(B8));
-	EXPECT_EQ(WGold, pos.get_board(C8));
-	EXPECT_EQ(WSilver, pos.get_board(E8));
-	EXPECT_EQ(WHorse, pos.get_board(A7));
-	EXPECT_EQ(WPawn, pos.get_board(B7));
-	EXPECT_EQ(BSilver, pos.get_board(C7));
-	EXPECT_EQ(WPawn, pos.get_board(C6));
-	EXPECT_EQ(WPawn, pos.get_board(D6));
-	EXPECT_EQ(BPawn, pos.get_board(F6));
-	EXPECT_EQ(WPawn, pos.get_board(I6));
-	EXPECT_EQ(WRook, pos.get_board(E5));
-	EXPECT_EQ(BBishop, pos.get_board(F5));
-	EXPECT_EQ(BPawn, pos.get_board(G5));
-	EXPECT_EQ(WPawn, pos.get_board(A4));
-	EXPECT_EQ(BLance, pos.get_board(B4));
-	EXPECT_EQ(BPawn, pos.get_board(C4));
-	EXPECT_EQ(BPawn, pos.get_board(I4));
-	EXPECT_EQ(BPawn, pos.get_board(B3));
-	EXPECT_EQ(BNight, pos.get_board(C3));
-	EXPECT_EQ(BPawn, pos.get_board(D3));
-	EXPECT_EQ(BSilver, pos.get_board(E3));
-	EXPECT_EQ(BPawn, pos.get_board(A2));
-	EXPECT_EQ(BKing, pos.get_board(C2));
-	EXPECT_EQ(BGold, pos.get_board(D2));
-	EXPECT_EQ(BSilver, pos.get_board(E2));
-	EXPECT_EQ(WProPawn, pos.get_board(G2));
-	EXPECT_EQ(BLance, pos.get_board(A1));
-	EXPECT_EQ(BLance, pos.get_board(I1));
-
-	EXPECT_EQ(1, pos.get_hand(Black, Rook));
-	EXPECT_EQ(1, pos.get_hand(Black, Gold));
-	EXPECT_EQ(1, pos.get_hand(Black, Night));
-	EXPECT_EQ(4, pos.get_hand(Black, Pawn));
-	EXPECT_EQ(2, pos.get_hand(White, Night));
-
+	//do_moveで局面をすすめundo_moveで元に戻すテスト
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+	//1g1f
+	from = square_from_string("1g");
+	to = square_from_string("1f");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//1
+	pos.do_move(m, st_stack[index++]);
+	//8a7c night
+	from = square_from_string("8a");
+	to = square_from_string("7c");
+	m = make_move(from, to, 0, Night, EmptyPiece);	//2
+	pos.do_move(m, st_stack[index++]);
+	//4h4g silver
+	from = square_from_string("4h");
+	to = square_from_string("4g");
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//3
+	pos.do_move(m, st_stack[index++]);
+	//5b6c gold
+	from = square_from_string("5b");
+	to = square_from_string("6c");
+	m = make_move(from, to, 0, Gold, EmptyPiece);	//4
+	pos.do_move(m, st_stack[index++]);
+	//2e2d pawn
+	from = square_from_string("2e");
+	to = square_from_string("2d");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);		//5
+	pos.do_move(m, st_stack[index++]);
+	//2c2d pawn
+	from = square_from_string("2c");
+	to = square_from_string("2d");
+	m = make_move(from, to, 0, Pawn, Pawn);		//6
+	pos.do_move(m, st_stack[index++]);
+	//3f3e pawn
+	from = square_from_string("3f");
+	to = square_from_string("3e");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);		//7
+	pos.do_move(m, st_stack[index++]);
+	//3d3e pawn
+	from = square_from_string("3d");
+	to = square_from_string("3e");
+	m = make_move(from, to, 0, Pawn, Pawn);		//8
+	pos.do_move(m, st_stack[index++]);
+	//4e4d pawn
+	from = square_from_string("4e");
+	to = square_from_string("4d");
+	m = make_move(from, to, 0, Pawn, Pawn);		//9
+	pos.do_move(m, st_stack[index++]);
+	//4c3d silver
+	from = square_from_string("4c");
+	to = square_from_string("3d");
+	m = make_move(from, to, 0, Silver, EmptyPiece);		//10
+	pos.do_move(m, st_stack[index++]);
+	//5g4f silver
+	from = square_from_string("5g");
+	to = square_from_string("4f");
+	m = make_move(from, to, 0, Silver, EmptyPiece);		//11
+	pos.do_move(m, st_stack[index++]);
+	//4b4d rook
+	from = square_from_string("4b");
+	to = square_from_string("4d");
+	m = make_move(from, to, 0, Rook, Pawn);		//12
+	pos.do_move(m, st_stack[index++]);
+	//P*4e pawn
+	from = square_from_string("4b");
+	to = square_from_string("4e");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//13
+	pos.do_move(m, st_stack[index++]);
+	//4d4c rook
+	from = square_from_string("4d");
+	to = square_from_string("4c");
+	m = make_move(from, to, 0, Rook, EmptyPiece);	//14
+	pos.do_move(m, st_stack[index++]);
+	//8h3c bishop bishop
+	from = square_from_string("8h");
+	to = square_from_string("3c");
+	m = make_move(from, to, 0, Bishop, Bishop);	//15
+	pos.do_move(m, st_stack[index++]);
+	//4c3c rook bishop
+	from = square_from_string("4c");
+	to = square_from_string("3c");
+	m = make_move(from, to, 0, Rook, Bishop);	//16
+	pos.do_move(m, st_stack[index++]);
+	//2h2d rook pawn
+	from = square_from_string("2h");
+	to = square_from_string("2d");
+	m = make_move(from, to, 0, Rook, Pawn);	//17
+	pos.do_move(m, st_stack[index++]);
+	//P*2c pawn
+	from = square_from_string("2h");
+	to = square_from_string("2c");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//18
+	pos.do_move(m, st_stack[index++]);
+	//2d2f rook
+	from = square_from_string("2d");
+	to = square_from_string("2f");
+	m = make_move(from, to, 0, Rook, EmptyPiece);	//19
+	pos.do_move(m, st_stack[index++]);
+	//3e3f pawn
+	from = square_from_string("3e");
+	to = square_from_string("3f");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//20
+	pos.do_move(m, st_stack[index++]);
+	//4g3f silver pawn
+	from = square_from_string("4g");
+	to = square_from_string("3f");
+	m = make_move(from, to, 0, Silver, Pawn);	//21
+	pos.do_move(m, st_stack[index++]);
+	//5d5e pawn
+	from = square_from_string("5d");
+	to = square_from_string("5e");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//22
+	pos.do_move(m, st_stack[index++]);
+	//P*3e pawn
+	to = square_from_string("3e");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//23
+	pos.do_move(m, st_stack[index++]);
+	//3d4c silver
+	from = square_from_string("3d");
+	to = square_from_string("4c");
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//24
+	pos.do_move(m, st_stack[index++]);
+	//B*1a bishop
+	from = square_from_string("3d");
+	to = square_from_string("1a");
+	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//25
+	pos.do_move(m, st_stack[index++]);
+	//5e5f pawn pawn
+	from = square_from_string("5e");
+	to = square_from_string("5f");
+	m = make_move(from, to, 0, Pawn, Pawn);	//26
+	pos.do_move(m, st_stack[index++]);
+	//P*2b pawn
+	from = square_from_string("3d");
+	to = square_from_string("2b");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//27
+	pos.do_move(m, st_stack[index++]);
+	//4c5b silver
+	from = square_from_string("4c");
+	to = square_from_string("5b");
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//28
+	pos.do_move(m, st_stack[index++]);
+	//2b2a pawn pmoto Night
+	from = square_from_string("2b");
+	to = square_from_string("2a");
+	m = make_move(from, to, 1, Pawn, Night);	//29
+	pos.do_move(m, st_stack[index++]);
+	//3c5c rook
+	from = square_from_string("3c");
+	to = square_from_string("5c");
+	m = make_move(from, to, 0, Rook, EmptyPiece);	//30
+	pos.do_move(m, st_stack[index++]);
+	//1a4d bishop pmoto 
+	from = square_from_string("1a");
+	to = square_from_string("4d");
+	m = make_move(from, to, 1, Bishop, EmptyPiece);	//31
+	pos.do_move(m, st_stack[index++]);
+	//7c6e night
+	from = square_from_string("7c");
+	to = square_from_string("6e");
+	m = make_move(from, to, 0, Night, EmptyPiece);	//32
+	pos.do_move(m, st_stack[index++]);
+	//N*6i night
+	from = square_from_string("7c");
+	to = square_from_string("6i");
+	m = make_move(drop_piece_from(Night), to, 0, Night, EmptyPiece);	//33
+	pos.do_move(m, st_stack[index++]);
+	//B*3i bishop
+	from = square_from_string("7c");
+	to = square_from_string("3i");
+	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//34
+	pos.do_move(m, st_stack[index++]);
+	//4d5c Horse rook
+	from = square_from_string("4d");
+	to = square_from_string("5c");
+	m = make_move(from, to, 0, Horse, Rook);	//35
+	pos.do_move(m, st_stack[index++]);
+	//5b5c silver Horse
+	from = square_from_string("5b");
+	to = square_from_string("5c");
+	m = make_move(from, to, 0, Silver, Horse);	//36
+	pos.do_move(m, st_stack[index++]);
+	//2f2c rook pmoto pawn
+	from = square_from_string("2f");
+	to = square_from_string("2c");
+	m = make_move(from, to, 1, Rook, Pawn);	//37
+	pos.do_move(m, st_stack[index++]);
+	//9d9e pawn
+	from = square_from_string("9d");
+	to = square_from_string("9e");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//38
+	pos.do_move(m, st_stack[index++]);
+	//2c1b doragon lance 
+	from = square_from_string("2c");
+	to = square_from_string("1b");
+	m = make_move(from, to, 0, Dragon, Lance);	//39
+	pos.do_move(m, st_stack[index++]);
+	//9e9f pawn pawn
+	from = square_from_string("9e");
+	to = square_from_string("9f");
+	m = make_move(from, to, 0, Pawn, Pawn);	//40
+	pos.do_move(m, st_stack[index++]);
+	//P*9h pawn
+	from = square_from_string("9e");
+	to = square_from_string("9h");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//41
+	pos.do_move(m, st_stack[index++]);
+	//3i8d bishop pmoto 
+	from = square_from_string("3i");
+	to = square_from_string("8d");
+	m = make_move(from, to, 1, Bishop, EmptyPiece);	//42
+	pos.do_move(m, st_stack[index++]);
+	//L*8f lance
+	from = square_from_string("3i");
+	to = square_from_string("8f");
+	m = make_move(drop_piece_from(Lance), to, 0, Lance, EmptyPiece);	//43
+	pos.do_move(m, st_stack[index++]);
+	//8d9c Horse
+	from = square_from_string("8d");
+	to = square_from_string("9c");
+	m = make_move(from, to, 1, Horse, EmptyPiece);	//44
+	pos.do_move(m, st_stack[index++]);
+	//4e4d pawn
+	from = square_from_string("4e");
+	to = square_from_string("4d");
+	m = make_move(from, to, 0, Pawn, EmptyPiece);	//45
+	pos.do_move(m, st_stack[index++]);
+	//P*4b pawn
+	from = square_from_string("4e");
+	to = square_from_string("4b");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//46
+	pos.do_move(m, st_stack[index++]);
+	//3g4e night
+	from = square_from_string("3g");
+	to = square_from_string("4e");
+	m = make_move(from, to, 0, Night, EmptyPiece);	//47
+	pos.do_move(m, st_stack[index++]);
+	//5c6b silver
+	from = square_from_string("5c");
+	to = square_from_string("6b");
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//48
+	pos.do_move(m, st_stack[index++]);
+	//R*2c rook
+	from = square_from_string("5c");
+	to = square_from_string("2c");
+	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//49
+	pos.do_move(m, st_stack[index++]);
+	//P*3g pawn
+	from = square_from_string("5c");
+	to = square_from_string("3g");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//50
+	pos.do_move(m, st_stack[index++]);
+	//3f4g silver
+	from = square_from_string("3f");
+	to = square_from_string("4g");
+	m = make_move(from, to, 0, Silver, EmptyPiece);	//51
+	pos.do_move(m, st_stack[index++]);
+	//B*4i bishop
+	from = square_from_string("3f");
+	to = square_from_string("4i");
+	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//52
+	pos.do_move(m, st_stack[index++]);
+	//1b4b dragon pawn
+	from = square_from_string("1b");
+	to = square_from_string("4b");
+	m = make_move(from, to, 0, Dragon, Pawn);	//53
+	pos.do_move(m, st_stack[index++]);
+	//3g3h pawn pmoto
+	from = square_from_string("3g");
+	to = square_from_string("3h");
+	m = make_move(from, to, 1, Pawn, EmptyPiece);	//54
+	pos.do_move(m, st_stack[index++]);
+	//2c6c rook pmoto gold
+	from = square_from_string("2c");
+	to = square_from_string("6c");
+	m = make_move(from, to, 1, Rook, Gold);	//55
+	pos.do_move(m, st_stack[index++]);
+	//6b6c silver Dragon
+	from = square_from_string("6b");
+	to = square_from_string("6c");
+	m = make_move(from, to, 0, Silver, Dragon);	//56
+	pos.do_move(m, st_stack[index++]);
+	//4e5c night pmoto
+	from = square_from_string("4e");
+	to = square_from_string("5c");
+	m = make_move(from, to, 1, Night, EmptyPiece);	//57
+	pos.do_move(m, st_stack[index++]);
+	//P*4a pawn
+	from = square_from_string("4e");
+	to = square_from_string("4a");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//58
+	pos.do_move(m, st_stack[index++]);
+	//4b2b dragon
+	from = square_from_string("4b");
+	to = square_from_string("2b");
+	m = make_move(from, to, 0, Dragon, EmptyPiece);	//59
+	pos.do_move(m, st_stack[index++]);
+	//4i5h bishop pmoto gold
+	from = square_from_string("4i");
+	to = square_from_string("5h");
+	m = make_move(from, to, 1, Bishop, Gold);	//60
+	pos.do_move(m, st_stack[index++]);
+	//4g5h silver bishop
+	from = square_from_string("4g");
+	to = square_from_string("5h");
+	m = make_move(from, to, 0, Silver, Horse);	//61
+	pos.do_move(m, st_stack[index++]);
+	//P*3b Pawn
+	from = square_from_string("5c");
+	to = square_from_string("3b");
+	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//62
+	pos.do_move(m, st_stack[index++]);
+	//5c6c PRoNight Silver
+	from = square_from_string("5c");
+	to = square_from_string("6c");
+	m = make_move(from, to, 0, ProNight, Silver);	//63
+	pos.do_move(m, st_stack[index++]);
+	//7b6c Silver PRoNight
+	from = square_from_string("7b");
+	to = square_from_string("6c");
+	m = make_move(from, to, 0, Silver, ProNight);	//64
+	pos.do_move(m, st_stack[index++]);
+	//2b3b dragon pawn
+	from = square_from_string("2b");
+	to = square_from_string("3b");
+	m = make_move(from, to, 0, Dragon, Pawn);	//65
+	pos.do_move(m, st_stack[index++]);
+	//R*5b
+	from = square_from_string("2b");
+	to = square_from_string("5b");
+	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//66
+	pos.do_move(m, st_stack[index++]);
+	//3b4a dragon pawn
+	from = square_from_string("3b");
+	to = square_from_string("4a");
+	m = make_move(from, to, 0, Dragon, Pawn);	//67
+	pos.do_move(m, st_stack[index++]);
+	//G*5a
+	from = square_from_string("3b");
+	to = square_from_string("5a");
+	m = make_move(drop_piece_from(Gold), to, 0, Gold, EmptyPiece);	//68
+	pos.do_move(m, st_stack[index++]);
+	//4a5b dragon rook
+	from = square_from_string("4a");
+	to = square_from_string("5b");
+	m = make_move(from, to, 0, Dragon, Rook);	//69
+	pos.do_move(m, st_stack[index++]);
+	//6c5b silver dragon
+	from = square_from_string("6c");
+	to = square_from_string("5b");
+	m = make_move(from, to, 0, Silver, Dragon);	//70
+	pos.do_move(m, st_stack[index++]);
+	//B*4e bishop
+	from = square_from_string("6c");
+	to = square_from_string("4e");
+	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//71
+	pos.do_move(m, st_stack[index++]);
+	//6a7b gold
+	from = square_from_string("6a");
+	to = square_from_string("7b");
+	m = make_move(from, to, 0, Gold, EmptyPiece);	//72
+	pos.do_move(m, st_stack[index++]);
+	//8i7g night
+	from = square_from_string("8i");
+	to = square_from_string("7g");
+	m = make_move(from, to, 0, Night, EmptyPiece);	//73
+	pos.do_move(m, st_stack[index++]);
+	//6e5g night pmoto
+	from = square_from_string("6e");
+	to = square_from_string("5g");
+	m = make_move(from, to, 1, Night, EmptyPiece);	//74
+	pos.do_move(m, st_stack[index++]);
+	//6i5g night night
+	from = square_from_string("6i");
+	to = square_from_string("5g");
+	m = make_move(from, to, 0, Night, ProNight);	//75
+	pos.do_move(m, st_stack[index++]);
+	//5f5g pawn pmoto night
+	from = square_from_string("5f");
+	to = square_from_string("5g");
+	m = make_move(from, to, 1, Pawn, Night);	//76
+	pos.do_move(m, st_stack[index++]);
+	//4f5g silver proPawn
+	from = square_from_string("4f");
+	to = square_from_string("5g");
+	m = make_move(from, to, 0, Silver, ProPawn);	//77
+	pos.do_move(m, st_stack[index++]);
+	//R*5e rook
+	from = square_from_string("4f");
+	to = square_from_string("5e");
+	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//78
+	pos.do_move(m, st_stack[index++]);
+	//S*7c silver
+	from = square_from_string("4f");
+	to = square_from_string("7c");
+	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//79
+	pos.do_move(m, st_stack[index++]);
+	//--------------------------------ここからundo_moveを行う
 	//S*7c silver
 	to = square_from_string("7c");
 	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//79
@@ -3074,6 +3354,7 @@ TEST(postion, undo_move)
 	pos.print_piece_bb(King,"King");
 	*/
 }
+
 TEST(position, do_move)
 {
 	Square from,to;
@@ -3186,630 +3467,553 @@ TEST(position, do_move)
 	from = square_from_string("1g");
 	to = square_from_string("1f");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//1
-	pos.do_move(m, st_stack[index]);
-	index++;
+	pos.do_move(m, st_stack[index++]);
 	//8a7c night
 	from = square_from_string("8a");
 	to = square_from_string("7c");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//2
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index-1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index-1].hand_key, st_stack[index - 2].hand_key);
 	//4h4g silver
 	from = square_from_string("4h");
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//3
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5b6c gold
 	from = square_from_string("5b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Gold, EmptyPiece);	//4
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2e2d pawn
 	from = square_from_string("2e");
 	to = square_from_string("2d");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);		//5
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2c2d pawn
 	from = square_from_string("2c");
 	to = square_from_string("2d");
 	m = make_move(from, to, 0, Pawn, Pawn);		//6
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3f3e pawn
 	from = square_from_string("3f");
 	to = square_from_string("3e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);		//7
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3d3e pawn
 	from = square_from_string("3d");
 	to = square_from_string("3e");
 	m = make_move(from, to, 0, Pawn, Pawn);		//8
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4e4d pawn
 	from = square_from_string("4e");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Pawn, Pawn);		//9
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4c3d silver
 	from = square_from_string("4c");
 	to = square_from_string("3d");
 	m = make_move(from, to, 0, Silver, EmptyPiece);		//10
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5g4f silver
 	from = square_from_string("5g");
 	to = square_from_string("4f");
 	m = make_move(from, to, 0, Silver, EmptyPiece);		//11
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4b4d rook
 	from = square_from_string("4b");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Rook, Pawn);		//12
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*4e pawn
 	from = square_from_string("4b");
 	to = square_from_string("4e");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//13
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4d4c rook
 	from = square_from_string("4d");
 	to = square_from_string("4c");
 	m = make_move(from, to, 0, Rook, EmptyPiece);	//14
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//8h3c bishop bishop
 	from = square_from_string("8h");
 	to = square_from_string("3c");
 	m = make_move(from, to, 0, Bishop, Bishop);	//15
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4c3c rook bishop
 	from = square_from_string("4c");
 	to = square_from_string("3c");
 	m = make_move(from, to, 0, Rook, Bishop);	//16
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2h2d rook pawn
 	from = square_from_string("2h");
 	to = square_from_string("2d");
 	m = make_move(from, to, 0, Rook, Pawn);	//17
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*2c pawn
 	from = square_from_string("2h");
 	to = square_from_string("2c");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//18
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2d2f rook
 	from = square_from_string("2d");
 	to = square_from_string("2f");
 	m = make_move(from, to, 0, Rook, EmptyPiece);	//19
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
-	
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3e3f pawn
 	from = square_from_string("3e");
 	to = square_from_string("3f");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//20
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4g3f silver pawn
 	from = square_from_string("4g");
 	to = square_from_string("3f");
 	m = make_move(from, to, 0, Silver, Pawn);	//21
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5d5e pawn
 	from = square_from_string("5d");
 	to = square_from_string("5e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//22
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*3e pawn
 	to = square_from_string("3e");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//23
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3d4c silver
 	from = square_from_string("3d");
 	to = square_from_string("4c");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//24
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//B*1a bishop
 	from = square_from_string("3d");
 	to = square_from_string("1a");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//25
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5e5f pawn pawn
 	from = square_from_string("5e");
 	to = square_from_string("5f");
 	m = make_move(from, to, 0, Pawn, Pawn);	//26
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*2b pawn
 	from = square_from_string("3d");
 	to = square_from_string("2b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//27
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4c5b silver
 	from = square_from_string("4c");
 	to = square_from_string("5b");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//28
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2b2a pawn pmoto Night
 	from = square_from_string("2b");
 	to = square_from_string("2a");
 	m = make_move(from, to, 1, Pawn, Night);	//29
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3c5c rook
 	from = square_from_string("3c");
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Rook, EmptyPiece);	//30
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//1a4d bishop pmoto 
 	from = square_from_string("1a");
 	to = square_from_string("4d");
 	m = make_move(from, to, 1, Bishop, EmptyPiece);	//31
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//7c6e night
 	from = square_from_string("7c");
 	to = square_from_string("6e");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//32
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//N*6i night
 	from = square_from_string("7c");
 	to = square_from_string("6i");
 	m = make_move(drop_piece_from(Night), to, 0, Night, EmptyPiece);	//33
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//B*3i bishop
 	from = square_from_string("7c");
 	to = square_from_string("3i");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//34
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4d5c Horse rook
 	from = square_from_string("4d");
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Horse, Rook);	//35
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5b5c silver Horse
 	from = square_from_string("5b");
 	to = square_from_string("5c");
 	m = make_move(from, to, 0, Silver, Horse);	//36
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2f2c rook pmoto pawn
 	from = square_from_string("2f");
 	to = square_from_string("2c");
 	m = make_move(from, to, 1, Rook, Pawn);	//37
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//9d9e pawn
 	from = square_from_string("9d");
 	to = square_from_string("9e");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//38
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2c1b doragon lance 
 	from = square_from_string("2c");
 	to = square_from_string("1b");
 	m = make_move(from, to, 0, Dragon, Lance);	//39
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//9e9f pawn pawn
 	from = square_from_string("9e");
 	to = square_from_string("9f");
 	m = make_move(from, to, 0, Pawn, Pawn);	//40
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*9h pawn
 	from = square_from_string("9e");
 	to = square_from_string("9h");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//41
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3i8d bishop pmoto 
 	from = square_from_string("3i");
 	to = square_from_string("8d");
 	m = make_move(from, to, 1, Bishop, EmptyPiece);	//42
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//L*8f lance
 	from = square_from_string("3i");
 	to = square_from_string("8f");
 	m = make_move(drop_piece_from(Lance), to, 0, Lance, EmptyPiece);	//43
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//8d9c Horse
 	from = square_from_string("8d");
 	to = square_from_string("9c");
 	m = make_move(from, to, 1, Horse, EmptyPiece);	//44
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4e4d pawn
 	from = square_from_string("4e");
 	to = square_from_string("4d");
 	m = make_move(from, to, 0, Pawn, EmptyPiece);	//45
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*4b pawn
 	from = square_from_string("4e");
 	to = square_from_string("4b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//46
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3g4e night
 	from = square_from_string("3g");
 	to = square_from_string("4e");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//47
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5c6b silver
 	from = square_from_string("5c");
 	to = square_from_string("6b");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//48
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//R*2c rook
 	from = square_from_string("5c");
 	to = square_from_string("2c");
 	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//49
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*3g pawn
 	from = square_from_string("5c");
 	to = square_from_string("3g");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//50
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3f4g silver
 	from = square_from_string("3f");
 	to = square_from_string("4g");
 	m = make_move(from, to, 0, Silver, EmptyPiece);	//51
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//B*4i bishop
 	from = square_from_string("3f");
 	to = square_from_string("4i");
 	m = make_move(drop_piece_from(Bishop), to, 0, Bishop, EmptyPiece);	//52
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//1b4b dragon pawn
 	from = square_from_string("1b");
 	to = square_from_string("4b");
 	m = make_move(from, to, 0, Dragon, Pawn);	//53
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3g3h pawn pmoto
 	from = square_from_string("3g");
 	to = square_from_string("3h");
 	m = make_move(from, to, 1, Pawn, EmptyPiece);	//54
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2c6c rook pmoto gold
 	from = square_from_string("2c");
 	to = square_from_string("6c");
 	m = make_move(from, to, 1, Rook, Gold);	//55
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//6b6c silver Dragon
 	from = square_from_string("6b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Silver, Dragon);	//56
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4e5c night pmoto
 	from = square_from_string("4e");
 	to = square_from_string("5c");
 	m = make_move(from, to, 1, Night, EmptyPiece);	//57
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*4a pawn
 	from = square_from_string("4e");
 	to = square_from_string("4a");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//58
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4b2b dragon
 	from = square_from_string("4b");
 	to = square_from_string("2b");
 	m = make_move(from, to, 0, Dragon, EmptyPiece);	//59
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4i5h bishop pmoto gold
 	from = square_from_string("4i");
 	to = square_from_string("5h");
 	m = make_move(from, to, 1, Bishop, Gold);	//60
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4g5h silver bishop
 	from = square_from_string("4g");
 	to = square_from_string("5h");
 	m = make_move(from, to, 0, Silver, Horse);	//61
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//P*3b Pawn
 	from = square_from_string("5c");
 	to = square_from_string("3b");
 	m = make_move(drop_piece_from(Pawn), to, 0, Pawn, EmptyPiece);	//62
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5c6c PRoNight Silver
 	from = square_from_string("5c");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, ProNight, Silver);	//63
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//7b6c Silver PRoNight
 	from = square_from_string("7b");
 	to = square_from_string("6c");
 	m = make_move(from, to, 0, Silver, ProNight);	//64
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//2b3b dragon pawn
 	from = square_from_string("2b");
 	to = square_from_string("3b");
 	m = make_move(from, to, 0, Dragon, Pawn);	//65
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//R*5b
 	from = square_from_string("2b");
 	to = square_from_string("5b");
 	m = make_move(drop_piece_from(Rook), to, 0, Rook, EmptyPiece);	//66
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//3b4a dragon pawn
 	from = square_from_string("3b");
 	to = square_from_string("4a");
 	m = make_move(from, to, 0, Dragon, Pawn);	//67
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//G*5a
 	from = square_from_string("3b");
 	to = square_from_string("5a");
 	m = make_move(drop_piece_from(Gold), to, 0, Gold, EmptyPiece);	//68
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4a5b dragon rook
 	from = square_from_string("4a");
 	to = square_from_string("5b");
 	m = make_move(from, to, 0, Dragon, Rook);	//69
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//6c5b silver dragon
 	from = square_from_string("6c");
 	to = square_from_string("5b");
 	m = make_move(from, to, 0, Silver, Dragon);	//70
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//B*4e bishop
 	from = square_from_string("6c");
 	to = square_from_string("4e");
 	m = make_move(drop_piece_from(Bishop), to, 0, Silver, EmptyPiece);	//71
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//6a7b gold
 	from = square_from_string("6a");
 	to = square_from_string("7b");
 	m = make_move(from, to, 0, Gold, EmptyPiece);	//72
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//8i7g night
 	from = square_from_string("8i");
 	to = square_from_string("7g");
 	m = make_move(from, to, 0, Night, EmptyPiece);	//73
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//6e5g night pmoto
 	from = square_from_string("6e");
 	to = square_from_string("5g");
 	m = make_move(from, to, 1, Night, EmptyPiece);	//74
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_EQ(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_EQ(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//6i5g night night
 	from = square_from_string("6i");
 	to = square_from_string("5g");
 	m = make_move(from, to, 0, Night, ProNight);	//75
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//5f5g pawn pmoto night
 	from = square_from_string("5f");
 	to = square_from_string("5g");
 	m = make_move(from, to, 1, Pawn, Night);	//76
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//4f5g silver proPawn
 	from = square_from_string("4f");
 	to = square_from_string("5g");
 	m = make_move(from, to, 0, Silver, ProPawn);	//77
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//R*5e rook
 	from = square_from_string("4f");
 	to = square_from_string("5e");
 	m = make_move(drop_piece_from(Rook), to, 0, Silver, EmptyPiece);	//78
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	index++;
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
 	//S*7c silver
 	from = square_from_string("4f");
 	to = square_from_string("7c");
 	m = make_move(drop_piece_from(Silver), to, 0, Silver, EmptyPiece);	//79
-	pos.do_move(m, st_stack[index]);
-	EXPECT_NE(st_stack[index].board_key, st_stack[index - 1].board_key);
-	EXPECT_NE(st_stack[index].hand_key, st_stack[index - 1].hand_key);
-	
+	pos.do_move(m, st_stack[index++]);
+	EXPECT_NE(st_stack[index - 1].board_key, st_stack[index - 2].board_key);	//結果が乱数なので値を直接比較することができないので前の値と異なっている、更新されていること（または更新されていないこと）を確認して良好とする。
+	EXPECT_NE(st_stack[index - 1].hand_key, st_stack[index - 2].hand_key);
+
 	EXPECT_EQ(WLance, pos.get_board(A9));
 	EXPECT_EQ(WGold, pos.get_board(E9));
 	EXPECT_EQ(BProPawn, pos.get_board(H9));
