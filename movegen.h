@@ -148,6 +148,10 @@ MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position& pos)
 	ml = generate_king_moves<Evasion, US, false>(ml, pos, tar, ksq);
 	ml = generate_horse_moves<Evasion, US, false>(ml, pos, tar, ksq);
 	ml = generate_dragon_moves<Evasion, US, false>(ml, pos, tar, ksq);
+	ml = generate_pawn_drop<US>(ml, pos, tar, ksq);
+	ml = generate_lance_drop<US>(ml, pos, tar, ksq);
+	ml = generate_night_drop<US>(ml, pos, tar, ksq);
+	ml = generate_silver_gold_bishop_rook_drop<US>(ml, pos, tar, ksq);
 	return ml;
 }
 

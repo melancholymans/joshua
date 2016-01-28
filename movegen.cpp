@@ -1,5 +1,7 @@
 ﻿#include <memory>
+#include <array>	//generate_evasions TESTのため
 #include "bitboard.h"
+#include "position.h"
 #include "move.h"
 #include "usi.h"
 #include "movegen.h"
@@ -27,21 +29,22 @@ bool array_check(Move anser, MoveStack *m)
 }
 TEST(movegen, generate_evasions)
 {
-	/*問題局面=受けとしのぎNo21*/
+	/*問題局面=受けとしのぎNo21　66角を打つ前の局面を現している*/
 	using namespace MoveGeneratens;
-	string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1Pb3G1/4P1N2/4G4/K3S3L b BGSNLP2s3p 1");
+	string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/4G4/K3S3L w BGSNLPb2s3p 1");
 	Position pos(ss);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
 	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
 
 	print_board(pos);
-	//NonCapture ALL=false
-	ml = generate_moves<NonCapture>(ml, pos);
+	pos.do_move(make_move(Square(Bishop + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
 	ans = make_move(A1, A2, 0, King, EmptyPiece);
-	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(A1, B2, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(A1, B1, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -56,8 +59,6 @@ TEST(movegen, generate_evasions)
 	ans = make_move(Square(Gold + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
-	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(Square(Pawn + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
