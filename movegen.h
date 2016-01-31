@@ -97,8 +97,8 @@ MoveStack* MoveGeneratens::generate_moves(MoveStack* ml, const Position& pos)
 		}
 		//打つ手
 		else{
-			BitBoard bb(0xFFFFFFFFFFFFFFFF, 0x3FFFF);	//inver_bit_bb関数によってto_bb[1]の領域に余分な1を立てさせないため
-			const BitBoard tar2 = pos.inver_bit_bb() & bb;	//空いている座標をonにしてtar2に入れておきDropのターゲットにする
+			BitBoard bb(0x7FFFFFFFFFFFFFFF, 0x3FFFF);	//inver_bit_bb関数によってto_bb[1]の領域に余分な1を立てさせないため
+			const BitBoard tar2 = pos.inver_bit_bb() & bb;	//空いている座標をonにしてtar2に入れておきDropのターゲットにする、同様にto_bb[0]の63bit目は使用していないのでここも0bitにしておく
 			ml = generate_pawn_drop<US>(ml, pos, tar2, ksq);
 			ml = generate_lance_drop<US>(ml, pos, tar2, ksq);
 			ml = generate_night_drop<US>(ml, pos, tar2, ksq);
