@@ -27,6 +27,19 @@ bool array_check(Move anser, MoveStack *m)
 	}
 	return false;
 }
+//ms[512]を直前にゼロクリアすることを利用してどれくらい
+//データを積み上げたかカウントアップする。
+int array_count(MoveStack *m)
+{
+	int count = 0;
+	for (int i = 0; i < 512; i++){
+		if (m++->move == 0){
+			return count;
+		}
+		count++;
+	}
+	return count;
+}
 TEST(movegen, generate_evasions)
 {
 	/*問題局面=受けとしのぎNo21　66角を打つ前の局面を現している*/
@@ -44,10 +57,14 @@ TEST(movegen, generate_evasions)
 	print_board(pos);
 	pos.do_move(make_move(Square(Bishop + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece), st_stack[index]);
 	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(13, array_count(ms));
 	ans = make_move(A1, A2, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(A1, B1, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A1, B2, 0, King, EmptyPiece);
+	EXPECT_FALSE(array_check(ans, ms));	//them側駒の利きに逃げるのは非合法
+	//TODO:ここでは全ても駒に対して、全ての位置に対して合いごまを生成しているが、柿木将棋のように合いごま対策をすること
 	ans = make_move(Square(Pawn + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), B2, 0, PieceType(0), EmptyPiece);
@@ -83,7 +100,12 @@ TEST(movegen, movegen_POS3_white)
 
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
+	EXPECT_EQ(33, array_count(ms));
+	//pawn 1
 	ans = make_move(F7, F6, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//gold 7
+	ans = make_move(F8, G7, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F8, G8, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -97,7 +119,7 @@ TEST(movegen, movegen_POS3_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F9, E9, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProPawn
+	//ProPawn 4
 	ans = make_move(I3, I2, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I3, H2, 0, ProPawn, EmptyPiece);
@@ -106,12 +128,36 @@ TEST(movegen, movegen_POS3_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I3, I4, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProNight
+	//ProLamce 6
+	ans = make_move(G3, H3, 0, ProLance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G3, H2, 0, ProLance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G3, G4, 0, ProLance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G3, G2, 0, ProLance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G3, F3, 0, ProLance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G3, F2, 0, ProLance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//ProNight 3
 	ans = make_move(I6, H5, 0, ProNight, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I6, I7, 0, ProNight, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Horse
+	ans = make_move(I6, H6, 0, ProNight, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//ProSilver 4
+	ans = make_move(C9, D9, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C9, D8, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C9, C8, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C9, B9, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Horse 4
 	ans = make_move(B2, C2, 0, Horse, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B2, B1, 0, Horse, EmptyPiece);
@@ -120,39 +166,56 @@ TEST(movegen, movegen_POS3_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B2, A2, 0, Horse, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Dragon
+	//Dragon 3
 	ans = make_move(D2, E1, 0, Dragon, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D2, D1, 0, Dragon, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D2, C2, 0, Dragon, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//king 1
+	ans = make_move(C3, C2, 0, King, EmptyPiece);	//本当は合法手ではない王の移動にthem駒の利き範囲への移動をロックする実装がまだないため
+	EXPECT_TRUE(array_check(ans, ms));
 	//Capture ALL=false
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
+	EXPECT_EQ(18, array_count(ms));
+	//pawn 5
 	ans = make_move(G6, G5, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E4, E3, 1, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D4, D3, 1, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, B3, 0, Pawn, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B4, B3, 1, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
+	//gold 1
 	ans = make_move(F8, E7, 0, Gold, ProNight);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProNight
+	//king 3
+	ans = make_move(C3, C4, 0, King, Pawn);	//本当は合法手ではない、王手の移動に相手利きがあるところに移動しない機能が実装されていないため
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C3, B3, 0, King, Pawn);	//本当は合法手ではない、王手の移動に相手利きがあるところに移動しない機能が実装されていないため
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C3, D3, 0, King, Pawn);	//本当は合法手ではない、王手の移動に相手利きがあるところに移動しない機能が実装されていないため
+	EXPECT_TRUE(array_check(ans, ms));
+	//ProNight 1
 	ans = make_move(I6, I5, 0, ProNight, ProSilver);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProSilver
+	//ProSilver 1
 	ans = make_move(C9, B8, 0, ProSilver, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Horse
+	//Horse 3
 	ans = make_move(B2, B3, 0, Horse, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B2, A3, 0, Horse, ProPawn);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Dragon
+	ans = make_move(B2, C1, 0, Horse, ProPawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Dragon 4
 	ans = make_move(D2, E2, 0, Dragon, ProPawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D2, C1, 0, Dragon, ProPawn);
@@ -165,6 +228,8 @@ TEST(movegen, movegen_POS3_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
+	EXPECT_EQ(100, array_count(ms));
+	//pawn 22
 	ans = make_move(Square(Pawn + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
@@ -209,7 +274,7 @@ TEST(movegen, movegen_POS3_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Lance
+	//Lance 43
 	ans = make_move(Square(Lance + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
@@ -239,6 +304,8 @@ TEST(movegen, movegen_POS3_white)
 	ans = make_move(Square(Lance + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -294,7 +361,7 @@ TEST(movegen, movegen_POS3_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Night
+	//Night 36
 	ans = make_move(Square(Night + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), I7, 0, PieceType(0), EmptyPiece);
@@ -380,6 +447,8 @@ TEST(movegen, movegen_POS3_black)
 
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
+	EXPECT_EQ(36, array_count(ms));
+	//15
 	ans = make_move(D5, C6, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D5, D6, 0, Silver, EmptyPiece);
@@ -410,7 +479,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H7, I8, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProPawn
+	//ProPawn 10
 	ans = make_move(A3, A4, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(A3, A2, 0, ProPawn, EmptyPiece);
@@ -431,7 +500,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F5, E5, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProLance
+	//ProLance 5
 	ans = make_move(C7, C8, 0, ProLance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C7, D8, 0, ProLance, EmptyPiece);
@@ -442,7 +511,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C7, C6, 0, ProLance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProNight
+	//ProNight 4
 	ans = make_move(E7, D8, 0, ProNight, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E7, E8, 0, ProNight, EmptyPiece);
@@ -451,7 +520,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E7, E6, 0, ProNight, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProSilver
+	//ProSilver 2
 	ans = make_move(I5, H5, 0, ProSilver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I5, I4, 0, ProSilver, EmptyPiece);
@@ -460,6 +529,8 @@ TEST(movegen, movegen_POS3_black)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
+	EXPECT_EQ(16, array_count(ms));
+	//8
 	ans = make_move(B3, B4, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D3, D4, 0, Pawn, Pawn);
@@ -476,7 +547,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H7, I6, 0, King, ProNight);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProPawn
+	//ProPawn 5
 	ans = make_move(A3, B4, 0, ProPawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C1, B2, 0, ProPawn, Horse);
@@ -487,18 +558,20 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F5, G6, 0, ProPawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
-	//PRoNight
+	//PRoNight 2
 	ans = make_move(E7, F8, 0, ProNight, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E7, F7, 0, ProNight, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProSilver
+	//ProSilver 1
 	ans = make_move(I5, I6, 0, ProSilver, ProNight);
 	EXPECT_TRUE(array_check(ans, ms));
 	//Drop
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
+	EXPECT_EQ(253, array_count(ms));
+	//pawn 24
 	ans = make_move(Square(Pawn + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
@@ -547,6 +620,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//lance 43
 	ans = make_move(Square(Lance + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
@@ -633,7 +707,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Night
+	//Night 36
 	ans = make_move(Square(Night + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
@@ -706,7 +780,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Silver
+	//Silver 50
 	ans = make_move(Square(Silver + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -807,7 +881,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Bishop
+	//Bishop 50
 	ans = make_move(Square(Bishop + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -908,7 +982,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Rook
+	//Rook 50
 	ans = make_move(Square(Rook + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -1023,6 +1097,7 @@ TEST(movegen, movegen_POS2_white)
 
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
+	EXPECT_EQ(16, array_count(ms));
 	ans = make_move(I3, I2, 1, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F7, F6, 0, Pawn, EmptyPiece);
@@ -1059,6 +1134,7 @@ TEST(movegen, movegen_POS2_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
+	EXPECT_EQ(12, array_count(ms));
 	ans = make_move(G6, G5, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E4, E3, 1, Pawn, Pawn);
@@ -1087,6 +1163,8 @@ TEST(movegen, movegen_POS2_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
+	EXPECT_EQ(189, array_count(ms));
+	//pawn  8
 	ans = make_move(Square(Pawn + SquareNum - 1), A2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
@@ -1103,6 +1181,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//lance 43
 	ans = make_move(Square(Lance + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
@@ -1189,7 +1268,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Night
+	//Night 34
 	ans = make_move(Square(Night + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
@@ -1258,7 +1337,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Bishop
+	//Bishop 52
 	ans = make_move(Square(Bishop + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
@@ -1363,7 +1442,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Rook
+	//Rook 52
 	ans = make_move(Square(Rook + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
@@ -1481,6 +1560,7 @@ TEST(movegen, movegen_POS2_black)
 
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
+	EXPECT_EQ(14, array_count(ms));
 	ans = make_move(F5, F6, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C7, C8, 1, Lance, EmptyPiece);
@@ -1513,6 +1593,7 @@ TEST(movegen, movegen_POS2_black)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
+	EXPECT_EQ(12, array_count(ms));
 	ans = make_move(B3, B4, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D3, D4, 0, Pawn, Pawn);
@@ -1541,6 +1622,8 @@ TEST(movegen, movegen_POS2_black)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
+	EXPECT_EQ(243, array_count(ms));
+	//Pawn 4
 	ans = make_move(Square(Pawn + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
@@ -1549,6 +1632,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//lance 45
 	ans = make_move(Square(Lance + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
@@ -1639,9 +1723,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
-
-	//Night
+	//Night 38
 	ans = make_move(Square(Night + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
@@ -1718,7 +1800,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Silver
+	//Silver 52
 	ans = make_move(Square(Silver + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -1823,7 +1905,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Bishop
+	//Bishop 52
 	ans = make_move(Square(Bishop + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -1928,7 +2010,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Rook
+	//Rook 52
 	ans = make_move(Square(Rook + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -2046,6 +2128,7 @@ TEST(movegen, movegen_POS1_white)
 	Move ans;
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
+	EXPECT_EQ(40, array_count(ms));
 	ans = make_move(G6, G5, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F7, F6, 0, Pawn, EmptyPiece);
@@ -2130,6 +2213,7 @@ TEST(movegen, movegen_POS1_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
+	EXPECT_EQ(10, array_count(ms));
 	ans = make_move(H4, H3, 1, Lance, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H4, H3, 0, Lance, Pawn);
@@ -2154,6 +2238,7 @@ TEST(movegen, movegen_POS1_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
+	EXPECT_EQ(108, array_count(ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
@@ -2386,6 +2471,7 @@ TEST(movegen, movegen_POS1_black)
 	//Lance,Nightの打つ手、silverの打つ手など
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
+	EXPECT_EQ(32, array_count(ms));		//32
 	ans = make_move(I4, I5, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(G4, G5, 0, Pawn, EmptyPiece);
@@ -2454,6 +2540,7 @@ TEST(movegen, movegen_POS1_black)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
+	EXPECT_EQ(5, array_count(ms));
 	ans = make_move(H3, H4, 0, Pawn, Lance);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(G7, H6, 1, Bishop, Pawn);
@@ -2468,6 +2555,7 @@ TEST(movegen, movegen_POS1_black)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
+	EXPECT_EQ(64, array_count(ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);

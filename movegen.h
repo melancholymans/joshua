@@ -129,7 +129,7 @@ MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position& pos)
 	BitBoard possible_bb = pos.attackers_from_king(ksq) & (pos.inver_bit_bb() | pos.color_of_bb(them));	//inver_bit_bbは現在の局面で空いている座標のbit_boardを返す | 相手の駒のbitboardのbit or
 	while (possible_bb.is_not_zero()){
 		to = possible_bb.first_one();
-		if (!pos.attackers_to(them, ksq, pos.all_bb()).is_not_zero()){
+		if (!pos.attackers_to(them, to, pos.all_bb()).is_not_zero()){
 			(*ml++).move = make_move(ksq, Square(to), 0, King, type_of_piece(Piece(pos.get_board(to))));
 		}
 	}
@@ -137,21 +137,22 @@ MoveStack* MoveGeneratens::generate_evasions(MoveStack* ml, const Position& pos)
 	if (checker_num > 1){
 		return ml;
 	}
-	BitBoard tar = checker_bb | make_between_bb(check_sq,ksq);
-	ml = generate_pawn_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_lance_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_night_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_silver_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_bishop_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_rook_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_gold_moves<Evasion, US, false>(ml, pos, tar, ksq);	//ProPawn,ProLance,ProNight,ProSilverもここで生成
-	ml = generate_king_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_horse_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_dragon_moves<Evasion, US, false>(ml, pos, tar, ksq);
-	ml = generate_pawn_drop<US>(ml, pos, tar, ksq);
-	ml = generate_lance_drop<US>(ml, pos, tar, ksq);
-	ml = generate_night_drop<US>(ml, pos, tar, ksq);
-	ml = generate_silver_gold_bishop_rook_drop<US>(ml, pos, tar, ksq);
+
+	BitBoard tar1 = make_between_bb(check_sq, ksq);
+	BitBoard tar2 = checker_bb | tar1;
+	ml = generate_pawn_drop<US>(ml, pos, tar1, ksq);
+	ml = generate_lance_drop<US>(ml, pos, tar1, ksq);
+	ml = generate_night_drop<US>(ml, pos, tar1, ksq);
+	ml = generate_silver_gold_bishop_rook_drop<US>(ml, pos, tar1, ksq);
+	ml = generate_pawn_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_lance_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_night_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_silver_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_bishop_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_rook_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_gold_moves<Evasion, US, false>(ml, pos, tar2, ksq);	//ProPawn,ProLance,ProNight,ProSilverもここで生成
+	ml = generate_horse_moves<Evasion, US, false>(ml, pos, tar2, ksq);
+	ml = generate_dragon_moves<Evasion, US, false>(ml, pos, tar2, ksq);
 	return ml;
 }
 
@@ -265,7 +266,7 @@ MoveStack* MoveGeneratens::generate_night_moves(MoveStack* ml, const Position& p
 			if (is_infront_rank(US, Rank6, to_rank)){
 				(*ml++).move = make_move(from, to, 1, Night, type_of_piece(Piece(pos.get_board(to))));
 			}
-			if (to_rank != rank8 || to_rank != 9){
+			if (to_rank != rank8 && to_rank != rank9){
 				(*ml++).move = make_move(from, to, 0, Night, type_of_piece(Piece(pos.get_board(to))));
 			}
 		}
