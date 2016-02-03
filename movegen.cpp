@@ -449,14 +449,15 @@ TEST(movegen, movegen_POS3_black)
 
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
-	EXPECT_EQ(36, array_count(ms));
-	//15
+	EXPECT_EQ(42, array_count(ms));
+	//Silver 3
 	ans = make_move(D5, C6, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D5, D6, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D5, E6, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//gold 9
 	ans = make_move(C5, B5, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C5, B6, 0, Gold, EmptyPiece);
@@ -475,13 +476,20 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B8, C8, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(H7, G8, 0, King, EmptyPiece);
+	//king 6
+	ans = make_move(H7, I8, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H7, I7, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H7, H8, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(H7, I8, 0, King, EmptyPiece);
+	ans = make_move(H7, H6, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProPawn 10
+	ans = make_move(H7, G8, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H7, G7, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//ProPawn 12
 	ans = make_move(A3, A4, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(A3, A2, 0, ProPawn, EmptyPiece);
@@ -501,6 +509,10 @@ TEST(movegen, movegen_POS3_black)
 	ans = make_move(F5, E6, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(F5, E5, 0, ProPawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F5, F4, 0, ProPawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(F5, F6, 0, ProPawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	//ProLance 5
 	ans = make_move(C7, C8, 0, ProLance, EmptyPiece);
@@ -522,11 +534,14 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E7, E6, 0, ProNight, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//ProSilver 2
+	//ProSilver 3
 	ans = make_move(I5, H5, 0, ProSilver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(I5, I4, 0, ProSilver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(I5, H6, 0, ProSilver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
 	//Capture ALL=false
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
