@@ -54,7 +54,6 @@ TEST(movegen, generate_evasions)
 	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
 	int index = 0;
 
-	print_board(pos);
 	pos.do_move(make_move(Square(Bishop + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece), st_stack[index]);
 	ml = generate_moves<Evasion>(ml, pos);
 	EXPECT_EQ(13, array_count(ms));
@@ -773,7 +772,7 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), F1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(Square(Night + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
+	ans = make_move(Square(Night + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1120,7 +1119,7 @@ TEST(movegen, movegen_POS2_white)
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
 	Move ans;
-
+	print_board(pos);
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
 	EXPECT_EQ(17, array_count(ms));
@@ -1165,7 +1164,8 @@ TEST(movegen, movegen_POS2_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
-	EXPECT_EQ(12, array_count(ms));
+	EXPECT_EQ(14, array_count(ms));
+	//pawn 5
 	ans = make_move(G6, G5, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(E4, E3, 1, Pawn, Pawn);
@@ -1176,14 +1176,21 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B4, B3, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B4, B3, 1, Pawn, Pawn);
+	EXPECT_TRUE(array_check(ans, ms));
+	//silver 4
 	ans = make_move(C9, B8, 0, Silver, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D6, C5, 0, Silver, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D6, C7, 0, Silver, Lance);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(D6, E7, 0, Silver, Night);
+	EXPECT_TRUE(array_check(ans, ms));
+	//gold 1
 	ans = make_move(F8, E7, 0, Gold, Night);
 	EXPECT_TRUE(array_check(ans, ms));
+	//king 3
 	ans = make_move(C3, D3, 0, King, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C3, B3, 0, King, Pawn);
@@ -1194,11 +1201,9 @@ TEST(movegen, movegen_POS2_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
-	EXPECT_EQ(189, array_count(ms));
-	//pawn  8
+	EXPECT_EQ(198, array_count(ms));
+	//pawn  13
 	ans = make_move(Square(Pawn + SquareNum - 1), A2, 0, PieceType(0), EmptyPiece);
-	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(Square(Pawn + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1212,7 +1217,19 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//lance 43
+	ans = make_move(Square(Pawn + SquareNum - 1), H2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//lance 44
 	ans = make_move(Square(Lance + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
@@ -1238,6 +1255,8 @@ TEST(movegen, movegen_POS2_white)
 	ans = make_move(Square(Lance + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1299,7 +1318,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Night 34
+	//Night 35
 	ans = make_move(Square(Night + SquareNum - 1), I4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
@@ -1319,6 +1338,8 @@ TEST(movegen, movegen_POS2_white)
 	ans = make_move(Square(Night + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1368,7 +1389,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Bishop 52
+	//Bishop 53
 	ans = make_move(Square(Bishop + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
@@ -1400,6 +1421,8 @@ TEST(movegen, movegen_POS2_white)
 	ans = make_move(Square(Bishop + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1473,7 +1496,7 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Rook 52
+	//Rook 53
 	ans = make_move(Square(Rook + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
@@ -1505,6 +1528,8 @@ TEST(movegen, movegen_POS2_white)
 	ans = make_move(Square(Rook + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Rook + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1591,17 +1616,24 @@ TEST(movegen, movegen_POS2_black)
 
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
-	EXPECT_EQ(14, array_count(ms));
+	EXPECT_EQ(16, array_count(ms));
+	//pawn 2
 	ans = make_move(F5, F6, 0, Pawn, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A4, A5, 0, Pawn, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//lance 2
 	ans = make_move(C7, C8, 1, Lance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C7, C8, 0, Lance, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//night 1
 	ans = make_move(E7, D9, 1, Night, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//silver 1
 	ans = make_move(I5, H4, 0, Silver, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//gold 8
 	ans = make_move(C5, B6, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C5, B5, 0, Gold, EmptyPiece);
@@ -1618,13 +1650,17 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(B8, B7, 0, Gold, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//king 2
 	ans = make_move(H6, H7, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(H6, G7, 0, King, EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	//Capture ALL=false
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Capture>(ml, pos);
-	EXPECT_EQ(12, array_count(ms));
+	EXPECT_EQ(13, array_count(ms));
+	//pawn 4
 	ans = make_move(B3, B4, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(D3, D4, 0, Pawn, Pawn);
@@ -1633,16 +1669,23 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(G5, G6, 0, Pawn, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
+	//lance 1
 	ans = make_move(C7, C9, 1, Lance, Silver);
 	EXPECT_TRUE(array_check(ans, ms));
+	//night 1
 	ans = make_move(E7, F9, 1, Night, Gold);
 	EXPECT_TRUE(array_check(ans, ms));
+	//silver 1
 	ans = make_move(I5, I6, 0, Silver, Night);
 	EXPECT_TRUE(array_check(ans, ms));
+	//gold 3
 	ans = make_move(C5, C6, 0, Gold, Pawn);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(C5, D6, 0, Gold, Silver);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B8, C9, 0, Gold, Silver);
+	EXPECT_TRUE(array_check(ans, ms));
+	//king 3
 	ans = make_move(H6, G6, 0, King, Pawn);	
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(H6, I6, 0, King, Night);	//本当は合法手ではない
@@ -1653,7 +1696,7 @@ TEST(movegen, movegen_POS2_black)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
-	EXPECT_EQ(243, array_count(ms));
+	EXPECT_EQ(248, array_count(ms));
 	//Pawn 4
 	ans = make_move(Square(Pawn + SquareNum - 1), I8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -1663,7 +1706,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//lance 45
+	//lance 46
 	ans = make_move(Square(Lance + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
@@ -1726,6 +1769,8 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
@@ -1754,7 +1799,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Night 38
+	//Night 39
 	ans = make_move(Square(Night + SquareNum - 1), A7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
@@ -1807,6 +1852,8 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), F1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
@@ -1831,7 +1878,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Silver 52
+	//Silver 53
 	ans = make_move(Square(Silver + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -1904,6 +1951,8 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
@@ -1936,7 +1985,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Bishop 52
+	//Bishop 53
 	ans = make_move(Square(Bishop + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -2009,6 +2058,8 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), G3, 0, PieceType(0), EmptyPiece);
@@ -2041,7 +2092,7 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	//Rook 52
+	//Rook 53
 	ans = make_move(Square(Rook + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), A8, 0, PieceType(0), EmptyPiece);
@@ -2113,6 +2164,8 @@ TEST(movegen, movegen_POS2_black)
 	ans = make_move(Square(Rook + SquareNum - 1), G9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), G8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Rook + SquareNum - 1), G7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), G4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -2269,7 +2322,8 @@ TEST(movegen, movegen_POS1_white)
 	memset(ms, 0, sizeof(ms));
 	ml = ms;	//初期化
 	ml = generate_moves<Drop>(ml, pos);
-	EXPECT_EQ(108, array_count(ms));
+	EXPECT_EQ(115, array_count(ms));
+	//pawn13
 	ans = make_move(Square(Pawn + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
@@ -2280,7 +2334,7 @@ TEST(movegen, movegen_POS1_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(Square(Pawn + SquareNum - 1), E1, 0, PieceType(0), EmptyPiece);
+	ans = make_move(Square(Pawn + SquareNum - 1), E1, 0, PieceType(0), EmptyPiece);	//ここはFALSEなのでPAWN生成数は13
 	EXPECT_FALSE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), E2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -2298,6 +2352,7 @@ TEST(movegen, movegen_POS1_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), B9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//silver 51
 	ans = make_move(Square(Silver + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
@@ -2314,7 +2369,7 @@ TEST(movegen, movegen_POS1_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-	ans = make_move(Square(Silver + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	ans = make_move(Square(Silver + SquareNum - 1), H9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), G1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -2337,6 +2392,14 @@ TEST(movegen, movegen_POS1_white)
 	ans = make_move(Square(Silver + SquareNum - 1), F6, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), F9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), E1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), E2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), E5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), E7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), D1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
@@ -2392,6 +2455,7 @@ TEST(movegen, movegen_POS1_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Silver + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	//gold 51
 	ans = make_move(Square(Gold + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Gold + SquareNum - 1), I5, 0, PieceType(0), EmptyPiece);
@@ -2431,6 +2495,14 @@ TEST(movegen, movegen_POS1_white)
 	ans = make_move(Square(Gold + SquareNum - 1), F6, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Gold + SquareNum - 1), F9, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E1, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), E7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Gold + SquareNum - 1), D1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
