@@ -40,7 +40,373 @@ int array_count(MoveStack *m)
 	}
 	return count;
 }
-TEST(movegen, generate_evasions)
+TEST(movegen, generate_evasions_POS39_white)
+{
+	//問題局面=受けとしのぎNo39
+	using namespace MoveGeneratens;
+	string ss("1g3l2l/2+B6/k2p5/2pP3p1/1p1g1p1n1/N1s1psPNp/6pP1/R2+n1P1K1/5SG1L b Brgsl6p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(A4, B6, 0, Night, EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(21, array_count(ms));
+	//move
+	ans = make_move(A7, B6, 0, King, Night);
+	EXPECT_TRUE(array_check(ans, ms));
+	//drop
+	ans = make_move(Square(Rook + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Rook + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Rook + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Rook + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+
+}
+TEST(movegen, generate_evasions_POS37_black)
+{
+	//問題局面=受けとしのぎNo37
+	using namespace MoveGeneratens;
+	string ss("7nl/2g2Gsk1/+P3pPpp1/2pp4P/1p2PpSN1/2PS3P1/1P2+p4/K1b6/LRB5L w GSN3Prgnl 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(Square(Lance + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(10, array_count(ms));
+	//move
+	ans = make_move(A2, B2, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C1, A3, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//drop
+	ans = make_move(Square(Gold + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), A3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS35_white)
+{
+	//問題局面=受けとしのぎNo35
+	using namespace MoveGeneratens;
+	string ss("l3gB1nl/7kp/4PP3/2p2ps1P/3ps1P1+R/pPP2GN2/2N3N2/P2+p+p4/LKG6 b S3Prbgslp 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(I5, H6, 0, Dragon, EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(8, array_count(ms));
+	//move
+	ans = make_move(H8, G9, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G6, H7, 0, Silver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//drop
+	ans = make_move(Square(Rook + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS33_black)
+{
+	//問題局面=受けとしのぎNo33
+	using namespace MoveGeneratens;
+	string ss("1n4kn1/4+S1g1G/l3G1p1l/p4psp1/4P3p/Pp1PS1P2/4b4/1PKp1+r3/LN6L w BGSN2Pr4p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(Square(Rook + SquareNum - 1), C4, 0, PieceType(0), EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(7+1, array_count(ms));	//TODO:King C2-C1は非合法手であるが現時点で検出できないので放置
+	//move
+	ans = make_move(C2, D3, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B1, C3, 0, Night, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//drop
+	ans = make_move(Square(Bishop + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS31_white)
+{
+	//問題局面=受けとしのぎNo31
+	using namespace MoveGeneratens;
+	string ss("l5k2/4p1l2/4g4/p2p2p+Bp/2P2R1p1/1np+b2P1P/PP1+rP2+n1/2G4P1/LNK1G4 b 2S2Pg2snl2p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(H6, I7, 0, Horse, EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(6, array_count(ms));
+	//move
+	ans = make_move(G9, H9, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(D4, H8, 0, Horse, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//drop
+	ans = make_move(Square(Gold + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS29_black)
+{
+	//問題局面=受けとしのぎNo29
+	using namespace MoveGeneratens;
+	string ss("4+R1sn1/4G1kp+P/2P2g2l/2p2bpS1/pPsPPp1Pp/3p+r1P2/NS1g2B2/PK7/L1L5L w GNPn2p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(E4, E2, 0, Dragon, EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(7, array_count(ms));
+	//move
+	ans = make_move(B2, B1, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(B3, C2, 0, Silver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C1, C2, 0, Lance, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Drop
+	ans = make_move(Square(Gold + SquareNum - 1), C2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), C2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS27_white)
+{
+	//問題局面=受けとしのぎNo27　
+	//本来black局面であるが手番反転してwhite側手番でテストしている
+	using namespace MoveGeneratens;
+	string ss("l4G1n1/6pkl/6s1p/2p1p4/pp1PbpN2/2Sp2s1P/PPP6/1KGg5/LN2+r3L b RS3Pbgn2p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(Square(Rook + SquareNum - 1), H4, 0, PieceType(0), EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(15, array_count(ms));
+	//move
+	ans = make_move(H8, I9, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G7, H6, 0, Silver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(G4, H5, 0, Silver, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Drop
+	ans = make_move(Square(Bishop + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), H6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), H5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), H5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night+ SquareNum - 1), H6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), H5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H6, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), H5, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS25_black)
+{
+	//問題局面=受けとしのぎNo25　D5->C4竜移動前の局面を現している
+	using namespace MoveGeneratens;
+	string ss("6snl/+P4gk2/4+P1p2/1P3+B1P1/BN1+rp1Npp/p2P1PP2/4Rp3/N1K2g3/L1s5L w G2SL2Pg3p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+
+	pos.do_move(make_move(D5, C4, 0, Dragon, EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(8+1, array_count(ms));	//TODO:King C2->C1は非合法手であるが検出する仕組みがないので放置
+	ans = make_move(C2, B1, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(C2, D1, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(A5, C3, 0, Bishop, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(E3, C3, 0, Rook, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//Drop
+	ans = make_move(Square(Gold + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Silver + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS23_white)
+{
+	//問題局面=受けとしのぎNo23　91飛車を打つ前の局面を現している
+	//本来black局面であるが手番反転してwhite側手番でテストしている
+
+	using namespace MoveGeneratens;
+	string ss("l6n1/6+P+L1/2np1p3/p3psS2/1pPPP1P1g/2GS1+B1pk/PKN+r1P3/3+p5/L4+s3 b RGbgnl4p 1");
+	Position pos(ss);
+	MoveStack ms[512];
+	memset(ms, 0, sizeof(ms));
+	MoveStack* ml = ms;
+	Move ans;
+	using std::array;
+	array<StateInfo, 80> st_stack;		//stack代わりのメモリ
+	int index = 0;
+	
+	pos.do_move(make_move(Square(Rook + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece), st_stack[index]);
+	ml = generate_moves<Evasion>(ml, pos);
+	EXPECT_EQ(10, array_count(ms));
+	ans = make_move(I4, H3, 0, King, EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	//drop 
+	ans = make_move(Square(Bishop + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Bishop + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Gold + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Night + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Lance + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), I3, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+	ans = make_move(Square(Pawn + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
+	EXPECT_TRUE(array_check(ans, ms));
+}
+TEST(movegen, generate_evasions_POS21_black)
 {
 	/*問題局面=受けとしのぎNo21　66角を打つ前の局面を現している*/
 	using namespace MoveGeneratens;
@@ -1119,7 +1485,7 @@ TEST(movegen, movegen_POS2_white)
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
 	Move ans;
-	print_board(pos);
+
 	//NonCapture ALL=false
 	ml = generate_moves<NonCapture>(ml, pos);
 	EXPECT_EQ(17, array_count(ms));
