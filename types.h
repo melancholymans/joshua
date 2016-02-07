@@ -172,7 +172,7 @@ inline Square make_square(File f, Rank r)
 //駒がbase_rankより進行方向側にいるならtrue,base_rank自体は含まない。
 inline bool is_infront_rank(Color c, Rank base_rank, Rank tar_rank)
 {
-	return c == Black ? (tar_rank < base_rank) : (tar_rank > (8 - base_rank));
+	return c == Black ? (tar_rank < base_rank) : (tar_rank > base_rank);
 }
 //引数のカラーをひっくり返す
 inline Color over_turn(Color c)

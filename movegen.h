@@ -217,6 +217,7 @@ MoveStack* MoveGeneratens::generate_lance_moves(MoveStack* ml, const Position& p
 	auto make_move_lance = [&pos,&from,&tar,&ml](const int part)
 	{
 		const Rank rank9 = (US == Black) ? Rank9 : Rank1;
+		const Rank rank6 = (US == Black) ? Rank6 : Rank4;
 		BitBoard to_bb;
 
 		to_bb.set_p(part, pos.attackers_from_lance(US, from, pos.all_bb()).p(part) & tar.p(part));
@@ -224,7 +225,7 @@ MoveStack* MoveGeneratens::generate_lance_moves(MoveStack* ml, const Position& p
 			const Square to = (0 == part) ? to_bb.first_one_right() : to_bb.first_one_left();
 			const Rank to_rank = make_rank(to);
 			//移動座標のランクがthem陣地内(7段目含む）のときの成り、不成の場合分け
-			if (is_infront_rank(US, Rank6, to_rank)){
+			if (is_infront_rank(US, rank6, to_rank)){
 				(*ml++).move = make_move(from, to, 1, Lance, type_of_piece(Piece(pos.get_board(to))));
 				if (to_rank != rank9){
 					(*ml++).move = make_move(from, to, 0, Lance, type_of_piece(Piece(pos.get_board(to))));
@@ -254,6 +255,7 @@ MoveStack* MoveGeneratens::generate_night_moves(MoveStack* ml, const Position& p
 {
 	const Rank rank8 = (US == Black) ? Rank8 : Rank2;
 	const Rank rank9 = (US == Black) ? Rank9 : Rank1;
+	const Rank rank6 = (US == Black) ? Rank6 : Rank4;
 	BitBoard from_bb = pos.color_type_of_bb(US, Night);
 
 	while (from_bb.is_not_zero()){
@@ -263,7 +265,7 @@ MoveStack* MoveGeneratens::generate_night_moves(MoveStack* ml, const Position& p
 			const Square to = to_bb.first_one();
 			const Rank to_rank = make_rank(to);
 			//移動座標のランクがthem陣地内(7段目は含む）のときの成り、不成の場合分け
-			if (is_infront_rank(US, Rank6, to_rank)){
+			if (is_infront_rank(US, rank6, to_rank)){
 				(*ml++).move = make_move(from, to, 1, Night, type_of_piece(Piece(pos.get_board(to))));
 			}
 			if (to_rank != rank8 && to_rank != rank9){
