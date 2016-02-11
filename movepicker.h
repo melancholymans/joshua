@@ -1,6 +1,6 @@
 #if !defined(MOVEPICKER_H_INCLUDE)
 #define MOVEPICKER_H_INCLUDE
-
+#include <array>
 #include "move.h"
 #include "position.h"
 
@@ -51,22 +51,12 @@ public:
 	}
 private:
 	void go_next_phase();
-	MoveStack* get_first_move()
-	{
-		return &lega_moves[1];
-	}
-	MoveStack* get_curr_move()
-	{
-		return curr_move;
-	}
-	MoveStack* get_last_move()
-	{
-		return last_move;
-	}
-	int phase;
-	MoveStack* curr_move;
-	MoveStack* last_move;
-	MoveStack lega_moves[MAX_LEGAL_MOVE];
+	MoveStack* m_first_move;
+	MoveStack* m_last_move;
+	MoveStack* m_current_move;
+
+	int m_phase;
+	MoveStack m_legal_moves[MAX_LEGAL_MOVE];
 	const Position& m_pos;
 };
 #endif

@@ -7,42 +7,42 @@
 using MoveGeneratens::generate_moves;
 
 MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
-{
-	
-	lega_moves[0].score = INT_MAX;	//番兵
-	curr_move = last_move = get_first_move();
+{	
+	m_current_move = m_last_move = m_legal_moves;
 	//あといろいろ設定してあるがわからない
 	if (pos.checker_bb().is_not_zero()){
-		phase = EvasionSearch;
+		m_phase = EvasionSearch;
 	}
 	else{
-		phase = MainSearch;
+		m_phase = MainSearch;
 	}
 	//killerMoveがあるがパス
 	//わからない処理
 	//置換表の手の処理らしきもあり、パス
-	
 }
 
 //MovePikerは全部で３つコンストラクタがあるがパス
 
 void MovePicker::go_next_phase()
 {
-	curr_move = get_first_move();
+	m_current_move = m_legal_moves;
 	Color us = m_pos.get_color_turn();
-	phase++;
-	switch (phase){
+	m_phase++;
+	switch (m_phase){
 	case PhTacticalMove0: case PhTacticalMove1:
-		last_move = generate_moves<Capture>(curr_move, m_pos);
+		m_last_move = generate_moves<Capture>(m_current_move, m_pos);
+		//ここにscroeCaptures関数があるがまだ実装できていないのでPASS
 		return;
 	case PhKiller:
 		//killerの準備ができていないのでreturnするだけ
 		return;
 	case PhNonTactionMove0:
-		//last_move = generate_moves<Capture,>(curr_move, m_pos);
-		//curr_move = last_move;
-		//last_move = generate_moves(curr_move, m_pos);
-		//curr_move = get_first_move();
+		m_last_move = generate_moves<NonCapture>(m_current_move, m_pos);
+		//scro関係の関数があるが実装していないのでPASS
+		m_current_move = m_last_move;
+		m_last_move = generate_moves<Drop>(m_current_move, m_pos);
+		//scro関係の関数があるが実装していないのでPASS
+		m_current_move = m_first_move;
 		////std::partionアルゴリズムをつかったなにかがある
 		//insertion_sort(curr_move, last_move);
 		return;
