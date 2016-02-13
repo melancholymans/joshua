@@ -19,14 +19,14 @@ MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
 	//killerMoveがあるがパス
 	//わからない処理
 	//置換表の手の処理らしきもあり、パス
+	m_ttmove = MoveNone;
 }
 
-//MovePikerは全部で３つコンストラクタがあるがパス
+//MovePikerは全部で３つコンストラクタがあるがとりあえずは１つだけ作る
 
 void MovePicker::go_next_phase()
 {
 	m_current_move = m_legal_moves;
-	Color us = m_pos.get_color_turn();
 	m_phase++;
 	switch (m_phase){
 	case PhTacticalMove0: case PhTacticalMove1:
@@ -47,50 +47,80 @@ void MovePicker::go_next_phase()
 		//insertion_sort(curr_move, last_move);
 		return;
 	case PhNonTactionMove1:
-		curr_move = last_move;
 		//わからない操作
 		return;
 	case PhBadCapture:
-		curr_move = lega_moves + MAX_LEGAL_MOVE - 1;
 		//わからない操作
 		return;
 	case PhEvasion:case PhQEvasion:
-		//last_move = generate_moves(curr_move, m_pos);
+		m_last_move = generate_moves<Evasion>(m_current_move, m_pos);
 		//わからない操作
 		return;
 	case PhQCapture0:
-		//last_move = generate_moves(curr_move, m_pos);
 		//わからない操作
 		return;
 	case PhQCapture1:
-		//last_move = generate_moves(curr_move, m_pos);
 		//わからない操作
 		return;
 	case EvasionSearch:case QSearch:case QEvasionSearch:case QRecapture:case ProCut:
-		phase = PhStop;
+		m_phase = PhStop;
 	case PhStop:
-		last_move = curr_move + 1;
+		m_last_move = m_current_move + 1;
 		return;
 	default:
 		_ASSERT(false);
 	}
-	/**/
 }
 
 Move MovePicker::next_move()
 {
-	
+	MoveStack* ms;
+	Move move;
+
 	do{
-		while (curr_move == last_move){
+		while (m_current_move == m_last_move){
 			go_next_phase();
 		}
-		switch (phase){
-		case MainSearch: case EvasionSearch:
-			curr_move++;
+		switch (m_phase){
+		case MainSearch: case EvasionSearch: case QSearch: case QEvasionSearch: case ProCut:
+			m_current_move++;
+			return m_ttmove;
+		case PhTacticalMove0:
+			ms = pick_best(m_current_move++, m_last_move);
+			//いろいろと処理があるが実装できていないのでパス
+			return ms->move;
+			break;
+		case PhKiller:
+			//実装できていないのでパス
+			break;
+		case PhNonTactionMove0: case PhNonTactionMove1:
+			move = (m_current_move++)->move;
+			//いろいろ条件があるがパス
+			return move;
+			break;
+		case PhBadCapture:
+			//いろいろあるがいまのところはこれ
+			return MoveNone;
+		case PhEvasion: case PhQEvasion: case PhQCapture0:
+			move = pick_best(m_current_move++, m_last_move)->move;
+			return move;
+			break;
+		case PhTacticalMove1:
+			ms = pick_best(m_current_move++, m_last_move);
+			//いろいろ処理しているが今はパス
+			return ms->move;
+			break;
+		case PhQCapture1:
+			move = pick_best(m_current_move++, m_last_move)->move;
+			return move;
+		case PhStop:
+			return MoveNone;
 		default:
 			_ASSERT(false);
 		}
-	} while (true);
-	
-	return static_cast<Move>(0);
+	} while (true);	
+}
+
+TEST(movepicker, movepicker)
+{
 }

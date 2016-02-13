@@ -58,5 +58,11 @@ private:
 	int m_phase;
 	MoveStack m_legal_moves[MAX_LEGAL_MOVE];
 	const Position& m_pos;
+	Move m_ttmove;	//’uŠ·•\‚©‚ç‚ÌŽw‚µŽè
 };
+inline MoveStack* pick_best(MoveStack* current_move, MoveStack* last_move)
+{
+	std::swap(*current_move, *std::max_element(current_move, last_move));
+	return current_move;
+}
 #endif

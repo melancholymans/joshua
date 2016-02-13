@@ -128,7 +128,7 @@ struct MoveStack{
 	Move move;
 	int score;
 };
-
+const Move MoveNone = 0;
 //駒コードから駒種を取り出す
 inline PieceType type_of_piece(Piece piece)
 {
