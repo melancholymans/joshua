@@ -148,6 +148,7 @@ string Movens::string_from_move_apery_format(const Move m)
 	else{
 		//盤上
 		result = string_from_square_apery_format(from) + string_from_square_apery_format(to);
+		result += piece_string[move_piece(m)];
 		if (pmoto){
 			result += "+";
 		}
@@ -161,15 +162,15 @@ TEST(move, string_from_move_apery_format)
 	Move m;
 
 	m = make_move(A3, A4, 0, Pawn, EmptyPiece);
-	EXPECT_STREQ("A3A4", string_from_move_apery_format(m).c_str());
+	EXPECT_STREQ("A3A4P", string_from_move_apery_format(m).c_str());
 	m = make_move(C4, D6, 0, Night, EmptyPiece);
-	EXPECT_STREQ("C4D6", string_from_move_apery_format(m).c_str());
+	EXPECT_STREQ("C4D6N", string_from_move_apery_format(m).c_str());
 	m = make_move(B8, G8, 0, Rook, EmptyPiece);
-	EXPECT_STREQ("B8G8", string_from_move_apery_format(m).c_str());
+	EXPECT_STREQ("B8G8R", string_from_move_apery_format(m).c_str());
 	m = make_move(drop_piece_from(Rook), E5, 0, EmptyPiece, EmptyPiece);
 	EXPECT_STREQ("R*E5", string_from_move_apery_format(m).c_str());
 	m = make_move(B8, B2, 1, Rook, EmptyPiece);
-	EXPECT_STREQ("B8B2+", string_from_move_apery_format(m).c_str());
+	EXPECT_STREQ("B8B2R+", string_from_move_apery_format(m).c_str());
 }
 TEST(move, string_from_move)
 {
