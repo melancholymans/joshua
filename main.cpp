@@ -182,19 +182,19 @@ TEST(mt64bit, mt64bit)
 {
 	//mt64bitはヘッダだけなのでmain.cppでテスト(動作確認)
 	//http://elephnote.com/blog/archives/768 このライブラリの使い方
-	cout << "seed固定でいつも同じ乱数を返してくれる" << endl;
+	//cout << "seed固定でいつも同じ乱数を返してくれる" << endl;
 	
 	MT64bit r;
 	for (int i = 0; i < 10; i++){
-		cout << r.random() << endl;
+		//cout << r.random() << endl;
 	}
 	//cppref.githubのサンプルコード、random_deviceは予測不可能な乱数を生成してくれるクラス、擬似乱数生成エンジンのシードとして使用される
-	cout << "seed変動でいつも違う乱数を返してくれる" << endl;
+	//cout << "seed変動でいつも違う乱数を返してくれる" << endl;
 	std::random_device seed_gen;
 	std::mt19937_64 engine(seed_gen());
 	for (int i = 0; i < 10; i++){
 		uint64_t result = engine();
-		cout << result << endl;
+		//cout << result << endl;
 	}
 }
 
