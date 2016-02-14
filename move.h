@@ -67,5 +67,6 @@ namespace Movens{
 	Move move_from_string(const Position &pos, const string &cmd);
 	string string_from_move(const Move m);
 	Square square_from_string(const string sq);
+	string string_from_move_apery_format(const Move m);
 }
 #endif
