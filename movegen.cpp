@@ -17,8 +17,9 @@ CapturePlusPro,		//Capture+歩香桂飛角（金銀王以外）で取る手＋�
 NonCaptureMinusPro,	//NonCapture-歩香桂飛角を取らない成る手-香の３段目への駒をとらない不成(移動不可の打ち駒は禁じ手ではあるがそれ以上移動不可能な進む手は禁じ手と明示してある資料がない）
 */
 
+#ifdef _DEBUG
 //TESTのためのヘルパー関数
-bool array_check(Move anser, MoveStack *m)
+static bool array_check(Move anser, MoveStack *m)
 {
 	for (int i=0; i < 512; i++){
 		if (m++->move == anser){
@@ -29,7 +30,7 @@ bool array_check(Move anser, MoveStack *m)
 }
 //ms[512]を直前にゼロクリアすることを利用してどれくらい
 //データを積み上げたかカウントアップする。
-int array_count(MoveStack *m)
+static int array_count(MoveStack *m)
 {
 	int count = 0;
 	for (int i = 0; i < 512; i++){
@@ -3154,5 +3155,5 @@ TEST(movegen, movegen_POS1_black)
 	ans = make_move(Square(Gold + SquareNum - 1), A1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
 }
-
+#endif
 

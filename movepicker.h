@@ -1,6 +1,8 @@
 #if !defined(MOVEPICKER_H_INCLUDE)
 #define MOVEPICKER_H_INCLUDE
 #include <array>
+#include <algorithm>
+#include <utility>
 #include "move.h"
 #include "position.h"
 
@@ -60,6 +62,11 @@ private:
 	const Position& m_pos;
 	Move m_ttmove;	//置換表からの指し手
 };
+/*
+pick_best関数で必要
+*/
+inline bool operator < (const MoveStack& f, const MoveStack& s) { return f.score < s.score; }
+inline bool operator > (const MoveStack& f, const MoveStack& s) { return f.score > s.score; }
 inline MoveStack* pick_best(MoveStack* current_move, MoveStack* last_move)
 {
 	std::swap(*current_move, *std::max_element(current_move, last_move));
