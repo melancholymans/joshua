@@ -116,9 +116,61 @@ static string string_from_square(Square sq)
 	row = sq - col * 9;
     return col_string.substr(col,1) + row_string.substr(row,1);
 }
+//Moveをaperyの指し手文字列に変換
 
+//apery座標を将棋所表記の座標文字列に変換
+static string string_from_square_apery_format(Square sq)
+{
+	int row, col;
+	string col_string = "IHGFEDCBA";
+	string row_string = "987654321";
+
+	col = sq / 9;
+	row = sq - col * 9;
+	return col_string.substr(col, 1) + row_string.substr(row, 1);
+}
+
+string Movens::string_from_move_apery_format(const Move m)
+{
+	string piece_string(" PLNSBRG");
+	Square from = move_from(m);
+	Square to = move_to(m);
+	PieceType piece = move_piece(m);
+	PieceType cap_piece = move_cap_piece(m);
+	bool pmoto = is_pmoto(m);
+	string result = "";
+
+	if (from > (SquareNum - 1)){
+		//打つ手
+		result = piece_string[drop_piece(m)];
+		result += "*" + string_from_square_apery_format(to);
+	}
+	else{
+		//盤上
+		result = string_from_square_apery_format(from) + string_from_square_apery_format(to);
+		if (pmoto){
+			result += "+";
+		}
+	}
+	return result;
+}
 
 #ifdef _DEBUG
+TEST(move, string_from_move_apery_format)
+{
+	Move m;
+
+	m = make_move(A3, A4, 0, Pawn, EmptyPiece);
+	EXPECT_STREQ("A3A4", string_from_move_apery_format(m).c_str());
+	m = make_move(C4, D6, 0, Night, EmptyPiece);
+	EXPECT_STREQ("C4D6", string_from_move_apery_format(m).c_str());
+	m = make_move(B8, G8, 0, Rook, EmptyPiece);
+	EXPECT_STREQ("B8G8", string_from_move_apery_format(m).c_str());
+	m = make_move(drop_piece_from(Rook), E5, 0, EmptyPiece, EmptyPiece);
+	EXPECT_STREQ("R*E5", string_from_move_apery_format(m).c_str());
+	m = make_move(B8, B2, 1, Rook, EmptyPiece);
+	EXPECT_STREQ("B8B2+", string_from_move_apery_format(m).c_str());
+}
 TEST(move, string_from_move)
 {
 	Move m;
