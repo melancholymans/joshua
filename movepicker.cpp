@@ -1,4 +1,8 @@
-#include <array>	//generate_evasions TEST‚Ì‚½‚ß
+#ifdef _DEBUG
+	#include <array>	//generate_evasions TEST‚Ì‚½‚ß
+	#include <vector>   //generate_evasions TEST‚Ì‚½‚ß
+	#include <algorithm>
+#endif
 #include "movegen.h"
 #include "movepicker.h"
 #include "move.h"
@@ -10,7 +14,7 @@ using MoveGeneratens::generate_moves;
 
 MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)
 {	
-	m_current_move = m_last_move = m_legal_moves;
+	m_first_move = m_current_move = m_last_move = m_legal_moves;
 	//‚ ‚Æ‚¢‚ë‚¢‚ëİ’è‚µ‚Ä‚ ‚é‚ª‚í‚©‚ç‚È‚¢
 	if (pos.checker_bb().is_not_zero()){
 		m_phase = EvasionSearch;
@@ -36,8 +40,11 @@ void MovePicker::go_next_phase()
 		//‚±‚±‚ÉscroeCapturesŠÖ”‚ª‚ ‚é‚ª‚Ü‚¾À‘•‚Å‚«‚Ä‚¢‚È‚¢‚Ì‚ÅPASS
 		return;
 	case PhKiller:
-		//killer‚Ì€”õ‚ª‚Å‚«‚Ä‚¢‚È‚¢‚Ì‚Åreturn‚·‚é‚¾‚¯
-		return;
+		//TODO:killer‚Ì€”õ‚ª‚Å‚«‚Ä‚¢‚È‚¢‚Ì‚Åreturn‚·‚é‚¾‚¯
+		//killer‚Ì€”õ‚ª‚Å‚«‚Ä‚¢‚È‚¢‚Ì‚Åm_phase‚ğ‚P‚Âi‚ß‚é
+		//killer‚Ì€”õ‚ª‚Å‚«‚½‚çíœ‚·‚é‚±‚Æ
+		m_phase++;
+		//return;
 	case PhNonTactionMove0:
 		m_last_move = generate_moves<NonCapture>(m_current_move, m_pos);
 		//scroŠÖŒW‚ÌŠÖ”‚ª‚ ‚é‚ªÀ‘•‚µ‚Ä‚¢‚È‚¢‚Ì‚ÅPASS
@@ -154,10 +161,11 @@ TEST(movepicker, movepicker_POS39_white)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m,old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(A4, B6, 0, Night, EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -186,12 +194,13 @@ TEST(movepicker, movepicker_POS39_white)
 	ml = ms;
 	for (int i = 0; i < 21; i++){
 		m = mp.next_move();
-		if (m == old_m){
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(),21);
 }
 TEST(movepicker, movepicker_POS37_black)
 {
@@ -200,10 +209,11 @@ TEST(movepicker, movepicker_POS37_black)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(Square(Lance + SquareNum - 1), A5, 0, PieceType(0), EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -224,12 +234,13 @@ TEST(movepicker, movepicker_POS37_black)
 	ml = ms;
 	for (int i = 0; i < 10; i++){
 		m = mp.next_move();
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 10);
 }
 TEST(movepicker, movepicker_POS35_white)
 {
@@ -238,10 +249,11 @@ TEST(movepicker, movepicker_POS35_white)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(I5, H6, 0, Dragon, EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -258,12 +270,13 @@ TEST(movepicker, movepicker_POS35_white)
 	ml = ms;
 	for (int i = 0; i < 8; i++){
 		m = mp.next_move();
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 8);
 }
 TEST(movepicker, movepicker_POS33_black)
 {
@@ -273,10 +286,11 @@ TEST(movepicker, movepicker_POS33_black)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(Square(Rook + SquareNum - 1), C4, 0, PieceType(0), EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -293,12 +307,13 @@ TEST(movepicker, movepicker_POS33_black)
 	ml = ms;
 	for (int i = 0; i < 7+1; i++){
 		m = mp.next_move();
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 7+1);
 }
 TEST(movegen, movepicker_POS31_white)
 {
@@ -307,10 +322,11 @@ TEST(movegen, movepicker_POS31_white)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(H6, I7, 0, Horse, EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -326,12 +342,13 @@ TEST(movegen, movepicker_POS31_white)
 	ml = ms;
 	for (int i = 0; i < 6; i++){
 		m = mp.next_move();
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 6);
 }
 TEST(movegen, movepicker_POS29_black)
 {
@@ -340,10 +357,11 @@ TEST(movegen, movepicker_POS29_black)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(E4, E2, 0, Dragon, EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -359,12 +377,13 @@ TEST(movegen, movepicker_POS29_black)
 	ml = ms;
 	for (int i = 0; i < 7; i++){
 		m = mp.next_move();
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 7);
 }
 TEST(movegen, movepicker_POS27_white)
 {
@@ -374,10 +393,11 @@ TEST(movegen, movepicker_POS27_white)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(Square(Rook + SquareNum - 1), H4, 0, PieceType(0), EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -401,12 +421,13 @@ TEST(movegen, movepicker_POS27_white)
 	ml = ms;
 	for (int i = 0; i < 15; i++){
 		m = mp.next_move();
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 15);
 }
 TEST(movegen, movepicker_POS25_black)
 {
@@ -415,10 +436,11 @@ TEST(movegen, movepicker_POS25_black)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(D5, C4, 0, Dragon, EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -436,13 +458,13 @@ TEST(movegen, movepicker_POS25_black)
 	ml = ms;
 	for (int i = 0; i < 9; i++){
 		m = mp.next_move();
-		std::cout << Movens::string_from_move_apery_format(m) << std::endl;
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 9);
 }
 TEST(movegen, movepicker_POS23_white)
 {
@@ -452,10 +474,11 @@ TEST(movegen, movepicker_POS23_white)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(Square(Rook + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -473,13 +496,13 @@ TEST(movegen, movepicker_POS23_white)
 	ml = ms;
 	for (int i = 0; i < 10; i++){
 		m = mp.next_move();
-		std::cout << Movens::string_from_move_apery_format(m) << std::endl;
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 10);
 }
 TEST(movegen, movepicker_POS21_black)
 {
@@ -488,10 +511,11 @@ TEST(movegen, movepicker_POS21_black)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	pos.do_move(make_move(Square(Bishop + SquareNum - 1), D4, 0, PieceType(0), EmptyPiece), st_stack[0]);
 	MovePicker mp(pos, 1);
@@ -514,13 +538,13 @@ TEST(movegen, movepicker_POS21_black)
 	ml = ms;
 	for (int i = 0; i < 13; i++){
 		m = mp.next_move();
-		std::cout << Movens::string_from_move_apery_format(m) << std::endl;
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(),old_m.end(),m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 13);
 }
 TEST(movegen, movepicker_POS3_white)
 {
@@ -528,10 +552,11 @@ TEST(movegen, movepicker_POS3_white)
 	Position pos(ss);
 	using std::array;
 	array<StateInfo, 80> st_stack;		//stack‘ã‚í‚è‚Ìƒƒ‚ƒŠ
-	Move m, old_m = MoveNone;
+	Move m;
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
+	std::vector<Move> old_m;
 
 	MovePicker mp(pos, 1);
 	//NonCapture ALL=false
@@ -692,12 +717,12 @@ TEST(movegen, movepicker_POS3_white)
 	ml = ms;
 	for (int i = 0; i < 153; i++){
 		m = mp.next_move();
-		std::cout << Movens::string_from_move_apery_format(m) << std::endl;
-		if (m == old_m){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
+		if (old_m.end() != std::find(old_m.begin(), old_m.end(), m)){	//next_moveŠÖ”‚ª“¯‚¶è‚ğ•Ô‚µ‚Ä‚¢‚È‚¢‚±‚Æ‚Ìcheck
 			EXPECT_TRUE(false);
 		}
 		EXPECT_TRUE(array_check(m, ml));
-		old_m = m;
+		old_m.push_back(m);
 	}
+	EXPECT_EQ(old_m.size(), 153);
 }
 #endif
