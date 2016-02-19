@@ -132,7 +132,7 @@ static string string_from_square_apery_format(Square sq)
 
 string Movens::string_from_move_apery_format(const Move m)
 {
-	string piece_string(" PLNSBRG");
+	string piece_string(" PLNSBRGKXTV[JZ");
 	Square from = move_from(m);
 	Square to = move_to(m);
 	PieceType piece = move_piece(m);
