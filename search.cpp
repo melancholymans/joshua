@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include <stdlib.h>
-
+/*
 using namespace std;
 
 #include "gtest\gtest.h"
@@ -138,3 +138,4 @@ TEST(serach,search_root)
     game_init(root_position);
     think(root_position);
 }
+*/
