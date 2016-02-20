@@ -135,6 +135,21 @@ const File SQUARE_FILE[SquareNum] = {
 	FileB, FileB, FileB, FileB, FileB, FileB, FileB, FileB, FileB,
 	FileA, FileA, FileA, FileA, FileA, FileA, FileA, FileA, FileA
 };
+
+const int max_ply = 128;
+
+enum Score{
+	score_zero = 0,
+	score_draw = 0,
+	score_max_evaluale = 30000,
+	score_mate_long = 30002,
+	score_mate1_ply = 32599,
+	score_mate0_ply = 32600,
+	score_mate_in_max_ply = score_mate0_ply - max_ply,
+	score_mated_in_max_ply = -score_mate_in_max_ply,
+	score_infinite = 32601,
+	score_none = 32602
+};
 //指し手データ定義
 typedef uint32_t Move;
 typedef uint64_t Key;	//boardの駒配置状態を一意に表す数値に使用されたりする
