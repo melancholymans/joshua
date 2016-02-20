@@ -1,6 +1,24 @@
 ﻿#if !defined(USI_H_INCLUDE)
 #define USI_H_INCLUDE
 
+#include "types.h"
+
+struct OptionsMap;
+
+class USIOption{
+
+};
+struct CaseInsensitiveLess
+{
+	
+};
+
+struct OptionsMap :public map<string,USIOption, CaseInsensitiveLess>
+{
+
+};
+
+
 namespace USI{
 	//局面を表す文字列
 	//先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
