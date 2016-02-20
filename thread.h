@@ -121,8 +121,7 @@ public:
 	std::mutex mutex;
 	std::condition_variable sleep_condd;
 private:
-	TimerThread* teimer;
+	TimerThread* timer;
 	int m_minimum_split_depth;
-
 }
 #endif
