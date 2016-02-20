@@ -13,8 +13,8 @@ void ptime_init(ptime_t *iPT)
 
 double ptime_now(const ptime_t *iPT)
 {
-    //経過時間をsecで返す
-    return (double)(clock() - *iPT)/(double)(CLOCKS_PER_SEC);
+    //経過時間をmsecで返す
+	return (double)(clock() - *iPT);
 }
 
 std::ostream& operator<<(std::ostream& os, SyncCout sc)
@@ -42,6 +42,6 @@ TEST(misc,ptime_init_ptime_now)
     Sleep(1234);    //単位はmsec
 
     //計測終了
-    //printf("%f msec \n",ptime_now(&aPT));
+    printf("%f msec \n",ptime_now(&aPT));
 }
 #endif
