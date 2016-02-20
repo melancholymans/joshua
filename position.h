@@ -4,7 +4,6 @@
 #include "types.h"
 #include "bitboard.h"
 //ヘッダファイルで名前空間を宣言しているが例外として認める
-using std::string;
 using BitBoardns::make_pawn_attack;
 using BitBoardns::make_lance_attack;
 using BitBoardns::make_night_attack;
@@ -39,6 +38,8 @@ public:
 	Key board_key;
 	Key hand_key;
 };
+//StateInfo構造体をstackに保持したデータをユニークポインタ(unique_ptr)の別定義
+typedef std::unique_ptr<std::stack<StateInfo> > StateStackPtr;
 
 extern const int hand_packed[8];
 extern const int hand_shift[8];

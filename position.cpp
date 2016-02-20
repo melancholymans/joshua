@@ -1,8 +1,9 @@
 ﻿#include <string>
 #include <sstream>
-#include <array>	//do_move TEST
+#include <array>	//do_move TESTのため
 #include <utility>	//CheckInfoのdc_bbのため
 
+#include "types.h"
 #include "position.h"
 #include "bitboard.h"
 #include "usi.h"
@@ -13,9 +14,11 @@
 #endif
 
 //名前空間宣言
+/*
 using std::cout;
 using std::cin;
 using std::endl;
+*/
 using std::stringstream;
 using std::noskipws;
 using Movens::move_from;

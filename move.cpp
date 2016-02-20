@@ -1,14 +1,10 @@
-﻿#include <string>
-
+﻿#include "types.h"
 #include "gtest\gtest.h"
 #include "position.h"
 #include "move.h"
 #include "usi.h"
 
 //名前空間宣言
-using std::string;
-using std::cout;
-using std::endl;
 using namespace Movens;
 //局所関数宣言
 static string string_from_square(Square sq);

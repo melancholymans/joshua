@@ -1,8 +1,8 @@
 #if !defined(THREAD_H_INCLUDE)
 #define THREAD_H_INCLUDE
-#include <string.h>
 #include <thread>
 #include <mutex>
+
 #include "types.h"
 #include "position.h"
 

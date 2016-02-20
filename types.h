@@ -2,7 +2,23 @@
 #define TYPES_H_INCLUDE
 
 #include <inttypes.h>
+#include <iostream>
 #include <string>
+#include <vector>
+#include <stack>
+#include <memory>
+#include <map>
+#include <bitset>
+#include <array>
+#include <string>
+
+using std::cout;
+using std::cin;
+using std::endl;
+using std::vector;
+using std::string;
+using std::map;
+using std::array;
 
 const int MAX_LEGAL_MOVE = 1024;	//局面の最大合法手数が593手なので一番近い２のべき乗
 

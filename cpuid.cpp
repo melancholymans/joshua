@@ -4,22 +4,14 @@
 // Uses the __cpuid intrinsic to get information about 
 // CPU extended instruction set support.
 
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <array>
-#include <string>
 #include <intrin.h>		//_mm_popcnt_u32 / _mm_popcnt_u64
 #include <inttypes.h>	//uint64_t
 #include <smmintrin.h>	//SSE4.2
 #include <immintrin.h>	//AVX
 
+#include "types.h"
 #include "cpuid.h"
 #include "bitboard.h"
-
-using std::cout;
-using std::cin;
-using std::endl;
 
 class InstructionSet
 {

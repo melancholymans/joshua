@@ -22,7 +22,6 @@ Shogidokoro shogi playing engin
 */
 #include <stdio.h>
 #include <cstdlib>
-#include <iostream>
 
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
@@ -35,9 +34,6 @@ Shogidokoro shogi playing engin
 #include "position.h"
 #include "usi.h"
 #include "mt64bit.h"
-
-using std::cout;
-using std::endl;
 /*
 #include "usioption.h"
 #include "evaluate.h"

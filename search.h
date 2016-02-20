@@ -1,13 +1,11 @@
 ﻿#if !defined(SEARCH_H_INCLUDE)
 #define SEARCH_H_INCLUDE
 
-#include <vector>
-#include <string>
 #include "types.h"
 #include "position.h"
 #include "thread.h"
-
-using std::string;
+#include "misc.h"
+#include "timemanager.h"
 
 //先行宣言
 class Position;
@@ -29,22 +27,22 @@ struct SignalsType{
 	bool stop_on_ponder_hit;
 	bool first_root_move;
 	bool stop;
-	failed_low_at_root;
+	bool failed_low_at_root;
 };
 //稲庭対策用フラグ
 enum InaniwaFlag{
 	not_inaniwa,
-	inaniwa_is_black;
-	inaniwa_is_white;
+	inaniwa_is_black,
+	inaniwa_is_white,
 	inaniwa_flag_num
 };
 class RootMove{
 public:
 	RootMove(){}
-	explicitRootMove(const Move m) :m_score(-score_infinite), prev_score(-score_infinite)
+	explicit RootMove(const Move m) :m_score(-score_infinite), m_prev_score(-score_infinite)
 	{
 		m_pv.push_back(m);
-		m_pv.push_back(MoveNone)
+		m_pv.push_back(MoveNone);
 	}
 	bool operator < (const RootMove& rm) const
 	{
@@ -59,7 +57,7 @@ public:
 private:
 	int m_score;
 	int m_prev_score;
-	std::vector<Move> m_pv;
+	vector<Move> m_pv;
 };
 
 template<bool Gain>
@@ -98,22 +96,22 @@ struct Searcher{
 	static Searcher* thisptr;
 	static volatile SignalsType signals;
 	static LimitsType limits;
-	static std::vector<Move> search_moves;
+	static vector<Move> search_moves;
 	static ptime_t search_timer;
 	static StateStackPtr setup_states;
-	static std::vector<RooMove> root_moves;
+	static vector<RootMove> root_moves;
 	static size_t pv_size;
 	static size_t pv_idx;
 	static TimeManager time_manager;
 	static int best_move_chages;
 	static History history;
-	static gains;
+	static Gains gains;
 	static TranspositionTable tt;
 	static Position root_position;
 	static ThreadPool threads;
 	static OptionMap options;
 
-	static init();
+	static void init();
 	static void id_loop(Position& pos);
 	static string pv_info_to_usi(Position& pos, const int depth, const int alpha, const int beta);
 	template<NodeType NT,bool IN_CHECK>
@@ -122,8 +120,8 @@ struct Searcher{
 	static int search(Position& pos, Searchtack* ss, int alpha, int beta, const int depth, const bool cut_node);
 	static void think();
 	static void check_time();
-	staic void do_usi_command_loop(int argc, char* argv[]);
-	static set_option(std::istringstream& ss_cmd);
+	static void do_usi_command_loop(int argc, char* argv[]);
+	static void set_option(std::istringstream& ss_cmd);
 };
 void init_search_table();
 #endif
