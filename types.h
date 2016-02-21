@@ -11,6 +11,7 @@
 #include <bitset>
 #include <array>
 #include <string>
+#include <algorithm>
 
 using std::cout;
 using std::cin;
@@ -19,6 +20,7 @@ using std::vector;
 using std::string;
 using std::map;
 using std::array;
+using std::max;
 
 const int MAX_LEGAL_MOVE = 1024;	//局面の最大合法手数が593手なので一番近い２のべき乗
 

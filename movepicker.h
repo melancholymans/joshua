@@ -1,7 +1,6 @@
 #if !defined(MOVEPICKER_H_INCLUDE)
 #define MOVEPICKER_H_INCLUDE
 #include <array>
-#include <algorithm>
 #include <utility>
 #include "move.h"
 #include "position.h"

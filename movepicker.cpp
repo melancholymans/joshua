@@ -1,7 +1,6 @@
 #ifdef _DEBUG
 	#include <array>	//generate_evasions TEST‚Ì‚½‚ß
 	#include <vector>   //generate_evasions TEST‚Ì‚½‚ß
-	#include <algorithm>
 #endif
 #include "movegen.h"
 #include "movepicker.h"
