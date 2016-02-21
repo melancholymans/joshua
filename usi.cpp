@@ -1,6 +1,6 @@
 ﻿#include <sstream>
+#include <thread>
 
-using namespace std;
 #ifdef _DEBUG
 	#include "gtest\gtest.h"
 #endif
@@ -17,8 +17,57 @@ using namespace std;
 #include "move.h"
 #include "evaluate.h"
 */
+//Global object
+OptionsMap options;
 
+void on_logger(const Option& opt)
+{
+}
+void on_eval(const Option&)
+{
+}
+void on_thread(const Option&)
+{
+}
+void on_hash_size(const Option& opt)
+{
+}
+void on_clear_hash(const Option&)
+{
+}
+//渡された文字列を１文字づつ比較しs1 < s2ならtrueをそれ以外はfalseを返す
+bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const
+{
+	return std::lexicographical_compare(s1.begin(), s1.end(), s2.begin(), s2.end(),
+		[](char c1, char c2) {return tolower(c1) < tolower(c2); });
+}
+void init(OptionsMap& opt)
+{
+	
+}
+std::ostream& operator << (std::ostream& os, const OptionsMap& om)
+{
+	for (size_t idx = 0; idx < om.size(); idx++){
+		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
+		{return p.second.idx == idx; });
+		const Option& opt = it->second;
+		os << "\noption name " << it->first << " type " << opt.type;
 
+	}
+}
+/*
+void on_threads(Searcher* sech, const USIOption&)
+{
+	//sech->threads.
+}
+void OptionsMap::init(Searcher* sech)
+{
+	const int cpus = max(static_cast<int>(std::thread::hardware_concurrency()),1);
+	const int min_split_depth = (cpus < 6 ? 4 : (cpus < 8 ? 5 : 7));
+	(*this)["Use_Search_Log"] = USIOption(false);
+	//(*this)["USI_Hash"] = USIOption(32,1,65536,onHashSize)
+}
+*/
 void USI::usi_main_loop(void)
 {
     string token,cmd;
@@ -40,9 +89,9 @@ void USI::usi_main_loop(void)
 bool USI::handle_command(const string &command)
 {
 	string token;
-    stringstream uip(command);
+    std::stringstream uip(command);
 
-	uip >> skipws >> token;
+	uip >> std::skipws >> token;
     if(token == "quit"){
         //後始末
         return false;
@@ -92,7 +141,7 @@ bool USI::handle_command(const string &command)
     return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
 }
 
-void set_position(stringstream& uip)
+void set_position(std::stringstream& uip)
 {
 	/*
     string token;
@@ -146,10 +195,14 @@ void go(void)
 }
 */
 #ifdef _DEBUG
+TEST(Options, init)
+{
+	EXPECT_EQ(static_cast<int>(std::thread::hardware_concurrency()),8);	//この８はマシンによって異なる
+}
 TEST(usi,set_position)
 {
     string command("startpos moves 7g7f 3c3d 2g2f 4c4d 3i4h 3a4b 5g5f 5c5d 2f2e 2b3c 5i6h 4b4c 6h7h 7a6b 7i6h 6b5c 4i5h 7c7d 6g6f 4a3b 6h7g 4d4e 5h6g 5a4b 3g3f 5d5e 2i3g 5c5d 5f5e 3c5e 2e2d 2c2d 2h2d 4b3a P*2c 4e4f 4g4f P*4g 4h4g 6a5b 3g4e 5d4e 4f4e 5e3g+ S*2b 3a4b 2b1a+ 3b3c 2d2e P*2d P*5c 2d2e 5c5b+ 8b5b G*3h 3g3h 4g3h R*4h L*5h 4h3h+ 2c2b+ N*2g B*3a 4b4a P*5c 5b3b 4e4d 3c4d P*4b 3b4b 3a4b+ 4a4b R*7a P*5g 7a3a+ 4b5c 6g5g P*5f 5g5f P*5e 5f6e 6c6d 6e7d B*5f 7h6h S*6g 6h7i P*7h 6i7h 6g7h+");
-    stringstream uip(command);
+    std::stringstream uip(command);
     //set_position(uip);
 	/*
     EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);

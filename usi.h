@@ -2,22 +2,51 @@
 #define USI_H_INCLUDE
 
 #include "types.h"
+#include "search.h"
+//先行宣言
+class Option;
 
-struct OptionsMap;
-
-class USIOption{
-
-};
 struct CaseInsensitiveLess
 {
-	
+	bool operator() (const string&, const string&) const;
 };
 
-struct OptionsMap :public map<string,USIOption, CaseInsensitiveLess>
-{
+typedef map<string, Option, CaseInsensitiveLess> OptionsMap;
 
+class Option{
+	//オプションを設定、変更するときに呼び出される関数ポインタの宣言
+	typedef void(Fn)(const Option&);
+public:
+	/*
+	optionのとり方は４種類ある
+	関数（省略可能）,buttn型
+	bool+関数（省略可能） check型
+	char+関数（省略可能） string型
+	int+関数（省略可能）　spin型
+	*/
+	Option(Fn* = nullptr);
+	Option(bool v, Fn* = nullptr);
+	Option(const char* v, Fn* = nullptr);
+	Option(int v, int min, int max, Fn* = nullptr);
+	//代入演算子のオーバライド
+	Option& operator = (const string& v);
+	//intへの変換演算子
+	operator int() const;
+	//stringへの変換演算子
+	operator string() const;
+private:
+	friend std::ostream& operator << (std::ostream&, const OptionsMap&);
+	string default_value;
+	string current_value;
+	string type;
+	int min, max;
+	size_t idx;
+	Fn* on_chage;
 };
+void init(OptionsMap&);
+void loop(const string&);
 
+extern OptionsMap options;
 
 namespace USI{
 	//局面を表す文字列
