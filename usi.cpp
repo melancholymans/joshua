@@ -45,14 +45,20 @@ void init(OptionsMap& opt)
 {
 	
 }
+//Option
 std::ostream& operator << (std::ostream& os, const OptionsMap& om)
 {
 	for (size_t idx = 0; idx < om.size(); idx++){
 		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
-		{return p.second.idx == idx; });
+			{return p.second.idx == idx; });
 		const Option& opt = it->second;
 		os << "\noption name " << it->first << " type " << opt.type;
-
+		if (opt.type != "buttom"){
+			os << " default" << opt.default_value;
+		}
+		if (opt.type == "spin"){
+			os << " min " < " max " << opt.max;
+		}
 	}
 }
 /*
