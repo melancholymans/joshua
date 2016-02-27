@@ -5,6 +5,7 @@
 
 #include "types.h"
 #include "position.h"
+#include "search.h"
 
 //定数宣言
 const int MAX_THREADS = 64;
@@ -13,6 +14,8 @@ const int MAX_SPLIT_POINT_PER_THREAD = 8;
 struct Thread;
 struct SearchStack;
 class MovePicker;
+struct Searcher;
+
 //探索ルーチンの型（ルート局面なのか、主探索スレッドなのか、分割探索スレッドなのか）
 enum NodeType{
 	Root, PV, NoPV, SplitPointRoot, SplitPointPV, SplitPointNonPV
@@ -26,7 +29,8 @@ struct LimitsType{
 	//不明
 	bool use_time_management() const
 	{
-		return !(depth | nodes | move_time | static_cast<int>(infinite));
+//		return !(depth | nodes | move_time | static_cast<int>(infinite));
+		return true;	//ダミー
 	}
 	int time[ColorNum];
 	int increment[ColorNum];
@@ -57,7 +61,7 @@ struct SplitPoint{
 	volatile bool cut_off;
 };
 struct Thread{
-	explicit Thread(Searcher* s);
+//	explicit Thread(Searcher* s);
 	virtual ~Thread();
 	virtual void idle_loop();
 	void notify_one();
@@ -74,28 +78,28 @@ struct Thread{
 	int idx;
 	int max_ply;
 	std::mutex sleep_lock;
-	std::condition_variable sleep_cond;
+//	std::condition_variable sleep_cond;
 	std::thread handle;
 	SplitPoint* volatile active_split_point;
 	volatile int split_point_size;
 	volatile bool searching;
 	volatile bool exit;
-	Searcher* searcher;
+//	Searcher* searcher;
 };
 struct MainThread :public Thread{
-	explicit MainThread(seracher* s) :Thread(s), thinking(true){}
+//	explicit MainThread(Searcher* s) :Thread(s), thinking(true){}
 	virtual void idle_loop();
-	virtual bool thinking;
+//	virtual bool thinking;
 };
 struct TimerThread :public Thread{
-	explicit TimerThread(seracher* s) :Thread(s), msec(0){}
+//	explicit TimerThread(Searcher* s) :Thread(s), msec(0){}
 	virtual void idle_loop();
 	int msec;
 };
-class ThreadPool :public std::vector<Thread *>
+class ThreadPool :public vector<Thread *>
 {
 public:
-	void init(Searcher *s);
+//	void init(Searcher *s);
 	~ThreadPool();
 	MainThread* main_thread()
 	{
@@ -109,19 +113,19 @@ public:
 	{
 		return m_timer;
 	}
-	void wake_up(seracher* s);
+//	void wake_up(Searcher* s);
 	void sleep();
-	void read_usi_options(Searcher* s);
+//	void read_usi_options(Searcher* s);
 	Thread* available_slave(Thread* master) const;
 	void set_timer(const int msec);
-	void wait_for_thking_finised()();
-	void start_thinking(const Postion& pos, const LimitsType& limits, const std::vector<Move>& serachMovers);
+	void wait_for_thking_finised();
+//	void start_thinking(const Postion& pos, const LimitsType& limits, const vector<Move>& serachMovers);
 	bool sleep_while_idle;
 	size_t max_thread_per_split_point;
 	std::mutex mutex;
-	std::condition_variable sleep_condd;
+//	std::condition_variable sleep_cond;
 private:
-	TimerThread* timer;
+	TimerThread* m_timer;
 	int m_minimum_split_depth;
-}
+};
 #endif
