@@ -1,6 +1,4 @@
-﻿#include <sstream>
-#include <thread>
-
+﻿
 #ifdef _DEBUG
 	#include "gtest\gtest.h"
 #endif
@@ -9,44 +7,68 @@
 #include "position.h"
 #include "usi.h"
 #include "misc.h"
+#include "tt.h"
+
 /*
-#include "usioption.h"
 #include "csa.h"
 #include "search.h"
 #include "movegen.h"
 #include "move.h"
 #include "evaluate.h"
 */
+using USI::Option;
 //Global object
-OptionsMap options;
+USI::OptionsMap options;
 
-void on_logger(const Option& opt)
-{
-}
-void on_eval(const Option&)
-{
-}
+using std::thread;
+
 void on_thread(const Option&)
 {
 }
 void on_hash_size(const Option& opt)
 {
+	//TT.set_size(opt);
 }
 void on_clear_hash(const Option&)
 {
 }
 //渡された文字列を１文字づつ比較しs1 < s2ならtrueをそれ以外はfalseを返す
-bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const
+bool USI::CaseInsensitiveLess::operator() (const string& s1, const string& s2) const
 {
 	return std::lexicographical_compare(s1.begin(), s1.end(), s2.begin(), s2.end(),
 		[](char c1, char c2) {return tolower(c1) < tolower(c2); });
 }
-void init(OptionsMap& opt)
+//main関数から１回だけ呼ばれるOptionMapはkeyをstring型,valueをOptionクラスで保持するmapコンテナ
+void USI::init(OptionsMap& opt)
 {
-	
+	const int cpus = std::max(static_cast<int>(std::thread::hardware_concurrency()),1);
+	const int min_split_depth = (cpus < 6 ? 4 : (cpus < 8 ? 5 : 7));
+	opt["Use_Search_Log"] = Option(false);
+	opt["USI_Hash"] = Option(32, 1, 65536, on_hash_size);
+	opt["Clear_Hash"] = Option(on_clear_hash);
+	opt["Book_File"] = Option("book.bin");
+	opt["Best_Book_Move"] = Option(false);
+	opt["Own_Book"] = Option(true);
+	opt["Min_Book_Ply"] = Option(SHRT_MAX, 0, SHRT_MAX);
+	opt["Max_Book_Ply"] = Option(SHRT_MAX, 0, SHRT_MAX);
+	opt["Min_Book_Score"] = Option(-180, -ScoreInfinite, ScoreInfinite);
+	opt["USI_Ponder"] = Option(true);
+	opt["MultiPV"] = Option(1, 1, MAX_LEGAL_MOVE);
+	opt["Skill_Level"] = Option(20, 0, 20);
+	opt["Max_Random_Score_Diff"] = Option(0, 0, ScoreMate0Ply);
+	opt["Max_Random_Score_Diff_Ply"] = Option(40, SHRT_MAX, SHRT_MAX);
+	opt["Emergency_Move_Horizon"] = Option(40, 0, 50);
+	opt["Emergency_Base_Time"] = Option(200, 0, 30000);
+	opt["Emergency_Move_Time"] = Option(70, 0, 5000);
+	opt["Slow_Mover"] = Option(100, 10, 1000);
+	opt["Minimum_Thinking_Time"] = Option(15400, 0, INT_MAX);
+	opt["Min_Split_Depth"] = Option(min_split_depth, 4, 12, on_thread);
+	opt["Max_Threads_per_Split_point"] = Option(5, 4, 8, on_thread);
+	opt["Threads"] = Option(cpus, 1, MAX_THREADS, on_thread);
+	opt["Use_Sleeping_Threads"] = Option(true);
 }
-//Option
-std::ostream& operator << (std::ostream& os, const OptionsMap& om)
+//OptionMapのidx順にオプションの内容を文字列化して返す。usiコマンドで呼ばれる
+std::ostream& USI::operator << (std::ostream& os, const USI::OptionsMap& om)
 {
 	for (size_t idx = 0; idx < om.size(); idx++){
 		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
@@ -57,23 +79,54 @@ std::ostream& operator << (std::ostream& os, const OptionsMap& om)
 			os << " default" << opt.default_value;
 		}
 		if (opt.type == "spin"){
-			os << " min " < " max " << opt.max;
+			os << " min " << " max " << opt.max;
 		}
 	}
+	return os;
 }
-/*
-void on_threads(Searcher* sech, const USIOption&)
+
+//オプションを設定するときに呼ばれる関数
+//char型+関数（省略可）　string型
+USI::Option::Option(const char* v, Fn* f) :type("string"), min(0), max(0), idx(options.size()), on_chage(f)
 {
-	//sech->threads.
+	default_value = current_value = v;
 }
-void OptionsMap::init(Searcher* sech)
+//bool型+関数（省略可）　check型
+USI::Option::Option(bool v, Fn* f) : type("check"), min(0), max(0), idx(options.size()), on_chage(f)
 {
-	const int cpus = max(static_cast<int>(std::thread::hardware_concurrency()),1);
-	const int min_split_depth = (cpus < 6 ? 4 : (cpus < 8 ? 5 : 7));
-	(*this)["Use_Search_Log"] = USIOption(false);
-	//(*this)["USI_Hash"] = USIOption(32,1,65536,onHashSize)
+	default_value = current_value = (v ? "true" : "false");
 }
-*/
+//関数（省略可）　button型
+USI::Option::Option(Fn* f) : type("button"), min(0), max(0), idx(options.size()), on_chage(f)
+{}
+//int型+int型+int型+関数（省略可）　spin型
+USI::Option::Option(int v,int minv,int maxv,Fn* f) : type("spin"), min(minv), max(maxv), idx(options.size()), on_chage(f)
+{
+	default_value = current_value = std::to_string(v);
+}
+//intへの変換演算子
+USI::Option::operator int() const
+{
+	_ASSERT(type == "check" || type == "spin");
+	return (type == "spin") ? stoi(current_value) : current_value == "true";
+}
+//stringへの変換演算子
+USI::Option::operator string() const
+{
+	_ASSERT(type == "string");
+	return current_value;
+}
+//代入演算子のオーバライド Option[name] = valueとされたとき起動される演算子オーバーライド
+USI::Option& Option::operator=(const string& v)
+{
+	_ASSERT(!type.empty());
+	if ((type != "button" && v.empty())
+		|| (type == "check" && v != "true" && v != "false")
+		|| (type == "spin" && (stoi(v) < min || stoi(v) > max))){
+		return *this;
+	}
+}
+
 void USI::usi_main_loop(void)
 {
     string token,cmd;
