@@ -1,23 +1,38 @@
-﻿#include <stdlib.h>
-/*
-using namespace std;
-
-#include "gtest\gtest.h"
-#include "types.h"
+﻿#include "types.h"
 #include "position.h"
 #include "movegen.h"
+#include "thread.h"
 #include "search.h"
-#include "move.h"
-#include "misc.h"
-#include "evaluate.h"
-#include "usi.h"
+#ifdef _DEBUG
+	#include <gtest\gtest.h>
+#endif
 
-search_t sech;
-status_t stats;
+volatile SignalsType Searcher::signals;
+LimitsType Searcher::limits;
+vector<Move> Searcher::search_moves;
+ptime_t Searcher::search_timer;
+StateStackPtr Searcher::setup_states;
+vector<RootMove> Searcher::root_moves;
+size_t Searcher::pv_size;
+size_t Searcher::pv_idx;
+TimeManager Searcher::time_manager;
+int Searcher::best_move_chages;
+History Searcher::history;
+Gains Searcher::gains;
+//TranspositionTable Searcher::tt;
+Position Searcher::root_position;
 
-int search_max(Position &pos,int ply);
-int search_min(Position &pos,int ply);
+//ThreadPool Searcher::threads;
+//OptionsMap Searcher::options;
+Searcher* Searcher::thisptr;
 
+/*
+void Searcher::init()
+{
+	options.init(thisptr);
+}
+*/
+/*
 bool think(Position &pos)
 {
     ptime_t aPT;
@@ -72,60 +87,6 @@ Move search_root(Position &pos,int ply)
         }
     }
     return m;
-}
-
-int search_max(Position &pos,int ply)
-{
-    backup_info_t bfo;
-
-    stats.search_node++;
-    if(ply > PLY_MAX){
-        return evaluate(pos);
-    }
-    short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
-    //全ての手を生成
-    Move *ml = next_move[ply].next_move = next_move[ply].last_move;
-    next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
-    int max_score = -2147483648;
-    //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
-    for(;ml != next_move[ply].last_move;ml++){
-        bfo.material = sech.material;
-        next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
-        int score = search_min(pos,ply+1);
-        undo_move(pos,ply);
-        sech.material = bfo.material;
-        if(max_score < score){
-            max_score = score;
-        }
-    }
-    return max_score;
-}
-
-int search_min(Position &pos,int ply)
-{
-    backup_info_t bfo;
-
-    stats.search_node++;
-    if(ply > PLY_MAX){
-        return evaluate(pos);
-    }
-    short *mf = next_modify[ply].next_dirty = next_modify[ply].last_dirty;
-    //全ての手を生成
-    Move *ml = next_move[ply].next_move = next_move[ply].last_move;
-    next_move[ply+1].last_move = next_move[ply].last_move = generate_moves(pos,ml);
-    int min_score = 2147483647;
-    //Move構造体をDoMove関数に渡して局面更新、もし合法手が0なら（王手を避ける手がないなど）このforループをパスする
-    for(;ml != next_move[ply].last_move;ml++){
-        bfo.material = sech.material;
-        next_modify[ply+1].last_dirty=next_modify[ply].last_dirty = DoMove(pos.turn,pos,*ml,mf);
-        int score = search_max(pos,ply+1);
-        undo_move(pos,ply);
-        sech.material = bfo.material;
-        if(min_score > score){
-            min_score = score;
-        }
-    }
-    return min_score;
 }
 
 TEST(serach,search_root)

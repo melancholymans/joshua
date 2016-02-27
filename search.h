@@ -6,10 +6,12 @@
 #include "thread.h"
 #include "misc.h"
 #include "timemanager.h"
-
+#include "usi.h"
+#include "tt.h"
 //先行宣言
 class Position;
 struct SplitPoint;
+class ThreadPool;
 
 struct SearchStack{
 	SplitPoint* split_point;
@@ -39,7 +41,7 @@ enum InaniwaFlag{
 class RootMove{
 public:
 	RootMove(){}
-	explicit RootMove(const Move m) :m_score(-score_infinite), m_prev_score(-score_infinite)
+	explicit RootMove(const Move m) :m_score(-ScoreInfinite), m_prev_score(-ScoreInfinite)
 	{
 		m_pv.push_back(m);
 		m_pv.push_back(MoveNone);
@@ -90,7 +92,7 @@ private:
 typedef Stats<false> History;
 typedef Stats<true> Gains;
 
-class TranspositionTable;
+//class TranspositionTable;
 
 struct Searcher{
 	static Searcher* thisptr;
@@ -106,22 +108,24 @@ struct Searcher{
 	static int best_move_chages;
 	static History history;
 	static Gains gains;
-	static TranspositionTable tt;
+//	static TranspositionTable tt;
 	static Position root_position;
 	static ThreadPool threads;
-	static OptionMap options;
-
+	//static OptionsMap options;
+	/*
 	static void init();
 	static void id_loop(Position& pos);
 	static string pv_info_to_usi(Position& pos, const int depth, const int alpha, const int beta);
 	template<NodeType NT,bool IN_CHECK>
-	static int qsearch(Position& pos, Searchtack* ss, int alpha, int beta, const int depth);
+	static int qsearch(Position& pos, SearchStack* ss, int alpha, int beta, const int depth);
 	template<NodeType NT>
-	static int search(Position& pos, Searchtack* ss, int alpha, int beta, const int depth, const bool cut_node);
+	static int search(Position& pos, SearchStack* ss, int alpha, int beta, const int depth, const bool cut_node);
 	static void think();
 	static void check_time();
 	static void do_usi_command_loop(int argc, char* argv[]);
 	static void set_option(std::istringstream& ss_cmd);
+	*/
 };
-void init_search_table();
+
+//void init_search_table();
 #endif
