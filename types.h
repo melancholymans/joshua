@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <stack>
@@ -12,6 +13,7 @@
 #include <array>
 #include <string>
 #include <algorithm>
+#include <thread>
 
 using std::cout;
 using std::cin;
@@ -22,7 +24,10 @@ using std::map;
 using std::array;
 using std::max;
 
-const int MAX_LEGAL_MOVE = 1024;	//局面の最大合法手数が593手なので一番近い２のべき乗
+//局面の最大合法手数が593手なので一番近い２のべき乗
+const int MAX_LEGAL_MOVE = 1024;	
+//最大探索深さ（？）
+const int MAX_PLY = 128;
 
 enum Color
 {
@@ -137,20 +142,17 @@ const File SQUARE_FILE[SquareNum] = {
 	FileB, FileB, FileB, FileB, FileB, FileB, FileB, FileB, FileB,
 	FileA, FileA, FileA, FileA, FileA, FileA, FileA, FileA, FileA
 };
-
-const int max_ply = 128;
-
 enum Score{
-	score_zero = 0,
-	score_draw = 0,
-	score_max_evaluale = 30000,
-	score_mate_long = 30002,
-	score_mate1_ply = 32599,
-	score_mate0_ply = 32600,
-	score_mate_in_max_ply = score_mate0_ply - max_ply,
-	score_mated_in_max_ply = -score_mate_in_max_ply,
-	score_infinite = 32601,
-	score_none = 32602
+	ScoreZero = 0,
+	ScoreDraw = 0,
+	ScoreMaxEvaluale = 30000,
+	ScoreMateLong = 30002,
+	ScoreMate1Ply = 32599,
+	ScoreMate0Ply = 32600,
+	ScoreMateInMaxPly = ScoreMate0Ply - MAX_PLY,
+	ScoreMatedInMaxPly = -ScoreMateInMaxPly,
+	ScoreInfinite = 32601,
+	ScoreNone = 32602
 };
 //指し手データ定義
 typedef uint32_t Move;
