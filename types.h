@@ -18,6 +18,7 @@
 using std::cout;
 using std::cin;
 using std::endl;
+using std::cerr;
 using std::vector;
 using std::string;
 using std::map;
@@ -118,8 +119,13 @@ enum MoveType{
 	*/
 	MoveTypeNum
 };
-
-
+//置換表の評価値の種別
+enum Bound{
+	BoundNone,
+	BoundUpper,
+	BoundLower,
+	BoundExact = BoundUpper | BoundLower
+};
 const Rank SQUARE_RANK[SquareNum] = {
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
@@ -156,8 +162,7 @@ enum Score{
 };
 //指し手データ定義
 typedef uint32_t Move;
-typedef uint64_t Key;	//boardの駒配置状態を一意に表す数値に使用されたりする
-
+typedef uint64_t Key_t;	//boardの駒配置状態を一意に表す数値に使用されたりする
 //指し手情報を入れておくクラス
 struct MoveStack{
 	Move move;
