@@ -40,6 +40,8 @@ Shogidokoro shogi playing engin
 #include "search.h"
 void profile(void);
 */
+//Global object
+extern USI::OptionsMap options;
 
 int main_test(int argc,char *argv[]);
 

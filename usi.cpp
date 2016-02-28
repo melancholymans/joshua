@@ -17,20 +17,23 @@
 #include "evaluate.h"
 */
 using USI::Option;
+using std::thread;
 //Global object
 USI::OptionsMap options;
+extern TranspositionTable TT;
 
-using std::thread;
 
 void on_thread(const Option&)
 {
 }
 void on_hash_size(const Option& opt)
 {
-	//TT.set_size(opt);
+	//optを引数として渡しているがset_size関数の仮引数型はsize_t型なのでint変換演算子が呼ばれる。
+	TT.set_size(opt);
 }
 void on_clear_hash(const Option&)
 {
+	TT.clear();
 }
 //渡された文字列を１文字づつ比較しs1 < s2ならtrueをそれ以外はfalseを返す
 bool USI::CaseInsensitiveLess::operator() (const string& s1, const string& s2) const

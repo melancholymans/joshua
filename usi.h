@@ -1,8 +1,8 @@
 ﻿#if !defined(USI_H_INCLUDE)
 #define USI_H_INCLUDE
 
-#include "types.h"
-#include "search.h"
+	#include "types.h"
+	#include "search.h"
 
 	namespace USI{
 		//先行宣言
@@ -52,11 +52,5 @@
 		const string start_sfen = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 		void usi_main_loop(void);
 		bool handle_command(const string &command);
-		/*
-		void set_position(stringstream& uip)
-		void go(void)
-		*/
 	}	//namespace end
-	
-	extern USI::OptionsMap options;
 #endif
