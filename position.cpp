@@ -77,9 +77,9 @@ const int hand_masking[8] = {
 };
 //駒文字(先手大文字、後手小文字）
 static const string PieceToChar(" PLNSBRGKXTV[JZ  plnsbrgkxtv{jz");
-static Key zobrist[PieceNum][SquareNum][ColorNum];
-static Key zob_hand[HandPieceNum][ColorNum];	//zob_hand配列の大きさは8とする。zob_hand[0]は使わない。配列へのindexをPieceTypeで統一するため
-static Key zob_turn;
+static Key_t zobrist[PieceNum][SquareNum][ColorNum];
+static Key_t zob_hand[HandPieceNum][ColorNum];	//zob_hand配列の大きさは8とする。zob_hand[0]は使わない。配列へのindexをPieceTypeで統一するため
+static Key_t zob_turn;
 
 //＜ここからCheckInfoクラスの定義域＞
 CheckInfo::CheckInfo(const Position& pos)
@@ -239,8 +239,8 @@ void Position::do_move(const Move m, StateInfo& st)
 #ifdef _DEBUG
 	Positionns::is_ok(*this);
 #endif
-	Key bod_key = get_board_key();
-	Key had_key = get_hand_key();
+	Key_t bod_key = get_board_key();
+	Key_t had_key = get_hand_key();
 	bod_key ^= get_zob_turn();	
 	const Color us = get_color_turn();
 	const Square to = move_to(m);
@@ -544,23 +544,23 @@ void Positionns::print_board(const Position& pos)
 	}
 	cout << endl;
 }
-Key Positionns::get_zobrist(const PieceType pt, const Square sq, const Color c)
+Key_t Positionns::get_zobrist(const PieceType pt, const Square sq, const Color c)
 {
 	return zobrist[pt][sq][c];
 }
-Key Positionns::get_zob_hand(const PieceType hp, const Color c)
+Key_t Positionns::get_zob_hand(const PieceType hp, const Color c)
 {
 	return zob_hand[hp][c];
 }
-Key Positionns::get_zob_turn()
+Key_t Positionns::get_zob_turn()
 {
 	return zob_turn;
 }
 //局面のハッシュキーの初期化
-Key Positionns::make_board_key(const Position& pos)
+Key_t Positionns::make_board_key(const Position& pos)
 {
 	
-	Key result = 0;
+	Key_t result = 0;
 	
 	for (int sq = I9; sq < SquareNum; sq++){
 		if (pos.get_board(sq) != EmptyPiece){
@@ -572,9 +572,9 @@ Key Positionns::make_board_key(const Position& pos)
 	}
 	return result;
 }
-Key Positionns::make_hand_key(const Position& pos)
+Key_t Positionns::make_hand_key(const Position& pos)
 {
-	Key result = 0;
+	Key_t result = 0;
 	for (int hp = Pawn; hp < HandPieceNum; hp++){
 		for (int c = Black; c < ColorNum; c++){
 			const int hand_num = pos.get_hand(Color(c), PieceType(hp));

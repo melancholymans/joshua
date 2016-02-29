@@ -35,8 +35,8 @@ public:
 	StateInfo* previous;
 	//手番側のKINGにチエックをかけている敵側駒のbitboard
 	BitBoard checker_bb;
-	Key board_key;
-	Key hand_key;
+	Key_t board_key;
+	Key_t hand_key;
 };
 //StateInfo構造体をstackに保持したデータをユニークポインタ(unique_ptr)の別定義
 typedef std::unique_ptr<std::stack<StateInfo> > StateStackPtr;
@@ -199,11 +199,11 @@ public:
 		_ASSERT(pt < 8);
 		hand[c] -= hand_packed[pt];
 	}
-	Key get_board_key() const
+	Key_t get_board_key() const
 	{
 		return m_st->board_key;
 	}
-	Key get_hand_key() const
+	Key_t get_hand_key() const
 	{
 		return m_st->hand_key;
 	}
@@ -300,11 +300,11 @@ namespace Positionns
 	void init();
 	void is_ok(Position& pos);
 	void print_board(const Position &pos);
-	Key make_board_key(const Position& pos);
-	Key make_hand_key(const Position& pos);
-	Key get_zobrist(const PieceType pt, const Square sq, const Color c);
-	Key get_zob_hand(const PieceType hp, const Color c);
-	Key get_zob_turn();
+	Key_t make_board_key(const Position& pos);
+	Key_t make_hand_key(const Position& pos);
+	Key_t get_zobrist(const PieceType pt, const Square sq, const Color c);
+	Key_t get_zob_hand(const PieceType hp, const Color c);
+	Key_t get_zob_turn();
 }
 #endif
 
