@@ -29,7 +29,7 @@
 			Option(const char* v, Fn* = nullptr);
 			Option(int v, int min, int max, Fn* = nullptr);
 			//代入演算子のオーバライド
-			Option& operator = (const string& v);
+			Option& operator=(const string& v);
 			//intへの変換演算子
 			operator int() const;
 			//stringへの変換演算子

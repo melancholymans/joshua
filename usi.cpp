@@ -1,13 +1,12 @@
-﻿
-#ifdef _DEBUG
-	#include "gtest\gtest.h"
-#endif
-
-#include "types.h"
+﻿#include "types.h"
 #include "position.h"
 #include "usi.h"
 #include "misc.h"
 #include "tt.h"
+#ifdef _DEBUG
+	#include "gtest\gtest.h"
+#endif
+
 
 /*
 #include "csa.h"
@@ -42,6 +41,7 @@ bool USI::CaseInsensitiveLess::operator() (const string& s1, const string& s2) c
 		[](char c1, char c2) {return tolower(c1) < tolower(c2); });
 }
 //main関数から１回だけ呼ばれるOptionMapはkeyをstring型,valueをOptionクラスで保持するmapコンテナ
+//cout << options << endl;のように使う。
 void USI::init(OptionsMap& opt)
 {
 	const int cpus = std::max(static_cast<int>(std::thread::hardware_concurrency()),1);
@@ -59,7 +59,7 @@ void USI::init(OptionsMap& opt)
 	opt["MultiPV"] = Option(1, 1, MAX_LEGAL_MOVE);
 	opt["Skill_Level"] = Option(20, 0, 20);
 	opt["Max_Random_Score_Diff"] = Option(0, 0, ScoreMate0Ply);
-	opt["Max_Random_Score_Diff_Ply"] = Option(40, SHRT_MAX, SHRT_MAX);
+	opt["Max_Random_Score_Diff_Ply"] = Option(40, SHRT_MIN, SHRT_MAX);
 	opt["Emergency_Move_Horizon"] = Option(40, 0, 50);
 	opt["Emergency_Base_Time"] = Option(200, 0, 30000);
 	opt["Emergency_Move_Time"] = Option(70, 0, 5000);
@@ -79,10 +79,10 @@ std::ostream& USI::operator << (std::ostream& os, const USI::OptionsMap& om)
 		const Option& opt = it->second;
 		os << "\noption name " << it->first << " type " << opt.type;
 		if (opt.type != "buttom"){
-			os << " default" << opt.default_value;
+			os << " default: " << opt.default_value;
 		}
 		if (opt.type == "spin"){
-			os << " min " << " max " << opt.max;
+			os << " min " << opt.min << " max " << opt.max;
 		}
 	}
 	return os;
@@ -120,6 +120,7 @@ USI::Option::operator string() const
 	return current_value;
 }
 //代入演算子のオーバライド Option[name] = valueとされたとき起動される演算子オーバーライド
+//具体的には	options["Best_Book_Move"] = string("true");と呼び出されたときである。
 USI::Option& Option::operator=(const string& v)
 {
 	_ASSERT(!type.empty());
@@ -128,6 +129,13 @@ USI::Option& Option::operator=(const string& v)
 		|| (type == "spin" && (stoi(v) < min || stoi(v) > max))){
 		return *this;
 	}
+	if (type != "button"){
+		current_value = v;
+	}
+	if (on_chage){
+		(*on_chage)(*this);
+	}
+	return *this;
 }
 
 void USI::usi_main_loop(void)
@@ -257,9 +265,85 @@ void go(void)
 }
 */
 #ifdef _DEBUG
+
 TEST(Options, init)
 {
 	EXPECT_EQ(static_cast<int>(std::thread::hardware_concurrency()),8);	//この８はマシンによって異なる
+	USI::init(options);
+	cout << options << endl;	//目視で画面を確認
+	EXPECT_EQ(options["Use_Search_Log"],false);
+	EXPECT_EQ(options["USI_Hash"], 32);
+	TT.set_size(options["USI_Hash"]);
+	EXPECT_EQ(TT.get_size(), 2097152 - 4);	//2097152はoptions["USI_Hash"]に32が設定された場合の数
+	string str1 = options["Book_File"];
+	string str2("book.bin");
+	EXPECT_EQ(str1, str2);
+	EXPECT_EQ(options["Best_Book_Move"], false);
+	EXPECT_EQ(options["Own_Book"], true);
+	EXPECT_EQ(options["Min_Book_Ply"], SHRT_MAX);
+	EXPECT_EQ(options["Max_Book_Ply"], SHRT_MAX);
+	EXPECT_EQ(options["Min_Book_Score"], -180);
+	EXPECT_EQ(options["USI_Ponder"], true);
+	EXPECT_EQ(options["MultiPV"], 1);
+	EXPECT_EQ(options["Skill_Level"], 20);
+	EXPECT_EQ(options["Max_Random_Score_Diff"], 0);
+	EXPECT_EQ(options["Max_Random_Score_Diff_Ply"], 40);
+	EXPECT_EQ(options["Emergency_Move_Horizon"], 40);
+	EXPECT_EQ(options["Emergency_Base_Time"], 200);
+	EXPECT_EQ(options["Emergency_Move_Time"], 70);
+	EXPECT_EQ(options["Slow_Mover"], 100);
+	EXPECT_EQ(options["Minimum_Thinking_Time"], 15400);
+	EXPECT_EQ(options["Min_Split_Depth"], 7);	//このテストまテストするPCによって答えが違う
+	EXPECT_EQ(options["Max_Threads_per_Split_point"], 5);
+	EXPECT_EQ(options["Threads"], 8);	//このテストまテストするPCによって答えが違う
+	EXPECT_EQ(options["Use_Sleeping_Threads"], true);
+	//option値変更ルーチンチエック
+	options["Use_Search_Log"] = string("true");
+	EXPECT_EQ(options["Use_Search_Log"], true);
+	options["USI_Hash"] = string("64");
+	EXPECT_EQ(options["USI_Hash"], 64);
+	options["Book_File"] = string("book2.bin");
+	str1 = options["Book_File"];
+	str2 = string("book2.bin");
+	EXPECT_EQ(str1, str2);
+	options["Best_Book_Move"] = string("true");
+	EXPECT_EQ(options["Best_Book_Move"], true);
+	options["Own_Book"] = string("false");
+	EXPECT_EQ(options["Own_Book"], false);
+	options["Min_Book_Ply"] = string("123");
+	EXPECT_EQ(options["Min_Book_Ply"], 123);
+	options["Max_Book_Ply"] = string("456");
+	EXPECT_EQ(options["Max_Book_Ply"], 456);
+	options["Min_Book_Score"] = string("270");
+	EXPECT_EQ(options["Min_Book_Score"], 270);
+	options["USI_Ponder"] = string("false");
+	EXPECT_EQ(options["USI_Ponder"], false);
+	options["MultiPV"] = string("789");
+	EXPECT_EQ(options["MultiPV"], 789);
+	options["Skill_Level"] = string("19");
+	EXPECT_EQ(options["Skill_Level"], 19);
+	options["Max_Random_Score_Diff"] = string("314");
+	EXPECT_EQ(options["Max_Random_Score_Diff"], 314);
+	options["Max_Random_Score_Diff_Ply"] = string("3014");
+	EXPECT_EQ(options["Max_Random_Score_Diff_Ply"], 3014);
+	options["Emergency_Move_Horizon"] = string("45");
+	EXPECT_EQ(options["Emergency_Move_Horizon"], 45);
+	options["Emergency_Base_Time"] = string("10448");
+	EXPECT_EQ(options["Emergency_Base_Time"], 10448);
+	options["Emergency_Move_Time"] = string("224");
+	EXPECT_EQ(options["Emergency_Move_Time"], 224);
+	options["Slow_Mover"] = string("159");
+	EXPECT_EQ(options["Slow_Mover"], 159);
+	options["Minimum_Thinking_Time"] = string("6626");
+	EXPECT_EQ(options["Minimum_Thinking_Time"], 6626);
+	options["Min_Split_Depth"] = string("11");
+	EXPECT_EQ(options["Min_Split_Depth"], 11);	//このテストまテストするPCによって答えが違う
+	options["Max_Threads_per_Split_point"] = string("6");
+	EXPECT_EQ(options["Max_Threads_per_Split_point"], 6);
+	options["Threads"] = string("32");
+	EXPECT_EQ(options["Threads"], 32);	//このテストまテストするPCによって答えが違う
+	options["Use_Sleeping_Threads"] = string("false");
+	EXPECT_EQ(options["Use_Sleeping_Threads"], false);
 }
 TEST(usi,set_position)
 {
