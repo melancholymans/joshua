@@ -45,7 +45,7 @@ struct TTEntry{
 	}
 	int eval_value() const
 	{
-		return (int)eval_value;
+		return (int)evalue;
 	}
 private:
 	uint32_t key32;
@@ -74,6 +74,12 @@ public:
 	void set_size(size_t mb_size);
 	void clear();
 	void store(const Key_t key, int v, Bound type, int d, Move m, int statv);
+#ifdef _DEBUG
+	int get_size()
+	{
+		return hash_mask;
+	}
+#endif
 private:
 	uint32_t hash_mask;
 	TTEntry* table;
