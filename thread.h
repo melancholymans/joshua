@@ -2,6 +2,7 @@
 #define THREAD_H_INCLUDE
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 #include "types.h"
 #include "position.h"
@@ -78,7 +79,7 @@ struct Thread{
 	int idx;
 	int max_ply;
 	std::mutex sleep_lock;
-//	std::condition_variable sleep_cond;
+	std::condition_variable sleep_cond;
 	std::thread handle;
 	SplitPoint* volatile active_split_point;
 	volatile int split_point_size;
@@ -89,7 +90,7 @@ struct Thread{
 struct MainThread :public Thread{
 //	explicit MainThread(Searcher* s) :Thread(s), thinking(true){}
 	virtual void idle_loop();
-//	virtual bool thinking;
+	volatile bool thinking;
 };
 struct TimerThread :public Thread{
 //	explicit TimerThread(Searcher* s) :Thread(s), msec(0){}
@@ -99,7 +100,7 @@ struct TimerThread :public Thread{
 class ThreadPool :public vector<Thread *>
 {
 public:
-//	void init(Searcher *s);
+	void init(Searcher *s);
 	~ThreadPool();
 	MainThread* main_thread()
 	{
@@ -119,11 +120,11 @@ public:
 	Thread* available_slave(Thread* master) const;
 	void set_timer(const int msec);
 	void wait_for_thking_finised();
-//	void start_thinking(const Postion& pos, const LimitsType& limits, const vector<Move>& serachMovers);
+	void start_thinking(const Position& pos, const LimitsType& limits, const vector<Move>& serachMovers);
 	bool sleep_while_idle;
 	size_t max_thread_per_split_point;
 	std::mutex mutex;
-//	std::condition_variable sleep_cond;
+	std::condition_variable sleep_cond;
 private:
 	TimerThread* m_timer;
 	int m_minimum_split_depth;
