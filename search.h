@@ -112,8 +112,7 @@ struct Searcher{
 	static Position root_position;
 	static ThreadPool threads;
 	//static OptionsMap options;
-	/*
-	static void init();
+	void init();
 	static void id_loop(Position& pos);
 	static string pv_info_to_usi(Position& pos, const int depth, const int alpha, const int beta);
 	template<NodeType NT,bool IN_CHECK>
@@ -124,7 +123,6 @@ struct Searcher{
 	static void check_time();
 	static void do_usi_command_loop(int argc, char* argv[]);
 	static void set_option(std::istringstream& ss_cmd);
-	*/
 };
 
 //void init_search_table();

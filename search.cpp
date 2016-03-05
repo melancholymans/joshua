@@ -3,10 +3,15 @@
 #include "movegen.h"
 #include "thread.h"
 #include "search.h"
+#include "usi.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
 
+//Global object
+extern USI::OptionsMap options;
+
+//searcher struct static member
 volatile SignalsType Searcher::signals;
 LimitsType Searcher::limits;
 vector<Move> Searcher::search_moves;
@@ -24,14 +29,14 @@ Position Searcher::root_position;
 
 //ThreadPool Searcher::threads;
 //OptionsMap Searcher::options;
-Searcher* Searcher::thisptr;
+//Searcher* Searcher::thisptr;
 
-/*
+
 void Searcher::init()
 {
 	options.init(thisptr);
 }
-*/
+
 /*
 bool think(Position &pos)
 {
