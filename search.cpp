@@ -10,6 +10,7 @@
 
 //Global object
 extern USI::OptionsMap options;
+extern TranspositionTable TT;
 
 //searcher struct static member
 volatile SignalsType Searcher::signals;
@@ -26,15 +27,16 @@ History Searcher::history;
 Gains Searcher::gains;
 //TranspositionTable Searcher::tt;
 Position Searcher::root_position;
-
-//ThreadPool Searcher::threads;
+ThreadPool Searcher::threads;
 //OptionsMap Searcher::options;
 //Searcher* Searcher::thisptr;
 
 
 void Searcher::init()
 {
-	options.init(thisptr);
+	USI::init(options);
+	threads.init(this);
+	TT.set_size(options["USI_Hash"]);
 }
 
 /*

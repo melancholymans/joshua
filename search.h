@@ -111,7 +111,7 @@ struct Searcher{
 //	static TranspositionTable tt;
 	static Position root_position;
 	static ThreadPool threads;
-	//static OptionsMap options;
+//	static OptionsMap options;
 	void init();
 	static void id_loop(Position& pos);
 	static string pv_info_to_usi(Position& pos, const int depth, const int alpha, const int beta);
