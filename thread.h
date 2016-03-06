@@ -17,10 +17,6 @@ struct SearchStack;
 class MovePicker;
 struct Searcher;
 
-//探索ルーチンの型（ルート局面なのか、主探索スレッドなのか、分割探索スレッドなのか）
-enum NodeType{
-	Root, PV, NoPV, SplitPointRoot, SplitPointPV, SplitPointNonPV
-};
 //時間や探索深さの制限のためのフラグなどの構造体
 struct LimitsType{
 	LimitsType()
@@ -62,18 +58,16 @@ struct SplitPoint{
 	volatile bool cut_off;
 };
 struct Thread{
-//	explicit Thread(Searcher* s);
+	explicit Thread(Searcher* sech);
 	virtual ~Thread();
 	virtual void idle_loop();
 	void notify_one();
 	bool cutoff_occurred() const;
 	bool is_available_to(Thread* master) const;
 	void wait_for(volatile const bool& b);
-
-	template<bool Fake >
-	void split(Position& pos, SearchStack* ss, const int alpha, int beta, int& best_score, 
-		Move& bestMove, const int depth, const Move threat_move, const int move_count, 
-		MovePicker& mp, const MoveType node_type, const bool cut_node);
+	template<bool Fake>
+	void split(Position& pos, SearchStack* ss, const int alpha, const int beta, int& best_score, Move& best_move, const int depth, 
+		const Move threat_move, const int move_count,MovePicker& mp, const MoveType node_type, const bool cut_node);
 	SplitPoint split_points[MAX_SPLIT_POINT_PER_THREAD];
 	Position *active_position;
 	int idx;
@@ -85,15 +79,15 @@ struct Thread{
 	volatile int split_point_size;
 	volatile bool searching;
 	volatile bool exit;
-//	Searcher* searcher;
+	Searcher* searcher;
 };
 struct MainThread :public Thread{
-//	explicit MainThread(Searcher* s) :Thread(s), thinking(true){}
+	explicit MainThread(Searcher* s) :Thread(s), thinking(true){}
 	virtual void idle_loop();
 	volatile bool thinking;
 };
 struct TimerThread :public Thread{
-//	explicit TimerThread(Searcher* s) :Thread(s), msec(0){}
+	explicit TimerThread(Searcher* s) :Thread(s), msec(0){}
 	virtual void idle_loop();
 	int msec;
 };
@@ -116,10 +110,10 @@ public:
 	}
 //	void wake_up(Searcher* s);
 	void sleep();
-//	void read_usi_options(Searcher* s);
+	void read_usi_options(Searcher* sech);
 	Thread* available_slave(Thread* master) const;
 	void set_timer(const int msec);
-	void wait_for_thking_finised();
+	void wait_for_think_finised();
 	void start_thinking(const Position& pos, const LimitsType& limits, const vector<Move>& serachMovers);
 	bool sleep_while_idle;
 	size_t max_thread_per_split_point;
@@ -129,4 +123,12 @@ private:
 	TimerThread* m_timer;
 	int m_minimum_split_depth;
 };
+
+template<bool Fake>
+void Thread::split(Position& pos, SearchStack* ss, const int alpha, const int beta, int& best_score, Move& best_move, const int depth,
+	const Move threat_move, const int move_count, MovePicker& mp, const MoveType node_type, const bool cut_node)
+{
+	searching = true;\
+}
+
 #endif

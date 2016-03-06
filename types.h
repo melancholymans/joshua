@@ -126,6 +126,11 @@ enum Bound{
 	BoundLower,
 	BoundExact = BoundUpper | BoundLower
 };
+//探索ルーチンの型（ルート局面なのか、主探索スレッドなのか、分割探索スレッドなのか）
+enum NodeType{
+	Root, PV, NoPV, SplitPointRoot, SplitPointPV, SplitPointNonPV
+};
+
 const Rank SQUARE_RANK[SquareNum] = {
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,
 	Rank9, Rank8, Rank7, Rank6, Rank5, Rank4, Rank3, Rank2, Rank1,

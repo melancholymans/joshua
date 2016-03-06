@@ -115,7 +115,7 @@ struct Searcher{
 	void init();
 	static void id_loop(Position& pos);
 	static string pv_info_to_usi(Position& pos, const int depth, const int alpha, const int beta);
-	template<NodeType NT,bool IN_CHECK>
+	template<NodeType NT, bool IN_CHECK>
 	static int qsearch(Position& pos, SearchStack* ss, int alpha, int beta, const int depth);
 	template<NodeType NT>
 	static int search(Position& pos, SearchStack* ss, int alpha, int beta, const int depth, const bool cut_node);
