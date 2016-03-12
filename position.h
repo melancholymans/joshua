@@ -49,7 +49,11 @@ class Position{
 public:
 	Position(){}
 	Position(const Position& p);
-
+	Position(const Position& pos, Thread* th)
+	{
+		*this = pos;
+		this_thread = th;
+	}
 	Position(const string& sfen)
 	{ 
 		position_from_sfen(sfen);
@@ -263,6 +267,11 @@ public:
 	}
 	//打歩詰のときtrueを返す
 	bool is_pawn_drop_checkmate(const Color c, const Square to, const Square ksq) const;
+	//m_nodeを返す
+	uint64_t nodes_searched() const
+	{
+		return m_nodes;
+	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);
@@ -293,6 +302,10 @@ private:
 	int color_turn;
 	StateInfo start_state;
 	StateInfo* m_st;
+	//positionごとのスレッドを保管
+	Thread* this_thread;
+	//展開したnode数をカウントアップするためもの？
+	uint64_t m_nodes;
 };
 
 namespace Positionns

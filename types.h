@@ -128,7 +128,7 @@ enum Bound{
 };
 //探索ルーチンの型（ルート局面なのか、主探索スレッドなのか、分割探索スレッドなのか）
 enum NodeType{
-	Root, PV, NoPV, SplitPointRoot, SplitPointPV, SplitPointNonPV
+	Root, PV, NonPV, SplitPointRoot, SplitPointPV, SplitPointNonPV
 };
 
 const Rank SQUARE_RANK[SquareNum] = {

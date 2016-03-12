@@ -54,10 +54,10 @@ int main(int argc,char *argv[])
 	//profile();
 	main_test(argc, argv);
 #endif
-	USI::init(options);
+	auto sech = std::unique_ptr<Searcher>(new Searcher);
+	sech->init();
 	BitBoardns::init();
 	Positionns::init();		//Positionns::init()はBitBoardの設定値を使用して初期化しているので順序変更禁止
-	//init_usi_options();
     USI::usi_main_loop();
     return 0;
 }

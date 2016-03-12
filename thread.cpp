@@ -1,5 +1,8 @@
 #include "thread.h"
 #include "search.h"
+#ifdef _DEBUG
+	#include <gtest\gtest.h>
+#endif
 
 //Global object
 extern USI::OptionsMap options;
@@ -39,6 +42,7 @@ void TimerThread::idle_loop()
 	}
 }
 //MainThreadクラスのマルチスレッド対象関数
+//idle_loop関数はthink関数を呼び出す１歩手前の関数で
 void MainThread::idle_loop()
 {
 	while (true){
@@ -146,3 +150,8 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits, c
 	main_thread()->thinking = true;
 	main_thread()->notify_one();
 }
+TEST(thread, start_thinking)
+{
+
+}
+
