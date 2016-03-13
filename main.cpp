@@ -9,6 +9,11 @@ Shogidokoro shogi playing engin
 		lower_case_with_under
 	namespace,クラス、列挙型の型
 		CamelCase
+その他注意事項、統一事項
+	変数、関数名の性質
+		変数はファイル内に宣言してもデフォルトでプライベート扱い、関数名はデフォルトでパアブリック扱い
+	ファイル内グローバル変数
+		そのファイル内のみの使用で他ファイルから参照されない変数にはstaticキーワードをつける
 	グローバル変数の宣言
 		元ソースファイルの冒頭に宣言、そのヘッダファイルには一切しない、グローバル変数を使用したいソースファイル内でextern宣言をすればそのソースファイル内で使用可能
 	64bitの変数を16進数で表示させるためのprintf関数の表記
@@ -19,6 +24,27 @@ Shogidokoro shogi playing engin
 	むやみと名前空間を導入しない、使用するときは限定的に導入する
 	× using namespace std;
 	○ using std::cout;
+コンピュータ将棋での取り決め
+	将棋所の棋譜規則
+	・先手は大文字、後手は小文字
+	・駒が成ったときは駒文字の前に+をつける、と金なら+P(+p)
+	・持ち駒の表記　枚数が２枚以上になったら駒文字の前に枚数を書く　歩２枚なら　2P(2p) 先手後手とも持ち駒がなければ -(ハイフン）で表記
+	・joshua内表記用駒文字
+				先手			後手
+	Pawn		P			p
+	Lance		L			l
+	Night		N			n
+	Silver		S			s
+	Gold		G			g
+	Bishop		B			b
+	Rook		R			r
+	King		K			k
+	ProPawn		X			x
+	ProLance	T			t
+	ProNight	V			v
+	ProSilver	[			{
+	Horse		J			j
+	Dragon		Z			z
 */
 #include <stdio.h>
 #include <cstdlib>
