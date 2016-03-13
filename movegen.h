@@ -2,9 +2,6 @@
 #define MOVEGEN_H_INCLUDE
 
 #include "types.h"
-#include "bitboard.h"
-#include "position.h"
-#include "move.h"
 
 using BitBoardns::IN_FRONT_MASK;
 using BitBoardns::FILE_MASK;

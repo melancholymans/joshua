@@ -1,8 +1,5 @@
 ﻿#include "types.h"
-#include "gtest\gtest.h"
-#include "position.h"
-#include "move.h"
-#include "usi.h"
+#include "common.h"
 
 //名前空間宣言
 using namespace Movens;

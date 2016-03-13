@@ -1,8 +1,5 @@
-#include "thread.h"
-#include "search.h"
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
+#include "types.h"
+#include "common.h"
 
 //Global object
 extern USI::OptionsMap options;

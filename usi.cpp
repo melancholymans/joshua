@@ -1,20 +1,7 @@
 ﻿#include "types.h"
-#include "position.h"
-#include "usi.h"
-#include "misc.h"
-#include "tt.h"
-#ifdef _DEBUG
-	#include "gtest\gtest.h"
-#endif
+#include "common.h"
 
-
-/*
-#include "csa.h"
-#include "search.h"
-#include "movegen.h"
-#include "move.h"
-#include "evaluate.h"
-*/
+//名前空間使用宣言
 using USI::Option;
 using std::thread;
 //Global object

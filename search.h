@@ -2,16 +2,11 @@
 #define SEARCH_H_INCLUDE
 
 #include "types.h"
-#include "position.h"
-#include "thread.h"
-#include "misc.h"
-#include "timemanager.h"
-#include "usi.h"
-#include "tt.h"
 //先行宣言
 class Position;
 struct SplitPoint;
 class ThreadPool;
+class TimeManager;
 
 struct SearchStack{
 	SplitPoint* split_point;

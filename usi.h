@@ -1,8 +1,6 @@
 ﻿#if !defined(USI_H_INCLUDE)
 #define USI_H_INCLUDE
 
-	#include "types.h"
-	#include "search.h"
 
 	namespace USI{
 		//先行宣言

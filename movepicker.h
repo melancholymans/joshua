@@ -2,8 +2,6 @@
 #define MOVEPICKER_H_INCLUDE
 #include <array>
 #include <utility>
-#include "move.h"
-#include "position.h"
 
 //w‚µèŒÄ‚Ño‚µ
 enum GenerateMovePhase{

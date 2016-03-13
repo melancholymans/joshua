@@ -5,8 +5,6 @@
 #include <condition_variable>
 
 #include "types.h"
-#include "position.h"
-#include "search.h"
 
 //’è”éŒ¾
 const int MAX_THREADS = 64;
@@ -16,7 +14,7 @@ struct Thread;
 struct SearchStack;
 class MovePicker;
 struct Searcher;
-
+class Position;
 //ŠÔ‚â’Tõ[‚³‚Ì§ŒÀ‚Ì‚½‚ß‚Ìƒtƒ‰ƒO‚È‚Ç‚Ì\‘¢‘Ì
 struct LimitsType{
 	LimitsType()

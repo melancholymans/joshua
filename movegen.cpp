@@ -1,13 +1,9 @@
 ﻿#include <memory>
 #include <array>	//generate_evasions TESTのため
-#include "bitboard.h"
-#include "position.h"
-#include "move.h"
-#include "usi.h"
-#include "movegen.h"
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
+
+#include "types.h"
+#include "common.h"
+//名前空間使用宣言
 using Movens::string_from_move;
 using Positionns::print_board;
 /*

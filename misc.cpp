@@ -1,9 +1,7 @@
 ﻿#include <Windows.h>
 #include <mutex>
-#ifdef _DEBUG
-	#include "gtest\gtest.h"
-#endif
-#include "misc.h"
+#include "types.h"
+#include "common.h"
 
 //CMAGAZINE 2005/2より
 void ptime_init(ptime_t *iPT)

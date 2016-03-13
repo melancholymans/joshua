@@ -1,12 +1,5 @@
 ﻿#include "types.h"
-#include "position.h"
-#include "movegen.h"
-#include "thread.h"
-#include "search.h"
-#include "usi.h"
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
+#include "common.h"
 
 //Global object
 extern USI::OptionsMap options;
@@ -49,6 +42,7 @@ void Searcher::check_time()
 }
 void Thread::idle_loop()
 {
+	/*
 	SplitPoint* this_sp = split_point_size ? active_split_point : nullptr;
 	while ((!searching && searcher->threads.sleep_while_idle) || exit){
 		if (exit){
@@ -102,6 +96,7 @@ void Thread::idle_loop()
 			return;
 		}
 	}
+	*/
 	return;
 }
 TEST(serach,search_root)

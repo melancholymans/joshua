@@ -4,21 +4,9 @@
 #include <utility>	//CheckInfoのdc_bbのため
 
 #include "types.h"
-#include "position.h"
-#include "bitboard.h"
-#include "usi.h"
-#include "move.h"
-#include "mt64bit.h"
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
+#include "common.h"
 
-//名前空間宣言
-/*
-using std::cout;
-using std::cin;
-using std::endl;
-*/
+//名前空間使用宣言
 using std::stringstream;
 using std::noskipws;
 using Movens::move_from;
@@ -202,6 +190,11 @@ void Position::put_piece(Piece piece,Square sq)
 	by_type_bb[pt].set_bit(sq);
 	by_color_bb[c].set_bit(sq);
 }
+int Position::get_hand(Color c, PieceType pt) const
+{
+	_ASSERT(pt < 8);
+	return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
+}
 void Position::put_hand(Piece piece,const int num)
 {
 	PieceType pt = type_of_piece(piece);
@@ -210,6 +203,11 @@ void Position::put_hand(Piece piece,const int num)
 	for (int i = 0; i < num; i++){
 		hand[c] += hand_packed[pt];
 	}
+}
+bool Position::is_hand(Color c, PieceType pt) const
+{
+	_ASSERT(pt < 8);
+	return static_cast<bool>(hand[c] & hand_masking[pt]);
 }
 //指定の駒種、カラーの駒のbitboardを更新する。指定座標が駒がいればoffにする。指定座標に駒がいなければonにする（打ち駒）
 inline void Position::drop_piece_bb(const PieceType pt, const Square sq, const Color c)
@@ -362,6 +360,16 @@ void Position::undo_move(const Move m)
 #ifdef _DEBUG
 	Positionns::is_ok(*this);
 #endif
+}
+void Position::add_hand(Color c, PieceType pt)
+{
+	_ASSERT(pt < 8);
+	hand[c] += hand_packed[pt];
+}
+void Position::sub_hand(Color c, PieceType pt)
+{
+	_ASSERT(pt < 8);
+	hand[c] -= hand_packed[pt];
 }
 //指定されたMoveが王手となる手ならtrueを返す。そうでなければfalseを返す。直接駒の利きがkingにあたって王手なのか、開き王手による王手なのか
 //あるいは同時発生なのかの3パターンあるが王手がかかっていればtrue（あくまで王手、詰めではない）

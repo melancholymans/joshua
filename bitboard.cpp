@@ -1,11 +1,6 @@
 ﻿#include <stdio.h>
 #include "types.h"
-#include "bitboard.h"
-#include "position.h"
-#include "misc.h"
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
+#include "common.h" 
 
 const BitBoard SQUARE_BB[SquareNum] = {		//bitboard index		board square
 	BitBoard(1ULL << 0, 0),					//0						I9			

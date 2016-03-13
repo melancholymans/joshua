@@ -1,14 +1,6 @@
-#ifdef _DEBUG
-	#include <array>	//generate_evasions TEST‚Ì‚½‚ß
-	#include <vector>   //generate_evasions TEST‚Ì‚½‚ß
-#endif
-#include "movegen.h"
-#include "movepicker.h"
-#include "move.h"
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
-
+#include "types.h"
+#include "common.h"
+//–¼‘O‹óŠÔg—péŒ¾
 using MoveGeneratens::generate_moves;
 
 MovePicker::MovePicker(const Position& pos, const int depth) :m_pos(pos)

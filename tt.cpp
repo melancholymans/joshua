@@ -1,5 +1,5 @@
 #include "types.h"
-#include "tt.h"
+#include "common.h"
 
 //Global TranspositionTable
 TranspositionTable TT;

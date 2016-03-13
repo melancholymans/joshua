@@ -10,7 +10,7 @@ Shogidokoro shogi playing engin
 	namespace,クラス、列挙型の型
 		CamelCase
 	グローバル変数の宣言
-		元ソースファイルの冒頭に宣言、そのヘッダファイルにextern宣言、グローバル変数を使用したいソースファイル内でインクルード
+		元ソースファイルの冒頭に宣言、そのヘッダファイルには一切しない、グローバル変数を使用したいソースファイル内でextern宣言をすればそのソースファイル内で使用可能
 	64bitの変数を16進数で表示させるためのprintf関数の表記
 		printf("occ.p(0) = %llx,occ.p(1) = %llx\n", occ.p(0), occ.p(1));
 		ストリームで表示させる方法もある。
@@ -23,23 +23,9 @@ Shogidokoro shogi playing engin
 #include <stdio.h>
 #include <cstdlib>
 
-#ifdef _DEBUG
-	#include <gtest\gtest.h>
-#endif
-
-#include "cpuid.h"
 #include "types.h"
-#include "misc.h"
-#include "bitboard.h"
-#include "position.h"
-#include "usi.h"
-#include "mt64bit.h"
-/*
-#include "usioption.h"
-#include "evaluate.h"
-#include "search.h"
-void profile(void);
-*/
+#include "common.h"
+
 //Global object
 extern USI::OptionsMap options;
 

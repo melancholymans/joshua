@@ -10,8 +10,7 @@
 #include <immintrin.h>	//AVX
 
 #include "types.h"
-#include "cpuid.h"
-#include "bitboard.h"
+#include "common.h"
 
 class InstructionSet
 {

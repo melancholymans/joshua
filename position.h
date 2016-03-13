@@ -21,6 +21,7 @@ using BitBoardns::get_bishop_attack_no_occ;
 using BitBoardns::get_rook_attack_no_occ;
 //Positionクラスの前方宣言
 class Position;
+class Thread;
 //check関係のクラス
 struct CheckInfo{
 	explicit CheckInfo(const Position&);
@@ -40,10 +41,6 @@ public:
 };
 //StateInfo構造体をstackに保持したデータをユニークポインタ(unique_ptr)の別定義
 typedef std::unique_ptr<std::stack<StateInfo> > StateStackPtr;
-
-extern const int hand_packed[8];
-extern const int hand_shift[8];
-extern const int hand_masking[8];
 
 class Position{
 public:
@@ -94,17 +91,9 @@ public:
 	//xxxxxx11 xxxxxxxx xxxxxxxx	rook	0x03(シフトしているので)	0x30000
 	//xxx111xx xxxxxxxx xxxxxxxx	gold	0x07(シフトしているので)	0x1C0000
 	//指定したカラー、駒種の駒数を取得
-	int get_hand(Color c, PieceType pt) const
-	{
-		_ASSERT(pt < 8);
-		return (hand[c] & hand_masking[pt]) >> hand_shift[pt];
-	}
+	int get_hand(Color c, PieceType pt) const;
 	//指定したカラー、駒種の有無を取得,駒数は不要
-	bool is_hand(Color c, PieceType pt) const
-	{
-		_ASSERT(pt < 8);
-		return static_cast<bool>(hand[c] & hand_masking[pt]);
-	}
+	bool is_hand(Color c, PieceType pt) const;
 	//カラー、駒種に関係なく、全ての局面bitboardを返す
 	BitBoard all_bb() const
 	{
@@ -193,16 +182,8 @@ public:
 	void do_move(const Move m, StateInfo& st);
 	//局面を復元
 	void undo_move(const Move m);
-	void add_hand(Color c, PieceType pt)
-	{
-		_ASSERT(pt < 8);
-		hand[c] += hand_packed[pt];
-	}
-	void sub_hand(Color c, PieceType pt)
-	{
-		_ASSERT(pt < 8);
-		hand[c] -= hand_packed[pt];
-	}
+	void add_hand(Color c, PieceType pt);
+	void sub_hand(Color c, PieceType pt);
 	Key_t get_board_key() const
 	{
 		return m_st->board_key;
