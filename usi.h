@@ -1,7 +1,6 @@
 ﻿#if !defined(USI_H_INCLUDE)
 #define USI_H_INCLUDE
 
-
 	namespace USI{
 		//先行宣言
 		class Option;

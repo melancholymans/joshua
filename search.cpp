@@ -31,7 +31,11 @@ void Searcher::init()
 	threads.init(this);
 	TT.set_size(options["USI_Hash"]);
 }
-
+template<NodeType NT>
+int Searcher::search(Position& pos, SearchStack* ss, int alpha, int beta, const int depth, const bool cut_node)
+{
+	return 1;
+}
 void Searcher::think()
 {
     return;
@@ -42,7 +46,6 @@ void Searcher::check_time()
 }
 void Thread::idle_loop()
 {
-	/*
 	SplitPoint* this_sp = split_point_size ? active_split_point : nullptr;
 	while ((!searching && searcher->threads.sleep_while_idle) || exit){
 		if (exit){
@@ -96,7 +99,6 @@ void Thread::idle_loop()
 			return;
 		}
 	}
-	*/
 	return;
 }
 TEST(serach,search_root)
