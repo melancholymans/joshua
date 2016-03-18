@@ -22,6 +22,7 @@ using BitBoardns::get_rook_attack_no_occ;
 //Positionクラスの前方宣言
 class Position;
 class Thread;
+struct Searcher;
 //check関係のクラス
 struct CheckInfo{
 	explicit CheckInfo(const Position&);
@@ -254,7 +255,7 @@ public:
 		return m_nodes;
 	}
 	//postionクラス内に保持しているSearcherポインタを返す
-	Searcher* searcher() const
+	Searcher* get_searcher() const
 	{
 		return m_searcher;
 	}
@@ -293,7 +294,7 @@ private:
 	//展開したnode数をカウントアップするためもの？
 	uint64_t m_nodes;
 	//Searcherを保持している
-	Searcher *m_searcher;
+	Searcher* m_searcher;
 };
 
 namespace Positionns

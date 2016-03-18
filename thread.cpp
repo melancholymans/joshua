@@ -137,13 +137,23 @@ void ThreadPool::wait_for_think_finised()
 void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits, const vector<Move>& search_moves)
 {
 	wait_for_think_finised();
-    /*
-    aperyはpositionクラスにsearcherポインタを設置しており
-    現在joshuaはそれに対応していないのでここではこれ以上できない
-    */
-    /*
-	for (MoveList)
-    */
+	ptime_init(&pos.get_searcher()->search_timer);
+	pos.get_searcher()->signals.stop_on_ponder_hit = pos.get_searcher()->signals.first_root_move =
+		pos.get_searcher()->signals.stop = pos.get_searcher()->signals.failed_low_at_root = false;
+	pos.get_searcher()->root_position = pos;
+	pos.get_searcher()->limits = limits;
+	pos.get_searcher()->root_moves.clear();
+	MoveType MT = Legal;
+	Color c = pos.get_color_turn();
+	Color them = over_turn(c);
+	Square ksq = pos.get_king_square(c);
+	//王手をかけている駒があればMTはEvasion
+	if (!pos.attackers_to(them, ksq, pos.all_bb()).is_not_zero()){
+		MT = Evasion;
+	}
+	for (MoveList<Legal> ml(pos); !ml.end(); ++ml){
+		pos.get_searcher()->root_moves.push_back(ml.move());
+	}
 	main_thread()->thinking = true;
 	main_thread()->notify_one();
 }
