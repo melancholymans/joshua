@@ -91,12 +91,12 @@ typedef Stats<true> Gains;
 
 struct Searcher{
 	static Searcher* thisptr;
-	static volatile SignalsType signals;
-	static LimitsType limits;
+	static volatile SignalsType signals;	//thread.cpp->start_thinkingで初期化
+	static LimitsType limits;		//thread.cpp->start_thinkingで初期化
 	static vector<Move> search_moves;
-	static ptime_t search_timer;
+	static ptime_t search_timer;	//thread.cpp->start_thinkingで初期化
 	static StateStackPtr setup_states;
-	static vector<RootMove> root_moves;
+	static vector<RootMove> root_moves;	//thread.cpp->start_thinkingで初期化
 	static size_t pv_size;
 	static size_t pv_idx;
 	static TimeManager time_manager;
@@ -104,7 +104,7 @@ struct Searcher{
 	static History history;
 	static Gains gains;
 //	static TranspositionTable tt;
-	static Position root_position;
+	static Position root_position;	//thread.cpp->start_thinkingで初期化
 	static ThreadPool threads;
 //	static OptionsMap options;
 	void init();
