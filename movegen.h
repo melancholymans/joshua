@@ -523,6 +523,32 @@ MoveStack* MoveGeneratens::generate_silver_gold_bishop_rook_drop(MoveStack* ml, 
 	}
 	return ml;
 }
+//root局面の合法手を生成
+template<MoveType>
+class MoveList{
+public:
+	explicit MoveList(const Position) :m_curr(m_movestack_list), m_last(generate_moves(m_movestack_list, pos)){}
+	void operator ++() 
+	{ 
+		++m_curr; 
+	}
+	bool end() const 
+	{
+		return m_curr == m_last;
+	}
+	Move move() const
+	{
+		return m_curr->move;
+	}
+	size_t size() const
+	{
+		return static_cast<size_t>(m_last - m_movestack_list);
+	}
+private:
+	MoveStack m_movestack_list[MAX_LEGAL_MOVE];
+	MoveStack* m_curr;
+	MoveStack* m_last;
+};
 #endif
 
 
