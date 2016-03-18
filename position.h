@@ -253,6 +253,11 @@ public:
 	{
 		return m_nodes;
 	}
+	//postionクラス内に保持しているSearcherポインタを返す
+	Searcher* searcher() const
+	{
+		return m_searcher;
+	}
 #ifdef _DEBUG
 	bool get_color_bit(const Color c, const Square sq);
 	bool get_piece_bit(const PieceType pt, const Square sq);
@@ -287,6 +292,8 @@ private:
 	Thread* this_thread;
 	//展開したnode数をカウントアップするためもの？
 	uint64_t m_nodes;
+	//Searcherを保持している
+	Searcher *m_searcher;
 };
 
 namespace Positionns
