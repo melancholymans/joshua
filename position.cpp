@@ -826,6 +826,25 @@ void Positionns::is_ok(Position &pos)
 #endif
 
 #ifdef _DEBUG
+TEST(position, king_check)
+{
+	//color c側のkingに王手がかかっているか判定する
+	//問題はNo21
+	string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1Pb3G1/4P1N2/4G4/K3S3L b BGSNLP2s3p 1");
+	Position pos(ss);
+	Color c = pos.get_color_turn();
+	Color them = over_turn(c);
+	Square ksq = pos.get_king_square(c);
+	EXPECT_TRUE(pos.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
+
+	string ss1("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/4G4/K3S3L b BGSNLP2s3pb 1");
+	Position pos1(ss1);
+	EXPECT_FALSE(pos1.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
+
+	string ss2("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/1s2G4/K3S3L b BGSNLP1s3pb 1");
+	Position pos2(ss2);
+	EXPECT_TRUE(pos2.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
+}
 TEST(position, color_type_of_bb)
 {
 	BitBoard ack;
