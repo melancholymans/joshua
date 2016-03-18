@@ -99,6 +99,7 @@ enum MoveType{
 	NonCapture,			//駒を取らない手
 	Drop,				//駒打ち
 	Evasion,			//王手回避
+	Legal,				//合法手->王手がかかっていればEvasionを指定して指し手生成、それ以外は王手回避手以外を生成
 	/*
 	定義内容がわからないので単純なMoveTypeを定義し直した。
 	Capture駒を取る手
@@ -114,7 +115,6 @@ enum MoveType{
 	NonCaptureMinusPro,	//NonCapture-歩香桂飛角を取らない成る手-香の３段目への駒をとらない不成(移動不可の打ち駒は禁じ手ではあるがそれ以上移動不可能な進む手は禁じ手と明示してある資料がない）
 	Recapture,			//特定の位置への取り返しの手
 	NonEvasion,			//王手がかかっていないときの合法手
-	Legal,				//合法手->王手がかかっていればEvasionを指定して指し手生成、王手がかかっていなければNonEvasionを指定して指し手生成
 	LegalAll,			//Legal+歩飛角の不成、香の２段目への不成、
 	*/
 	MoveTypeNum
