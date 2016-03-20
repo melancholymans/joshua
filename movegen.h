@@ -524,10 +524,10 @@ MoveStack* MoveGeneratens::generate_silver_gold_bishop_rook_drop(MoveStack* ml, 
 	return ml;
 }
 //root局面の合法手を生成
-template<MoveType>
+template<MoveType MT>
 class MoveList{
 public:
-	explicit MoveList(const Position) :m_curr(m_movestack_list), m_last(generate_moves(m_movestack_list, pos)){}
+	explicit MoveList(const Position& pos) :m_curr(m_movestack_list), m_last(MoveGeneratens::generate_moves<MT>(m_movestack_list, pos)){}
 	void operator ++() 
 	{ 
 		++m_curr; 
