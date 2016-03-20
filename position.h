@@ -52,6 +52,12 @@ public:
 		*this = pos;
 		this_thread = th;
 	}
+	Position(const string& sfen, Thread* th,Searcher* sech)
+	{
+		position_from_sfen(sfen);
+		this_thread = th;
+		m_searcher = sech;
+	}
 	Position(const string& sfen)
 	{ 
 		position_from_sfen(sfen);
