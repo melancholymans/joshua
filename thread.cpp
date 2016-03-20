@@ -134,6 +134,8 @@ void ThreadPool::wait_for_think_finised()
 	std::unique_lock<std::mutex> lock(t->sleep_lock);
 	sleep_cond.wait(lock, [&]{return !(t->thinking); });
 }
+//goŠÖ”‚©‚ç‚Ì‚ÝŒÄ‚Î‚ê‚Ä‚¢‚é
+//pos.get_searcher()->threads.start_thinking(pos, limits, moves)‚Ì‚æ‚¤‚ÉŒÄ‚Î‚ê‚é
 void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits, const vector<Move>& search_moves)
 {
 	wait_for_think_finised();
@@ -152,13 +154,32 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits, c
 		MT = Evasion;
 	}
 	for (MoveList<Legal> ml(pos); !ml.end(); ++ml){
-		pos.get_searcher()->root_moves.push_back(ml.move());
+		pos.get_searcher()->root_moves.push_back(RootMove(ml.move()));
 	}
 	main_thread()->thinking = true;
 	main_thread()->notify_one();
 }
+
+#ifdef _DEBUG
 TEST(thread, start_thinking)
 {
+	std::vector<Move> moves;
+	LimitsType limits;
+	//–â‘è}‚Í«Šû¢ŠE‚UŒŽ•t˜^VŽèƒ|ƒJ–­Žè‘INo6‚æ‚è
+	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
 
+	Searcher *sech = new Searcher;
+	sech->init();
+	BitBoardns::init();
+	Positionns::init();		//Positionns::init()‚ÍBitBoard‚ÌÝ’è’l‚ðŽg—p‚µ‚Ä‰Šú‰»‚µ‚Ä‚¢‚é‚Ì‚Å‡˜•ÏX‹ÖŽ~
+
+	Position pos(ss,sech->threads.main_thread(),sech);
+	limits.depth = 3;
+	limits.infinite = false;
+	limits.ponder = false;
+	limits.time[Black] = 30000;
+	limits.time[White] = 30000;
+	pos.get_searcher()->threads.start_thinking(pos, limits, moves);
 }
+#endif
 
