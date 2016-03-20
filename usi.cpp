@@ -245,14 +245,36 @@ sech.material = eval_material(pos);
 }
 */
 
-/*
-void go(void)
+//USIインターフェイスから呼ばれ、思考開始コマンドｗｐ処理する。
+//goコマンドの後に続くオプションをここで設定し、start_thinking関数を呼んで探索を開始させる
+void go(const Position& pos,std::istringstream& cmd)
 {
-    think(root_position);
-}
-*/
-#ifdef _DEBUG
+	LimitsType limits;
+	std::vector<Move> moves;
+	string token;
 
+	while (cmd >> token){
+		if (token == "ponder"){
+			limits.ponder = true;
+		}
+		else if (token == "btime"){
+			cmd >> limits.time[Black];
+		}
+		else if (token == "wtime"){
+			cmd >> limits.time[White];
+		}
+		else if (token == "infinite"){
+			limits.infinite = true;
+		}
+		else if (token == "depth"){
+			cmd >> limits.depth;
+		}
+	}
+	//ss_cmdでlimitsを設定する
+	pos.get_searcher()->threads.start_thinking(pos, limits, moves);
+}
+
+#ifdef _DEBUG
 TEST(Options, init)
 {
 	EXPECT_EQ(static_cast<int>(std::thread::hardware_concurrency()),8);	//この８はマシンによって異なる
