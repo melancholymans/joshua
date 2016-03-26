@@ -165,6 +165,9 @@ enum Score{
 	ScoreInfinite = 32601,
 	ScoreNone = 32602
 };
+enum Depth{
+	OnePly = 2
+};
 //指し手データ定義
 typedef uint32_t Move;
 typedef uint64_t Key_t;	//boardの駒配置状態を一意に表す数値に使用されたりする

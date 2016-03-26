@@ -28,10 +28,10 @@ struct SignalsType{
 };
 //稲庭対策用フラグ
 enum InaniwaFlag{
-	not_inaniwa,
-	inaniwa_is_black,
-	inaniwa_is_white,
-	inaniwa_flag_num
+	NotInaniwa,
+	InaniwaIsNlack,
+	InaniwaIsWhite,
+	InaniwaFlagNum
 };
 class RootMove{
 public:

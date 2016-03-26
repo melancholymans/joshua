@@ -3,7 +3,21 @@
 
 //Global object
 extern USI::OptionsMap options;
-
+namespace{
+	template<typename T> T* new_thread(Searcher* sech)
+	{
+		T* th = new T(sech);
+		th->handle = std::thread(&Thread::idle_loop, th);
+		return th;
+	}
+	void delete_thread(Thread* th)
+	{
+		th->exit = true;
+		th->notify_one();
+		th->handle.join();
+		delete th;
+	}
+}
 Thread::Thread(Searcher* sech)
 {
 	searcher = sech;
@@ -14,15 +28,8 @@ Thread::Thread(Searcher* sech)
 	active_split_point = nullptr;
 	active_position = nullptr;
 	idx = sech->threads.size();
-	handle = std::thread(&Thread::idle_loop, this);
 }
 
-Thread::~Thread()
-{
-	exit = true;
-	notify_one();
-	handle.join();
-}
 //TimerThreadクラスのマルチスレッド対象関数
 void TimerThread::idle_loop()
 {
@@ -39,7 +46,8 @@ void TimerThread::idle_loop()
 	}
 }
 //MainThreadクラスのマルチスレッド対象関数
-//idle_loop関数はthink関数を呼び出す１歩手前の関数で
+//idle_loop関数はthink関数を呼び出す１歩手前の関数で、ThreadPoolのinit関数で呼び出される
+//
 void MainThread::idle_loop()
 {
 	while (true){
@@ -58,7 +66,6 @@ void MainThread::idle_loop()
 	_ASSERT(searching);
 	searching = false;
 }
-
 void Thread::notify_one()
 {
 	std::unique_lock<std::mutex > lock(sleep_lock);
@@ -89,28 +96,28 @@ void Thread::wait_for(volatile const bool& b)
 void ThreadPool::init(Searcher* sech)
 {
 	sleep_while_idle = true;
-	m_timer = new TimerThread(sech);
-	push_back(new MainThread(sech));
+	m_timer = new_thread<TimerThread>(sech);
+	push_back(new_thread<MainThread>(sech));
 	read_usi_options(sech);
 }
-ThreadPool::~ThreadPool()
+void ThreadPool::exit()
 {
-	delete m_timer;
+	delete_thread(m_timer);
 	for (auto elem : *this){
-		delete elem;
+		delete_thread(elem);
 	}
 }
 void ThreadPool::read_usi_options(Searcher* sech)
 {
 	max_thread_per_split_point = options["Max_Threads_per_Split_point"];
-	m_minimum_split_depth = options["Min_Split_Depth"];
 	const size_t requested = options["Threads"];
+	m_minimum_split_depth = (requested < 6 ? 4 : (requested < 8 ? 5:7)) * OnePly;
 	_ASSERT(requested > 0);
 	while (size() < requested){
-		push_back(new Thread(sech));
+		push_back(new_thread<Thread>(sech));
 	}
 	while (requested < size()){
-		delete back();
+		delete_thread(back());
 		pop_back();
 	}
 }
@@ -132,7 +139,7 @@ void ThreadPool::wait_for_think_finised()
 {
 	MainThread* t = main_thread();
 	std::unique_lock<std::mutex> lock(t->sleep_lock);
-	sleep_cond.wait(lock, [&]{return !(t->thinking); });
+	sleep_cond.wait(lock, [&]{return (!t->thinking); });	//ここのsleep_condはThreadPoolのsleep_condです。
 }
 //go関数からのみ呼ばれている
 //pos.get_searcher()->threads.start_thinking(pos, limits, moves)のように呼ばれる

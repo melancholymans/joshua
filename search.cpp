@@ -47,59 +47,60 @@ void Searcher::check_time()
 void Thread::idle_loop()
 {
 	SplitPoint* this_sp = split_point_size ? active_split_point : nullptr;
-	while ((!searching && searcher->threads.sleep_while_idle) || exit){
-		if (exit){
-			return;
+	while (true){
+		while ((!searching && searcher->threads.sleep_while_idle) || exit){
+			if (exit){
+				return;
+			}
+			std::unique_lock<std::mutex> lock(sleep_lock);
+			if (this_sp != nullptr && !this_sp->slaves_mask){
+				break;
+			}
+			if (!searching && !exit){
+				sleep_cond.wait(lock);
+			}
 		}
-		std::unique_lock<std::mutex> lock(sleep_lock);
+		if (searching){
+			searcher->threads.mutex.lock();
+			SplitPoint* sp = active_split_point;
+			searcher->threads.mutex.unlock();
+			SearchStack ss[MAX_PLY + 2];
+			Position pos(*sp->pos, this);
+			memcpy(ss, sp->ss - 1, 4 * sizeof(SearchStack));
+			(ss + 1)->split_point = sp;
+			sp->mutex.lock();
+			active_position = &pos;
+			switch (sp->node_type){
+			case Root:
+				searcher->search<SplitPointRoot>(pos, ss + 1, sp->alpha, sp->beta, sp->depth, sp->cut_node);
+				break;
+			case PV:
+				searcher->search<SplitPointPV>(pos, ss + 1, sp->alpha, sp->beta, sp->depth, sp->cut_node);
+				break;
+			case NonPV:
+				searcher->search<SplitPointNonPV>(pos, ss + 1, sp->alpha, sp->beta, sp->depth, sp->cut_node);
+				break;
+			default:
+				_ASSERT(false);
+			}
+			searching = false;
+			active_position = nullptr;
+			sp->slaves_mask ^= uint64_t(1) << idx;
+			sp->nodes += pos.nodes_searched();
+			if (searcher->threads.sleep_while_idle && this != sp->masterThread && !sp->slaves_mask){
+				sp->masterThread->notify_one();
+			}
+			sp->mutex.unlock();
+		}
 		if (this_sp != nullptr && !this_sp->slaves_mask){
-			break;
-		}
-		if (!searching && !exit){
-			sleep_cond.wait(lock);
-		}
-	}
-	if (searching){
-		searcher->threads.mutex.lock();
-		SplitPoint* sp = active_split_point;
-		searcher->threads.mutex.unlock();
-		SearchStack ss[MAX_PLY + 2];
-		Position pos(*sp->pos, this);
-		memcpy(ss, sp->ss - 1, 4 * sizeof(SearchStack));
-		(ss + 1)->split_point = sp;
-		sp->mutex.lock();
-		active_position = &pos;
-		switch (sp->node_type){
-		case Root:
-			searcher->search<SplitPointRoot>(pos, ss + 1, sp->alpha, sp->beta, sp->depth, sp->cut_node);
-			break;
-		case PV:
-			searcher->search<SplitPointPV>(pos, ss + 1, sp->alpha, sp->beta, sp->depth, sp->cut_node);
-			break;
-		case NonPV:
-			searcher->search<SplitPointNonPV>(pos, ss + 1, sp->alpha, sp->beta, sp->depth, sp->cut_node);
-			break;
-		default:
-			_ASSERT(false);
-		}
-		searching = false;
-		active_position = nullptr;
-		sp->slaves_mask ^= uint64_t(1) << idx;
-		sp->nodes += pos.nodes_searched();
-		if (searcher->threads.sleep_while_idle && this != sp->masterThread && !sp->slaves_mask){
-			sp->masterThread->notify_one();
-		}
-		sp->mutex.unlock();
-	}
-	if (this_sp != nullptr && !this_sp->slaves_mask){
-		this_sp->mutex.lock();
-		const bool finished = !this_sp->slaves_mask;
-		this_sp->mutex.unlock();
-		if (finished){
-			return;
+			this_sp->mutex.lock();
+			const bool finished = !this_sp->slaves_mask;
+			this_sp->mutex.unlock();
+			if (finished){
+				return;
+			}
 		}
 	}
-	return;
 }
 TEST(serach,search_root)
 {

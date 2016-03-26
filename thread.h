@@ -57,7 +57,7 @@ struct SplitPoint{
 };
 struct Thread{
 	explicit Thread(Searcher* sech);
-	virtual ~Thread();
+	virtual ~Thread(){};
 	virtual void idle_loop();
 	void notify_one();
 	bool cutoff_occurred() const;
@@ -93,7 +93,7 @@ class ThreadPool :public vector<Thread *>
 {
 public:
 	void init(Searcher *s);
-	~ThreadPool();
+	void exit();
 	MainThread* main_thread()
 	{
 		return static_cast<MainThread*>((*this)[0]);
@@ -112,7 +112,7 @@ public:
 	Thread* available_slave(Thread* master) const;
 	void set_timer(const int msec);
 	void wait_for_think_finised();
-	void start_thinking(const Position& pos, const LimitsType& limits, const vector<Move>& serachMovers);
+	void start_thinking(const Position& pos, const LimitsType& limits, const vector<Move>& serach_movers);
 	bool sleep_while_idle;
 	size_t max_thread_per_split_point;
 	std::mutex mutex;
@@ -122,11 +122,5 @@ private:
 	int m_minimum_split_depth;
 };
 
-template<bool Fake>
-void Thread::split(Position& pos, SearchStack* ss, const int alpha, const int beta, int& best_score, Move& best_move, const int depth,
-	const Move threat_move, const int move_count, MovePicker& mp, const MoveType node_type, const bool cut_node)
-{
-	searching = true;\
-}
 
 #endif
