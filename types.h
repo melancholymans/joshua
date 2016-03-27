@@ -24,6 +24,7 @@ using std::string;
 using std::map;
 using std::array;
 using std::max;
+using std::min;
 
 //局面の最大合法手数が593手なので一番近い２のべき乗
 const int MAX_LEGAL_MOVE = 1024;	
