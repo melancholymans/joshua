@@ -21,7 +21,6 @@ Gains Searcher::gains;
 //TranspositionTable Searcher::tt;
 Position Searcher::root_position;
 ThreadPool Searcher::threads;
-//OptionsMap Searcher::options;
 //Searcher* Searcher::thisptr;
 
 
@@ -40,6 +39,7 @@ void Searcher::think()
 {
     return;
 }
+//定期的に探索ツリーの展開ノード数、消費された思考時間をを超えたら探索を強制停止させる。
 void Searcher::check_time()
 {
 	return;

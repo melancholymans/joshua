@@ -29,8 +29,10 @@ struct LimitsType{
 	}
 	int time[ColorNum];
 	int increment[ColorNum];
+	int moves_to_go;
 	int depth;
 	uint32_t nodes;
+	int move_time;
 	bool infinite;
 	bool ponder;
 };

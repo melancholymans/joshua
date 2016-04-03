@@ -37,6 +37,7 @@ void TimerThread::idle_loop()
 		{
 			std::unique_lock<std::mutex> lock(sleep_lock);  //sleep_lockはThreadクラスのmutex変数
 			if (!exit){
+				//wait_forはタイムアウト時間を設定の上起こしてくるのを待機する関数　タイムアウト時間＝24日
 				sleep_cond.wait_for(lock, std::chrono::milliseconds(msec ? msec : INT_MAX));
 			}
 		}
@@ -51,20 +52,22 @@ void TimerThread::idle_loop()
 void MainThread::idle_loop()
 {
 	while (true){
-		std::unique_lock<std::mutex> lock(sleep_lock);  //sleep_lockはThreadクラスのmutex変数
-		thinking = false;
-		while (!thinking && !exit){
-			searcher->threads.sleep_cond.notify_one();
-			sleep_cond.wait(lock);
+		{
+			std::unique_lock<std::mutex> lock(sleep_lock);  //sleep_lockはThreadクラスのmutex変数
+			thinking = false;
+			while (!thinking && !exit){
+				searcher->threads.sleep_cond.notify_one();
+				sleep_cond.wait(lock);
+			}
 		}
+		if (exit){
+			return;
+		}
+		searching = true;
+		searcher->think();
+		_ASSERT(searching);
+		searching = false;
 	}
-	if (exit){
-		return;
-	}
-	searching = true;
-	searcher->think();
-	_ASSERT(searching);
-	searching = false;
 }
 void Thread::notify_one()
 {
