@@ -170,6 +170,7 @@ void Position::position_from_sfen(const string &sfen)
     //持ち駒の次は手数が入っているが無視してよい
 	m_st->board_key = Positionns::make_board_key(*this);
 	m_st->hand_key = Positionns::make_hand_key(*this);
+	this_thread = th;
 	//このあといろいろ設定する必要があるが準備ができていないのでここまで
 	is_ok(*this);
 }
