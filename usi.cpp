@@ -25,6 +25,80 @@ bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const
 	return std::lexicographical_compare(s1.begin(), s1.end(), s2.begin(), s2.end(),
 		[](char c1, char c2) {return tolower(c1) < tolower(c2); });
 }
+void Searcher::do_usi_command_loop(int argc, char* argv[])
+{
+	Position pos(USI::start_sfen, threads.main_thread(), thisptr);
+	string token, cmd;
+
+	for (int i = 1; i < argc; i++){
+		cmd += string(argv[1]) + " ";
+	}
+
+	do{
+		if (argc == 1 && !getline(cin, cmd)){
+			//改行のみ場合はquit扱い
+			cmd = "quit";
+		}
+		std::istringstream ss_cmd(cmd);
+		//std::skipsは空白を読み飛ばす
+		ss_cmd >> std::skipws >> token;
+		if (token == "quit" || token == "stop" || token == "ponder" || token == "gameover"){
+			if (token != "ponder" || signals.stop_on_ponder_hit){
+				signals.stop = true;
+				threads.main_thread()->notify_one();
+			}
+			else{
+				limits.ponder = false;
+			}
+			if (token == "ponder" && limits.move_time != 0){
+				//経過時間を加算する
+				limits.move_time += ptime_now(&search_timer);
+			}
+		}
+		else if (token == "usinewgame"){
+			TT.clear();
+			for (int i = 0; i < 100; i++){
+				//こんな関数はないといわれる
+				//std::g_randomTimeSeed();
+			}
+		}
+		else if (token == "usi"){
+			sync_cout
+				<< "id name joshua"
+				<< "\nid author takemori masami"
+				<< "\n"
+				<< options
+				<< "\nusiok"
+				<< sync_endl;
+		}
+		else if (token == "go"){
+			USI::go(pos, ss_cmd);
+		}
+		else if (token == "isready"){
+			sync_cout << "readyok" << sync_endl;
+		}
+		else if (token == "position"){
+			USI::set_position(pos, ss_cmd);
+		}
+		else if (token == "bench"){
+			benchmark(pos);
+		}
+		else if (token == "d"){
+			Positionns::print_board(pos);
+		}
+		else{
+			sync_cout << "unknow command" << cmd << sync_endl;
+		}
+	} while (token != "quit" && argc == 1);
+	threads.wait_for_think_finised();
+}
+
+void Searcher::set_option(std::istringstream& ss_cmd)
+{
+	string token, name, value;
+
+
+}
 //main関数から１回だけ呼ばれるOptionMapはkeyをstring型,valueをOptionクラスで保持するmapコンテナ
 //cout << options << endl;のように使う。
 void USI::init(OptionsMap& opt)
@@ -55,197 +129,9 @@ void USI::init(OptionsMap& opt)
 	opt["Threads"] = Option(cpus, 1, MAX_THREADS, on_thread);
 	opt["Use_Sleeping_Threads"] = Option(true);
 }
-//OptionMapのidx順にオプションの内容を文字列化して返す。usiコマンドで呼ばれる
-std::ostream& USI::operator << (std::ostream& os, const USI::OptionsMap& om)
-{
-	for (size_t idx = 0; idx < om.size(); idx++){
-		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
-			{return p.second.idx == idx; });
-		const Option& opt = it->second;
-		os << "\noption name " << it->first << " type " << opt.type;
-		if (opt.type != "buttom"){
-			os << " default: " << opt.default_value;
-		}
-		if (opt.type == "spin"){
-			os << " min " << opt.min << " max " << opt.max;
-		}
-	}
-	return os;
-}
-
-//オプションを設定するときに呼ばれる関数
-//char型+関数（省略可）　string型
-USI::Option::Option(const char* v, Fn* f) :type("string"), min(0), max(0), idx(options.size()), on_chage(f)
-{
-	default_value = current_value = v;
-}
-//bool型+関数（省略可）　check型
-USI::Option::Option(bool v, Fn* f) : type("check"), min(0), max(0), idx(options.size()), on_chage(f)
-{
-	default_value = current_value = (v ? "true" : "false");
-}
-//関数（省略可）　button型
-USI::Option::Option(Fn* f) : type("button"), min(0), max(0), idx(options.size()), on_chage(f)
-{}
-//int型+int型+int型+関数（省略可）　spin型
-USI::Option::Option(int v,int minv,int maxv,Fn* f) : type("spin"), min(minv), max(maxv), idx(options.size()), on_chage(f)
-{
-	default_value = current_value = std::to_string(v);
-}
-//intへの変換演算子
-USI::Option::operator int() const
-{
-	_ASSERT(type == "check" || type == "spin");
-	return (type == "spin") ? stoi(current_value) : current_value == "true";
-}
-//stringへの変換演算子
-USI::Option::operator string() const
-{
-	_ASSERT(type == "string");
-	return current_value;
-}
-//代入演算子のオーバライド Option[name] = valueとされたとき起動される演算子オーバーライド
-//具体的には	options["Best_Book_Move"] = string("true");と呼び出されたときである。
-USI::Option& Option::operator=(const string& v)
-{
-	_ASSERT(!type.empty());
-	if ((type != "button" && v.empty())
-		|| (type == "check" && v != "true" && v != "false")
-		|| (type == "spin" && (stoi(v) < min || stoi(v) > max))){
-		return *this;
-	}
-	if (type != "button"){
-		current_value = v;
-	}
-	if (on_chage){
-		(*on_chage)(*this);
-	}
-	return *this;
-}
-
-void USI::usi_main_loop(void)
-{
-    string token,cmd;
-	Position pos(start_sfen);
-
-    do{
-		if (!getline(cin, cmd)){
-            //改行のみ場合はquit扱い
-            cmd = "quit";
-        }
-
-    }while(handle_command(cmd));
-}
-
-
-//usi->isready->usinewgameで対局開始
-//positionで思考局面の付与->goで思考
-//bestmoveで思考結果を返信,gameoverで終局
-bool USI::handle_command(const string &command)
-{
-	string token;
-    std::stringstream uip(command);
-
-	uip >> std::skipws >> token;
-    if(token == "quit"){
-        //後始末
-        return false;
-    }
-	/*
-    else if(token == "usi"){
-        sync_cout	<< "id name " << "joshua" << "\n"
-					<< "id author takemori masami"
-					//optionがあったらここで送信
-					<< "option name BookFile value public.bin"
-					<< "option name UseBook type default true"
-					<< "usiok" << sync_endl;
-    }
-    else if(token == "isready"){
-        sync_cout << "readyok" << sync_endl;
-    }
-    else if(token == "usinewgame"){
-        //色々初期など準備,このコマンドに対して将棋所に返すものはない
-        //from_sfen(start_position);
-        //game_init(root_position);
-    }
-    else if(token == "position"){
-        //エンジンに思考させる局面を逐一送ってくるので解釈させ内部のデータ構造に変換する
-        set_position(pos,uip);
-    }
-    else if(token == "setoption"){
-        //エンジンに対する値を設定するとき送信
-        //set_option(uip);
-    }
-    else if(token == "go"){
-        //思考開始
-        //go();
-    }
-    else if(token == "d"){
-        //print_board(root_position);
-    }
-    else if(token == "csa"){
-        //csa(uip);
-    }
-    else if(token == "gameover"){
-        //GUI側からの終局の通知
-    }
-    else{
-		sync_cout << "Unknow command" << uip.str() << sync_endl;
-    }
-	*/
-    return true;    //明示的な終了以外は動作継続(ユーザーからの終了コマンド(quit)のみ)
-}
-
-void set_position(std::stringstream& uip)
-{
-	/*
-    string token;
-    short dummy[8];
-
-    uip >> token;
-    //平手初期局面
-    if(token == "startpos"){
-        from_sfen(start_position);
-    }
-    //駒落ち初期局面
-    else if(cmd == "sfen"){
-        string sfen;
-        while(cmd != "moves" && !uip.at_end_of_line()){
-            cmd = uip.get_next_token();
-            sfen += cmd;
-            sfen += ' ';
-        }
-        from_sfen(sfen);
-    }
-    //指し手再現,局面更新
-    if(!uip.at_end_of_line()){
-        if(cmd != "moves"){
-            cmd = uip.get_next_token();
-        }
-        if(cmd == "moves"){
-            while(!uip.at_end_of_line()){
-                cmd = uip.get_next_token(); //cmdには指し手ごと分割されて渡す
-                Move m = move_from_string(root_position,cmd);
-                DoMove(root_position.turn,root_position,m,dummy);
-            }
-        }
-    }
-	*/
-}
-
-/*
-void game_init(const Position &pos)
-{
-//対局ごと初期化する必要がある変数
-next_move[0].last_move = mlist;
-next_modify[0].last_dirty = modifylist;
-sech.material = eval_material(pos);
-}
-*/
-
 //USIインターフェイスから呼ばれ、思考開始コマンドｗｐ処理する。
 //goコマンドの後に続くオプションをここで設定し、start_thinking関数を呼んで探索を開始させる
-void go(const Position& pos,std::istringstream& cmd)
+void USI::go(const Position& pos, std::istringstream& cmd)
 {
 	LimitsType limits;
 	std::vector<Move> moves;
@@ -271,13 +157,117 @@ void go(const Position& pos,std::istringstream& cmd)
 	//ss_cmdでlimitsを設定する
 	pos.get_searcher()->threads.start_thinking(pos, limits, moves);
 }
+//do_usi_command_loopからpositionコマンドから呼ばれる
+void USI::set_position(Position& pos, std::istringstream& uip)
+{
+	string token;
+	string sfen;
+	//short dummy[8];
 
+	uip >> token;
+	//平手初期局面
+	if (token == "startpos"){
+		sfen = USI::start_sfen;
+		uip >> token;
+	}
+	else if (token == "sfen"){
+		while (uip >> token && token != "moves"){
+			sfen += token + " ";
+		}
+	}
+	else{
+		return;
+	}
+	//指し手再現,局面更新
+	pos.position_from_sfen(sfen, pos.get_searcher()->threads.main_thread(), pos.get_searcher());
+	/*
+	if(!uip.at_end_of_line()){
+	if(cmd != "moves"){
+	cmd = uip.get_next_token();
+	}
+	if(cmd == "moves"){
+	while(!uip.at_end_of_line()){
+	cmd = uip.get_next_token(); //cmdには指し手ごと分割されて渡す
+	Move m = move_from_string(root_position,cmd);
+	DoMove(root_position.turn,root_position,m,dummy);
+	}
+	}
+	}
+	*/
+}
+
+//OptionMapのidx順にオプションの内容を文字列化して返す。usiコマンドで呼ばれる
+std::ostream& operator << (std::ostream& os, const OptionsMap& om)
+{
+	for (size_t idx = 0; idx < om.size(); idx++){
+		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
+			{return p.second.idx == idx; });
+		const Option& opt = it->second;
+		os << "\noption name " << it->first << " type " << opt.type;
+		if (opt.type != "buttom"){
+			os << " default: " << opt.default_value;
+		}
+		if (opt.type == "spin"){
+			os << " min " << opt.min << " max " << opt.max;
+		}
+	}
+	return os;
+}
+
+//オプションを設定するときに呼ばれる関数
+//char型+関数（省略可）　string型
+Option::Option(const char* v, Fn* f) :type("string"), min(0), max(0), idx(options.size()), on_chage(f)
+{
+	default_value = current_value = v;
+}
+//bool型+関数（省略可）　check型
+Option::Option(bool v, Fn* f) : type("check"), min(0), max(0), idx(options.size()), on_chage(f)
+{
+	default_value = current_value = (v ? "true" : "false");
+}
+//関数（省略可）　button型
+Option::Option(Fn* f) : type("button"), min(0), max(0), idx(options.size()), on_chage(f)
+{}
+//int型+int型+int型+関数（省略可）　spin型
+Option::Option(int v,int minv,int maxv,Fn* f) : type("spin"), min(minv), max(maxv), idx(options.size()), on_chage(f)
+{
+	default_value = current_value = std::to_string(v);
+}
+//intへの変換演算子
+Option::operator int() const
+{
+	_ASSERT(type == "check" || type == "spin");
+	return (type == "spin") ? stoi(current_value) : current_value == "true";
+}
+//stringへの変換演算子
+Option::operator string() const
+{
+	_ASSERT(type == "string");
+	return current_value;
+}
+//代入演算子のオーバライド Option[name] = valueとされたとき起動される演算子オーバーライド
+//具体的には	options["Best_Book_Move"] = string("true");と呼び出されたときである。
+Option& Option::operator=(const string& v)
+{
+	_ASSERT(!type.empty());
+	if ((type != "button" && v.empty())
+		|| (type == "check" && v != "true" && v != "false")
+		|| (type == "spin" && (stoi(v) < min || stoi(v) > max))){
+		return *this;
+	}
+	if (type != "button"){
+		current_value = v;
+	}
+	if (on_chage){
+		(*on_chage)(*this);
+	}
+	return *this;
+}
 #ifdef _DEBUG
 TEST(Options, init)
 {
 	EXPECT_EQ(static_cast<int>(std::thread::hardware_concurrency()),8);	//この８はマシンによって異なる
 	USI::init(options);
-	cout << options << endl;	//目視で画面を確認
 	EXPECT_EQ(options["Use_Search_Log"],false);
 	EXPECT_EQ(options["USI_Hash"], 32);
 	TT.set_size(options["USI_Hash"]);
@@ -358,7 +348,7 @@ TEST(usi,set_position)
     std::stringstream uip(command);
     //set_position(uip);
 	/*
-    EXPECT_EQ(W_LANCE,root_position.board[SQ_9A]);
+	EXPECT_EQ(WLance, root_position.board[SQ_9A]);
     EXPECT_EQ(W_KNIGHT,root_position.board[SQ_8A]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_7A]);
     EXPECT_EQ(EMPTY,root_position.board[SQ_6A]);
