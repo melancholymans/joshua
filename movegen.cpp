@@ -41,8 +41,10 @@ TEST(movegen, generate_evasions_POS39_white)
 {
 	//問題局面=受けとしのぎNo39
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("1g3l2l/2+B6/k2p5/2pP3p1/1p1g1p1n1/N1s1psPNp/6pP1/R2+n1P1K1/5SG1L b Brgsl6p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -104,8 +106,10 @@ TEST(movegen, generate_evasions_POS37_black)
 {
 	//問題局面=受けとしのぎNo37
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("7nl/2g2Gsk1/+P3pPpp1/2pp4P/1p2PpSN1/2PS3P1/1P2+p4/K1b6/LRB5L w GSN3Prgnl 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -144,8 +148,10 @@ TEST(movegen, generate_evasions_POS35_white)
 {
 	//問題局面=受けとしのぎNo35
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3gB1nl/7kp/4PP3/2p2ps1P/3ps1P1+R/pPP2GN2/2N3N2/P2+p+p4/LKG6 b S3Prbgslp 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -180,8 +186,10 @@ TEST(movegen, generate_evasions_POS33_black)
 {
 	//問題局面=受けとしのぎNo33
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("1n4kn1/4+S1g1G/l3G1p1l/p4psp1/4P3p/Pp1PS1P2/4b4/1PKp1+r3/LN6L w BGSN2Pr4p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -214,8 +222,10 @@ TEST(movegen, generate_evasions_POS31_white)
 {
 	//問題局面=受けとしのぎNo31
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l5k2/4p1l2/4g4/p2p2p+Bp/2P2R1p1/1np+b2P1P/PP1+rP2+n1/2G4P1/LNK1G4 b 2S2Pg2snl2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -246,8 +256,10 @@ TEST(movegen, generate_evasions_POS29_black)
 {
 	//問題局面=受けとしのぎNo29
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("4+R1sn1/4G1kp+P/2P2g2l/2p2bpS1/pPsPPp1Pp/3p+r1P2/NS1g2B2/PK7/L1L5L w GNPn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -281,8 +293,10 @@ TEST(movegen, generate_evasions_POS27_white)
 	//問題局面=受けとしのぎNo27　
 	//本来black局面であるが手番反転してwhite側手番でテストしている
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l4G1n1/6pkl/6s1p/2p1p4/pp1PbpN2/2Sp2s1P/PPP6/1KGg5/LN2+r3L b RS3Pbgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -331,8 +345,10 @@ TEST(movegen, generate_evasions_POS25_black)
 {
 	//問題局面=受けとしのぎNo25　D5->C4竜移動前の局面を現している
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("6snl/+P4gk2/4+P1p2/1P3+B1P1/BN1+rp1Npp/p2P1PP2/4Rp3/N1K2g3/L1s5L w G2SL2Pg3p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -368,8 +384,10 @@ TEST(movegen, generate_evasions_POS23_white)
 	//本来black局面であるが手番反転してwhite側手番でテストしている
 
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l6n1/6+P+L1/2np1p3/p3psS2/1pPPP1P1g/2GS1+B1pk/PKN+r1P3/3+p5/L4+s3 b RGbgnl4p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -407,8 +425,10 @@ TEST(movegen, generate_evasions_POS21_black)
 {
 	/*問題局面=受けとしのぎNo21　66角を打つ前の局面を現している*/
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/4G4/K3S3L w BGSNLPb2s3p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -453,8 +473,10 @@ TEST(movegen, generate_evasions_POS21_black)
 TEST(movegen, movegen_POS3_white)
 {
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("2+s2g3/1G3g3/2+L1+Np1K1/6p1+n/2GS1+PP1+S/1pPpp4/+PPkPP1+l1+p/1+b1+r+P4/2+P6 w RBSNLPnl2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -802,8 +824,10 @@ TEST(movegen, movegen_POS3_white)
 TEST(movegen, movegen_POS3_black)
 {
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("2+s2g3/1G3g3/2+L1+Np1K1/6p1+n/2GS1+PP1+S/1pPpp4/+PPkPP1+l1+p/1+b1+r+P4/2+P6 b RBSNLPnl2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -1476,8 +1500,10 @@ TEST(movegen, movegen_POS3_black)
 TEST(movegen, movegen_POS2_white)
 {
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("2s2g3/1G3g3/2L1Np2l/2ps2pKn/2G2PPPS/PpPpp4/1PkPP3p/9/9 w RBSNLPrbnl2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -1970,8 +1996,10 @@ TEST(movegen, movegen_POS2_white)
 TEST(movegen, movegen_POS2_black)
 {
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("2s2g3/1G3g3/2L1Np2l/2ps2pKn/2G2PPPS/PpPpp4/1PkPP3p/9/9 b RBSNLPrbnl2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -2567,8 +2595,10 @@ TEST(movegen, movegen_POS1_white)
 {
 	//問題図は自作
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("4k4/4gP3/pNbp1pB2/4R1ppL/1P5n1/lrP1P1PlP/2p1+nS1P1/5+s2K/7NL w G4P2g2sp 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;
@@ -2926,8 +2956,10 @@ TEST(movegen, movegen_POS1_black)
 {
 	//問題図は自作
 	using namespace MoveGeneratens;
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("4k4/4gP3/pNbp1pB2/4R1ppL/1P5n1/lrP1P1PlP/2p1+nS1P1/5+s2K/7NL b G4P2g2sp 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	MoveStack ms[512];
 	memset(ms, 0, sizeof(ms));
 	MoveStack* ml = ms;

@@ -54,14 +54,15 @@ public:
 	}
 	Position(const string& sfen, Thread* th,Searcher* sech)
 	{
-		position_from_sfen(sfen,th);
-		m_searcher = sech;
+		position_from_sfen(sfen,th,sech);
 	}
+	/*
 	Position(const string& sfen)
 	{ 
 		position_from_sfen(sfen);
 	}
-	void position_from_sfen(const string &sfen,Thread* th);
+	*/
+	void position_from_sfen(const string &sfen, Thread* th, Searcher* sech);
 	//手番を設定
 	void set_color_turn(Color c)
 	{

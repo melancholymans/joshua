@@ -184,7 +184,9 @@ TEST(move, string_from_move)
 TEST(move,move_from_string)
 {
     //平手初期局面を与え、駒を動かして、正しいMoveが返ってくるか調べる
-	Position pos(USI::start_sfen);
+	Searcher* sech = new Searcher;
+	sech->init();
+	Position pos(USI::start_sfen, sech->threads.main_thread(), sech);
 	using Movens::square_from_string;
 
     string cmd;

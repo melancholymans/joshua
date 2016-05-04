@@ -29,6 +29,7 @@ using BitBoardns::make_between_bb;
 using BitBoardns::is_aligned;
 using BitBoardns::allon;
 using BitBoardns::print;
+
 //局所定数宣言・定義
 //駒の枚数をunsigned int 32bitにパッキンするための駒１つの定数
 const int hand_packed[8] = {
@@ -104,7 +105,7 @@ CheckInfo::CheckInfo(const Position& pos)
 //sfen文字列からPosition内部の局面情報をセットする。
 //標準初期sfen文字列はこう->"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
 //小文字が後手駒、大文字が先手駒
-void Position::position_from_sfen(const string &sfen)
+void Position::position_from_sfen(const string &sfen,Thread* th,Searcher* sech)
 {
 	stringstream uip(sfen);
 	char token;
@@ -113,6 +114,7 @@ void Position::position_from_sfen(const string &sfen)
 	int piece;
 
 	clear();
+	m_searcher = sech;
 	uip >> noskipws;	//空白をスキップさせない設定
     //盤上
     while(uip >> token && !isspace(token)){
@@ -831,19 +833,22 @@ TEST(position, king_check)
 {
 	//color c側のkingに王手がかかっているか判定する
 	//問題はNo21
-	string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1Pb3G1/4P1N2/4G4/K3S3L b BGSNLP2s3p 1");
-	Position pos(ss);
+	Searcher* sech = new Searcher;
+	sech->init();
+
+	const string ss("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1Pb3G1/4P1N2/4G4/K3S3L b BGSNLP2s3p 1");
+	Position pos(ss,sech->threads.main_thread(),sech);
 	Color c = pos.get_color_turn();
 	Color them = over_turn(c);
 	Square ksq = pos.get_king_square(c);
 	EXPECT_TRUE(pos.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
 
 	string ss1("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/4G4/K3S3L b BGSNLP2s3pb 1");
-	Position pos1(ss1);
+	Position pos1(ss1, sech->threads.main_thread(), sech);
 	EXPECT_FALSE(pos1.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
 
 	string ss2("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/1s2G4/K3S3L b BGSNLP1s3pb 1");
-	Position pos2(ss2);
+	Position pos2(ss2, sech->threads.main_thread(), sech);
 	EXPECT_TRUE(pos2.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
 }
 TEST(position, color_type_of_bb)
@@ -851,8 +856,10 @@ TEST(position, color_type_of_bb)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	ack = pos.color_type_of_bb(Black, Pawn);
 	EXPECT_EQ(ack.p(0), 0x800040001000040);
@@ -867,8 +874,10 @@ TEST(position, oper_shift_bit_right)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	ack = pos.piece_type_of_bb(Pawn) & pos.color_of_bb(White);
 	ack = pos.attackers_from_pawns(White, ack);
@@ -881,8 +890,10 @@ TEST(position, oper_shift_bit_left)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	ack = pos.piece_type_of_bb(Pawn) & pos.color_of_bb(Black);
 	ack = pos.attackers_from_pawns(Black,ack);
@@ -893,8 +904,10 @@ TEST(position, do_move_m_st)
 {
 	//問題図は自作
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
+	Searcher* sech = new Searcher;
+	sech->init();
 	BitBoardns::init();
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	Move m;
 	StateInfo st;
 
@@ -949,9 +962,11 @@ TEST(position, do_move_m_st)
 TEST(position, move_give_check)
 {
 	//問題図は自作
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	BitBoardns::init();
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	Move m;
 
 	CheckInfo cib(pos);
@@ -977,9 +992,11 @@ TEST(position, move_give_check)
 TEST(position, is_discovered_check)
 {
 	//問題図は自作
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	BitBoardns::init();
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	CheckInfo cib(pos);
 	EXPECT_EQ(pos.is_discovered_check(F8, F9, E9, cib.dc_bb.first),true);
@@ -996,10 +1013,12 @@ TEST(position, is_discovered_check)
 TEST(position, is_aligned)
 {
 	//問題図は自作
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
 	BitBoardns::init();
 
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	using BitBoardns::is_aligned;
 
 	EXPECT_EQ(is_aligned(F8, F9, E9),false);
@@ -1013,8 +1032,10 @@ TEST(position, is_aligned)
 TEST(position, check_bb)
 {
 	//問題図は自作
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	CheckInfo cib(pos);
 	EXPECT_EQ(cib.check_bb[Pawn].p(0), 0x2000000000);
@@ -1060,8 +1081,10 @@ TEST(position, check_bb)
 TEST(position, dc_bb)
 {
 	//問題図は自作
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	CheckInfo cib(pos);
 	EXPECT_EQ(cib.dc_bb.first.p(0), 0x10000000);
@@ -1075,8 +1098,10 @@ TEST(position, dc_bb)
 TEST(position, pinned_bb)
 {
 	//問題図は自作
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("l3k4/4gP3/pNbp1pB2/2p3ppp/1P2R2n1/2P3PlP/P3+nS1P1/2r2+s1K1/L6NL b G4P2g2s 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	CheckInfo cib(pos);
 	EXPECT_EQ(cib.pinned_bb.p(0), 0x10000008000);
@@ -1092,8 +1117,10 @@ TEST(position, attackers_to)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	ack = pos.attackers_to(C9, occ);
 	EXPECT_EQ(ack.p(0), 0x600000000000);
@@ -1242,8 +1269,10 @@ TEST(position, attackers_to2)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	ack = pos.attackers_to(White,C9, occ);
 	EXPECT_EQ(ack.p(0), 0x600000000000);
@@ -1392,8 +1421,10 @@ TEST(position, attackers_to_excluded_of_king)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	ack = pos.attackers_to_excluded_of_king(White, C9, occ);
 	EXPECT_EQ(ack.p(0), 0x200000000000);
@@ -1491,8 +1522,10 @@ TEST(position, attackers_from_pawn)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	//black
@@ -1579,8 +1612,10 @@ TEST(position, attackers_from_night)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	//black
@@ -1799,8 +1834,10 @@ TEST(bitboard, attackers_from_silver)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	//black
@@ -1891,8 +1928,10 @@ TEST(bitboard, attackers_from_gold)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	//black
@@ -1979,8 +2018,10 @@ TEST(bitboard, attackers_from_king)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	//kingにはblack/whiteは関係ない
@@ -2043,8 +2084,10 @@ TEST(bitboard, attackers_from_lance)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	//lance black
@@ -2144,8 +2187,10 @@ TEST(bitboard, attackers_from_rook)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	sq = C9;
@@ -2207,8 +2252,10 @@ TEST(bitboard, attackers_from_bishop)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	sq = C9;
@@ -2267,8 +2314,10 @@ TEST(bitboard, attackers_from_horse)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	sq = C9;
@@ -2311,8 +2360,10 @@ TEST(bitboard, attackers_from_dragon)
 	BitBoard ack;
 	BitBoard occ(0x4D096E604D5A0344, 0x25271);
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoardns::init();
 	sq = C9;
@@ -2340,8 +2391,10 @@ TEST(position, inver_bit_bb)
 {
 	//bitboardのbit反転する関数
 	//テスト問題は加藤一二三実践集より
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoard bb = pos.inver_bit_bb();
 	EXPECT_EQ(false, bb.is_bit_on(A9));
@@ -2435,8 +2488,10 @@ TEST(postion, undo_move)
 
 	//テスト問題は加藤一二三実践集より
 	Positionns::init();		//StateInfoのテストのため
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	//do_moveで局面をすすめundo_moveで元に戻すテスト
 	using std::array;
@@ -3395,8 +3450,10 @@ TEST(position, do_move)
 
 	//テスト問題は加藤一二三実践集より
 	Positionns::init();		//StateInfoのテストのため
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g3n1/1ks1gr2l/1p3sbp1/p1ppppp1p/5P1P1/P1P1P1P2/1P1PS1N1P/1BKGGS1R1/LN6L b - 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	EXPECT_EQ(1, pos.get_color_bit(Black, A1));
 	EXPECT_EQ(1, pos.get_color_bit(Black, B1));
@@ -4167,15 +4224,19 @@ TEST(position, do_move)
 }
 TEST(position, get_king_square)
 {
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	EXPECT_EQ(B4, pos.get_king_square(Black));
 	EXPECT_EQ(D8, pos.get_king_square(White));
 }
 TEST(position, add_hand_sub_hand)
 {
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP6/1P1pP1P1P/9/2S3b+pL b RGSNLPg3p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	EXPECT_EQ(1, pos.get_hand(Black, Pawn));
 	pos.add_hand(Black, Pawn);
@@ -4251,8 +4312,10 @@ TEST(position, add_hand_sub_hand)
 }
 TEST(position, piece_type_of_bb)
 {
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoard bb = pos.piece_type_of_bb(Pawn);
 	EXPECT_EQ(bb.p(0), 0x908044009400044);
@@ -4299,8 +4362,10 @@ TEST(position, piece_type_of_bb)
 }
 TEST(position, color_of_bb)
 {
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 
 	BitBoard bb = pos.color_of_bb(Black);
 	EXPECT_EQ(bb.p(0), 0x4C000E0001080340);
@@ -4311,25 +4376,31 @@ TEST(position, color_of_bb)
 }
 TEST(position, all_bb)
 {
+	Searcher* sech = new Searcher;
+	sech->init();
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos(ss);
+	Position pos(ss, sech->threads.main_thread(), sech);
 	BitBoard bb = pos.all_bb();
 	EXPECT_EQ(bb.p(0), 0x4D096E604D5A0344);
 	EXPECT_EQ(bb.p(1), 0x25271);
 }
 TEST(position, print_board)
 {
-	Position pos(USI::start_sfen);
+	Searcher* sech = new Searcher;
+	sech->init();
+	Position pos(USI::start_sfen, sech->threads.main_thread(), sech);
 	//Positionns::print_board(pos);
 
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos1(ss);
+	Position pos1(ss, sech->threads.main_thread(), sech);
 	//Positionns::print_board(pos1);
 }
 TEST(position, position_from_sfen)
 {
-	Position pos(USI::start_sfen);
+	Searcher* sech = new Searcher;
+	sech->init();
+	Position pos(USI::start_sfen, sech->threads.main_thread(), sech);
 	EXPECT_EQ(WLance, pos.get_board(A9));
 	EXPECT_EQ(WNight, pos.get_board(B9));
 	EXPECT_EQ(WSilver, pos.get_board(C9));
@@ -4421,7 +4492,7 @@ TEST(position, position_from_sfen)
 	EXPECT_EQ(BLance, pos.get_board(I1));
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	Position pos1(ss);
+	Position pos1(ss, sech->threads.main_thread(), sech);
 	EXPECT_EQ(WLance, pos1.get_board(A9));
 	EXPECT_EQ(WNight, pos1.get_board(B9));
 	EXPECT_EQ(PieceNone, pos1.get_board(C9));
