@@ -9,6 +9,7 @@
 #include "misc.h"
 #include "search.h"
 #include "timemanager.h"
+#include "benchmark.h"
 #ifdef _DEBUG
 	#include <gtest\gtest.h>
 #endif
