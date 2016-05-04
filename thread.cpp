@@ -2,7 +2,7 @@
 #include "common.h"
 
 //Global object
-extern USI::OptionsMap options;
+extern OptionsMap options;
 namespace{
 	template<typename T> T* new_thread(Searcher* sech)
 	{

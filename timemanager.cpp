@@ -2,7 +2,7 @@
 #include "common.h"
 
 //Global object
-extern USI::OptionsMap options;
+extern OptionsMap options;
 
 const int move_horizon = 47;	//15•ªØ‚ê•‰‚¯—p
 const float max_ratio = 3.0;	//15•ªØ‚ê•‰‚¯—p

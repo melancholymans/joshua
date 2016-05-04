@@ -53,7 +53,7 @@ Shogidokoro shogi playing engin
 #include "common.h"
 
 //Global object
-extern USI::OptionsMap options;
+extern OptionsMap options;
 
 int main_test(int argc,char *argv[]);
 

@@ -2,7 +2,7 @@
 #include "common.h"
 
 //Global object
-extern USI::OptionsMap options;
+extern OptionsMap options;
 extern TranspositionTable TT;
 
 //searcher struct static member

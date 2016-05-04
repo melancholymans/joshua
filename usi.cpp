@@ -20,7 +20,7 @@ void on_clear_hash(const Option&)
 	TT.clear();
 }
 //渡された文字列を１文字づつ比較しs1 < s2ならtrueをそれ以外はfalseを返す
-bool USI::CaseInsensitiveLess::operator() (const string& s1, const string& s2) const
+bool CaseInsensitiveLess::operator() (const string& s1, const string& s2) const
 {
 	return std::lexicographical_compare(s1.begin(), s1.end(), s2.begin(), s2.end(),
 		[](char c1, char c2) {return tolower(c1) < tolower(c2); });
