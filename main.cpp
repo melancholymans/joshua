@@ -70,7 +70,7 @@ int main(int argc,char *argv[])
 	sech->init();
 	BitBoardns::init();
 	Positionns::init();		//Positionns::init()はBitBoardの設定値を使用して初期化しているので順序変更禁止
-    USI::usi_main_loop();
+	sech->do_usi_command_loop(argc, argv);
     return 0;
 }
 
