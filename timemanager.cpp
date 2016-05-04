@@ -119,7 +119,6 @@ void TimeManager::init(LimitsType& limits, const int current_ply, const Color us
 #ifdef _DEBUG
 TEST(timemanager, init)
 {
-	
 	std::vector<Move> moves;
 	LimitsType limits;
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
@@ -128,7 +127,7 @@ TEST(timemanager, init)
 	Searcher *sech = new Searcher;
 	
 	sech->init();
-	/*
+	
 	BitBoardns::init();
 	Positionns::init();		//Positionns::init()はBitBoardの設定値を使用して初期化しているので順序変更禁止
 	
@@ -148,7 +147,7 @@ TEST(timemanager, init)
 	
 	cout << "available_time: " << time_manager.available_time() << endl;
 	cout << "maximum_time: " << time_manager.maximum_time() << endl;
-	*/
+	
 	sech->signals.stop = true;
 	sech->threads.main_thread()->thinking = true;
 	sech->threads.main_thread()->notify_one();
