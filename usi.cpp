@@ -2,12 +2,10 @@
 #include "common.h"
 
 //名前空間使用宣言
-using USI::Option;
 using std::thread;
 //Global object
-USI::OptionsMap options;
+OptionsMap options;
 extern TranspositionTable TT;
-
 
 void on_thread(const Option&)
 {
