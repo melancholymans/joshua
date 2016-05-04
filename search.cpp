@@ -21,11 +21,12 @@ Gains Searcher::gains;
 //TranspositionTable Searcher::tt;
 Position Searcher::root_position;
 ThreadPool Searcher::threads;
-//Searcher* Searcher::thisptr;
+Searcher* Searcher::thisptr;
 
 
 void Searcher::init()
 {
+	thisptr = this;
 	USI::init(options);
 	threads.init(this);
 	TT.set_size(options["USI_Hash"]);

@@ -90,6 +90,7 @@ typedef Stats<true> Gains;
 //class TranspositionTable;
 
 struct Searcher{
+	//静的メンバーのときはthisが呼べないのでthisptrで代用する。thisptrはinit関数内で設定
 	static Searcher* thisptr;
 	static volatile SignalsType signals;	//thread.cpp->start_thinkingで初期化
 	static LimitsType limits;		//thread.cpp->start_thinkingで初期化
