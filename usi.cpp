@@ -131,79 +131,12 @@ void USI::init(OptionsMap& opt)
 	opt["Threads"] = Option(cpus, 1, MAX_THREADS, on_thread);
 	opt["Use_Sleeping_Threads"] = Option(true);
 }
-//USIインターフェイスから呼ばれ、思考開始コマンドｗｐ処理する。
-//goコマンドの後に続くオプションをここで設定し、start_thinking関数を呼んで探索を開始させる
-void USI::go(const Position& pos, std::istringstream& cmd)
-{
-	LimitsType limits;
-	std::vector<Move> moves;
-	string token;
-
-	while (cmd >> token){
-		if (token == "ponder"){
-			limits.ponder = true;
-		}
-		else if (token == "btime"){
-			cmd >> limits.time[Black];
-		}
-		else if (token == "wtime"){
-			cmd >> limits.time[White];
-		}
-		else if (token == "infinite"){
-			limits.infinite = true;
-		}
-		else if (token == "depth"){
-			cmd >> limits.depth;
-		}
-	}
-	//ss_cmdでlimitsを設定する
-	pos.get_searcher()->threads.start_thinking(pos, limits, moves);
-}
-//do_usi_command_loopからpositionコマンドから呼ばれる
-void USI::set_position(Position& pos, std::istringstream& uip)
-{
-	string token;
-	string sfen;
-	//short dummy[8];
-
-	uip >> token;
-	//平手初期局面
-	if (token == "startpos"){
-		sfen = USI::start_sfen;
-		uip >> token;
-	}
-	else if (token == "sfen"){
-		while (uip >> token && token != "moves"){
-			sfen += token + " ";
-		}
-	}
-	else{
-		return;
-	}
-	//指し手再現,局面更新
-	pos.position_from_sfen(sfen, pos.get_searcher()->threads.main_thread(), pos.get_searcher());
-	/*
-	if(!uip.at_end_of_line()){
-	if(cmd != "moves"){
-	cmd = uip.get_next_token();
-	}
-	if(cmd == "moves"){
-	while(!uip.at_end_of_line()){
-	cmd = uip.get_next_token(); //cmdには指し手ごと分割されて渡す
-	Move m = move_from_string(root_position,cmd);
-	DoMove(root_position.turn,root_position,m,dummy);
-	}
-	}
-	}
-	*/
-}
-
 //OptionMapのidx順にオプションの内容を文字列化して返す。usiコマンドで呼ばれる
 std::ostream& operator << (std::ostream& os, const OptionsMap& om)
 {
 	for (size_t idx = 0; idx < om.size(); idx++){
 		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
-			{return p.second.idx == idx; });
+		{return p.second.idx == idx; });
 		const Option& opt = it->second;
 		os << "\noption name " << it->first << " type " << opt.type;
 		if (opt.type != "buttom"){
@@ -264,6 +197,68 @@ Option& Option::operator=(const string& v)
 		(*on_chage)(*this);
 	}
 	return *this;
+}
+//USIインターフェイスから呼ばれ、思考開始コマンドｗｐ処理する。
+//goコマンドの後に続くオプションをここで設定し、start_thinking関数を呼んで探索を開始させる
+void USI::go(const Position& pos, std::istringstream& cmd)
+{
+	LimitsType limits;
+	std::vector<Move> moves;
+	string token;
+
+	while (cmd >> token){
+		if (token == "ponder"){
+			limits.ponder = true;
+		}
+		else if (token == "btime"){
+			cmd >> limits.time[Black];
+		}
+		else if (token == "wtime"){
+			cmd >> limits.time[White];
+		}
+		else if (token == "infinite"){
+			limits.infinite = true;
+		}
+		else if (token == "depth"){
+			cmd >> limits.depth;
+		}
+	}
+	//ss_cmdでlimitsを設定する
+	pos.get_searcher()->threads.start_thinking(pos, limits, moves);
+}
+//do_usi_command_loopからpositionコマンドから呼ばれる
+void USI::set_position(Position& pos, std::istringstream& uip)
+{
+	string token;
+	string sfen;
+
+	uip >> token;
+	//平手初期局面
+	if (token == "startpos"){
+		sfen = USI::start_sfen;
+		uip >> token;
+	}
+	else if (token == "sfen"){
+		while (uip >> token && token != "moves"){
+			sfen += token + " ";
+		}
+	}
+	else{
+		return;
+	}
+	//指し手再現,局面更新
+	pos.position_from_sfen(sfen, pos.get_searcher()->threads.main_thread(), pos.get_searcher());
+	//TODO:他にもいろいろ設定しているがわからないのでパス
+	while(uip >> token){
+		const Move m = move_from_string(pos,token);
+		if (m == MoveNone){
+			break;
+		}
+		//TO:StackInfoに関する処理があるが不明のためパス,do_moveに渡しているStateInfoはダミー
+		StateInfo st;
+		pos.do_move(m, st);
+	}
+	//TODO:いろいろあるがパス
 }
 #ifdef _DEBUG
 TEST(Options, init)
