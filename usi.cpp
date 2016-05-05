@@ -148,7 +148,6 @@ std::ostream& operator << (std::ostream& os, const OptionsMap& om)
 	}
 	return os;
 }
-
 //オプションを設定するときに呼ばれる関数
 //char型+関数（省略可）　string型
 Option::Option(const char* v, Fn* f) :type("string"), min(0), max(0), idx(options.size()), on_chage(f)
