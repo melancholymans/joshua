@@ -11,7 +11,8 @@ struct CaseInsensitiveLess
 	bool operator() (const string&, const string&) const;
 };
 
-typedef map<string, Option, CaseInsensitiveLess> OptionsMap;
+//typedef map<string, Option, CaseInsensitiveLess> OptionsMap;
+struct OptionsMap;
 
 class Option{
 	//オプションを設定、変更するときに呼び出される関数ポインタの宣言
@@ -32,6 +33,11 @@ public:
 	operator int() const;
 	//stringへの変換演算子
 	operator string() const;
+	string get_type() const;
+	string get_default_value() const;
+	string get_current() const;
+	int get_min() const;
+	int get_max() const;
 private:
 	friend std::ostream& operator << (std::ostream&, const OptionsMap&);
 	string default_value;
@@ -42,6 +48,15 @@ private:
 	Fn* on_chage;
 };
 
+struct OptionsMap :public map<string, Option, CaseInsensitiveLess>
+{
+public:
+	void init(Searcher* sech);
+	bool is_legal_option(string name)
+	{
+		return this->find(name) != std::end(*this);
+	}
+};
 namespace USI{
 	//void init(OptionsMap&);
 	void go(const Position& pos, std::istringstream& cmd);
