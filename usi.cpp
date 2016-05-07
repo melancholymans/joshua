@@ -163,7 +163,7 @@ Option::Option(bool v, Fn* f) : type("check"), min(0), max(0), idx(options.size(
 Option::Option(Fn* f) : type("button"), min(0), max(0), idx(options.size()), on_chage(f)
 {}
 //int型+int型+int型+関数（省略可）　spin型
-Option::Option(int v,int minv,int maxv,Fn* f) : type("spin"), min(minv), max(maxv), idx(options.size()), on_chage(f)
+Option::Option(int v, int minv, int maxv, Fn* f) : type("spin"), min(minv), max(maxv), idx(options.size()), on_chage(f)
 {
 	default_value = current_value = std::to_string(v);
 }
