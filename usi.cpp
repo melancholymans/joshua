@@ -129,29 +129,29 @@ void OptionsMap::init(Searcher* sech)
 {
 	const int cpus = std::max(static_cast<int>(std::thread::hardware_concurrency()),1);
 	const int min_split_depth = (cpus < 6 ? 4 : (cpus < 8 ? 5 : 7));
-	opt["Use_Search_Log"] = Option(false);
-	opt["USI_Hash"] = Option(32, 1, 65536, on_hash_size);
-	opt["Clear_Hash"] = Option(on_clear_hash);
-	opt["Book_File"] = Option("book.bin");
-	opt["Best_Book_Move"] = Option(false);
-	opt["Own_Book"] = Option(true);
-	opt["Min_Book_Ply"] = Option(SHRT_MAX, 0, SHRT_MAX);
-	opt["Max_Book_Ply"] = Option(SHRT_MAX, 0, SHRT_MAX);
-	opt["Min_Book_Score"] = Option(-180, -ScoreInfinite, ScoreInfinite);
-	opt["USI_Ponder"] = Option(true);
-	opt["MultiPV"] = Option(1, 1, MAX_LEGAL_MOVE);
-	opt["Skill_Level"] = Option(20, 0, 20);
-	opt["Max_Random_Score_Diff"] = Option(0, 0, ScoreMate0Ply);
-	opt["Max_Random_Score_Diff_Ply"] = Option(40, SHRT_MIN, SHRT_MAX);
-	opt["Emergency_Move_Horizon"] = Option(40, 0, 50);
-	opt["Emergency_Base_Time"] = Option(200, 0, 30000);
-	opt["Emergency_Move_Time"] = Option(70, 0, 5000);
-	opt["Slow_Mover"] = Option(100, 10, 1000);
-	opt["Minimum_Thinking_Time"] = Option(15400, 0, INT_MAX);
-	opt["Min_Split_Depth"] = Option(min_split_depth, 4, 12, on_thread);
-	opt["Max_Threads_per_Split_point"] = Option(5, 4, 8, on_thread);
-	opt["Threads"] = Option(cpus, 1, MAX_THREADS, on_thread);
-	opt["Use_Sleeping_Threads"] = Option(true);
+	(*this)["Use_Search_Log"] = Option(false);
+	(*this)["USI_Hash"] = Option(32, 1, 65536, on_hash_size);
+	(*this)["Clear_Hash"] = Option(on_clear_hash);
+	(*this)["Book_File"] = Option("book.bin");
+	(*this)["Best_Book_Move"] = Option(false);
+	(*this)["Own_Book"] = Option(true);
+	(*this)["Min_Book_Ply"] = Option(SHRT_MAX, 0, SHRT_MAX);
+	(*this)["Max_Book_Ply"] = Option(SHRT_MAX, 0, SHRT_MAX);
+	(*this)["Min_Book_Score"] = Option(-180, -ScoreInfinite, ScoreInfinite);
+	(*this)["USI_Ponder"] = Option(true);
+	(*this)["MultiPV"] = Option(1, 1, MAX_LEGAL_MOVE);
+	(*this)["Skill_Level"] = Option(20, 0, 20);
+	(*this)["Max_Random_Score_Diff"] = Option(0, 0, ScoreMate0Ply);
+	(*this)["Max_Random_Score_Diff_Ply"] = Option(40, SHRT_MIN, SHRT_MAX);
+	(*this)["Emergency_Move_Horizon"] = Option(40, 0, 50);
+	(*this)["Emergency_Base_Time"] = Option(200, 0, 30000);
+	(*this)["Emergency_Move_Time"] = Option(70, 0, 5000);
+	(*this)["Slow_Mover"] = Option(100, 10, 1000);
+	(*this)["Minimum_Thinking_Time"] = Option(15400, 0, INT_MAX);
+	(*this)["Min_Split_Depth"] = Option(min_split_depth, 4, 12, on_thread);
+	(*this)["Max_Threads_per_Split_point"] = Option(5, 4, 8, on_thread);
+	(*this)["Threads"] = Option(cpus, 1, MAX_THREADS, on_thread);
+	(*this)["Use_Sleeping_Threads"] = Option(true);
 }
 //OptionMapのオプションの内容を文字列化して返す。usiコマンドで呼ばれる
 //cout << options << endl;のように使う。
@@ -218,6 +218,27 @@ Option& Option::operator=(const string& v)
 	}
 	return *this;
 }
+//Optionのタイプ "string" "spin" "check" "button"を文字列型で返す。 
+string Option::get_type() const
+{
+	return type;
+}
+string Option::get_default_value() const
+{
+	return default_value;
+}
+string Option::get_current() const
+{
+	return current_value;
+}
+int Option::get_min() const
+{
+	return min;
+}
+int Option::get_max() const
+{
+	return max;
+}
 //USIインターフェイスから呼ばれ、思考開始コマンドｗｐ処理する。
 //goコマンドの後に続くオプションをここで設定し、start_thinking関数を呼んで探索を開始させる
 void USI::go(const Position& pos, std::istringstream& cmd)
@@ -280,11 +301,132 @@ void USI::set_position(Position& pos, std::istringstream& uip)
 	}
 	//TODO:いろいろあるがパス
 }
+
 #ifdef _DEBUG
+TEST(Option, set_option)
+{
+	//このような文字列で渡される
+	//"name Threads value 1"
+	//"name MultiPV value 1"
+	//"name OwnBook value false"
+	//"name Max_Random_Score_Diff value 0"
+	Searcher* sech = new Searcher;
+	sech->init();
+	options.init(sech);
+
+	sech->set_option(std::istringstream("name Use_Search_Log value true"));
+	EXPECT_EQ(options["Use_Search_Log"],true);
+	sech->set_option(std::istringstream("name USI_Hash value 64"));
+	EXPECT_EQ(options["USI_Hash"], 64);
+	sech->set_option(std::istringstream("name Book_File value notebook"));
+	EXPECT_STREQ(options["Book_File"].get_current().c_str(), "notebook");
+	sech->set_option(std::istringstream("name Best_Book_Move value false"));
+	EXPECT_EQ(options["Best_Book_Move"], false);
+	sech->set_option(std::istringstream("name Min_Book_Ply value 128"));
+	EXPECT_EQ(options["Min_Book_Ply"], 128);
+	sech->set_option(std::istringstream("name Max_Book_Ply value 314"));
+	EXPECT_EQ(options["Max_Book_Ply"], 314);
+	sech->set_option(std::istringstream("name Min_Book_Score value 512"));
+	EXPECT_EQ(options["Min_Book_Score"], 512);
+	sech->set_option(std::istringstream("name USI_Ponder value false"));
+	EXPECT_EQ(options["USI_Ponder"], false);
+	sech->set_option(std::istringstream("name MultiPV value 8"));
+	EXPECT_EQ(options["MultiPV"], 8);
+	sech->set_option(std::istringstream("name Skill_Level value 7"));
+	EXPECT_EQ(options["Skill_Level"], 7);
+	sech->set_option(std::istringstream("name Max_Random_Score_Diff value 54"));
+	EXPECT_EQ(options["Max_Random_Score_Diff"], 54);
+	sech->set_option(std::istringstream("name Max_Random_Score_Diff_Ply value 5"));
+	EXPECT_EQ(options["Max_Random_Score_Diff_Ply"], 5);
+	sech->set_option(std::istringstream("name Emergency_Move_Horizon value 41"));
+	EXPECT_EQ(options["Emergency_Move_Horizon"], 41);
+	sech->set_option(std::istringstream("name Emergency_Base_Time value 300"));
+	EXPECT_EQ(options["Emergency_Base_Time"], 300);
+	sech->set_option(std::istringstream("name Emergency_Move_Time value 85"));
+	EXPECT_EQ(options["Emergency_Move_Time"], 85);
+	sech->set_option(std::istringstream("name Slow_Mover value 123"));
+	EXPECT_EQ(options["Slow_Mover"], 123);
+	sech->set_option(std::istringstream("name Minimum_Thinking_Time value 333"));
+	EXPECT_EQ(options["Minimum_Thinking_Time"], 333);
+	sech->set_option(std::istringstream("name Min_Split_Depth value 11"));
+	EXPECT_EQ(options["Min_Split_Depth"], 11);
+	sech->set_option(std::istringstream("name Max_Threads_per_Split_point value 7"));
+	EXPECT_EQ(options["Max_Threads_per_Split_point"], 7);
+	sech->set_option(std::istringstream("name Use_Sleeping_Threads value false"));
+	EXPECT_EQ(options["Use_Sleeping_Threads"], false);
+	sech->set_option(std::istringstream("name Threads value 33"));
+	EXPECT_EQ(options["Threads"], 33);
+}
+TEST(Option, get_type)
+{
+	Searcher* sech = new Searcher;
+	sech->init();
+	options.init(sech);
+	
+	EXPECT_STREQ(options["Use_Search_Log"].get_type().c_str(), "check");
+	EXPECT_STREQ(options["USI_Hash"].get_type().c_str(), "spin");
+	EXPECT_STREQ(options["Clear_Hash"].get_type().c_str(), "button");
+	EXPECT_STREQ(options["Book_File"].get_type().c_str(), "string");
+}
+TEST(Option, get_default_value)
+{
+	Searcher* sech = new Searcher;
+	sech->init();
+	options.init(sech);
+	EXPECT_STREQ(options["USI_Hash"].get_default_value().c_str(), "32");
+	EXPECT_STREQ(options["Min_Book_Score"].get_default_value().c_str(), "-180");
+	EXPECT_STREQ(options["Skill_Level"].get_default_value().c_str(), "20");
+	EXPECT_STREQ(options["Emergency_Move_Horizon"].get_default_value().c_str(), "40");/**/
+}
+TEST(Option, get_minmax)
+{
+	Searcher* sech = new Searcher;
+	sech->init();
+	options.init(sech);
+	EXPECT_EQ(options["USI_Hash"].get_min(), 1);
+	EXPECT_EQ(options["USI_Hash"].get_max(), 65536);
+	EXPECT_EQ(options["Min_Book_Ply"].get_min(), 0);
+	EXPECT_EQ(options["Min_Book_Ply"].get_max(), SHRT_MAX);
+	EXPECT_EQ(options["Max_Book_Ply"].get_min(), 0);
+	EXPECT_EQ(options["Max_Book_Ply"].get_max(), SHRT_MAX);
+	EXPECT_EQ(options["Min_Book_Score"].get_min(), -ScoreInfinite);
+	EXPECT_EQ(options["Min_Book_Score"].get_max(), ScoreInfinite);
+	EXPECT_EQ(options["MultiPV"].get_min(), 1);
+	EXPECT_EQ(options["MultiPV"].get_max(), MAX_LEGAL_MOVE);
+	EXPECT_EQ(options["Skill_Level"].get_min(), 0);
+	EXPECT_EQ(options["Skill_Level"].get_max(), 20);
+	EXPECT_EQ(options["Max_Random_Score_Diff"].get_min(), 0);
+	EXPECT_EQ(options["Max_Random_Score_Diff"].get_max(), ScoreMate0Ply);
+	EXPECT_EQ(options["Max_Random_Score_Diff_Ply"].get_min(), SHRT_MIN);
+	EXPECT_EQ(options["Max_Random_Score_Diff_Ply"].get_max(), SHRT_MAX);
+	EXPECT_EQ(options["Emergency_Move_Horizon"].get_min(), 0);
+	EXPECT_EQ(options["Emergency_Move_Horizon"].get_max(), 50);
+	EXPECT_EQ(options["Emergency_Base_Time"].get_min(), 0);
+	EXPECT_EQ(options["Emergency_Base_Time"].get_max(), 30000);
+	EXPECT_EQ(options["Emergency_Move_Time"].get_min(), 0);
+	EXPECT_EQ(options["Emergency_Move_Time"].get_max(), 5000);
+	EXPECT_EQ(options["Slow_Mover"].get_min(), 10);
+	EXPECT_EQ(options["Slow_Mover"].get_max(), 1000);
+	EXPECT_EQ(options["Minimum_Thinking_Time"].get_min(), 0);
+	EXPECT_EQ(options["Minimum_Thinking_Time"].get_max(), INT_MAX);
+	EXPECT_EQ(options["Min_Split_Depth"].get_min(), 4);
+	EXPECT_EQ(options["Min_Split_Depth"].get_max(), 12);
+	EXPECT_EQ(options["Max_Threads_per_Split_point"].get_min(), 4);
+	EXPECT_EQ(options["Max_Threads_per_Split_point"].get_max(), 8);/**/
+}
+TEST(Option, option_display)
+{
+	Searcher* sech = new Searcher;
+	sech->init();
+	options.init(sech);
+	cout << options << endl;
+}
 TEST(Options, init)
 {
-	EXPECT_EQ(static_cast<int>(std::thread::hardware_concurrency()),8);	//この８はマシンによって異なる
-	USI::init(options);
+	Searcher* sech = new Searcher;
+	sech->init();
+	EXPECT_EQ(static_cast<int>(std::thread::hardware_concurrency()), 8);	//この８はマシンによって異なる
+	options.init(sech);
 	EXPECT_EQ(options["Use_Search_Log"],false);
 	EXPECT_EQ(options["USI_Hash"], 32);
 	TT.set_size(options["USI_Hash"]);
@@ -366,7 +508,6 @@ TEST(usi,set_position)
 	Position pos;
     USI::set_position(pos,uip);
 
-	Positionns::print_board(pos);
 	EXPECT_EQ(WLance, pos.get_board(A9));
 	EXPECT_EQ(WNight, pos.get_board(B9));
 	EXPECT_EQ(EmptyPiece, pos.get_board(C9));
