@@ -153,19 +153,18 @@ void OptionsMap::init(Searcher* sech)
 	opt["Threads"] = Option(cpus, 1, MAX_THREADS, on_thread);
 	opt["Use_Sleeping_Threads"] = Option(true);
 }
-//OptionMapのidx順にオプションの内容を文字列化して返す。usiコマンドで呼ばれる
+//OptionMapのオプションの内容を文字列化して返す。usiコマンドで呼ばれる
+//cout << options << endl;のように使う。
 std::ostream& operator << (std::ostream& os, const OptionsMap& om)
 {
-	for (size_t idx = 0; idx < om.size(); idx++){
-		auto it = std::find_if(om.begin(), om.end(), [idx](const OptionsMap::value_type& p)
-		{return p.second.idx == idx; });
-		const Option& opt = it->second;
-		os << "\noption name " << it->first << " type " << opt.type;
-		if (opt.type != "buttom"){
-			os << " default: " << opt.default_value;
+	for (auto& elem : om){
+		const Option& opt = elem.second;
+		os << "\noption name " << elem.first  << " type " << opt.get_type();
+		if (opt.get_type() != "button"){
+			os << " default " << opt.get_default_value();
 		}
-		if (opt.type == "spin"){
-			os << " min " << opt.min << " max " << opt.max;
+		if (opt.get_type() == "spin"){
+			os << " min " << opt.get_min() << " max " << opt.get_max();
 		}
 	}
 	return os;
