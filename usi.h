@@ -4,6 +4,7 @@
 //先行宣言
 class Position;
 class Option;
+struct Searcher;
 
 struct CaseInsensitiveLess
 {
@@ -42,10 +43,9 @@ private:
 };
 
 namespace USI{
-	void init(OptionsMap&);
+	//void init(OptionsMap&);
 	void go(const Position& pos, std::istringstream& cmd);
 	void set_position(Position& pos, std::istringstream& uip);
-
 	//局面を表す文字列
 	//先手大文字、後手小文字、数字は空白、/は行区切り +は成駒の印
 	const string start_sfen = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";

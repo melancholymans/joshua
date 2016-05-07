@@ -27,7 +27,7 @@ Searcher* Searcher::thisptr;
 void Searcher::init()
 {
 	thisptr = this;
-	USI::init(options);
+	options.init(thisptr);
 	threads.init(this);
 	TT.set_size(options["USI_Hash"]);
 }
