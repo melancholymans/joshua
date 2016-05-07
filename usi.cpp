@@ -82,6 +82,9 @@ void Searcher::do_usi_command_loop(int argc, char* argv[])
 		else if (token == "position"){
 			USI::set_position(pos, ss_cmd);
 		}
+		else if (token == "setoption"){
+			set_option(ss_cmd);
+		}
 		else if (token == "bench"){
 			benchmark(pos);
 		}
@@ -94,16 +97,35 @@ void Searcher::do_usi_command_loop(int argc, char* argv[])
 	} while (token != "quit" && argc == 1);
 	threads.wait_for_think_finised();
 }
-
-void Searcher::set_option(std::istringstream& ss_cmd)
+/*
+このような文字列で渡される
+"name Threads value 1"
+"name MultiPV value 1"
+"name OwnBook value false"
+"name Max_Random_Score_Diff value 0"
+*/
+void Searcher::set_option(std::istringstream& uip)
 {
 	string token, name, value;
-
-
+	
+	uip >> token;	//nameが入る
+	uip >> name;	//optionの名前が入る
+	while (uip >> token && token != "value"){
+		name + " " + token;
+	}
+	uip >> value;	//valueが入る
+	while (uip >> token){
+		value += " " + token;
+	}
+	if (!options.is_legal_option(name)){
+		cout << "No  search option: " << name << endl;
+	}
+	else{
+		options[name] = value;
+	}
 }
 //main関数から１回だけ呼ばれるOptionMapはkeyをstring型,valueをOptionクラスで保持するmapコンテナ
-//cout << options << endl;のように使う。
-void USI::init(OptionsMap& opt)
+void OptionsMap::init(Searcher* sech)
 {
 	const int cpus = std::max(static_cast<int>(std::thread::hardware_concurrency()),1);
 	const int min_split_depth = (cpus < 6 ? 4 : (cpus < 8 ? 5 : 7));

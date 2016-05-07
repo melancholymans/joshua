@@ -118,7 +118,7 @@ struct Searcher{
 	static void think();
 	static void check_time();
 	static void do_usi_command_loop(int argc, char* argv[]);
-	static void set_option(std::istringstream& ss_cmd);
+	static void set_option(std::istringstream& uip);
 };
 
 //void init_search_table();
