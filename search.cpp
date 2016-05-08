@@ -28,7 +28,7 @@ void Searcher::init()
 {
 	thisptr = this;
 	options.init(thisptr);
-	threads.init(this);
+	threads.init(thisptr);
 	TT.set_size(options["USI_Hash"]);
 }
 template<NodeType NT>
