@@ -11,6 +11,7 @@ extern TranspositionTable TT;
 
 void on_thread(const Option&)
 {
+	//TODO:未実装
 }
 void on_hash_size(const Option& opt)
 {

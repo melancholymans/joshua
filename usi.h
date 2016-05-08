@@ -12,7 +12,6 @@ struct CaseInsensitiveLess
 	bool operator() (const string&, const string&) const;
 };
 
-//typedef map<string, Option, CaseInsensitiveLess> OptionsMap;
 struct OptionsMap;
 
 class Option{
