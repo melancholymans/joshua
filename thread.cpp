@@ -160,7 +160,7 @@ void ThreadPool::start_thinking(const Position& pos, const LimitsType& limits, c
 	Color them = over_turn(c);
 	Square ksq = pos.get_king_square(c);
 	//王手をかけている駒があればMTはEvasion
-	if (!pos.attackers_to(them, ksq, pos.all_bb()).is_not_zero()){
+	if (pos.attackers_to(them, ksq, pos.all_bb()).is_not_zero()){
 		MT = Evasion;
 	}
 	for (MoveList<Legal> ml(pos); !ml.end(); ++ml){
@@ -184,6 +184,7 @@ TEST(thread, start_thinking)
 	Positionns::init();		//Positionns::init()はBitBoardの設定値を使用して初期化しているので順序変更禁止
 
 	Position pos(ss,sech->threads.main_thread(),sech);
+	Positionns::print_board(pos);
 	limits.depth = 3;
 	limits.infinite = false;
 	limits.ponder = false;
