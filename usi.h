@@ -6,6 +6,7 @@ class Position;
 class Option;
 struct Searcher;
 
+//OptionsMapのKeyを比較するための関数
 struct CaseInsensitiveLess
 {
 	bool operator() (const string&, const string&) const;
@@ -47,7 +48,7 @@ private:
 	size_t idx;
 	Fn* on_chage;
 };
-
+//OptionsMapのクラスmapテンプレートを警手している。mapの第３引数は比較関数、このmapはstring型キーワードをkeyとしてoptionクラスを属性値としている。
 struct OptionsMap :public map<string, Option, CaseInsensitiveLess>
 {
 public:
