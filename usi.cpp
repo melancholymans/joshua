@@ -356,6 +356,8 @@ TEST(Option, set_option)
 	EXPECT_EQ(options["Use_Sleeping_Threads"], false);
 	sech->set_option(std::istringstream("name Threads value 33"));
 	EXPECT_EQ(options["Threads"], 33);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(Option, get_type)
 {
@@ -367,6 +369,8 @@ TEST(Option, get_type)
 	EXPECT_STREQ(options["USI_Hash"].get_type().c_str(), "spin");
 	EXPECT_STREQ(options["Clear_Hash"].get_type().c_str(), "button");
 	EXPECT_STREQ(options["Book_File"].get_type().c_str(), "string");
+	sech->threads.exit();
+	delete sech;
 }
 TEST(Option, get_default_value)
 {
@@ -376,7 +380,9 @@ TEST(Option, get_default_value)
 	EXPECT_STREQ(options["USI_Hash"].get_default_value().c_str(), "32");
 	EXPECT_STREQ(options["Min_Book_Score"].get_default_value().c_str(), "-180");
 	EXPECT_STREQ(options["Skill_Level"].get_default_value().c_str(), "20");
-	EXPECT_STREQ(options["Emergency_Move_Horizon"].get_default_value().c_str(), "40");/**/
+	EXPECT_STREQ(options["Emergency_Move_Horizon"].get_default_value().c_str(), "40");
+	sech->threads.exit();
+	delete sech;
 }
 TEST(Option, get_minmax)
 {
@@ -412,7 +418,9 @@ TEST(Option, get_minmax)
 	EXPECT_EQ(options["Min_Split_Depth"].get_min(), 4);
 	EXPECT_EQ(options["Min_Split_Depth"].get_max(), 12);
 	EXPECT_EQ(options["Max_Threads_per_Split_point"].get_min(), 4);
-	EXPECT_EQ(options["Max_Threads_per_Split_point"].get_max(), 8);/**/
+	EXPECT_EQ(options["Max_Threads_per_Split_point"].get_max(), 8);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(Option, option_display)
 {
@@ -420,6 +428,8 @@ TEST(Option, option_display)
 	sech->init();
 	options.init(sech);
 	cout << options << endl;
+	sech->threads.exit();
+	delete sech;
 }
 TEST(Options, init)
 {
@@ -500,6 +510,8 @@ TEST(Options, init)
 	EXPECT_EQ(options["Threads"], 32);	//このテストまテストするPCによって答えが違う
 	options["Use_Sleeping_Threads"] = string("false");
 	EXPECT_EQ(options["Use_Sleeping_Threads"], false);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(usi,set_position)
 {

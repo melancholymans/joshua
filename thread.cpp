@@ -191,7 +191,6 @@ TEST(thread, start_thinking)
 	limits.time[White] = 30000;
 	pos.get_searcher()->threads.start_thinking(pos, limits, moves);
 	sech->threads.exit();
-
 	delete sech;
 }
 #endif

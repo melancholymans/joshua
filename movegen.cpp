@@ -100,7 +100,8 @@ TEST(movegen, generate_evasions_POS39_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A6, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
-
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS37_black)
 {
@@ -143,6 +144,8 @@ TEST(movegen, generate_evasions_POS37_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), A4, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS35_white)
 {
@@ -181,6 +184,8 @@ TEST(movegen, generate_evasions_POS35_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), H7, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS33_black)
 {
@@ -217,6 +222,8 @@ TEST(movegen, generate_evasions_POS33_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS31_white)
 {
@@ -251,6 +258,8 @@ TEST(movegen, generate_evasions_POS31_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Lance + SquareNum - 1), H8, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS29_black)
 {
@@ -287,6 +296,8 @@ TEST(movegen, generate_evasions_POS29_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), D2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS27_white)
 {
@@ -340,6 +351,8 @@ TEST(movegen, generate_evasions_POS27_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), H5, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS25_black)
 {
@@ -377,6 +390,8 @@ TEST(movegen, generate_evasions_POS25_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS23_white)
 {
@@ -420,6 +435,8 @@ TEST(movegen, generate_evasions_POS23_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Pawn + SquareNum - 1), I2, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, generate_evasions_POS21_black)
 {
@@ -469,6 +486,8 @@ TEST(movegen, generate_evasions_POS21_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Bishop + SquareNum - 1), C3, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movegen_POS3_white)
 {
@@ -820,6 +839,8 @@ TEST(movegen, movegen_POS3_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Night + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movegen_POS3_black)
 {
@@ -1496,6 +1517,8 @@ TEST(movegen, movegen_POS3_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movegen_POS2_white)
 {
@@ -1992,6 +2015,8 @@ TEST(movegen, movegen_POS2_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movegen_POS2_black)
 {
@@ -2590,6 +2615,8 @@ TEST(movegen, movegen_POS2_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Rook + SquareNum - 1), I1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movegen_POS1_white)
 {
@@ -2951,6 +2978,8 @@ TEST(movegen, movegen_POS1_white)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Gold + SquareNum - 1), A9, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movegen_POS1_black)
 {
@@ -3182,6 +3211,8 @@ TEST(movegen, movegen_POS1_black)
 	EXPECT_TRUE(array_check(ans, ms));
 	ans = make_move(Square(Gold + SquareNum - 1), A1, 0, PieceType(0), EmptyPiece);
 	EXPECT_TRUE(array_check(ans, ms));
+	sech->threads.exit();
+	delete sech;
 }
 #endif
 

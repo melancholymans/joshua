@@ -850,6 +850,8 @@ TEST(position, king_check)
 	string ss2("5+Prnl/4+R4/1p1p2gkp/P1pl1p1p1/1N4pPP/p1P4G1/4P1N2/1s2G4/K3S3L b BGSNLP1s3pb 1");
 	Position pos2(ss2, sech->threads.main_thread(), sech);
 	EXPECT_TRUE(pos2.attackers_to(them, ksq, pos.all_bb()).is_not_zero());
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, color_type_of_bb)
 {
@@ -867,6 +869,8 @@ TEST(position, color_type_of_bb)
 	ack = pos.color_type_of_bb(White, Pawn);
 	EXPECT_EQ(ack.p(0), 0x108004008400004);
 	EXPECT_EQ(ack.p(1), 0x1000);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, oper_shift_bit_right)
 {
@@ -883,6 +887,8 @@ TEST(position, oper_shift_bit_right)
 	ack = pos.attackers_from_pawns(White, ack);
 	EXPECT_EQ(ack.p(0), 0x210008010800008);
 	EXPECT_EQ(ack.p(1), 0x2000);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, oper_shift_bit_left)
 {
@@ -899,6 +905,8 @@ TEST(position, oper_shift_bit_left)
 	ack = pos.attackers_from_pawns(Black,ack);
 	EXPECT_EQ(ack.p(0), 0x400020000800020);
 	EXPECT_EQ(ack.p(1), 0x2020);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, do_move_m_st)
 {
@@ -958,6 +966,8 @@ TEST(position, do_move_m_st)
 	EXPECT_EQ(pos.checker_bb().p(0), 0x2000000001000000);
 	EXPECT_EQ(pos.checker_bb().p(1), 0x00);
 	pos.undo_move(m);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, move_give_check)
 {
@@ -988,6 +998,8 @@ TEST(position, move_give_check)
 	EXPECT_EQ(pos.move_gives_check(m, ciw), true);
 	m = make_move(F2, F3, false, type_of_piece(Piece(pos.get_board(F2))), type_of_piece(Piece(pos.get_board(F3))));
 	EXPECT_EQ(pos.move_gives_check(m, ciw), true);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, is_discovered_check)
 {
@@ -1009,6 +1021,8 @@ TEST(position, is_discovered_check)
 	EXPECT_EQ(pos.is_discovered_check(F2, F1, H2, ciw.dc_bb.first), true);
 	EXPECT_EQ(pos.is_discovered_check(F2, G1, H2, ciw.dc_bb.first), true);
 	EXPECT_EQ(pos.is_discovered_check(F2, F3, H2, ciw.dc_bb.first), true);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, is_aligned)
 {
@@ -1028,6 +1042,8 @@ TEST(position, is_aligned)
 	EXPECT_EQ(is_aligned(F2, F1, H2), false);
 	EXPECT_EQ(is_aligned(F2, G1, H2), false);
 	EXPECT_EQ(is_aligned(F2, F3, H2), false);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, check_bb)
 {
@@ -1077,6 +1093,8 @@ TEST(position, check_bb)
 	EXPECT_EQ(ciw.check_bb[Horse].p(1), 0x00);
 	EXPECT_EQ(ciw.check_bb[Dragon].p(0), 0x4070281C0);
 	EXPECT_EQ(ciw.check_bb[Dragon].p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, dc_bb)
 {
@@ -1094,6 +1112,8 @@ TEST(position, dc_bb)
 	CheckInfo ciw(pos);
 	EXPECT_EQ(ciw.dc_bb.first.p(0), 0x400000000);
 	EXPECT_EQ(ciw.dc_bb.first.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, pinned_bb)
 {
@@ -1111,6 +1131,8 @@ TEST(position, pinned_bb)
 	CheckInfo ciw(pos);
 	EXPECT_EQ(ciw.pinned_bb.p(0), 0x2000000000);
 	EXPECT_EQ(ciw.pinned_bb.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, attackers_to)
 {
@@ -1263,6 +1285,8 @@ TEST(position, attackers_to)
 	ack = pos.attackers_to(F1, occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, attackers_to2)
 {
@@ -1415,6 +1439,8 @@ TEST(position, attackers_to2)
 	ack = pos.attackers_to(White, F1, occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, attackers_to_excluded_of_king)
 {
@@ -1514,6 +1540,8 @@ TEST(position, attackers_to_excluded_of_king)
 	ack = pos.attackers_to_excluded_of_king(Black, H3, occ);
 	EXPECT_EQ(ack.p(0), 0x200);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, attackers_from_pawn)
 {
@@ -1604,6 +1632,8 @@ TEST(position, attackers_from_pawn)
 	ack = pos.attackers_from_pawn(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, attackers_from_night)
 {
@@ -1826,6 +1856,8 @@ TEST(position, attackers_from_night)
 	ack = pos.attackers_from_night(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_silver)
 {
@@ -1916,6 +1948,8 @@ TEST(bitboard, attackers_from_silver)
 	ack = pos.attackers_from_silver(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x80);
+	sech->threads.exit();
+	delete sech;
 }
 /*
 テストを書き換える
@@ -2010,6 +2044,8 @@ TEST(bitboard, attackers_from_gold)
 	ack = pos.attackers_from_gold(c, Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x10100);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_king)
 {
@@ -2061,6 +2097,8 @@ TEST(bitboard, attackers_from_king)
 	ack = pos.attackers_from_king(Square(sq));
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x10180);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_lance)
 {
@@ -2164,6 +2202,8 @@ TEST(bitboard, attackers_from_lance)
 	ack = pos.attackers_from_lance(White, Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x00);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_rook)
 {
@@ -2229,6 +2269,8 @@ TEST(bitboard, attackers_from_rook)
 	ack = pos.attackers_from_rook(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x40201007C4000000);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_bishop)
 {
@@ -2294,6 +2336,8 @@ TEST(bitboard, attackers_from_bishop)
 	ack = pos.attackers_from_bishop(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x80002008020);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_horse)
 {
@@ -2340,6 +2384,8 @@ TEST(bitboard, attackers_from_horse)
 	ack = pos.attackers_from_horse(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x10070281C1000000);
 	EXPECT_EQ(ack.p(1), 0x20080);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(bitboard, attackers_from_dragon)
 {
@@ -2386,6 +2432,8 @@ TEST(bitboard, attackers_from_dragon)
 	ack = pos.attackers_from_dragon(Square(sq), occ);
 	EXPECT_EQ(ack.p(0), 0x40702C1C0400000);
 	EXPECT_EQ(ack.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, inver_bit_bb)
 {
@@ -2478,6 +2526,8 @@ TEST(position, inver_bit_bb)
 	EXPECT_EQ(true, bb.is_bit_on(G1));
 	EXPECT_EQ(true, bb.is_bit_on(H1));
 	EXPECT_EQ(false, bb.is_bit_on(I1));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(postion, undo_move)
 {
@@ -3439,6 +3489,8 @@ TEST(postion, undo_move)
 	pos.print_piece_bb(Gold,"Gold");
 	pos.print_piece_bb(King,"King");
 	*/
+	sech->threads.exit();
+	delete sech;
 }
 
 TEST(position, do_move)
@@ -4221,6 +4273,8 @@ TEST(position, do_move)
 	pos.print_piece_bb(Horse,"Horse");
 	pos.print_piece_bb(Dragon,"Dragon");
 	*/
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, get_king_square)
 {
@@ -4230,6 +4284,8 @@ TEST(position, get_king_square)
 	Position pos(ss, sech->threads.main_thread(), sech);
 	EXPECT_EQ(B4, pos.get_king_square(Black));
 	EXPECT_EQ(D8, pos.get_king_square(White));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, add_hand_sub_hand)
 {
@@ -4309,6 +4365,8 @@ TEST(position, add_hand_sub_hand)
 	pos.sub_hand(Black, Gold);
 	pos.sub_hand(Black, Gold);
 	EXPECT_EQ(0, pos.get_hand(Black, Gold));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, piece_type_of_bb)
 {
@@ -4359,6 +4417,8 @@ TEST(position, piece_type_of_bb)
 	bb = pos.piece_type_of_bb(Dragon);
 	EXPECT_EQ(bb.p(0), 0x200);
 	EXPECT_EQ(bb.p(1), 0x00);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, color_of_bb)
 {
@@ -4373,6 +4433,8 @@ TEST(position, color_of_bb)
 	bb = pos.color_of_bb(White);
 	EXPECT_EQ(bb.p(0), 0x10960604C520004);
 	EXPECT_EQ(bb.p(1), 0x1211);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, all_bb)
 {
@@ -4383,18 +4445,20 @@ TEST(position, all_bb)
 	BitBoard bb = pos.all_bb();
 	EXPECT_EQ(bb.p(0), 0x4D096E604D5A0344);
 	EXPECT_EQ(bb.p(1), 0x25271);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, print_board)
 {
 	Searcher* sech = new Searcher;
 	sech->init();
 	Position pos(USI::start_sfen, sech->threads.main_thread(), sech);
-	//Positionns::print_board(pos);
 
 	//問題図は将棋世界６月付録新手ポカ妙手選No6より
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
 	Position pos1(ss, sech->threads.main_thread(), sech);
-	//Positionns::print_board(pos1);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, position_from_sfen)
 {
@@ -4612,6 +4676,8 @@ TEST(position, position_from_sfen)
 	EXPECT_FALSE(pos1.is_hand(White, Bishop));
 	EXPECT_FALSE(pos1.is_hand(White, Rook));
 	EXPECT_TRUE(pos1.is_hand(White, Gold));
+	sech->threads.exit();
+	delete sech;
 }
 TEST(position, color_turn)
 {

@@ -194,6 +194,8 @@ TEST(movepicker, movepicker_POS39_white)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(),21);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movepicker, movepicker_POS37_black)
 {
@@ -236,6 +238,8 @@ TEST(movepicker, movepicker_POS37_black)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 10);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movepicker, movepicker_POS35_white)
 {
@@ -274,6 +278,8 @@ TEST(movepicker, movepicker_POS35_white)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 8);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movepicker, movepicker_POS33_black)
 {
@@ -313,6 +319,8 @@ TEST(movepicker, movepicker_POS33_black)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 7+1);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS31_white)
 {
@@ -350,6 +358,8 @@ TEST(movegen, movepicker_POS31_white)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 6);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS29_black)
 {
@@ -387,6 +397,8 @@ TEST(movegen, movepicker_POS29_black)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 7);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS27_white)
 {
@@ -433,6 +445,8 @@ TEST(movegen, movepicker_POS27_white)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 15);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS25_black)
 {
@@ -472,6 +486,8 @@ TEST(movegen, movepicker_POS25_black)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 9);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS23_white)
 {
@@ -512,6 +528,8 @@ TEST(movegen, movepicker_POS23_white)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 10);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS21_black)
 {
@@ -556,6 +574,8 @@ TEST(movegen, movepicker_POS21_black)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 13);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(movegen, movepicker_POS3_white)
 {
@@ -737,5 +757,7 @@ TEST(movegen, movepicker_POS3_white)
 		old_m.push_back(m);
 	}
 	EXPECT_EQ(old_m.size(), 153);
+	sech->threads.exit();
+	delete sech;
 }
 #endif

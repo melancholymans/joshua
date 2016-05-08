@@ -255,6 +255,8 @@ TEST(move,move_from_string)
 	to = square_from_string(cmd.substr(2, 2));
 	am = make_move(drop_piece_from(Gold), to, 0, EmptyPiece, EmptyPiece);
 	EXPECT_EQ(am, m);
+	sech->threads.exit();
+	delete sech;
 }
 TEST(move,square_from_string)
 {

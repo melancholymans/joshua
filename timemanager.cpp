@@ -123,11 +123,8 @@ TEST(timemanager, init)
 	LimitsType limits;
 	//–â‘è}‚Í«Šû¢ŠE‚UŒŽ•t˜^VŽèƒ|ƒJ–­Žè‘INo6‚æ‚è
 	string ss("ln1g1p1+R1/3kb1+S2/2p1p1n1p/p2s1g3/1nL3p2/PKP1S4/1P1pP1P1P/4G4/L1S3b+pL b R2Pgn2p 1");
-	
 	Searcher *sech = new Searcher;
-	
 	sech->init();
-	
 	BitBoardns::init();
 	Positionns::init();		//Positionns::init()‚ÍBitBoard‚ÌÝ’è’l‚ðŽg—p‚µ‚Ä‰Šú‰»‚µ‚Ä‚¢‚é‚Ì‚Å‡˜•ÏX‹ÖŽ~
 	
@@ -152,7 +149,6 @@ TEST(timemanager, init)
 	sech->threads.main_thread()->thinking = true;
 	sech->threads.main_thread()->notify_one();
 	sech->threads.exit();
-
 	delete sech;
 }
 #endif
