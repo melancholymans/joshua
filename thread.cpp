@@ -106,9 +106,15 @@ void ThreadPool::init(Searcher* sech)
 void ThreadPool::exit()
 {
 	delete_thread(m_timer);
+	while (!this->empty()){
+		delete_thread((this)->back());
+		this->pop_back();
+	}
+	/*
 	for (auto elem : *this){
 		delete_thread(elem);
 	}
+	*/
 }
 void ThreadPool::read_usi_options(Searcher* sech)
 {
