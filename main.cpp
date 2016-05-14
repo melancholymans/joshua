@@ -71,6 +71,7 @@ int main(int argc,char *argv[])
 	BitBoardns::init();
 	Positionns::init();		//Positionns::init()はBitBoardの設定値を使用して初期化しているので順序変更禁止
 	sech->do_usi_command_loop(argc, argv);
+	sech->threads.exit();
     return 0;
 }
 
