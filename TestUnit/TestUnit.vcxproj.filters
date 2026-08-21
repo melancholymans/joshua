@@ -21,7 +21,7 @@
     <ClCompile Include="unity.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\shogi\add.c">
+    <ClCompile Include="..\shogi\quickRefC.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

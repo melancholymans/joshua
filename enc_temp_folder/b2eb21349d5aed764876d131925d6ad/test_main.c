@@ -31,7 +31,7 @@ int test_quickRefC() {
 	TEST_ASSERT_EQUAL_INT(1, function_learn());
 	TEST_ASSERT_EQUAL_INT(1, factorial(5));
 	TEST_ASSERT_EQUAL_INT(1, addArray(a1, a2,9));
-	TEST_ASSERT_EQUAL_INT(1, initNode(&m));	
+	TEST_ASSERT_EQUAL_INT(1, initNode(&m));
 }
 
 

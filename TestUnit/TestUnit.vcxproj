@@ -125,7 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\shogi\add.c" />
+    <ClCompile Include="..\shogi\quickRefC.c" />
     <ClCompile Include="test_main.c" />
     <ClCompile Include="unity.c" />
   </ItemGroup>
