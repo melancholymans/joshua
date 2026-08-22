@@ -47,9 +47,9 @@ int test_quickRefC() {
 	TEST_ASSERT_EQUAL_INT(1, print_errno("test_main.c"));
 	TEST_ASSERT_EQUAL_INT(1, File_stream());
 	//TEST_ASSERT_EQUAL_INT(1, scanf_test());	ユーザーによる入力が必要なのでパス
-	TEST_ASSERT_FLOAT_WITHIN(135.0,0.1,sig_sum(a2,9));
+	TEST_ASSERT_FLOAT_WITHIN(135.0,0.1,sig_sum(a2,9));	//135.0
 	float sum_arg = 0;
-	TEST_ASSERT_TRUE(sum(a2,9,&sum_arg));
+	TEST_ASSERT_TRUE(sum(a2,9,&sum_arg));	//sum_arg = 135.0
 	TEST_ASSERT_EQUAL_INT(1,const_basic());
 }
 

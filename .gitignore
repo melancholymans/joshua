@@ -365,3 +365,4 @@ desktop.ini
 .gitattributes
 *.vcxproj
 *.filters
+Docs/

@@ -24,6 +24,9 @@
     <ClCompile Include="..\shogi\quickRefC.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="simd_learn.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="unity.h">
