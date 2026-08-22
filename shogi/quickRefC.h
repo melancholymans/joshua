@@ -3,7 +3,6 @@
 struct Node_Type {
 	long key;
 	char name[32];
-	struct Node* next;
 };
 
 int type_conversion();
@@ -21,8 +20,8 @@ extern int function_learn();
 int factorial(register unsigned int n);
 int addArray(register float a1[], register float a2[], const int len);
 int initNode(struct Node_Type* pNode);
-inline void swapf(float* p1, float* p2);
-void selection_sortf(float a[], int n);
+inline int swapf(float* p1, float* p2);
+int selection_sortf(float a[], int n);
 const float* binarySearch(const float val, const float array[], const int n);
 double add(const int n, ...);
 //int array(int n);
@@ -38,3 +37,5 @@ int DynamicMemoryManagement();
 //BTree_main
 int File_stream();
 int scanf_test();
+float sig_sum(float arr[], int len);
+_Bool sum(float arr[], int len, float* sumPtr);

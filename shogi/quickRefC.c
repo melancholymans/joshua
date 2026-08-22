@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include <math.h>
-//#include <threads.h>
+#include <threads.h>
 #include <assert.h>
 #include <float.h>
 
@@ -277,17 +277,19 @@ int factorial(register unsigned int n) {
 
 //関数に配列を渡す時のフォーマット、配列を関数に渡すと実質配列のポインタを渡すことと等価、配列の大きさは無視されるので別途配列の大きさを渡す必要がある
 int addArray(register float a1[], register float a2[], const int len) {
+	register float* start = a1;	//関数内でa1を動かすのでここで保存しておく
 	register float* end = a1 + len;
 	for (; a1 < end; a1++, a2++) {
 		*a1 += *a2;
 	}
 	printf("addArray\n");
 	for (int i = 0; i < 9; i += 1) {
-		printf("%.2f ", a2[i]);
+		printf("%.2f ", start[i]);
 	}
 	putchar('\n');
 	return 1;
 }
+
 
 //構造体を関数に渡す
 //文字列の取り扱いは注意が必要
@@ -300,13 +302,14 @@ int initNode(struct Node_Type* pNode) {
 }
 
 //inline関数
-inline void swapf(float* p1, float* p2) {
+inline int swapf(float* p1, float* p2) {
 	const float tmp = *p1;
 	*p1 = *p2;
 	*p2 = tmp;
+	return 1;
 }
 
-void selection_sortf(float a[], int n) {
+int selection_sortf(float a[], int n) {
 	for (int i = 0; i < n - 1; ++i) {
 		int mini = i;
 		for (int j = i + 1; j < n; ++j) {
@@ -316,6 +319,7 @@ void selection_sortf(float a[], int n) {
 		}
 		swapf(a + i, a + mini);
 	}
+	return 1;
 }
 
 const float* binarySearch(const float val, const float array[], const int n) {
@@ -326,35 +330,6 @@ const float* binarySearch(const float val, const float array[], const int n) {
 	else { return binarySearch(val, array + m + 1, n - m - 1); }
 }
 
-//可変引数
-/*
-stdarg.hをインクルードすること
-void va_start(va_list argptr,lastparam)
-	マクロva_startは引数ポインタargptrの最初のポインタ引数の位置に初期化されている
-	マクロの第2引数は関数の最後の名前付き引数の名前出なければならない
-	このマクロは関数がオプション引数を妻う前に呼び出す
-type va_arg(va_list argptr,type)
-	マクロva_argは現在argptrが参照しているオプション引数を取り出し、argptr
-	を次の引数に進める。第2引数は読み込まれている引数の型である
-void va_end(valist argptr)
-	引数ポインタをもう使わないならこのマクロva_endを呼ぶ
-void va_copy(va_list dest,va_list src)
-	マクロva_copy引数ポインタdestをsrcの現在値で初期化する。destにあるコピーを使って
-	オプション引数のリストに,srcで参照されている位置からサイドアクセスできる
-
-注意事項
-	可変引数で実数（浮動小数点数）を受け取る場合は、必ず double型 を指定して va_arg(argptr, double) と書く必要があります。
-	決定的な注意点：va_arg のハマりどころ
-		va_arg(ap, float) や va_arg(ap, char) は未定義動作
-		C言語規格（ISO C）では、昇格後の型と異なる型を va_arg に指定することを明確に禁止しています。
-		// ❌ 誤り：未定義動作になる（クラッシュや値の破損の原因）
-		float f = va_arg(argptr, float);
-		char c = va_arg(argptr, char);
-
-		// ⭕️ 正解：昇格後の型で受け取り、必要ならキャストする
-		float f = (float)va_arg(argptr, double);
-		char c = (char)va_arg(argptr, int);
-*/
 
 double add(const int n, ...) {
 	va_list argptr;
@@ -376,6 +351,7 @@ int array_init() {
 	}Person;
 	Person team[6] = { {1000,"Mary"},{2000,"Harry"} };
 	printf("team:%ld\n", team[0].pin);
+	return 1;
 }
 
 int string_init() {
@@ -385,6 +361,7 @@ int string_init() {
 	printf("string長さ:%zu\n", strlen(str1));
 	char str2[] = " to London!";	//自動で配列長を決めてくれる
 	printf("string長さ:%zu\n", strlen(str2));
+	return 1;
 }
 
 int mul_array_init() {
@@ -401,10 +378,11 @@ int mul_array_init() {
 			putchar('\n');
 		}
 	}
+	return 1;
 }
 
 int void_pointer() {
-	//mallocはvoid* ポインタを返すがint* iPtrに代入されることでint*に変換される
+	//mallocはvoid* ポインタを返すがint* iPtrに代入されることでint*に変換される,つまりわざわざキャストしなくて良い
 	int* iPtr = malloc(1000 * sizeof(int));
 	printf("iPtr %zu\n", sizeof(iPtr));	//iPtr 8
 	double x = 1.5;
@@ -414,6 +392,7 @@ int void_pointer() {
 	double* dPtr = &x;
 	printf("double*でdoubleを当然指せる%f\n", *dPtr);
 	free(iPtr);
+	return 1;
 }
 
 int const_pointer() {
@@ -423,6 +402,7 @@ int const_pointer() {
 	printf("int:%d\n", var);
 	//しかしc_ptr自体はへんこうできない
 	//c_ptr += 1;	//エラーとなる
+	return 1;
 }
 
 int array_pointer() {
@@ -446,6 +426,7 @@ int array_pointer() {
 	for (int i = 0; i < 3; i += 1) {
 		printf("mtStrings:%s\n", myStrPtr[i]);
 	}
+	return 1;
 }
 
 static double Add(double x, double y) { return x + y; }
@@ -461,7 +442,7 @@ int func_pointer() {
 	for (int i = 0; i < 4; i += 1) {
 		printf("func Table: %f\n", (float)funcTable[i](6.0, 3.0));
 	}
-
+	return 1;
 }
 
 struct Date {	//このDateはタグ
@@ -565,6 +546,7 @@ int struct_unit_bitfiled() {
 	printf("bit fild size: %zu\n", sizeof(struct Date_Time));		//4bit + 5bit + 22bit = 31bit 31/8bit=4byteの1bitあまり
 	struct Date_Time dt = { 1,15,2023 };
 	printf("bit fild init %d/%d/%d\n", dt.year, dt.month, dt.day);
+	return 1;
 }
 
 int DynamicMemoryManagement() {
@@ -598,6 +580,7 @@ int DynamicMemoryManagement() {
 	*dPtr = 0.02;
 	printf("DynamicMemoryManagement: %f\n", *dPtr);
 	free(dPtr);
+	return 1;
 }
 
 //**************************BSTree*******************************************************************
@@ -960,9 +943,8 @@ _Bool file_error(const char* filename) {
 	if (ferror(fp)) {
 		printf("Error writeing\n");
 	}
-	return 0;
+	return true;
 }
-
 
 int print_errno(const char* filename) {
 	FILE* fp = fopen(filename, "r+");
@@ -970,7 +952,7 @@ int print_errno(const char* filename) {
 	if (pos == 0L) {
 		perror("ftell()");	//perrorは現在のエラーメッセージを表示する
 	}
-	return 0;
+	return 1;
 }
 
 static int file_get(const char* filename) {
@@ -982,11 +964,11 @@ static int file_get(const char* filename) {
 }
 
 int File_stream() {
-	printf("fileopen %d\n", isReadWriteable("mdump.h"));	//1
+	printf("fileopen %d\n", isReadWriteable("test_main.c"));	//1
 	//file_error("mdump1.h"); //runtimeエラーがでて継続できない
-	print_errno("mdump.h");		//ftell(): No error
-	file_get("mdump.h");
-	return 0;
+	print_errno("test_main.c");		//ftell(): No error
+	file_get("test_main.c");
+	return 1;
 }
 
 int scanf_test() {
@@ -1007,7 +989,7 @@ int scanf_test() {
 	sscanf_s(buf, "%99[^\n] %d", name, (unsigned)sizeof(name), &age);
 	*/
 	printf("name: %s age: %d\n", name, age);
-	return 0;
+	return 1;
 }
 
 #define MAX_THREADS 8
@@ -1017,20 +999,21 @@ typedef struct {
 	float* start;
 	int len;
 	int block_size;
-	double sum;
+	float sum;
 }Sum_arg;
 
-int sig_sum(float arr[]) {
-	double total = 0;
-	for (int i = 0; i < 100; i += 1) {
+float sig_sum(float arr[],int len) {
+	float total = 0;
+	for (int i = 0; i < len; i += 1) {
 		total += arr[i];
 	}
 	printf("total %f\n", total);
+	return total;
 }
-/*
+
 int parallel_sum(void* arg);
 
-bool sum(float arr[], int len, double* sumPtr) {
+_Bool sum(float arr[], int len, float* sumPtr) {
 	int block_size = len / MAX_THREADS;
 	if (block_size < MIN_BLOCK_SIZE) {
 		block_size = len;
@@ -1074,7 +1057,7 @@ int parallel_sum(void* arg) {
 		return 1;
 	}
 }
-*/
+
 
 int const_basic() {
 	const int n;
@@ -1107,4 +1090,5 @@ int const_basic() {
 	//ポインタも変更不可、ポインタ経由での変更も不可は次のように書く
 	const int* const p = &b;
 	printf("*p=%d\n", *p);	//107
+	return 1;
 }
