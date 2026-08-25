@@ -3,42 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-//1 _mm_loadu_si128
-    /*128ビット（16バイト）の整数データを、メモリアドレスのアラインメント（整列）条件を問わずに __m128i 型のSIMDレジスタへロード（読み込み）します。
-    */
-//2 _mm_storeu_si128
-    /*128ビット（16バイト）の整数データを、メモリアドレスのアラインメント（整列）条件を問わずに __m128i 型のSIMDレジスタからメモリへストア（書き込み）します。
-	*/
-//3 __m128iを直接printできないので一旦 _mm_storeu_si128などストア系のメモリにコピーしてprintする
-//4 _mm_set1_epi32
-    /*1 つの 32 ビット符号付き整数（int32_t 相当）を引数に取り、
-	それを 128 ビット SIMD レジスタ（__m128i 型）の全レーン（4 要素）に同じ値でコピー します。
-    */
-//5 _mm_testz_si128
-    /*128 ビット幅のパックド 32 ビット整数同士を要素ごとに比較し、等しいかどうかを判定するものです。
-	_mm_testz_si128(a, b)でa,bの中身が全て0であれば1を返す。そうでなければ0を返す。
-	*/
-//6 _mm_testc_si128
-    /*一言で言うと、「ベクトルbで1が立っているすべてのビット位置において、ベクトルaでも1が立っているか
-    （完全包摂されているか）」 を判定する関数です。であれば1を返しそうでなければ0を返す
-	*/
-//7 _mm_set1_epi32
-    /*1 つの 32 ビット符号付き整数（int32_t 相当）を引数に取り、
-    それを 128 ビット SIMD レジスタ（__m128i 型）の全レーン（4 要素）に同じ値でコピー します。
-	*/
-//8 _mm_andnot_si128
-    /*
-    _mm_testc_si128とよく似ている
-    一言で表すと、「第1引数をビット反転（NOT）し、第2引数とのビット論理積（AND）を計算する」 関数です。
-    ビットごとに次のような計算をする
-    result = (~a) & b
-    用途としてはaをマスクとして使い、aのbitが１であればbのbitをクリアにできる
-    a   b   andnot
-    0   0   0
-    0   1   1   aが0なのでbは1のまま
-    1   0   0   aが1であるがbが0なので0のまま
-    1   1   0   aが1なのでbの1をクリアしている
-    */
+#include "simd_learn.h"
 
 int simd_128() {
     //_mm_loadu_si128
@@ -308,109 +273,12 @@ int simd_128() {
     //result8:[ b[0] (bits 127:64) | a[0] (bits 63:0) ]のa[0]を取り出してres_valに代入している
     res_val = _mm_cvtsi128_si64(result8);
     printf("_mm_unpacklo_epi64 下位: 0x%016llX\n", res_val);    //0x0123456701234567
-
-    return 0;
+    return 1;
 }
-
-//1 _mm256_loadu_si256  
-    /*メモリのアドレス256ベクトルにデータをロードする。変数の型は符号あり整数loaduとあるのはunaligned（非アラインメント）なデータでも読み込める。
-    loadとあるのはアライメントがそろっている必要がある。つまり32バイト境界に揃っている必要がある。
-    si256とあるのは符号付き整数(256bit幅)*/
-//2 _mm256_storeu_si256
-    /* 「アラインメントを強制しない 256ビット整数ベクトルのストア（書き込み）」 を行う組み込み関数です。
-    si256は上の説明と同じ*/
-//3 _mm256_min_epi32 
-    /*SIMD 組み込み関数（intrinsic） で、 256 ビット幅のベクトルに詰められた 32 ビット符号付き整数の要素ごとの最小値を計算する命令です。
-    引数a,b(__mm256i型）をとりa,bのレーンごとに最小値を返す a[i] < b[i] ならb[i]を返す
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    b = [b0, b1, b2, b3, b4, b5, b6, b7]
-    結果は
-    dst = [min(a0,b0), min(a1,b1), min(a2,b2), min(a3,b3), min(a4,b4), min(a5,b5), min(a6,b6), min(a7,b7)]*/
-//4 _mm256_max_epi32
-    /*SIMD 組み込み関数（intrinsic） で、 256 ビット幅のベクトルに詰められた 32 ビット符号付き整数の要素ごとの最大値を計算する命令です。
-    引数a, b(__mm256i型）をとりa, bのレーンごとに最大値を返す a[i] < b[i] ならb[i]を返す
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    b = [b0, b1, b2, b3, b4, b5, b6, b7]
-    結果は
-    dst = [max(a0, b0), max(a1, b1), max(a2, b2), max(a3, b3), max(a4, b4), max(a5, b5), max(a6, b6), max(a7, b7)] */
-//5 _mm256_set1_epi32
-    /*1 つの 32 ビット符号付き整数（int32_t 相当）を引数に取り、
-    それを 256 ビット SIMD レジスタ（__m256i 型）の全レーン（8 要素）に同じ値でコピー します。*/
-
-//6 _mm256_cmpeq_epi32
-    /*256 ビット幅のパックド 32 ビット整数同士を要素ごとに比較し、等しいかどうかを判定するものです。
-    _mm256_cmpeq_epi32(a256, key256)でkey256に探す値をレーンに設定してある。このkeyとa256を比較して
-    同じであれば(a256[i]=＝key256[i])32bitが全て１（0xFFFFFFFF）を返し等しくなければ0を返す*/
-//7 _mm256_testz_si256
-    /*256 ビット幅のパックド 32 ビット整数同士を要素ごとに比較し、等しいかどうかを判定するものです。
-    _mm256_testz_si256(equals256, equals256)でequals256の中身が全て0であれば1を返す。つまりkeyと等しい値がなければ1を返す
-    つまりインデックス検査をする価値があるかどうかをここでチエックしている*/
-//8 _mm256_castsi256_ps
-    /*__m256i型の整数ベクトルを__m256型に読み替える*/
-//9 _mm256_movemask_ps
-    /*__m256型の浮動小数点ベクトルの各要素の符号ビットを抽出し、8 ビットのマスクを作成する
-    __m256 vec = _mm256_setr_ps(1.0f, -2.0f, 3.0f, -4.0f, 5.0f, -6.0f, 7.0f, -8.0f);
-    int mask = _mm256_movemask_ps(vec);
-    このとき、符号ビットの並びは（LSB → MSB の順に）：
-    レーン0: +1.0 → 0  1.0は正の数なので符号ビットは0   LSB
-    レーン1: -2.0 → 1  2.0は負の数なので符号ビットは1   LSB + 1
-    レーン2: +3.0 → 0  3.0は正の数なので符号ビットは0   LSB + 2
-    レーン3: -4.0 → 1  4.0は負の数なので符号ビットは1   LSB + 3
-    レーン4: +5.0 → 0  5.0は正の数なので符号ビットは0   LSB + 4
-    レーン5: -6.0 → 1  -6.0は負の数なので符号ビットは1  LSB + 5
-    レーン6: +7.0 → 0  7.0は正の数なので符号ビットは0   LSB + 6
-    レーン7: -8.0 → 1  -8.0は負の数なので符号ビットは1  LSB + 7
-    0b10101010 = 0xAA となる。つまり、maskのビットパターンは、各レーンの符号ビットを表す8ビットの整数として表される
-    もしベクトルが全て正の数であれば、maskは0b00000000 = 0x00となる。
-    */
-//10 _mm256_setzero_si256
-    /*256 ビット幅の整数ベクトルをゼロで初期化する*/
-
-//11 _mm256_mullo_epi32
-    /*32ビット符号付き整数（int32_t）のベクトル同士を要素ごとに掛け算し、その下位 32 ビットを結果として返す機能を持ちます.
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    b = [b0, b1, b2, b3, b4, b5, b6, b7]
-    __m256i c = _mm256_mullo_epi32(a, b);
-    c = [a0*b0, a1*b1, a2*b2, a3*b3, a4*b4, a5*b5, a6*b6, a7*b7]
-    各要素の乗算結果は 64 ビットになり得ますが、この命令はその下位 32 ビットだけを結果として格納します（オーバーフローは無視されます）。
-*/
-//12 _mm256_add_epi32
-    /*32ビット符号付き整数（int32_t）のベクトル同士を要素ごとに加算する機能を持ちます。
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    b = [b0, b1, b2, b3, b4, b5, b6, b7]
-    __m256i c = _mm256_add_epi32(a, b);
-    c = [a0+b0, a1+b1, a2+b2, a3+b3, a4+b4, a5+b5, a6+b6, a7+b7]
-    各要素の加算結果は 32 ビットで表現されます。オーバーフローが発生した場合、結果はラップアラウンドします。
-    */
-//13 _mm256_permute2x128_si256
-    /*256 ビット幅の整数ベクトルを 128 ビット単位で入れ替える機能を持ちます。
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    b = [b0, b1, b2, b3, b4, b5, b6, b7]
-    __m256i c = _mm256_permute2x128_si256(a, b, imm8);
-    imm8 の値によって、a と b の 128 ビット単位のブロックをどのように組み合わせるかが決まります。
-    例えば、imm8 = 0x01 の場合、c は次のようになります：
-    c = [a0, a1, a2, a3, b0, b1, b2, b3]
-    つまり、a の下位 128 ビットと b の下位 128 ビットを結合した結果となります。
-    */
-//14 _mm256_hadd_epi32
-    /*256 ビット幅の整数ベクトルの要素を水平方向に加算する機能を持ちます。
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    b = [b0, b1, b2, b3, b4, b5, b6, b7]
-    __m256i c = _mm256_hadd_epi32(a, b);
-    c = [a0+a1, a2+a3, a4+a5, a6+a7, b0+b1, b2+b3, b4+b5, b6+b7]
-    つまり、各 128 ビット単位で隣接する要素を加算し、新しいベクトルを生成します。
-    */
-//15_mm256_extract_epi32
-    /*256 ビット幅の整数ベクトルから指定したインデックスの 32 ビット整数を抽出する機能を持ちます。
-    a = [a0, a1, a2, a3, a4, a5, a6, a7]
-    int value = _mm256_extract_epi32(a, index);
-    index の値に応じて、a の中から対応する要素が抽出されます。
-    例えば、index = 3 の場合、value は a3 の値となります。
-*/
 
 // 32 ビット符号付整数の 8 個の要素を持つベクトルの中から、
 // 最初に負の要素が見つかったインデックスを求める関数。
-unsigned long find_first_non_zero_index_epi32(__m256i a) {
+static unsigned long find_first_non_zero_index_epi32(__m256i a) {
     unsigned long index;
     __m256 floating_point_a = _mm256_castsi256_ps(a);
     int mask = _mm256_movemask_ps(floating_point_a);
@@ -491,16 +359,15 @@ int simd_256() {
         __m256i equals256 = _mm256_cmpeq_epi32(a256, key256);
         // 8 個の要素の中に key と等しい要素があるかどうかを判定。
         if (!_mm256_testz_si256(equals256, equals256)) {
-            return i + find_first_non_zero_index_epi32(equals256);
+            printf("index:%zu\n", i + find_first_non_zero_index_epi32(equals256));
         }
     }
     // 残りの要素を処理。ここは汎用命令。
     for (; i < length; i++) {
         if (key == a[i]) {
-            return i;
+            printf("index: %d\n", i);
         }
     }
-    printf("index: %d\n", i);
 
     // ベクトルの内積を求める関数。
     i = 0;
@@ -524,15 +391,17 @@ int simd_256() {
     for (; i < length; i++) {
         dot_product += a[i] * b[i];
     }
-
     //test_mm256_extract_epi32
     int a1[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     __m256i a256 = _mm256_loadu_si256((__m256i*)a1);
     int value = _mm256_extract_epi32(a256, 3);
     printf("a[%d] = %d\n", 3, value);
+    return 1;
 }
 
-void scalar_multiplication(int* a, int row, int column, int scalar){
+//行列のスカラー倍を計算する
+//_mm256_mullo_epi32はa25,とscalar256の要素同士を掛け合わせる（8要素ごと）
+int scalar_multiplication(int* a, int row, int column, int scalar){
     int i = 0;
     __m256i scalar256 = _mm256_set1_epi32(scalar);
     // 8 要素ずつ計算する。
@@ -545,9 +414,10 @@ void scalar_multiplication(int* a, int row, int column, int scalar){
     for (; i < row * column; i++){
         a[i] *= scalar;
     }
+    return 1;
 }
 
-void get_cpuid(int eax, int ecx, int regs[4]) {
+static void get_cpuid(int eax, int ecx, int regs[4]) {
     __cpuidex(regs, eax, ecx);
 }
 
@@ -588,5 +458,5 @@ int simd_info() {
     print_support("AVX512CD", (ebx7 & (1 << 28)) != 0); // Conflict Detection
     print_support("AVX512BW", (ebx7 & (1 << 30)) != 0); // Byte/Word
     print_support("AVX512VL", (ebx7 & (1 << 31)) != 0); // Vector Length Extensions
-    return 0;
+    return 1;
 }

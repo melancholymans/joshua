@@ -131,6 +131,7 @@
     <ClCompile Include="unity.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="simd_learn.h" />
     <ClInclude Include="unity.h" />
     <ClInclude Include="unity_internals.h" />
   </ItemGroup>

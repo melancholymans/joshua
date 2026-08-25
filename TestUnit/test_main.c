@@ -3,11 +3,13 @@
 
 #include "unity.h"
 #include "../shogi/quickRefC.h"
+#include "simd_learn.h"
 
-void setUp(void) {}	//setUp,tearDownを書かないとエラーが出る -> 未解決の外部シンボル setUp が関数 UnityDefaultTestRun で参照されました
-void tearDown(void) {}	//上に同じく -> 未解決の外部シンボル tearDown が関数 UnityDefaultTestRun で参照されました
+void setUp(void) {}
+void tearDown(void) {}
 
-int test_quickRefC() {
+void test_quickRefC() {
+	printf("-----------test_quickRefC----------------------------------\n");
 	float a1[] = { 1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0 };
 	float a2[] = { 11.0,12.0,13.0,14.0,15.0,16.0,17.0,18.0,19.0 };
 	struct Node_Type m = {101,"text"};
@@ -51,12 +53,23 @@ int test_quickRefC() {
 	float sum_arg = 0;
 	TEST_ASSERT_TRUE(sum(a2,9,&sum_arg));	//sum_arg = 135.0
 	TEST_ASSERT_EQUAL_INT(1,const_basic());
+	return 1;
 }
 
+void test_simd() {
+	printf("-----------test_simd----------------------------------\n");
+	TEST_ASSERT_EQUAL_INT(1, simd_128());
+	TEST_ASSERT_EQUAL_INT(1, simd_256());
+	//int a[8] = { 1,2,3,4,5,6,7,8 };
+	//TEST_ASSERT_EQUAL_INT(1, scalar_multiplication(a, 1, 8, 2));
+	//TEST_ASSERT_EQUAL_INT(1, simd_info());
+}
 
 int main() {
 	UNITY_BEGIN();
 	//テスト用関数にtest_とつけるのは慣用でありルールではない。テスト関数には引数なし、返り値なしで記述する
 	RUN_TEST(test_quickRefC);
+	RUN_TEST(test_simd);
 	return UNITY_END();;
 }
+
