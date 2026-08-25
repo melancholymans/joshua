@@ -60,9 +60,9 @@ void test_simd() {
 	printf("-----------test_simd----------------------------------\n");
 	TEST_ASSERT_EQUAL_INT(1, simd_128());
 	TEST_ASSERT_EQUAL_INT(1, simd_256());
-	//int a[8] = { 1,2,3,4,5,6,7,8 };
-	//TEST_ASSERT_EQUAL_INT(1, scalar_multiplication(a, 1, 8, 2));
-	//TEST_ASSERT_EQUAL_INT(1, simd_info());
+	int a[8] = { 1,2,3,4,5,6,7,8 };
+	TEST_ASSERT_EQUAL_INT(72, scalar_multiplication(a, 1, 8, 2));
+	TEST_ASSERT_EQUAL_INT(1, simd_info());
 }
 
 int main() {

@@ -414,7 +414,11 @@ int scalar_multiplication(int* a, int row, int column, int scalar){
     for (; i < row * column; i++){
         a[i] *= scalar;
     }
-    return 1;
+    int sum = 0;
+    for (int i = 0; i < row * column; i += 1) {
+        sum += a[i];
+    }
+    return sum;
 }
 
 static void get_cpuid(int eax, int ecx, int regs[4]) {
