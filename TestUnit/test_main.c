@@ -2,7 +2,7 @@
 #include <windows.h>
 
 #include "unity.h"
-#include "../shogi/quickRefC.h"
+#include "quickRefC.h"
 #include "simd_learn.h"
 
 void setUp(void) {}

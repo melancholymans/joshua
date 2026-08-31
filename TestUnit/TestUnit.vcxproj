@@ -125,12 +125,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\shogi\quickRefC.c" />
+    <ClCompile Include="quickRefC.c" />
     <ClCompile Include="simd_learn.c" />
     <ClCompile Include="test_main.c" />
     <ClCompile Include="unity.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="quickRefC.h" />
     <ClInclude Include="simd_learn.h" />
     <ClInclude Include="unity.h" />
     <ClInclude Include="unity_internals.h" />

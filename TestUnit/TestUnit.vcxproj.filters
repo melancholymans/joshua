@@ -21,10 +21,10 @@
     <ClCompile Include="unity.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\shogi\quickRefC.c">
+    <ClCompile Include="simd_learn.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="simd_learn.c">
+    <ClCompile Include="quickRefC.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,6 +36,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="simd_learn.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="quickRefC.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
