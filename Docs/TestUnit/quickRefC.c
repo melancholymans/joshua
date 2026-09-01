@@ -32,10 +32,12 @@ int type_conversion() {
 	printf("array_len: %d\n", array_len);
 	int* iPtr = iArray + 3;		//C言語はポインタ計算ができる。
 	printf("iArray[4]=%d\n", *iPtr);
+
 	//文字配列をstrlenとsizeofで比較したとき数値が違う
 	char msg[80] = "I'm a string literal.";
 	printf("The string %d char long\n", (int)strlen(msg));	//文字列の長さ（ヌル文字列までの長さ）を返している,strlenが返すのはsize_t(long log型)なのでintにキャストしている
 	printf("The array named msg is %zu byte long\n", sizeof(msg));	//msg配列のサイズを返している,sizeofが返すのはsize_t(long log型)なのでintにキャストするのではなく%zuで表示するとワーニングがでない%zuはC99で導入されたフォーマット指定子で、size_t型の値を表示するために使用されます
+	
 	//関数名は関数へのポインタに暗黙的に変換される
 	void (*funcTable[2])(void) = { func0, func1 };	//関数ポインタの配列を定義している,上に定義している関数のポインタを配列に格納している
 	//文字配列と関数配列を比較してみる
@@ -54,6 +56,10 @@ int type_conversion() {
 	for (int i = 0; i < 2; i += 1) {
 		funcTable[i]();	//関数ポインタを使って関数を呼び出している
 	}
+
+
+
+
 	//どんな型でもchar型(char, signed char,unsigned char)に変換すると結果はオブジェクトの先頭バイトのポインタになる。これを利用して構造体の先頭バイトをchar型のポインタに変換して、構造体のメンバ変数の値をバイト単位で取得することができる
 	struct Data {
 		short id;
@@ -67,6 +73,7 @@ int type_conversion() {
 	}
 	putchar('\n');
 	//関数ポインタを異なる関数へのポインタに明示的に変換できる（反対に暗黙的に変換するとバグの原因となる）
+
 	//typedef文は「double引数を１つ持ちdouble値を返す関数」型の名前を定義している
 	typedef double(func_t)(double);	//func_tという型ではない。double引数を１つ持ちdouble値を返す関数型の名前をfunc_tとして定義しているだけ
 	func_t* pFunc = sqrt;	//sqrt関数のポインタを取得している
@@ -78,10 +85,16 @@ int type_conversion() {
 	return 1;
 }
 
+
+
+
 /*ヘッダファイルが作らなくてもよい理由
 	C言語（特に古いC89規格など）には、「プロトタイプ宣言がない関数を突然呼び出しても、コンパイラが自動で『戻り値が int 型の関数』と仮定してコンパイルを継続する」という仕様（暗黙の関数宣言）が存在します
 	なのでヘッダファイルを用意しなくてもリンク実行ができる
 */
+
+
+
 int sizeof_basic_types() {
 	printf("unit ---byte--- \n");
 	printf("sizeof(char) = %zu\n", sizeof(char));
@@ -116,6 +129,9 @@ int float_learn() {
 		"%18.10f\n", d_var - f_var);
 	return 1;
 }
+
+
+
 
 int enum_learn() {
 	enum Color { RED, GREEN, BLUE };
@@ -212,6 +228,11 @@ int incremental_learn() {
 	return 1;
 }
 
+
+
+
+
+
 int struct_op() {
 	//定義
 	struct Article {
@@ -250,6 +271,8 @@ int Alignof_learn() {
 	printf("Alignof int* %zu\n", _Alignof(int*));
 	return 1;
 }
+
+/*今日はここまで 2026/08/31*/
 
 static int help_func() {
 	puts("help function");
@@ -301,6 +324,8 @@ int initNode(struct Node_Type* pNode) {
 	return 1;
 }
 
+
+
 //inline関数
 inline int swapf(float* p1, float* p2) {
 	const float tmp = *p1;
@@ -342,6 +367,8 @@ double add(const int n, ...) {
 	va_end(argptr);
 	return sum;
 }
+
+
 
 int array_init() {
 	//構造体の初期化リスト
@@ -436,13 +463,19 @@ static double Div(double x, double y) { return x / y; }
 
 int func_pointer() {
 	//関数の型へのポインタの書き方、型doubleの２つの引数をとりdoubleを返す関数の型
-	double (*funcPtr)(double, double);
+	//double (*funcPtr)(double, double);
 	typedef double func_t(double, double);
 	func_t* const funcTable[4] = { Add ,Sub,Mul,Div };
 	for (int i = 0; i < 4; i += 1) {
 		printf("func Table: %f\n", (float)funcTable[i](6.0, 3.0));
 	}
 	return 1;
+}
+
+static char* dateAsString(struct Date d) {
+	static char strDate[12];
+	sprintf_s(strDate, 12, "%02d/%02d/%04d", d.month, d.day, d.year);
+	return strDate;
 }
 
 struct Date {	//このDateはタグ
@@ -472,11 +505,6 @@ static void printSong(const Song_t* pSong) {
 	//pSong->artist = "test";	//変更不可のエラーがでる
 }
 
-static char* dateAsString(struct Date d) {
-	static char strDate[12];
-	sprintf_s(strDate, 12, "%02d/%02d/%04d", d.month, d.day, d.year);
-	return strDate;
-}
 
 int struct_unit_bitfiled() {
 	struct Song {

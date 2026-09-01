@@ -4,6 +4,7 @@
 
 void init_tables() {
 	new_mask_bb();
+	new_file_mask();
 }
 
 int main() {

@@ -24,9 +24,6 @@
     <ClCompile Include="simd_learn.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="quickRefC.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="unity.h">
@@ -36,9 +33,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="simd_learn.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="quickRefC.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
