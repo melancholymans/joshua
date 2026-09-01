@@ -365,7 +365,7 @@ desktop.ini
 .gitattributes
 *.vcxproj
 *.filters
-TestUnit/TestUnit.vcxproj.filters
+TestUnit.vcxproj.filters
 TestUnit/TestUnit.vcxproj
 shogi/shogi.vcxproj.filters
 shogi/shogi.vcxproj

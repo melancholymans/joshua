@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -9,11 +10,11 @@ __m128i file_mask[9];
 //座標sqごとにbitが立っている配列を生成している
 void new_mask_bb() {
 	for (int i = 0; i < 63; i += 1) {
-		int64_t tmp[2] = {1 << i,0x00};
+		int64_t tmp[2] = {(int64_t)1 << i,0x00};
 		mask_bb[i] = _mm_loadu_si128((const __m128i*)tmp);
 	}
 	for (int i = 63; i < 81; i += 1){
-		int64_t tmp[2] = { 0x00,1 << (i-63)};
+		int64_t tmp[2] = { 0x00,(int64_t)1 << (i-63)};
 		mask_bb[i] = _mm_loadu_si128((const __m128i*)tmp);
 	}
 }
@@ -34,6 +35,11 @@ int set_square(int f, int r) {
 	return f * 9 + r;
 }
 
+__m128i set_bb(int64_t idx0, int64_t idx1) {
+	int64_t tmp[2] = { idx0, idx1 };
+	return _mm_loadu_si128((const __m128i*)tmp);
+}
+
 //引数bbのsq座標にビットが立っていればtrueを返す
 bool is_biton(int sq, __m128i bb) {
 	return !(bool)_mm_testz_si128(mask_bb[sq],bb);
@@ -42,8 +48,8 @@ bool is_biton(int sq, __m128i bb) {
 //debug用のbitboard表示
 void print_bitboard(__m128i bb, const char* msg) {
 	char rstr[] = "abcdefghi";
-	printf("----------- ", msg, " -----------\n");
-	printf("    9  8  7  6  5  4  3  2  1");
+	printf("----------- %s ------------\n", msg);
+	printf("    9  8  7  6  5  4  3  2  1\n");
 	for (int r = 0; r < 9; r += 1) {
 		printf("%c ", rstr[r]);
 		for (int f = 8; f >= 0; f -= 1) {

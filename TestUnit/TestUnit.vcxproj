@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="simd_learn.c" />
+    <ClCompile Include="test_bitboard.c" />
     <ClCompile Include="test_main.c" />
     <ClCompile Include="unity.c" />
   </ItemGroup>
