@@ -3,10 +3,31 @@
 
 #include "unity.h"
 #include "simd_learn.h"
+#include "../shogi/bitboard.h"
+#include "../shogi/position.h"
+#include "test_bitboard.h"
+#include "test_position.h"
 
 void setUp(void) {}
 void tearDown(void) {}
 
+
+void test_position() {
+	printf("-----------test_position----------------------------------\n");
+	test_set_file();
+	test_set_rank();
+	TEST_ASSERT_TRUE(test_set_square());
+}
+
+void test_bitboard() {
+	printf("-----------test_bitboard----------------------------------\n");
+	init_tables();
+	__m128i bb = set_bb(0x298060C0A1121B45, 0x3abad);
+	//print_bitboard(bb, "test");
+	test_set_mask_bb(bb);
+	test_file_mask();
+
+}
 
 void test_simd() {
 	printf("-----------test_simd----------------------------------\n");
@@ -21,6 +42,8 @@ int main() {
 	UNITY_BEGIN();
 	//テスト用関数にtest_とつけるのは慣用でありルールではない。テスト関数には引数なし、返り値なしで記述する
 	RUN_TEST(test_simd);
+	RUN_TEST(test_position);
+	RUN_TEST(test_bitboard);
 	return UNITY_END();;
 }
 

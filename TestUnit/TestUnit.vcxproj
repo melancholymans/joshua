@@ -125,13 +125,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\shogi\bitboard.c" />
+    <ClCompile Include="..\shogi\position.c" />
     <ClCompile Include="simd_learn.c" />
     <ClCompile Include="test_bitboard.c" />
     <ClCompile Include="test_main.c" />
+    <ClCompile Include="test_position.c" />
     <ClCompile Include="unity.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="simd_learn.h" />
+    <ClInclude Include="test_bitboard.h" />
+    <ClInclude Include="test_position.h" />
     <ClInclude Include="unity.h" />
     <ClInclude Include="unity_internals.h" />
   </ItemGroup>
