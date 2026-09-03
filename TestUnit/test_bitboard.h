@@ -4,3 +4,9 @@
 
 void test_set_mask_bb(__m128i bb);
 void test_file_mask();
+void test_rank_mask();
+void test_all_one_bb();
+void test_all_zero_bb();
+void test_in_front_mask();
+void test_enemy_field();
+void test_set_biton();

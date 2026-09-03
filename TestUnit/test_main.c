@@ -22,10 +22,16 @@ void test_position() {
 void test_bitboard() {
 	printf("-----------test_bitboard----------------------------------\n");
 	init_tables();
-	__m128i bb = set_bb(0x298060C0A1121B45, 0x3abad);
-	//print_bitboard(bb, "test");
+	__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
 	test_set_mask_bb(bb);
 	test_file_mask();
+	test_rank_mask();
+	test_all_one_bb();
+	test_all_zero_bb();
+	test_in_front_mask();
+	test_enemy_field();
+	test_set_biton();
+
 
 }
 
