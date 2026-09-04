@@ -445,7 +445,7 @@ void test_enemy_field(){
 	_mm_storeu_si128((const __m128i*)tmp, enemy_field[color]);
 	TEST_ASSERT_EQUAL_INT(7 * 3, _mm_popcnt_u64(tmp[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 3, _mm_popcnt_u64(tmp[1]));
-	print_bitboard(enemy_field[color], "test_enemy_field");
+	//print_bitboard(enemy_field[color], "test_enemy_field");
 
 	color = white;
 	for (int r = rank7; r <= rank9; r += 1) {
@@ -457,7 +457,7 @@ void test_enemy_field(){
 	_mm_storeu_si128((const __m128i*)tmp, enemy_field[color]);
 	TEST_ASSERT_EQUAL_INT(7 * 3, _mm_popcnt_u64(tmp[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 3, _mm_popcnt_u64(tmp[1]));
-	print_bitboard(enemy_field[color], "test_enemy_field");
+	//print_bitboard(enemy_field[color], "test_enemy_field");
 }
 
 void test_set_biton() {
@@ -472,4 +472,67 @@ void test_set_biton() {
 	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
 	TEST_ASSERT_TRUE(is_biton(sq1i, bb));
 	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+}
+
+void test_first_one_from() {
+	__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
+	TEST_ASSERT_EQUAL_INT(0,first_one_from(&bb));
+	int64_t tmp[2];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B44, tmp[0]);	//bbから最初の1bitを0にした値が返ることを確認
+	TEST_ASSERT_EQUAL_HEX64(0x3abad, tmp[1]);
+	bb = set_board(0x282d026660282000, 0x28b5b);
+	TEST_ASSERT_EQUAL_INT(13, first_one_from(&bb));
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x282D026660280000, tmp[0]);	//bbから最初の1bitを0にした値が返ることを確認
+	TEST_ASSERT_EQUAL_HEX64(0x28b5b, tmp[1]);
+}
+
+void test_lance_block_mask() {
+	__m128i bb = lance_block_mask(sq9a);
+	int64_t tmp[2];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1fc00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq8b);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xfe, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq7c);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x3f80000000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq6d);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x1fc00000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq5e);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0xFE000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq4f);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x7F0000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq3g);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x3F80000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq2h);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x1fc00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
+	bb = lance_block_mask(sq1i);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0xfe, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(bb, "test_lance_block_mask");
 }

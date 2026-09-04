@@ -10,3 +10,5 @@ void test_all_zero_bb();
 void test_in_front_mask();
 void test_enemy_field();
 void test_set_biton();
+void test_first_one_from();
+void test_lance_block_mask();

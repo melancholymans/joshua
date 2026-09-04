@@ -10,6 +10,7 @@ __m128i rank_mask[9];
 __m128i all_one_bb;
 __m128i in_front_mask[2][9];
 __m128i enemy_field[2];
+__m128i lance_attack[2][81][128];
 
 //各種テーブルの初期化
 void init_tables() {
@@ -56,10 +57,6 @@ void new_all_one_bb() {
 	all_one_bb = _mm_loadu_si128((const __m128i*)tmp);
 }
 
-__m128i all_zero_bb() {
-	return _mm_setzero_si128();
-}
-
 // Rankを指定するとそのRankより前段のRankをbitで埋めていく。カラーによって前段の方向は反対になる
 // RankMaskが設定されていることが前提、AllZeroBBが設定されていることが前提
 void new_in_front_mask() {
@@ -92,8 +89,16 @@ void new_enemy_field() {
 
 // new_lance_attack関数のヘルパー関数,sq座標があるfile_maskから1段と9段のbitを除いたbitBoardを返す
 // all_one_bbとのAndNotはC/C++のチルダ演算子（bit反転）と同等の演算となる
+//rank1  0     0    0       rank1とrank9はlanceにとって死に駒になるので移動可能範囲から除外する
+//       x     x    x　　　　つまりlance_block_maskは座標sq軸のlanceの移動可能範囲（block）を表す
+//       ...   ...  ...
+//       sq    x    x
+//       x     x    x
+//       x     sq   x 
+//       x     x    sq
+// rank9 0     0    0 
 __m128i lance_block_mask(int sq) {
-	__m128i bb = _mm_andnot_si128(all_one_bb, _mm_or_si128(rank_mask[rank1], rank_mask[rank9]));
+	__m128i bb = _mm_andnot_si128(_mm_or_si128(rank_mask[rank1], rank_mask[rank9]), all_one_bb);
 	return _mm_and_si128(file_mask[set_file(sq)],bb);
 }
 
@@ -118,17 +123,44 @@ int first_one_from(__m128i* bb) {
 	return -1; // ビットが立っていない場合は-1を返す
 }
 
+__m128i lance_attack_calc(int color,int square, __m128i occ) {
+	int f = set_file(square);
+	__m128i bb = all_zero_bb();
+	//上方向
+	for(int r = set_rank(square); r > rank1; ){
+		r -= 1;
+		int sq = set_square(f, r);
+		set_biton(sq, &bb);
+		if (is_biton(sq, occ)) {
+			break;
+		}
+	}
+	//下方向
+	for (int r = set_rank(square); r >  rank9; ) {
+		r += 1;
+		int sq = set_square(f, r);
+		set_biton(sq, &bb);
+		if (is_biton(sq, occ)) {
+			break;
+		}
+	}
+	return _mm_or_si128(bb,in_front_mask[color][set_rank(square)]);
+}
+
 __m128i index_to_occupied(int idx, __m128i block_mask) {
 	__m128i tmp = block_mask;
 	__m128i result = all_zero_bb();
 	for(int i = 0;i < 7;i += 1){
 		int sq = first_one_from(&tmp);
-		if(idx & (1 << i)){
-			__m128i bit = _mm_and_si128(tmp, _mm_sub_epi64(tmp, _mm_set1_epi64x(1)));
-			result = _mm_or_si128(result, bit);
-			tmp = _mm_andnot_si128(bit, tmp);
+		if(sq == -1){
+			printf("Error: [%s : %d : %s()]\n", __FILE__, __LINE__, __func__);
+			exit(1);
+		}
+		if((idx & (1 << i))>0){
+			set_biton(sq, &result);
 		}
 	}
+	return result;
 }
 
 // lanceの利きbitboardを生成する
@@ -137,11 +169,15 @@ void new_lance_attack(){
 		for (int sq = sq1a; sq <= sq9i;sq+=1) {
 			__m128i block_mask = lance_block_mask(sq);
 			for(int i=0;i<128;i+=1){
-				__m128i occ = index_to_occ_upied(i,block_mask);
+				__m128i occ = index_to_occupied(i,block_mask);
 				lance_attack[c][sq][i] = lance_attack_calc(c,sq,occ);
 			}
 		}
 	}
+}
+
+__m128i all_zero_bb() {
+	return _mm_setzero_si128();
 }
 
 __m128i set_board(int64_t idx0, int64_t idx1) {
