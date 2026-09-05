@@ -124,6 +124,20 @@ int first_one_from(__m128i* bb) {
 }
 
 // NewLanceAttack関数のヘルパー関数、bbが盤の状態を表すbitBoard
+// occはindex_to_occupied関数で生成されたlanceの移動可能範囲のなかで駒を置いたパターンを表すbitBoard
+// 指定されたcolor,指定された座標sqにlanceが置かれたとして、そのlanceから上、下に利きを記録する
+// 最後にcolorでblackなら上向きの利きを、whiteなら下向きの利きにマスクして返す
+// sq5eでoccのパターンが97(0x61)の場合
+//    sq  occ(97)   lanceの利き in_front_mask[color=black][rank5] andした結果
+// 5a     0          0          1                                 0
+// 5b     1          1          1                                 1
+// 5c     0          1          1                                 1
+// 5d     0          1          1                                 1
+// 5e x   0          0          0                                 0
+// 5f     0          1          0                                 0
+// 5g     1          1          0                                 1
+// 5h     1          0          0                                 0
+// 5i     0          0          0                                 0
 __m128i lance_attack_calc(int color,int square, __m128i occ) {
 	int f = set_file(square);
 	__m128i bb = all_zero_bb();
@@ -137,7 +151,7 @@ __m128i lance_attack_calc(int color,int square, __m128i occ) {
 		}
 	}
 	//下方向
-	for (int r = set_rank(square); r >  rank9; ) {
+	for (int r = set_rank(square); r <  rank9; ) {
 		r += 1;
 		int sq = set_square(f, r);
 		set_biton(sq, &bb);
@@ -145,7 +159,7 @@ __m128i lance_attack_calc(int color,int square, __m128i occ) {
 			break;
 		}
 	}
-	return _mm_or_si128(bb,in_front_mask[color][set_rank(square)]);
+	return _mm_and_si128(bb,in_front_mask[color][set_rank(square)]);
 }
 
 // NewPawnAttack関数のヘルパー関数

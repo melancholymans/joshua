@@ -13,3 +13,4 @@ void test_set_biton();
 void test_first_one_from();
 void test_lance_block_mask();
 void test_index_to_occupied();
+void test_lance_attack_calc();

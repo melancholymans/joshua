@@ -585,20 +585,64 @@ void test_index_to_occupied() {
 	print_bitboard(occ, "test_index_to_occupied");
 }
 
-/*
+
 void test_lance_attack_calc(){
-	__m128i occ = all_zero_bb();
-	__m128i bb = lance_attack_calc(black, sq9a, occ);
-
-
-
-
-
-	__m128i occ = set_board(0x0000000000000000, 0x0000000000000000);
-	__m128i bb = lance_attack_calc(black, sq9a, occ);
+	//black
 	int64_t tmp[2];
+	__m128i bm = lance_block_mask(sq5a);
+	__m128i occ = index_to_occupied(97,bm);
+	__m128i bb = lance_attack_calc(black, sq5a, occ);
 	_mm_storeu_si128((const __m128i*)tmp, bb);
 	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x1fc00, tmp[1]);
-	print_bitboard(bb, "test_lance_attack_calc");
-}*/
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	print_bitboard(occ, "test_lance_attack_calc");
+
+	bm = lance_block_mask(sq5d);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(black, sq5d, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x6000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bm = lance_block_mask(sq5f);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(black, sq5f, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bm = lance_block_mask(sq5g);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(black, sq5i, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x80000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	//white
+	bm = lance_block_mask(sq5a);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(white, sq5a, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x2000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bm = lance_block_mask(sq5c);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(white, sq5c, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x78000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bm = lance_block_mask(sq5f);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(white, sq5f, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x40000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bm = lance_block_mask(sq5i);
+	occ = index_to_occupied(97, bm);
+	bb = lance_attack_calc(white, sq5i, occ);
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+}
