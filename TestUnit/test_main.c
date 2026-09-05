@@ -34,7 +34,7 @@ void test_bitboard() {
 	test_set_biton();
 	test_first_one_from();
 	test_lance_block_mask();
-
+	test_index_to_occupied();
 }
 
 void test_simd() {

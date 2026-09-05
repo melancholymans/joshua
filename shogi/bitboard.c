@@ -89,7 +89,7 @@ void new_enemy_field() {
 
 // new_lance_attack関数のヘルパー関数,sq座標があるfile_maskから1段と9段のbitを除いたbitBoardを返す
 // all_one_bbとのAndNotはC/C++のチルダ演算子（bit反転）と同等の演算となる
-//rank1  0     0    0       rank1とrank9はlanceにとって死に駒になるので移動可能範囲から除外する
+//rank1  0     0    0       rank1とrank9はlanceにとって死駒になるので移動可能範囲から除外する
 //       x     x    x　　　　つまりlance_block_maskは座標sq軸のlanceの移動可能範囲（block）を表す
 //       ...   ...  ...
 //       sq    x    x
@@ -103,19 +103,19 @@ __m128i lance_block_mask(int sq) {
 }
 
 // 渡されたbitBoardを0から80までスキャンして最初bitが立っていたindexを返す,1つもビットが立っていなかったらfalseを返す
-// LSB側からの最初の1bitを0にする
+// LSB側からの最初の1bitを0にする(LSBから削っていくことで、次の１bitが最初に立っているbitになる)
 int first_one_from(__m128i* bb) {
 	int64_t tmp[2];
 	unsigned long sq;
 	_mm_storeu_si128((__m128i*)tmp, *bb);
 	if (tmp[0] != 0) {
-		_BitScanForward(&sq,tmp[0]);
+		_BitScanForward64(&sq,tmp[0]);
 		tmp[0] = tmp[0] & (tmp[0] - 1);
 		*bb = _mm_loadu_si128((const __m128i*)tmp);
 		return (int)sq;
 	}
 	if (tmp[1] != 0) {
-		_BitScanForward(&sq, tmp[1]);
+		_BitScanForward64(&sq, tmp[1]);
 		tmp[1] = tmp[1] & (tmp[1] - 1);
 		*bb = _mm_loadu_si128((const __m128i*)tmp);
 		return (int)sq + 63;
@@ -123,6 +123,7 @@ int first_one_from(__m128i* bb) {
 	return -1; // ビットが立っていない場合は-1を返す
 }
 
+// NewLanceAttack関数のヘルパー関数、bbが盤の状態を表すbitBoard
 __m128i lance_attack_calc(int color,int square, __m128i occ) {
 	int f = set_file(square);
 	__m128i bb = all_zero_bb();
@@ -147,6 +148,20 @@ __m128i lance_attack_calc(int color,int square, __m128i occ) {
 	return _mm_or_si128(bb,in_front_mask[color][set_rank(square)]);
 }
 
+// NewPawnAttack関数のヘルパー関数
+// blockはsq座標に応じたlanceの移動可能範囲を表すbitBoard
+// idxはパターン番号0から127までの番号がある。
+// sq lanceの移動範囲 idx 
+//                   0 1 2 3 4 ... 14 ... 120 ... 127   この128のパターンをresultにbitboardとして写取っている
+// 5b x              0 1 0 1 0     0      0       1 
+// 5c x              0 0 1 1 0     1      0       1
+// 5d x              0 0 0 0 1     1      0       1
+// 5e x              0 0 0 0 0     1      1       1
+// 5f x              0 0 0 0 0     0      1       1
+// 5g x              0 0 0 0 0     0      1       1
+// 5h x              0 0 0 0 0     0      0       0
+// lanceの移動可能範囲のなかで駒を置けるパターンは2^7=128通りあるので、idxは0から127までの番号がある。そのパターンを
+// sq座標ごとに128個の配列に保存しておく
 __m128i index_to_occupied(int idx, __m128i block_mask) {
 	__m128i tmp = block_mask;
 	__m128i result = all_zero_bb();
