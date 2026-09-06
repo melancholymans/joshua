@@ -15,3 +15,5 @@ void test_lance_block_mask();
 void test_index_to_occupied();
 void test_lance_attack_calc();
 void test_lance_attack();
+void test_byte_reverse();
+void test_unpack();

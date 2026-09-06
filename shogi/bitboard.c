@@ -98,7 +98,7 @@ void new_enemy_field() {
 //       x     sq   x 
 //       x     x    sq
 // rank9 0     0    0 
-__m128i lance_block_mask(int sq) {
+__m128i lance_block_mask(const int sq) {
 	__m128i bb = _mm_andnot_si128(_mm_or_si128(rank_mask[rank1], rank_mask[rank9]), all_one_bb);
 	return _mm_and_si128(file_mask[set_file(sq)],bb);
 }
@@ -139,7 +139,7 @@ int first_one_from(__m128i* bb) {
 // 5g     1          1          0                                 1
 // 5h     1          0          0                                 0
 // 5i     0          0          0                                 0
-__m128i lance_attack_calc(int color,int square, __m128i occ) {
+__m128i lance_attack_calc(const int color,const int square,const __m128i occ) {
 	int f = set_file(square);
 	__m128i bb = all_zero_bb();
 	//上方向
@@ -177,7 +177,7 @@ __m128i lance_attack_calc(int color,int square, __m128i occ) {
 // 5h x              0 0 0 0 0     0      0       0
 // lanceの移動可能範囲のなかで駒を置けるパターンは2^7=128通りあるので、idxは0から127までの番号がある。そのパターンを
 // sq座標ごとに128個の配列に保存しておく
-__m128i index_to_occupied(int idx, __m128i block_mask) {
+__m128i index_to_occupied(const int idx,const __m128i block_mask) {
 	__m128i tmp = block_mask;
 	__m128i result = all_zero_bb();
 	for(int i = 0;i < 7;i += 1){
@@ -206,22 +206,36 @@ void new_lance_attack(){
 	}
 }
 
+// 飛車の利きの右方向と角の利きの右上、右下方向を求める時に使う。
+// byte単位でリバースする。bit単位ではない
+__m128i byte_reverse(__m128i bb) {
+	const __m128i shuffle = _mm_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+	return _mm_shuffle_epi8(bb, shuffle);
+}
+
+// hi_in,lo_inの上位64bitを抜き出して１つの128bitレジスタ(hi_out)を構成する
+// hi_in,lo_inの下位64bitを抜き出して１つの128bitレジスタ(lo_out)を構成する
+void unpack(const __m128i hi_in,const __m128i lo_in, __m128i* hi_out, __m128i* lo_out) {
+	*hi_out = _mm_unpackhi_epi64(lo_in, hi_in);
+	*lo_out = _mm_unpackhi_epi64(lo_in, hi_in);
+}
+
 __m128i all_zero_bb() {
 	return _mm_setzero_si128();
 }
 
-__m128i set_board(int64_t idx0, int64_t idx1) {
+__m128i set_board(const int64_t idx0,const int64_t idx1) {
 	int64_t tmp[2] = { idx0, idx1 };
 	return _mm_loadu_si128((const __m128i*)tmp);
 }
 
 //引数bbのsq座標にビットが立っていればtrueを返す
-bool is_biton(int sq, __m128i bb) {
+bool is_biton(const int sq,const __m128i bb) {
 	return !(bool)_mm_testz_si128(mask_bb[sq],bb);
 }
 
 // 引数bbのsq座標にビットを立てる
-void set_biton(int sq, __m128i* bb) {
+void set_biton(const int sq, __m128i* bb) {
 	*bb = _mm_or_si128(*bb, mask_bb[sq]);
 }
 

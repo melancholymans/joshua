@@ -37,6 +37,8 @@ void test_bitboard() {
 	test_index_to_occupied();
 	test_lance_attack_calc();
 	test_lance_attack();
+	test_byte_reverse();
+	test_unpack();
 }
 
 void test_simd() {

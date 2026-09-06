@@ -709,3 +709,32 @@ void test_lance_attack() {
 	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x400, tmp[1]);
 }
+
+// tmp        
+// [0]0x01 [1]0x02 [2]0x03 [3]0x04 [4]0x05 [5]0x06 [6]0x07 [7]0x08 [8]0x09 [9]0x0a [10]0x0b [11]0x0c [12]0x0d [13]0x0e [14]0xf [15]0x10
+// __m128i bb
+// | ----[1]---------------|--------[0]------------] 
+// 0x10 0f 0e 0d 0c 0b 0a 09 08 07 06 05 04 03 02 01   
+// これをリバースすると
+// __m128i result
+// | ----[1]---------------|--------[0]------------] 
+// 0x01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10
+void test_byte_reverse() {
+	int8_t tmp[16] = { 0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10 };	//見やすいので16進数にしている
+	__m128i bb = _mm_loadu_si128(tmp);
+	__m128i result = byte_reverse(bb);
+	int64_t tmp2[2];
+	_mm_storeu_si128((const __m128i*)tmp2, result);
+	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, tmp2[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, tmp2[1]);
+}
+
+void test_unpack() {
+	int64_t hight_tmp[2] = { 0x0102030405060708,0x090a0b0c0d0e0f10 };	//見やすいので16進数にしている
+	int64_t low_tmp[2] = { 0x1112131415161718,0x191a1b1c1d1e1f20 };	//見やすいので16進数にしている
+	__m128i hight = _mm_loadu_si128(hight_tmp);
+	__m128i low = _mm_loadu_si128(low_tmp);
+	__m128i hight_result;
+	__m128i low_result;
+	unpack(hight, low, &hight_result, &low_result);
+}
