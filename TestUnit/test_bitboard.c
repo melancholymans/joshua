@@ -585,7 +585,6 @@ void test_index_to_occupied() {
 	print_bitboard(occ, "test_index_to_occupied");
 }
 
-
 void test_lance_attack_calc(){
 	//black
 	int64_t tmp[2];
@@ -611,7 +610,7 @@ void test_lance_attack_calc(){
 	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, tmp[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
 
-	bm = lance_block_mask(sq5g);
+	bm = lance_block_mask(sq5i);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(black, sq5i, occ);
 	_mm_storeu_si128((const __m128i*)tmp, bb);
@@ -645,4 +644,68 @@ void test_lance_attack_calc(){
 	_mm_storeu_si128((const __m128i*)tmp, bb);
 	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+}
+
+void test_lance_attack() {
+	int64_t tmp[2];
+
+	__m128i bb = lance_attack[black][sq5a][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[black][sq5d][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x6000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[black][sq5f][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[black][sq5i][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x80000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[white][sq5a][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x2000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[white][sq5c][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x78000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[white][sq5f][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x40000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[white][sq5i][97];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[black][sq9e][35];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1800, tmp[1]);
+
+	bb = lance_attack[black][sq9a][35];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+
+	bb = lance_attack[white][sq9e][35];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xC000, tmp[1]);
+
+	bb = lance_attack[white][sq9a][35];
+	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x400, tmp[1]);
 }

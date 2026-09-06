@@ -36,6 +36,7 @@ void test_bitboard() {
 	test_lance_block_mask();
 	test_index_to_occupied();
 	test_lance_attack_calc();
+	test_lance_attack();
 }
 
 void test_simd() {

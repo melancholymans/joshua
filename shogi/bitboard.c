@@ -20,6 +20,7 @@ void init_tables() {
 	new_all_one_bb();
 	new_in_front_mask();
 	new_enemy_field();
+	new_lance_attack();
 }
 
 //À•Wsq‚²‚Æ‚Ébit‚ª—§‚Á‚Ä‚¢‚é”z—ñ‚ğ¶¬‚µ‚Ä‚¢‚é
