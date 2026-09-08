@@ -24,21 +24,26 @@ void test_bitboard() {
 	init_tables();
 	//__m128i bb = set_board(0x282d026660282000, 0x28b5b);
 	__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
-	test_set_mask_bb(bb);
-	test_file_mask();
-	test_rank_mask();
-	test_all_one_bb();
+	test_new_set_mask_bb(bb);
+	test_new_file_mask();
+	test_new_rank_mask();
+	test_new_all_one_bb();
 	test_all_zero_bb();
-	test_in_front_mask();
-	test_enemy_field();
+	test_new_in_front_mask();
+	test_new_enemy_field();
 	test_set_biton();
 	test_first_one_from();
 	test_lance_block_mask();
 	test_index_to_occupied();
 	test_lance_attack_calc();
-	test_lance_attack();
+	test_new_lance_attack();
 	test_byte_reverse();
 	test_unpack();
+	test_decrement();
+	test_new_rook_attacks();
+	test_rook_attack_rank();
+	test_rook_attack_file();
+	test_rook_attack();
 }
 
 void test_simd() {

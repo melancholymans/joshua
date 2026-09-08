@@ -107,10 +107,16 @@ enum {
 };
 
 enum {
+	delta_nw = 8,
+	delta_sw = 10,
+	delta_ne = -10,
+	delta_se = -8
+};
+
+enum {
 	black = 0,
 	white = 1
 };
-
 
 int set_square(int f, int r);
 int set_file(int sq);

@@ -11,6 +11,19 @@ __m128i all_one_bb;
 __m128i in_front_mask[2][9];
 __m128i enemy_field[2];
 __m128i lance_attack[2][81][128];
+__m128i rook_attack_rank_to_mask[81][2];
+__m128i bishop_attack_to_mask[81][2];
+const int slide[81] = {
+	1,1,1,1,1,1,1,1,1,
+	10,10,10,10,10,10,10,10,10,
+	19,19,19,19,19,19,19,19,19,
+	28,28,28,28,28,28,28,28,28,
+	37,37,37,37,37,37,37,37,37,
+	46,46,46,46,46,46,46,46,46,
+	55,55,55,55,55,55,55,55,55,
+	1,1,1,1,1,1,1,1,1,
+	10,10,10,10,10,10,10,10,10
+};
 
 //各種テーブルの初期化
 void init_tables() {
@@ -21,6 +34,7 @@ void init_tables() {
 	new_in_front_mask();
 	new_enemy_field();
 	new_lance_attack();
+	new_rook_attacks();
 }
 
 //座標sqごとにbitが立っている配列を生成している
@@ -217,8 +231,109 @@ __m128i byte_reverse(__m128i bb) {
 // hi_in,lo_inの下位64bitを抜き出して１つの128bitレジスタ(lo_out)を構成する
 void unpack(const __m128i hi_in,const __m128i lo_in, __m128i* hi_out, __m128i* lo_out) {
 	*hi_out = _mm_unpackhi_epi64(lo_in, hi_in);
-	*lo_out = _mm_unpackhi_epi64(lo_in, hi_in);
+	*lo_out = _mm_unpacklo_epi64(lo_in, hi_in);
 }
+
+// -1を引くことによってsqからの利きを生成する 
+void decrement(const __m128i hi_in, const __m128i lo_in, __m128i* hi_out, __m128i* lo_out) {
+	*hi_out = _mm_add_epi64(hi_in, _mm_cmpeq_epi64(lo_in, _mm_setzero_si128()));
+	*lo_out = _mm_add_epi64(lo_in, _mm_set1_epi64x(-1LL));
+}
+
+// 座標s	qごとの飛車の横利きをrook_attack_rank_to_mask配列に保存しておく
+void new_rook_attacks() {
+	for (int f = file1; f <= file9; f+=1) {
+		for (int r = rank1; r <= rank9; r+=1) {
+			__m128i left = all_zero_bb();
+			__m128i right = all_zero_bb();
+			//sq座標から左方向
+			for (int f2 = f + 1; f2 <= file9; f2+=1) {
+				left = _mm_or_si128(left,mask_bb[set_square(f2, r)]);
+			}
+			//sq座標から右方向
+			for (int f2 = f - 1; f2 >= file1; f2-=1) {
+				right = _mm_or_si128(right,mask_bb[set_square(f2, r)]);
+			}
+			__m128i right_rev = byte_reverse(right);
+			__m128i hi, lo;
+			unpack(right_rev, left, &hi, &lo);
+			rook_attack_rank_to_mask[set_square(f, r)][0]=lo;
+			rook_attack_rank_to_mask[set_square(f, r)][1]=hi;
+		}
+	}
+}
+
+// 局面(occ)に応じて飛車の横利きを返す
+__m128i rook_attack_rank(const int sq,const __m128i occ) {
+	__m128i hi, lo, t1, t0;
+	const __m128i mask_lo = rook_attack_rank_to_mask[sq][0];
+	const __m128i mask_hi = rook_attack_rank_to_mask[sq][1];
+	__m128i rocc = byte_reverse(occ);
+	unpack(rocc, occ, &hi, &lo);
+	hi = _mm_and_si128(hi, mask_hi);
+	lo = _mm_and_si128(lo, mask_lo);
+	decrement(hi, lo, &t1, &t0);
+	t1 = _mm_and_si128(_mm_xor_si128(t1, hi), mask_hi);
+	t0 = _mm_and_si128(_mm_xor_si128(t0, lo), mask_lo);
+	unpack(t1, t0, &hi, &lo);
+	__m128i result = _mm_or_si128(byte_reverse(hi), lo);
+	return result;
+}
+
+// sq座標からrook縦の利きを返す
+__m128i rook_attack_file(const int sq, const __m128i occ) {
+	int64_t tmp[2];
+	_mm_storeu_si128((const __m128i*)tmp, occ);
+	int part = (int)(sq > sq7i);
+	int index = (tmp[part] >> (slide[sq])) & 127;
+	return _mm_or_si128(lance_attack[black][sq][index], lance_attack[white][sq][index]);
+}
+
+//nw  ne
+// \ /
+// / \
+//sw  se
+void new_bishop_attacks() {
+	int bishop_delta[4] = {	//delta_nw等はposition.hで定義してある
+		delta_nw,	//左上
+		delta_sw,	//左下
+		delta_ne,	//右上
+		delta_se	//右下
+	};
+	for (int f = file1; f <= file9; f += 1) {
+		for (int r = rank1; r <= rank9; r += 1) {
+			int sq = set_square(f, r);
+			__m128i bishop_to_bb[4];
+			for (int i = 0; i < 4; i += 1) {
+				__m128i bb = all_zero_bb();
+				int delta = bishop_delta[i];
+				// 四方にそれぞれリーチを伸ばし壁に突き当たるまで歩進する
+				int sq2 = sq;
+				for (;;) {
+					if ((delta == delta_nw || delta == delta_ne) && set_rank(sq2) == rank1) break;
+					if ((delta == delta_sw || delta == delta_se) && set_rank(sq2) == rank9) break;
+					if ((delta == delta_nw || delta == delta_sw) && set_file(sq2) == file9) break;
+					if ((delta == delta_ne || delta == delta_se) && set_file(sq2) == file1) break;
+					sq2 += delta;
+					bb = _mm_or_si128(bb, mask_bb[sq2]);
+				}
+				bishop_to_bb[i] = bb;
+			}
+			bishop_to_bb[2] = byte_reverse(bishop_to_bb[2]);
+			bishop_to_bb[3] = byte_reverse(bishop_to_bb[3]);
+			for (int i = 0; i < 2; i += 1) {
+				bishop_attack_to_mask[sq][i]
+			}
+		}
+	}
+}
+
+//rookの縦と横の利きbitboardを合成して返す
+__m128i rook_attack(const int sq, const __m128i occ) {
+	return _mm_or_si128(rook_attack_rank(sq, occ), rook_attack_file(sq, occ));
+}
+
+
 
 __m128i all_zero_bb() {
 	return _mm_setzero_si128();
