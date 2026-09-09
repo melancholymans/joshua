@@ -64,6 +64,22 @@ int main() {
 	RUN_TEST(test_simd);
 	RUN_TEST(test_position);
 	RUN_TEST(test_bitboard);
+	typedef union {
+		int64_t p[2];
+		__m128i m;
+	}bitboard;
+	typedef union {
+		int64_t p[4];
+		__m256i m;
+	}bitboard256;
+
+	printf("bitboard size %zu", sizeof(__m128i));
+	printf("bitboard size %zu", sizeof(bitboard));
+	bitboard mb[81];
+	for (int i = 0; i < 63; i += 1) {
+		int64_t tmp[2] = { (int64_t)1 << i,0x00 };
+		mb[i].m = _mm_loadu_si128((const __m128i*)tmp);
+	}
 	return UNITY_END();;
 }
 
