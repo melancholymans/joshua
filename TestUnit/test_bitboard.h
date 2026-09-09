@@ -22,3 +22,6 @@ void test_new_rook_attacks();
 void test_rook_attack_rank();
 void test_rook_attack_file();
 void test_rook_attack();
+void test_new_bishop_attacks();
+void test_unpack256();
+void test_decrement256();

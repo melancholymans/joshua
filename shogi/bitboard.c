@@ -12,7 +12,7 @@ __m128i in_front_mask[2][9];
 __m128i enemy_field[2];
 __m128i lance_attack[2][81][128];
 __m128i rook_attack_rank_to_mask[81][2];
-__m128i bishop_attack_to_mask[81][2];
+__m256i bishop_attack_to_mask[81][2];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -35,6 +35,7 @@ void init_tables() {
 	new_enemy_field();
 	new_lance_attack();
 	new_rook_attacks();
+	new_bishop_attacks();
 }
 
 //座標sqごとにbitが立っている配列を生成している
@@ -289,12 +290,17 @@ __m128i rook_attack_file(const int sq, const __m128i occ) {
 	return _mm_or_si128(lance_attack[black][sq][index], lance_attack[white][sq][index]);
 }
 
+//rookの縦と横の利きbitboardを合成して返す
+__m128i rook_attack(const int sq, const __m128i occ) {
+	return _mm_or_si128(rook_attack_rank(sq, occ), rook_attack_file(sq, occ));
+}
+
 //nw  ne
 // \ /
 // / \
 //sw  se
 void new_bishop_attacks() {
-	int bishop_delta[4] = {	//delta_nw等はposition.hで定義してある
+	int bishop_delta[4] = {
 		delta_nw,	//左上
 		delta_sw,	//左下
 		delta_ne,	//右上
@@ -321,19 +327,51 @@ void new_bishop_attacks() {
 			}
 			bishop_to_bb[2] = byte_reverse(bishop_to_bb[2]);
 			bishop_to_bb[3] = byte_reverse(bishop_to_bb[3]);
-			for (int i = 0; i < 2; i += 1) {
-				bishop_attack_to_mask[sq][i]
-			}
+			
+			int64_t tmp0[2];
+			int64_t tmp1[2];
+			int64_t tmp2[2];
+			int64_t tmp3[2];
+			_mm_storeu_si128((const __m128i*)tmp0, bishop_to_bb[0]);
+			_mm_storeu_si128((const __m128i*)tmp1, bishop_to_bb[1]);
+			_mm_storeu_si128((const __m128i*)tmp2, bishop_to_bb[2]);
+			_mm_storeu_si128((const __m128i*)tmp3, bishop_to_bb[3]);
+			 __m256i bm = _mm256_castsi128_si256(_mm_set_epi64x(tmp2[0],tmp0[0] ));
+			 bishop_attack_to_mask[sq][0] = _mm256_inserti128_si256(bm, _mm_set_epi64x(tmp3[0],tmp1[0] ), 1);
+			 bm = _mm256_castsi128_si256(_mm_set_epi64x(tmp2[1], tmp0[1]));
+			 bishop_attack_to_mask[sq][1] = _mm256_inserti128_si256(bm, _mm_set_epi64x(tmp3[1], tmp1[1]), 1);
 		}
 	}
 }
 
-//rookの縦と横の利きbitboardを合成して返す
-__m128i rook_attack(const int sq, const __m128i occ) {
-	return _mm_or_si128(rook_attack_rank(sq, occ), rook_attack_file(sq, occ));
+// hi_in,lo_inの上位64bitを抜き出して１つの256bitレジスタ(hi_out)を構成する
+// hi_in,lo_inの下位64bitを抜き出して１つの256bitレジスタ(lo_out)を構成する
+// lo_in = [a3,a2 | a1,a0]	配列並びと同じように右側がMSB左がLSB 
+// hi_in = [b3,b2 | b1,b0]
+// hi_out = [a3,b3 | a1,b1]
+// lo_out = [a2,b2 | a0,b0]
+void unpack256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out) {
+	*hi_out = _mm256_unpackhi_epi64(lo_in, hi_in);
+	*lo_out = _mm256_unpacklo_epi64(lo_in, hi_in);
 }
 
+void decrement256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out) {
+	*hi_out = _mm256_add_epi64(hi_in, _mm256_cmpeq_epi64(lo_in, _mm256_setzero_si256()));
+	*lo_out = _mm256_add_epi64(lo_in, _mm256_set1_epi64x(-1LL));
+}
 
+//　bishopのクロスの利き返す
+__m128i bishop_attack(const int sq, const __m128i occ) {
+	__m256i mask_lo = bishop_attack_to_mask[sq][0];
+	__m256i mask_hi = bishop_attack_to_mask[sq][1];
+	__m256i occ2 = _mm256_broadcastsi128_si256(occ);
+	__m256i rocc2 = _mm256_broadcastsi128_si256(byte_reverse(occ));
+	__m256i hi, lo, t1, t0;
+	unpack256(rocc2, occ2, &hi, &lo);
+	hi = _mm256_and_si256(hi, mask_hi);
+	lo = _mm256_and_si256(lo, mask_lo);
+	decrement256(hi, lo, &t1, &t0);
+}
 
 __m128i all_zero_bb() {
 	return _mm_setzero_si128();

@@ -897,3 +897,55 @@ void test_rook_attack() {
 	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, tmp[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
 }
+
+void test_new_bishop_attacks() {
+	int64_t tmp[4];
+	__m256i bb = bishop_attack_to_mask[sq4e][0];
+	_mm256_storeu_si256((__m256i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x80808000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2008020000000000, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[3]);
+	bb = bishop_attack_to_mask[sq4e][1];
+	_mm256_storeu_si256((__m256i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x01, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x208200000000000, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x100, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x8080800000000000, tmp[3]);
+}
+
+void test_unpack256() {
+	int64_t tmp[4];
+	__m256i hi = _mm256_set_epi64x(0x14, 0x13, 0x12, 0x11 );
+	__m256i lo = _mm256_set_epi64x(0x04, 0x03, 0x02, 0x01);
+	__m256i t1, t0;
+	unpack256(hi, lo, &t1, &t0);
+	_mm256_storeu_si256((__m256i*)tmp, t1);
+	TEST_ASSERT_EQUAL_HEX64(0x02, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x12, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x04, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x14, tmp[3]);
+	_mm256_storeu_si256((__m256i*)tmp, t0);
+	TEST_ASSERT_EQUAL_HEX64(0x01, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x11, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x03, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x13, tmp[3]);
+}
+
+void test_decrement256() {
+	__m256i hi = _mm256_set_epi64x(0x1010101000000, 0x20080, 0x104104000000000, 0x202);
+	__m256i lo = _mm256_set_epi64x(0x00, 0x1004000000000000, 0x00, 0x101000000000000);
+	__m256i t1,t0;
+	decrement256(hi, lo, &t1, &t0);
+	int64_t tmp[4];
+	_mm256_storeu_si256((__m256i*)tmp, t1);
+	TEST_ASSERT_EQUAL_HEX64(0x202, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x104103fffffffff, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x20080, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x1010100ffffff, tmp[3]);
+	_mm256_storeu_si256((__m256i*)tmp, t0);
+	TEST_ASSERT_EQUAL_HEX64(0x100ffffffffffff, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xffffffffffffffff, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x1003ffffffffffff, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0xffffffffffffffff, tmp[3]);
+}

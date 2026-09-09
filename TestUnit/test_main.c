@@ -44,6 +44,9 @@ void test_bitboard() {
 	test_rook_attack_rank();
 	test_rook_attack_file();
 	test_rook_attack();
+	test_new_bishop_attacks();
+	test_unpack256();
+	test_decrement256();
 }
 
 void test_simd() {
