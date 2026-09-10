@@ -3,6 +3,15 @@
 #include <intrin.h>
 #include <stdbool.h>
 
+typedef union {
+	__m128i m;
+	int64_t p[2];
+}bitboard;
+typedef union {
+	__m256i m;
+	int64_t p[4];
+}bitboard256;
+
 extern __m128i file_mask[9];
 extern __m128i rank_mask[9];
 extern __m128i all_one_bb;
