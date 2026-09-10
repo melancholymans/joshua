@@ -355,9 +355,22 @@ void unpack256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256
 	*lo_out = _mm256_unpacklo_epi64(lo_in, hi_in);
 }
 
+// -1を引くことによってsqからの利きを生成する 
 void decrement256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out) {
 	*hi_out = _mm256_add_epi64(hi_in, _mm256_cmpeq_epi64(lo_in, _mm256_setzero_si256()));
 	*lo_out = _mm256_add_epi64(lo_in, _mm256_set1_epi64x(-1LL));
+}
+
+// byte単位でリバースする。bit単位ではない
+__m256i byte_reverse256(__m256i bb) {
+	const __m256i shuffle = _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+	return _mm256_shuffle_epi8(bb, shuffle);
+}
+
+//保持している２つの盤面を重ね合わせた利きを返す
+__m128i merge256(__m256i bb) {
+	return _mm_or_si128(_mm256_castsi256_si128(bb), _mm256_extracti128_si256(bb, 1));
 }
 
 //　bishopのクロスの利き返す
@@ -371,6 +384,10 @@ __m128i bishop_attack(const int sq, const __m128i occ) {
 	hi = _mm256_and_si256(hi, mask_hi);
 	lo = _mm256_and_si256(lo, mask_lo);
 	decrement256(hi, lo, &t1, &t0);
+	t1 = _mm256_and_si256(_mm256_xor_si256(t1 , hi), mask_hi);
+	t0 = _mm256_and_si256(_mm256_xor_si256(t0, lo), mask_lo);
+	unpack256(t1, t0, &hi, &lo);
+	return merge256(_mm256_or_si256(byte_reverse256(hi),lo));
 }
 
 __m128i all_zero_bb() {

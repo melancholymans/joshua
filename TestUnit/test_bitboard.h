@@ -25,3 +25,6 @@ void test_rook_attack();
 void test_new_bishop_attacks();
 void test_unpack256();
 void test_decrement256();
+void test_byte_reverse256();
+void test_merge256();
+void test_bishop_attack();
