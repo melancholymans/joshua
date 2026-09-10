@@ -4,6 +4,15 @@
 #include "bitboard.h"
 #include "position.h"
 
+typedef union {
+	__m128i m;
+	int64_t p[2];
+}bitboard;
+typedef union {
+	__m256i m;
+	int64_t p[4];
+}bitboard256;
+
 __m128i mask_bb[81];
 __m128i file_mask[9];
 __m128i rank_mask[9];
