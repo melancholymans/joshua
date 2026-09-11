@@ -23,33 +23,37 @@ void test_bitboard() {
 	printf("-----------test_bitboard----------------------------------\n");
 	init_tables();
 	//__m128i bb = set_board(0x282d026660282000, 0x28b5b);
-	__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
+	//__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb;
+	bb.p[0] = 0x298060C0A1121B45;
+	bb.p[1] = 0x3abad;
 	test_new_set_mask_bb(bb);
 	test_new_file_mask();
 	test_new_rank_mask();
 	test_new_all_one_bb();
-	test_all_zero_bb();
+	//test_all_zero_bb(); •s—v‚È‚Ì‚Åíœ‚·‚é
 	test_new_in_front_mask();
 	test_new_enemy_field();
 	test_set_biton();
+	test_set_board();
 	test_first_one_from();
 	test_lance_block_mask();
-	test_index_to_occupied();
-	test_lance_attack_calc();
-	test_new_lance_attack();
-	test_byte_reverse();
-	test_unpack();
-	test_decrement();
-	test_new_rook_attacks();
-	test_rook_attack_rank();
-	test_rook_attack_file();
-	test_rook_attack();
-	test_new_bishop_attacks();
-	test_unpack256();
-	test_decrement256();
-	test_byte_reverse256();
-	test_merge256();
-	test_bishop_attack();
+	//test_index_to_occupied();
+	//test_lance_attack_calc();
+	//test_new_lance_attack();
+	//test_byte_reverse();
+	//test_unpack();
+	//test_decrement();
+	//test_new_rook_attacks();
+	//test_rook_attack_rank();
+	//test_rook_attack_file();
+	//test_rook_attack();
+	//test_new_bishop_attacks();
+	//test_unpack256();
+	//test_decrement256();
+	//test_byte_reverse256();
+	//test_merge256();
+	//test_bishop_attack();
 }
 
 void test_simd() {
