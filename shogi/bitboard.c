@@ -11,8 +11,8 @@ bitboard rank_mask[9];
 bitboard all_one_bb;
 bitboard in_front_mask[2][9];
 bitboard enemy_field[2];
-__m128i lance_attack[2][81][128];
-__m128i rook_attack_rank_to_mask[81][2];
+bitboard lance_attack[2][81][128];
+bitboard rook_attack_rank_to_mask[81][2];
 __m256i bishop_attack_to_mask[81][2];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
@@ -34,8 +34,8 @@ void init_tables() {
 	new_all_one_bb();
 	new_in_front_mask();
 	new_enemy_field();
-	//new_lance_attack();
-	//new_rook_attacks();
+	new_lance_attack();
+	new_rook_attacks();
 	//new_bishop_attacks();
 }
 
@@ -153,9 +153,10 @@ int first_one_from(bitboard* bb) {
 // 5g     1          1          0                                 1
 // 5h     1          0          0                                 0
 // 5i     0          0          0                                 0
-/*__m128i lance_attack_calc(const int color, const int square, const __m128i occ) {
+bitboard lance_attack_calc(const int color, const int square, const bitboard occ) {
 	int f = set_file(square);
-	__m128i bb = all_zero_bb();
+	bitboard bb;
+	bb.m = _mm_setzero_si128();
 	//上方向
 	for(int r = set_rank(square); r > rank1; ){
 		r -= 1;
@@ -174,8 +175,9 @@ int first_one_from(bitboard* bb) {
 			break;
 		}
 	}
-	return _mm_and_si128(bb,in_front_mask[color][set_rank(square)]);
-}*/
+	bb.m = _mm_and_si128(bb.m, in_front_mask[color][set_rank(square)].m);
+	return bb;
+}
 
 // NewPawnAttack関数のヘルパー関数
 // blockはsq座標に応じたlanceの移動可能範囲を表すbitBoard
@@ -191,9 +193,10 @@ int first_one_from(bitboard* bb) {
 // 5h x              0 0 0 0 0     0      0       0
 // lanceの移動可能範囲のなかで駒を置けるパターンは2^7=128通りあるので、idxは0から127までの番号がある。そのパターンを
 // sq座標ごとに128個の配列に保存しておく
-/*__m128i index_to_occupied(const int idx, const __m128i block_mask) {
-	__m128i tmp = block_mask;
-	__m128i result = all_zero_bb();
+bitboard index_to_occupied(const int idx, const bitboard block_mask) {
+	bitboard tmp = block_mask;
+	bitboard result;
+	result.m = _mm_setzero_si128();
 	for(int i = 0;i < 7;i += 1){
 		int sq = first_one_from(&tmp);
 		if(sq == -1){
@@ -205,63 +208,66 @@ int first_one_from(bitboard* bb) {
 		}
 	}
 	return result;
-}*/
+}
 
 // lanceの利きbitboardを生成する
-/*void new_lance_attack() {
+void new_lance_attack() {
 	for(int c = black;c <= white;c+=1){
 		for (int sq = sq1a; sq <= sq9i;sq+=1) {
-			__m128i block_mask = lance_block_mask(sq);
+			bitboard block_mask = lance_block_mask(sq);
 			for(int i=0;i<128;i+=1){
-				__m128i occ = index_to_occupied(i,block_mask);
+				bitboard occ = index_to_occupied(i,block_mask);
 				lance_attack[c][sq][i] = lance_attack_calc(c,sq,occ);
 			}
 		}
 	}
-}*/
+}
 
 // 飛車の利きの右方向と角の利きの右上、右下方向を求める時に使う。
 // byte単位でリバースする。bit単位ではない
-/*__m128i byte_reverse(__m128i bb) {
+bitboard byte_reverse(bitboard bb) {
 	const __m128i shuffle = _mm_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-	return _mm_shuffle_epi8(bb, shuffle);
-}*/
+	bb.m = _mm_shuffle_epi8(bb.m, shuffle);
+	return bb;
+}
 
 // hi_in,lo_inの上位64bitを抜き出して１つの128bitレジスタ(hi_out)を構成する
 // hi_in,lo_inの下位64bitを抜き出して１つの128bitレジスタ(lo_out)を構成する
-/*void unpack(const __m128i hi_in,const __m128i lo_in, __m128i* hi_out, __m128i* lo_out) {
-	*hi_out = _mm_unpackhi_epi64(lo_in, hi_in);
-	*lo_out = _mm_unpacklo_epi64(lo_in, hi_in);
-}*/
+void unpack(const bitboard hi_in,const bitboard lo_in, bitboard* hi_out, bitboard* lo_out) {
+	hi_out->m = _mm_unpackhi_epi64(lo_in.m, hi_in.m);
+	lo_out->m = _mm_unpacklo_epi64(lo_in.m, hi_in.m);
+}
 
 // -1を引くことによってsqからの利きを生成する 
-/*void decrement(const __m128i hi_in, const __m128i lo_in, __m128i* hi_out, __m128i* lo_out) {
-	*hi_out = _mm_add_epi64(hi_in, _mm_cmpeq_epi64(lo_in, _mm_setzero_si128()));
-	*lo_out = _mm_add_epi64(lo_in, _mm_set1_epi64x(-1LL));
-}*/
+void decrement(const bitboard hi_in, const bitboard lo_in, bitboard* hi_out, bitboard* lo_out) {
+	hi_out->m = _mm_add_epi64(hi_in.m, _mm_cmpeq_epi64(lo_in.m, _mm_setzero_si128()));
+	lo_out->m = _mm_add_epi64(lo_in.m, _mm_set1_epi64x(-1LL));
+}
 
 // 座標s	qごとの飛車の横利きをrook_attack_rank_to_mask配列に保存しておく
-/*void new_rook_attacks() {
+void new_rook_attacks() {
 	for (int f = file1; f <= file9; f+=1) {
 		for (int r = rank1; r <= rank9; r+=1) {
-			__m128i left = all_zero_bb();
-			__m128i right = all_zero_bb();
+			bitboard left;
+			left.m = _mm_setzero_si128();
+			bitboard right;
+			right.m = _mm_setzero_si128();
 			//sq座標から左方向
 			for (int f2 = f + 1; f2 <= file9; f2+=1) {
-				left = _mm_or_si128(left,mask_bb[set_square(f2, r)]);
+				left.m = _mm_or_si128(left.m,mask_bb[set_square(f2, r)].m);
 			}
 			//sq座標から右方向
 			for (int f2 = f - 1; f2 >= file1; f2-=1) {
-				right = _mm_or_si128(right,mask_bb[set_square(f2, r)]);
+				right.m = _mm_or_si128(right.m,mask_bb[set_square(f2, r)].m);
 			}
-			__m128i right_rev = byte_reverse(right);
-			__m128i hi, lo;
+			bitboard right_rev = byte_reverse(right);
+			bitboard hi, lo;
 			unpack(right_rev, left, &hi, &lo);
-			rook_attack_rank_to_mask[set_square(f, r)][0]=lo;
-			rook_attack_rank_to_mask[set_square(f, r)][1]=hi;
+			rook_attack_rank_to_mask[set_square(f, r)][0] = lo;
+			rook_attack_rank_to_mask[set_square(f, r)][1] = hi;
 		}
 	}
-}*/
+}
 
 // 局面(occ)に応じて飛車の横利きを返す
 /*__m128i rook_attack_rank(const int sq,const __m128i occ) {

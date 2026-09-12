@@ -453,213 +453,189 @@ void test_lance_block_mask() {
 	bitboard bb = lance_block_mask(sq9a);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1fc00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq8b);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xfe, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq7c);
 	TEST_ASSERT_EQUAL_HEX64(0x3f80000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq6d);
 	TEST_ASSERT_EQUAL_HEX64(0x1fc00000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq5e);
 	TEST_ASSERT_EQUAL_HEX64(0xFE000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq4f);
 	TEST_ASSERT_EQUAL_HEX64(0x7F0000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq3g);
 	TEST_ASSERT_EQUAL_HEX64(0x3F80000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq2h);
 	TEST_ASSERT_EQUAL_HEX64(0x1fc00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 	bb = lance_block_mask(sq1i);
 	TEST_ASSERT_EQUAL_HEX64(0xfe, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, "test_lance_block_mask");
 }
 
-/*void test_index_to_occupied() {
+void test_index_to_occupied() {
 	int sq = sq5e;
-	__m128i lbm = lance_block_mask(sq);
-	int64_t tmp[2];
+	bitboard lbm = lance_block_mask(sq);
+	bitboard occ = index_to_occupied(0, lbm);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
+	//print_bitboard(occ, "test_index_to_occupied");
 
-	__m128i occ = index_to_occupied(0, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
 
 	occ = index_to_occupied(1, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x2000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
+	//print_bitboard(occ, "test_index_to_occupied");
 
 	occ = index_to_occupied(2, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x4000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x4000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
+	//print_bitboard(occ, "test_index_to_occupied");
 
 	occ = index_to_occupied(3, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x6000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x6000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
+	//print_bitboard(occ, "test_index_to_occupied");
 
 	occ = index_to_occupied(4, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x8000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x8000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
+	//print_bitboard(occ, "test_index_to_occupied");
 
 	occ = index_to_occupied(5, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0xA000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0xA000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
+	//print_bitboard(occ, "test_index_to_occupied");
 
 	occ = index_to_occupied(125, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0xFA000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0xFA000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
 	//print_bitboard(occ, "test_index_to_occupied");
 
 	occ = index_to_occupied(127, lbm);
-	_mm_storeu_si128((const __m128i*)tmp, occ);
-	TEST_ASSERT_EQUAL_HEX64(0xFE000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0xFE000000000, occ.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
 	//print_bitboard(occ, "test_index_to_occupied");
-}*/
+}
 
-/*void test_lance_attack_calc() {
+void test_lance_attack_calc() {
 	//black
-	int64_t tmp[2];
-	__m128i bm = lance_block_mask(sq5a);
-	__m128i occ = index_to_occupied(97,bm);
-	__m128i bb = lance_attack_calc(black, sq5a, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	//int64_t tmp[2];
+	bitboard bm = lance_block_mask(sq5a);
+	bitboard occ = index_to_occupied(97,bm);
+	bitboard bb = lance_attack_calc(black, sq5a, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//print_bitboard(occ, "test_lance_attack_calc");
 
 	bm = lance_block_mask(sq5d);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(black, sq5d, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x6000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x6000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bm = lance_block_mask(sq5f);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(black, sq5f, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bm = lance_block_mask(sq5i);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(black, sq5i, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x80000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x80000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//white
 	bm = lance_block_mask(sq5a);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(white, sq5a, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x2000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bm = lance_block_mask(sq5c);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(white, sq5c, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x78000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x78000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bm = lance_block_mask(sq5f);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(white, sq5f, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x40000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x40000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bm = lance_block_mask(sq5i);
 	occ = index_to_occupied(97, bm);
 	bb = lance_attack_calc(white, sq5i, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
-}*/
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+}
 
-/*void test_new_lance_attack() {
-	int64_t tmp[2];
-
-	__m128i bb = lance_attack[black][sq5a][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+void test_new_lance_attack() {
+	bitboard bb = lance_attack[black][sq5a][97];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[black][sq5d][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x6000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x6000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, "test_new_lance_attack");
 
 	bb = lance_attack[black][sq5f][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x1E000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[black][sq5i][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x80000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x80000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[white][sq5a][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x2000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[white][sq5c][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x78000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x78000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[white][sq5f][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x40000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x40000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[white][sq5i][97];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[black][sq9e][35];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x1800, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1800, bb.p[1]);
 
 	bb = lance_attack[black][sq9a][35];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 
 	bb = lance_attack[white][sq9e][35];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0xC000, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xC000, bb.p[1]);
 
 	bb = lance_attack[white][sq9a][35];
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x400, tmp[1]);
-}*/
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x400, bb.p[1]);
+}
 
 // tmp        
 // [0]0x01 [1]0x02 [2]0x03 [3]0x04 [4]0x05 [5]0x06 [6]0x07 [7]0x08 [8]0x09 [9]0x0a [10]0x0b [11]0x0c [12]0x0d [13]0x0e [14]0xf [15]0x10
@@ -670,36 +646,35 @@ void test_lance_block_mask() {
 // __m128i result
 // | ----[1]---------------|--------[0]------------] 
 // 0x01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10
-/*void test_byte_reverse() {
-	int8_t tmp[16] = { 0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10 };	//見やすいので16進数にしている
-	__m128i bb = _mm_loadu_si128(tmp);
-	__m128i result = byte_reverse(bb);
-	int64_t tmp2[2];
-	_mm_storeu_si128((const __m128i*)tmp2, result);
-	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, tmp2[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, tmp2[1]);
-}*/
+void test_byte_reverse() {
+	int8_t tmp[16] = { 0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10 };
+	bitboard bb;
+	bb.m = _mm_loadu_si128(tmp);
+	bitboard result = byte_reverse(bb);
+	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, result.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, result.p[1]);
+}
+
 //                                     |---- [1]---------|---- [0]---------|      
 // hight                               0x090a0b0c0d0e0f10 0x0102030405060708
 // low                                 0x191a1b1c1d1e1f20 0x1112131415161718
 // hight_result  = hight[1] | low[1] = 0x090a0b0c0d0e0f10 0x191a1b1c1d1e1f20
 // low_resuto    = hight[0] | low[0] = 0x0102030405060708 0x1112131415161718
-/*void test_unpack() {
-	int64_t hight_tmp[2] = { 0x0102030405060708,0x090a0b0c0d0e0f10 };	//見やすいので16進数にしている
-	int64_t low_tmp[2] = { 0x1112131415161718,0x191a1b1c1d1e1f20 };	//見やすいので16進数にしている
-	__m128i hight = _mm_loadu_si128(hight_tmp);
-	__m128i low = _mm_loadu_si128(low_tmp);
-	__m128i hight_result;
-	__m128i low_result;
+void test_unpack() {
+	bitboard hight;
+	hight.p[0] = 0x0102030405060708;
+	hight.p[1] = 0x090a0b0c0d0e0f10;
+	bitboard low;
+	low.p[0] = 0x1112131415161718;
+	low.p[1] = 0x191a1b1c1d1e1f20;
+	bitboard hight_result;
+	bitboard low_result;
 	unpack(hight, low, &hight_result, &low_result);
-	int64_t tmp[2];
-	_mm_storeu_si128((const __m128i*)tmp, hight_result);
-	TEST_ASSERT_EQUAL_HEX64(0x191a1b1c1d1e1f20, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, tmp[1]);
-	_mm_storeu_si128((const __m128i*)tmp, low_result);
-	TEST_ASSERT_EQUAL_HEX64(0x1112131415161718, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, tmp[1]);
-}*/
+	TEST_ASSERT_EQUAL_HEX64(0x191a1b1c1d1e1f20, hight_result.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, hight_result.p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x1112131415161718, low_result.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, low_result.p[1]);
+}
 
 // 最初にlo_inがオールゼロであるかどうかを確認している
 // hiにはsq座標より右側の駒の状態が(occ)が入っている
@@ -709,49 +684,41 @@ void test_lance_block_mask() {
 // 10 0000000がそれぞれ9筋8筋 7筋～1筋のoccを表現しているとして
 // 128bitの上位64bitが9,8筋、下位64bitが7筋～1筋を担当している
 // この説明間違っているので理解できたところで書き直す
-/*void test_decrement() {
-	int64_t hight_tmp[2] = { 0x0000000000100000,0x0000000000001000 };	//見やすいので16進数にしている
-	int64_t low_tmp[2] = { 0x0000000000000000,0x0000000000000000 };	//見やすいので16進数にしている
-	__m128i hight = _mm_loadu_si128(hight_tmp);
-	__m128i low = _mm_loadu_si128(low_tmp);
-	__m128i hight_result;
-	__m128i low_result;
+void test_decrement() {
+	bitboard hight;
+	hight.p[0] = 0x0000000000100000;
+	hight.p[1] = 0x0000000000001000;
+	bitboard low;
+	low.p[0] = 0x0000000000000000;
+	low.p[1] = 0x0000000000000000;
+	bitboard hight_result;
+	bitboard low_result;
 	decrement(hight, low, &hight_result, &low_result);
-	int64_t tmp[2];
-	_mm_storeu_si128((const __m128i*)tmp, hight_result);
-	TEST_ASSERT_EQUAL_HEX64(0x00000000000FFFFF, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x0000000000000FFF, tmp[1]);
-	_mm_storeu_si128((const __m128i*)tmp, low_result);
-	TEST_ASSERT_EQUAL_HEX64(0xFFFFFFFFFFFFFFFF, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0xFFFFFFFFFFFFFFFF, tmp[1]);
-}*/
+	TEST_ASSERT_EQUAL_HEX64(0x00000000000FFFFF, hight_result.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0000000000000FFF, hight_result.p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0xFFFFFFFFFFFFFFFF, low_result.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xFFFFFFFFFFFFFFFF, low_result.p[1]);
+}
 
 // rook_attack_rank_to_mask配列に座標を入力してテストしている
-/*void test_new_rook_attacks() {
-	int64_t tmp[2];
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank_to_mask[sq6e][0]);
-	TEST_ASSERT_EQUAL_HEX64(0x0400000000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank_to_mask[sq6e][1]);
-	TEST_ASSERT_EQUAL_HEX64(0x2010, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x1020408000010000, tmp[1]);
+void test_new_rook_attacks() {
+	TEST_ASSERT_EQUAL_HEX64(0x0400000000000000, rook_attack_rank_to_mask[sq6e][0].p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, rook_attack_rank_to_mask[sq6e][0].p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2010, rook_attack_rank_to_mask[sq6e][1].p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1020408000010000, rook_attack_rank_to_mask[sq6e][1].p[1]);
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank_to_mask[sq7e][0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank_to_mask[sq7e][1]);
-	TEST_ASSERT_EQUAL_HEX64(0x2010, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x1020408000010200, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, rook_attack_rank_to_mask[sq7e][0].p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, rook_attack_rank_to_mask[sq7e][0].p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2010, rook_attack_rank_to_mask[sq7e][1].p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1020408000010200, rook_attack_rank_to_mask[sq7e][1].p[1]);
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank_to_mask[sq2e][0]);
-	TEST_ASSERT_EQUAL_HEX64(0x402010080400000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank_to_mask[sq2e][1]);
-	TEST_ASSERT_EQUAL_HEX64(0x2010, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x1000000000000000, tmp[1]);
-	//print_bitboard(rook_attack_rank_to_mask[sq2e][0], "test_new_rook_attacks=2e");
-	//print_bitboard(rook_attack_rank_to_mask[sq2e][1], "test_new_rook_attacks=2e");
-}*/
+	TEST_ASSERT_EQUAL_HEX64(0x402010080400000, rook_attack_rank_to_mask[sq2e][0].p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, rook_attack_rank_to_mask[sq2e][0].p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2010, rook_attack_rank_to_mask[sq2e][1].p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1000000000000000, rook_attack_rank_to_mask[sq2e][1].p[1]);
+	print_bitboard(rook_attack_rank_to_mask[sq2e][0], "test_new_rook_attacks=2e");
+	print_bitboard(rook_attack_rank_to_mask[sq2e][1], "test_new_rook_attacks=2e");
+}
 
 /*void test_rook_attack_rank() {
 	int64_t tmp[2];
