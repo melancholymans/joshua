@@ -29,7 +29,6 @@ void test_bitboard() {
 	test_new_file_mask();
 	test_new_rank_mask();
 	test_new_all_one_bb();
-	//test_all_zero_bb(); •s—v‚È‚Ì‚Åíœ‚·‚é
 	test_new_in_front_mask();
 	test_new_enemy_field();
 	test_set_biton();
@@ -46,12 +45,12 @@ void test_bitboard() {
 	test_rook_attack_rank();
 	test_rook_attack_file();
 	test_rook_attack();
-	//test_new_bishop_attacks();
-	//test_unpack256();
-	//test_decrement256();
-	//test_byte_reverse256();
-	//test_merge256();
-	//test_bishop_attack();
+	test_new_bishop_attacks();
+	test_unpack256();
+	test_decrement256();
+	test_byte_reverse256();
+	test_merge256();
+	test_bishop_attack();
 }
 
 void test_simd() {
