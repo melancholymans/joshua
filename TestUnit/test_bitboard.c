@@ -716,40 +716,39 @@ void test_new_rook_attacks() {
 	TEST_ASSERT_EQUAL_HEX64(0x00, rook_attack_rank_to_mask[sq2e][0].p[1]);
 	TEST_ASSERT_EQUAL_HEX64(0x2010, rook_attack_rank_to_mask[sq2e][1].p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1000000000000000, rook_attack_rank_to_mask[sq2e][1].p[1]);
-	print_bitboard(rook_attack_rank_to_mask[sq2e][0], "test_new_rook_attacks=2e");
-	print_bitboard(rook_attack_rank_to_mask[sq2e][1], "test_new_rook_attacks=2e");
+	//print_bitboard(rook_attack_rank_to_mask[sq2e][0], "test_new_rook_attacks=2e");
+	//print_bitboard(rook_attack_rank_to_mask[sq2e][1], "test_new_rook_attacks=2e");
 }
 
-/*void test_rook_attack_rank() {
-	int64_t tmp[2];
-	__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
-	//print_bitboard(bb, "test_rook_attack_rank bb");
+void test_rook_attack_rank() {
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	//print_bitboard(occ, "test_rook_attack_rank occ");
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank(sq5e, bb));
-	TEST_ASSERT_EQUAL_HEX64(0x402000080000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x2010, tmp[1]);
-	//print_bitboard(rook_attack_rank(sq5e, bb), "test_rook_attack_rank 5e");
+	bitboard bb = rook_attack_rank(sq5e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x402000080000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
+	//print_bitboard(bb, "test_rook_attack_rank 5e");
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank(sq5f, bb));
-	TEST_ASSERT_EQUAL_HEX64(0x804000100804020, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
-	//print_bitboard(rook_attack_rank(sq5f, bb), "test_rook_attack_rank 5f");
+	bb = rook_attack_rank(sq5f, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x804000100804020, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, "test_rook_attack_rank 5f");
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank(sq5g, bb));
-	TEST_ASSERT_EQUAL_HEX64(0x1008000201000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x8040, tmp[1]);
-	//print_bitboard(rook_attack_rank(sq5g, bb), "test_rook_attack_rank 5g");
+	bb = rook_attack_rank(sq5g, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x1008000201000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x8040, bb.p[1]);
+	//print_bitboard(bb, "test_rook_attack_rank 5g");
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank(sq5h, bb));
-	TEST_ASSERT_EQUAL_HEX64(0x2010000402010080, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);	
-	//print_bitboard(rook_attack_rank(sq5h, bb), "test_rook_attack_rank 5h");
+	bb = rook_attack_rank(sq5h, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x2010000402010080, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);	
+	//print_bitboard(bb, "test_rook_attack_rank 5h");
 
-	_mm_storeu_si128((const __m128i*)tmp, rook_attack_rank(sq5i, bb));
-	TEST_ASSERT_EQUAL_HEX64(0x4020000804020000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x100, tmp[1]);
-	//print_bitboard(rook_attack_rank(sq5i, bb), "test_rook_attack_rank 5i");
-}*/
+	bb = rook_attack_rank(sq5i, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x4020000804020000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x100, bb.p[1]);
+	//print_bitboard(bb, "test_rook_attack_rank 5i");
+}
 
 // occを1筋～7筋と8,9筋に分ける(partで計算している)
 // occに例として問題１の局面を与える。sqはsq5eにする（図中でアスタリスクになっている）
@@ -777,44 +776,40 @@ void test_new_rook_attacks() {
 // .     1
 // 最後の & 127は2段～8段だけを抽出する。抽出したパターンはlance_attack[color][sq][index]のどれかに該当する
 // blackとwhiteをor結合すればrookの縦利きになる
-/*void test_rook_attack_file() {
-	int64_t tmp[2];
-	__m128i occ = set_board(0x298060C0A1121B45, 0x3abad);
-	__m128i bb = rook_attack_file(sq5e, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
+void test_rook_attack_file() {
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb = rook_attack_file(sq5e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x1E8000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//print_bitboard(bb, "test_rook_attack_file 5e");
-	TEST_ASSERT_EQUAL_HEX64(0x1E8000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
 
 	bb = rook_attack_file(sq5f, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x1D8000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//print_bitboard(bb, "test_rook_attack_file 5f");
-	TEST_ASSERT_EQUAL_HEX64(0x1D8000000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
 
 	bb = rook_attack_file(sq9f, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xA000, bb.p[1]);
 	//print_bitboard(bb, "test_rook_attack_file 9f");
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0xA000, tmp[1]);
-}*/
+}
 
 //rookの縦と横の利きbitboardを合成して返す
-/*void test_rook_attack() {
+void test_rook_attack() {
 	int64_t tmp[2];
-	__m128i occ = set_board(0x298060C0A1121B45, 0x3abad);
-	__m128i bb = rook_attack(sq5e, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	//print_bitboard(bb, "test_rook_attack 5e");
-	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x2010, tmp[1]);
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb = rook_attack(sq5e, occ);
+	//_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
+	print_bitboard(bb, "test_rook_attack 5e");
 
 	bb = rook_attack(sq2f, occ);
-	_mm_storeu_si128((const __m128i*)tmp, bb);
-	//print_bitboard(bb, "test_rook_attack 2f");
-	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, tmp[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
-}*/
+	//_mm_storeu_si128((const __m128i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_rook_attack 2f");
+}
 
 /*void test_new_bishop_attacks() {
 	int64_t tmp[4];

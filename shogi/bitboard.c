@@ -270,35 +270,38 @@ void new_rook_attacks() {
 }
 
 // ‹Ç–Ê(occ)‚É‰‚¶‚Ä”òÔ‚Ì‰¡—˜‚«‚ğ•Ô‚·
-/*__m128i rook_attack_rank(const int sq,const __m128i occ) {
-	__m128i hi, lo, t1, t0;
-	const __m128i mask_lo = rook_attack_rank_to_mask[sq][0];
-	const __m128i mask_hi = rook_attack_rank_to_mask[sq][1];
-	__m128i rocc = byte_reverse(occ);
+bitboard rook_attack_rank(const int sq,const bitboard occ) {
+	bitboard hi, lo, t1, t0;
+	const bitboard mask_lo = rook_attack_rank_to_mask[sq][0];
+	const bitboard mask_hi = rook_attack_rank_to_mask[sq][1];
+	bitboard rocc = byte_reverse(occ);
 	unpack(rocc, occ, &hi, &lo);
-	hi = _mm_and_si128(hi, mask_hi);
-	lo = _mm_and_si128(lo, mask_lo);
+	hi.m = _mm_and_si128(hi.m, mask_hi.m);
+	lo.m = _mm_and_si128(lo.m, mask_lo.m);
 	decrement(hi, lo, &t1, &t0);
-	t1 = _mm_and_si128(_mm_xor_si128(t1, hi), mask_hi);
-	t0 = _mm_and_si128(_mm_xor_si128(t0, lo), mask_lo);
+	t1.m = _mm_and_si128(_mm_xor_si128(t1.m, hi.m), mask_hi.m);
+	t0.m = _mm_and_si128(_mm_xor_si128(t0.m, lo.m), mask_lo.m);
 	unpack(t1, t0, &hi, &lo);
-	__m128i result = _mm_or_si128(byte_reverse(hi), lo);
+	bitboard result;
+	result.m = _mm_or_si128(byte_reverse(hi).m, lo.m);
 	return result;
-}*/
+}
 
 // sqÀ•W‚©‚çrookc‚Ì—˜‚«‚ğ•Ô‚·
-/*__m128i rook_attack_file(const int sq, const __m128i occ) {
-	int64_t tmp[2];
-	_mm_storeu_si128((const __m128i*)tmp, occ);
+bitboard rook_attack_file(const int sq, const bitboard occ) {
 	int part = (int)(sq > sq7i);
-	int index = (tmp[part] >> (slide[sq])) & 127;
-	return _mm_or_si128(lance_attack[black][sq][index], lance_attack[white][sq][index]);
-}*/
+	int index = (occ.p[part] >> (slide[sq])) & 127;
+	bitboard bb;
+	bb.m = _mm_or_si128(lance_attack[black][sq][index].m, lance_attack[white][sq][index].m);
+	return bb;
+}
 
 //rook‚Ìc‚Æ‰¡‚Ì—˜‚«bitboard‚ğ‡¬‚µ‚Ä•Ô‚·
-/*__m128i rook_attack(const int sq, const __m128i occ) {
-	return _mm_or_si128(rook_attack_rank(sq, occ), rook_attack_file(sq, occ));
-}*/
+bitboard rook_attack(const int sq, const bitboard occ) {
+	bitboard bb;
+	bb.m = _mm_or_si128(rook_attack_rank(sq, occ).m, rook_attack_file(sq, occ).m);
+	return bb;
+}
 
 //nw  ne
 // \ /

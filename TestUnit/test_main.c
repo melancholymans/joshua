@@ -22,11 +22,9 @@ void test_position() {
 void test_bitboard() {
 	printf("-----------test_bitboard----------------------------------\n");
 	init_tables();
-	//__m128i bb = set_board(0x282d026660282000, 0x28b5b);
-	//__m128i bb = set_board(0x298060C0A1121B45, 0x3abad);
 	bitboard bb;
-	bb.p[0] = 0x298060C0A1121B45;
-	bb.p[1] = 0x3abad;
+	bb.p[0] = 0x298060C0A1121B45;	// 0x282d026660282000
+	bb.p[1] = 0x3abad;				// 0x28b5b
 	test_new_set_mask_bb(bb);
 	test_new_file_mask();
 	test_new_rank_mask();
@@ -45,9 +43,9 @@ void test_bitboard() {
 	test_unpack();
 	test_decrement();
 	test_new_rook_attacks();
-	//test_rook_attack_rank();
-	//test_rook_attack_file();
-	//test_rook_attack();
+	test_rook_attack_rank();
+	test_rook_attack_file();
+	test_rook_attack();
 	//test_new_bishop_attacks();
 	//test_unpack256();
 	//test_decrement256();
