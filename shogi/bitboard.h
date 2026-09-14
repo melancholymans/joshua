@@ -7,10 +7,10 @@ typedef union {
 	__m128i m;
 	int64_t p[2];
 }bitboard;
-typedef union {
-	__m256i m;
-	int64_t p[4];
-}bitboard256;
+//typedef union {
+//	__m256i m;
+//	int64_t p[4];
+//}bitboard256;
 
 extern bitboard file_mask[9];
 extern bitboard rank_mask[9];
@@ -19,7 +19,7 @@ extern bitboard in_front_mask[2][9];
 extern bitboard enemy_field[2];
 extern bitboard lance_attack[2][81][128];
 extern bitboard rook_attack_rank_to_mask[81][2];
-extern bitboard256 bishop_attack_to_mask[81][2];
+extern __m256i bishop_attack_to_mask[81][2];
 extern const int slide[81];
 
 void init_tables();
@@ -42,10 +42,10 @@ bitboard rook_attack_rank(const int sq,const bitboard occ);
 bitboard rook_attack_file(const int sq,const bitboard occ);
 bitboard rook_attack(const int sq, const bitboard occ);
 void new_bishop_attacks();
-void unpack256(const bitboard256 hi_in, const bitboard256 lo_in, bitboard256* hi_out, bitboard256* lo_out);
-void decrement256(const bitboard256 hi_in, const bitboard256 lo_in, bitboard256* hi_out, bitboard256* lo_out);
-bitboard256 byte_reverse256(bitboard256 bb);
-bitboard merge256(bitboard256 bb);
+void unpack256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out);
+void decrement256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out);
+__m256i byte_reverse256(__m256i bb);
+__m128i merge256(__m256i bb);
 bitboard bishop_attack(const int sq, const bitboard occ);
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);

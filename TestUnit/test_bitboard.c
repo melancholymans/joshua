@@ -789,69 +789,66 @@ void test_rook_attack() {
 	int64_t tmp[2];
 	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
 	bitboard bb = rook_attack(sq5e, occ);
-	//_mm_storeu_si128((const __m128i*)tmp, bb);
 	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
 	//print_bitboard(bb, "test_rook_attack 5e");
 
 	bb = rook_attack(sq2f, occ);
-	//_mm_storeu_si128((const __m128i*)tmp, bb);
 	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//print_bitboard(bb, "test_rook_attack 2f");
 }
 
 void test_new_bishop_attacks() {
-	bitboard256 bb = bishop_attack_to_mask[sq4e][0];
-	TEST_ASSERT_EQUAL_HEX64(0x80808000000000, bb.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x2008020000000000, bb.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[3]);
+	int64_t tmp[4];
+	__m256i bb = bishop_attack_to_mask[sq4e][0];
+	_mm256_storeu_si256((__m256i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x80808000000000, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x2008020000000000, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, tmp[3]);
 	bb = bishop_attack_to_mask[sq4e][1];
-	TEST_ASSERT_EQUAL_HEX64(0x01, bb.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x208200000000000, bb.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x100, bb.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0x8080800000000000, bb.p[3]);
+	_mm256_storeu_si256((__m256i*)tmp, bb);
+	TEST_ASSERT_EQUAL_HEX64(0x01, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x208200000000000, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x100, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x8080800000000000, tmp[3]);
 }
 
 void test_unpack256() {
-	//int64_t tmp[4];
-	bitboard256 hi;
-	hi.m = _mm256_set_epi64x(0x14, 0x13, 0x12, 0x11);
-	bitboard256 lo;
-	lo.m = _mm256_set_epi64x(0x04, 0x03, 0x02, 0x01);
-	bitboard256 t1, t0;
+	int64_t tmp[4];
+	__m256i hi = _mm256_set_epi64x(0x14, 0x13, 0x12, 0x11);
+	__m256i lo = _mm256_set_epi64x(0x04, 0x03, 0x02, 0x01);
+	__m256i t1, t0;
 	unpack256(hi, lo, &t1, &t0);
-	//_mm256_storeu_si256((__m256i*)tmp, t1);
-	TEST_ASSERT_EQUAL_HEX64(0x02, t1.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x12, t1.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x04, t1.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0x14, t1.p[3]);
-	//_mm256_storeu_si256((__m256i*)tmp, t0);
-	TEST_ASSERT_EQUAL_HEX64(0x01, t0.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x11, t0.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x03, t0.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0x13, t0.p[3]);
+	_mm256_storeu_si256((__m256i*)tmp, t1);
+	TEST_ASSERT_EQUAL_HEX64(0x02, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x12, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x04, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x14, tmp[3]);
+	_mm256_storeu_si256((__m256i*)tmp, t0);
+	TEST_ASSERT_EQUAL_HEX64(0x01, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x11, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x03, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x13, tmp[3]);
 }
 
 void test_decrement256() {
-	bitboard256 hi;
-	hi.m = _mm256_set_epi64x(0x1010101000000, 0x20080, 0x104104000000000, 0x202);
-	bitboard256 lo;
-	lo.m = _mm256_set_epi64x(0x00, 0x1004000000000000, 0x00, 0x101000000000000);
-	bitboard256 t1,t0;
+	__m256i hi = _mm256_set_epi64x(0x1010101000000, 0x20080, 0x104104000000000, 0x202);
+	__m256i lo = _mm256_set_epi64x(0x00, 0x1004000000000000, 0x00, 0x101000000000000);
+	__m256i t1,t0;
 	decrement256(hi, lo, &t1, &t0);
-	//int64_t tmp[4];
-	//_mm256_storeu_si256((__m256i*)tmp, t1);
-	TEST_ASSERT_EQUAL_HEX64(0x202, t1.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x104103fffffffff, t1.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x20080, t1.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0x1010100ffffff, t1.p[3]);
-	//_mm256_storeu_si256((__m256i*)tmp, t0);
-	TEST_ASSERT_EQUAL_HEX64(0x100ffffffffffff, t0.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0xffffffffffffffff, t0.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x1003ffffffffffff, t0.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0xffffffffffffffff, t0.p[3]);
+	int64_t tmp[4];
+	_mm256_storeu_si256((__m256i*)tmp, t1);
+	TEST_ASSERT_EQUAL_HEX64(0x202, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x104103fffffffff, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x20080, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x1010100ffffff, tmp[3]);
+	_mm256_storeu_si256((__m256i*)tmp, t0);
+	TEST_ASSERT_EQUAL_HEX64(0x100ffffffffffff, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xffffffffffffffff, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x1003ffffffffffff, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0xffffffffffffffff, tmp[3]);
 }
 
 // tmp        
@@ -865,49 +862,48 @@ void test_decrement256() {
 // | ----[3]---------------|--------[2]------------|---[1]-------------------|--------[0]----------] 
 // 0x21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10
 void test_byte_reverse256() {
-	int8_t tmp[32] = { 0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,
+	int8_t td[32] = { 0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,
 					   0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,0x30 };
-	bitboard256 bb;
-	bb.m = _mm256_loadu_si256(tmp);
-	bitboard256 result = byte_reverse256(bb);
-	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, result.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, result.p[1]);
-	TEST_ASSERT_EQUAL_HEX64(0x292a2b2c2d2e2f30, result.p[2]);
-	TEST_ASSERT_EQUAL_HEX64(0x2122232425262728, result.p[3]);
+	__m256i bb = _mm256_loadu_si256(td);
+	__m256i result = byte_reverse256(bb);
+	int64_t tmp[4];
+	_mm256_storeu_si256((const __m256i*)tmp, result);
+	TEST_ASSERT_EQUAL_HEX64(0x090a0b0c0d0e0f10, tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0102030405060708, tmp[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x292a2b2c2d2e2f30, tmp[2]);
+	TEST_ASSERT_EQUAL_HEX64(0x2122232425262728, tmp[3]);
 }
 
 void test_merge256() {
-	//__m128i occ1 = set_board(0x802008000080200, 0x10040);
+	//bitboard occ1 = set_board(0x802008000080200, 0x10040);
 	//print_bitboard(occ1, "test_merge256");
-	//__m128i occ2 = set_board(0x202000202020, 0x00);
+	//bitboard occ2 = set_board(0x202000202020, 0x00);
 	//print_bitboard(occ2, "test_merge256");
-	bitboard256 bb;
-	bb.m = _mm256_set_epi64x(0x10040, 0x802008000080200, 0x00, 0x202000202020);
-	bitboard mg = merge256(bb);
+	__m256i bb = _mm256_set_epi64x(0x10040, 0x802008000080200, 0x00, 0x202000202020);
+	__m128i mg = merge256(bb);
 	int64_t tmp[2];
-	//_mm_storeu_si128((__m128*)tmp, mg);
-	//print_bitboard(merge256(bb), "test_merge256"); ;
-	TEST_ASSERT_EQUAL_HEX64(0x080220a000282220,mg.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x0000000000010040,mg.p[1]);
+	_mm_storeu_si128((__m128*)tmp, mg);
+	TEST_ASSERT_EQUAL_HEX64(0x080220a000282220,tmp[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0000000000010040,tmp[1]);
+	//bitboard bd;
+	//bd.m = merge256(bb);
+	//print_bitboard(bd, "test_merge256");
+
 }
 
 void test_bishop_attack() {
 	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
 	//print_bitboard(occ, "test_bishop_attack");
-	int64_t tmp[2];
 	bitboard mg = bishop_attack(sq4g, occ);
-	//_mm_storeu_si128((__m128*)tmp, mg);
 	TEST_ASSERT_EQUAL_HEX64(0x2220a0002822008, mg.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x04, mg.p[1]);
-	print_bitboard(mg, "test_bishop_attack"); ;
+	//print_bitboard(mg, "test_bishop_attack"); ;
 	mg = bishop_attack(sq3b, occ);
-	//_mm_storeu_si128((__m128*)tmp, mg);
 	TEST_ASSERT_EQUAL_HEX64(0x28000a00, mg.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, mg.p[1]);
-	print_bitboard(mg, "test_bishop_attack"); ;
+	//print_bitboard(mg, "test_bishop_attack"); ;
 	mg = bishop_attack(sq8e, occ);
-	//_mm_storeu_si128((__m128*)tmp, mg);
 	TEST_ASSERT_EQUAL_HEX64(0xa00802008000000, mg.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x5000, mg.p[1]);
-	print_bitboard(mg, "test_bishop_attack"); ;
+	//print_bitboard(mg, "test_bishop_attack"); ;
 }

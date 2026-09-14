@@ -12,7 +12,7 @@ bitboard in_front_mask[2][9];
 bitboard enemy_field[2];
 bitboard lance_attack[2][81][128];
 bitboard rook_attack_rank_to_mask[81][2];
-bitboard256 bishop_attack_to_mask[81][2];
+__m256i bishop_attack_to_mask[81][2];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -335,11 +335,10 @@ void new_bishop_attacks() {
 			}
 			bishop_to_bb[2] = byte_reverse(bishop_to_bb[2]);
 			bishop_to_bb[3] = byte_reverse(bishop_to_bb[3]);
-			
 			__m256i bm = _mm256_castsi128_si256(_mm_set_epi64x(bishop_to_bb[2].p[0], bishop_to_bb[0].p[0]));
-			bishop_attack_to_mask[sq][0].m = _mm256_inserti128_si256(bm, _mm_set_epi64x(bishop_to_bb[3].p[0], bishop_to_bb[1].p[0]), 1);
+			bishop_attack_to_mask[sq][0] = _mm256_inserti128_si256(bm, _mm_set_epi64x(bishop_to_bb[3].p[0], bishop_to_bb[1].p[0]), 1);
 			bm = _mm256_castsi128_si256(_mm_set_epi64x(bishop_to_bb[2].p[1], bishop_to_bb[0].p[1]));
-			bishop_attack_to_mask[sq][1].m = _mm256_inserti128_si256(bm, _mm_set_epi64x(bishop_to_bb[3].p[1], bishop_to_bb[1].p[1]), 1);
+			bishop_attack_to_mask[sq][1] = _mm256_inserti128_si256(bm, _mm_set_epi64x(bishop_to_bb[3].p[1], bishop_to_bb[1].p[1]), 1);
 		}
 	}
 }
@@ -350,51 +349,46 @@ void new_bishop_attacks() {
 // hi_in = [b3,b2 | b1,b0]
 // hi_out = [a3,b3 | a1,b1]
 // lo_out = [a2,b2 | a0,b0]
-void unpack256(const bitboard256 hi_in, const bitboard256 lo_in, bitboard256* hi_out, bitboard256* lo_out) {
-	hi_out->m = _mm256_unpackhi_epi64(lo_in.m, hi_in.m);
-	lo_out->m = _mm256_unpacklo_epi64(lo_in.m, hi_in.m);
+void unpack256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out) {
+	*hi_out = _mm256_unpackhi_epi64(lo_in, hi_in);
+	*lo_out = _mm256_unpacklo_epi64(lo_in, hi_in);
 }
 
 // -1を引くことによってsqからの利きを生成する 
-void decrement256(const bitboard256 hi_in, const bitboard256 lo_in, bitboard256* hi_out, bitboard256* lo_out) {
-	hi_out->m = _mm256_add_epi64(hi_in.m, _mm256_cmpeq_epi64(lo_in.m, _mm256_setzero_si256()));
-	lo_out->m = _mm256_add_epi64(lo_in.m, _mm256_set1_epi64x(-1LL));
+void decrement256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out) {
+	*hi_out = _mm256_add_epi64(hi_in, _mm256_cmpeq_epi64(lo_in, _mm256_setzero_si256()));
+	*lo_out = _mm256_add_epi64(lo_in, _mm256_set1_epi64x(-1LL));
 }
 
 // byte単位でリバースする。bit単位ではない
-bitboard256 byte_reverse256(bitboard256 bb) {
+__m256i byte_reverse256(__m256i bb) {
 	const __m256i shuffle = _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-	bb.m = _mm256_shuffle_epi8(bb.m, shuffle);
-	return bb;
+	return _mm256_shuffle_epi8(bb, shuffle);
 }
 
 //保持している２つの盤面を重ね合わせた利きを返す
-bitboard merge256(bitboard256 bb) {
-	bitboard result;
-	result.m = _mm_or_si128(_mm256_castsi256_si128(bb.m), _mm256_extracti128_si256(bb.m, 1));
-	return result;
+__m128i merge256(__m256i bb) {
+	return _mm_or_si128(_mm256_castsi256_si128(bb), _mm256_extracti128_si256(bb, 1));
 }
 
 //　bishopのクロスの利き返す
 bitboard bishop_attack(const int sq, const bitboard occ) {
-	bitboard256 mask_lo = bishop_attack_to_mask[sq][0];
-	bitboard256 mask_hi = bishop_attack_to_mask[sq][1];
-	bitboard256 occ2;
-	occ2.m = _mm256_broadcastsi128_si256(occ.m);
-	bitboard256 rocc2;
-	rocc2.m = _mm256_broadcastsi128_si256(byte_reverse(occ).m);
-	bitboard256 hi, lo, t1, t0;
+	__m256i mask_lo = bishop_attack_to_mask[sq][0];
+	__m256i mask_hi = bishop_attack_to_mask[sq][1];
+	__m256i occ2 = _mm256_broadcastsi128_si256(occ.m);
+	__m256i rocc2 = _mm256_broadcastsi128_si256(byte_reverse(occ).m);
+	__m256i hi, lo, t1, t0;
 	unpack256(rocc2, occ2, &hi, &lo);
-	hi.m = _mm256_and_si256(hi.m, mask_hi.m);
-	lo.m = _mm256_and_si256(lo.m, mask_lo.m);
+	hi = _mm256_and_si256(hi, mask_hi);
+	lo = _mm256_and_si256(lo, mask_lo);
 	decrement256(hi, lo, &t1, &t0);
-	t1.m = _mm256_and_si256(_mm256_xor_si256(t1.m , hi.m), mask_hi.m);
-	t0.m = _mm256_and_si256(_mm256_xor_si256(t0.m , lo.m), mask_lo.m);
+	t1 = _mm256_and_si256(_mm256_xor_si256(t1 , hi), mask_hi);
+	t0 = _mm256_and_si256(_mm256_xor_si256(t0 , lo), mask_lo);
 	unpack256(t1, t0, &hi, &lo);
-	bitboard256 result;
-	result.m = _mm256_or_si256(byte_reverse256(hi).m, lo.m);
-	return merge256(result);
+	bitboard bb;
+	bb.m = merge256(_mm256_or_si256(byte_reverse256(hi), lo));
+	return bb;
 }
 
 bitboard set_board(const int64_t idx0,const int64_t idx1) {
