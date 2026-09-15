@@ -54,6 +54,7 @@ void test_bitboard() {
 	test_new_king_attacks();
 	test_new_gold_attacks();
 	test_new_silver_attacks();
+	test_new_pawn_attacks();
 }
 
 void test_simd() {

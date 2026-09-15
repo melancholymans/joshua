@@ -980,3 +980,32 @@ void test_new_silver_attacks() {
 	TEST_ASSERT_EQUAL_HEX64(0x805, bb.p[1]);
 	print_bitboard(bb, "test_new_silver_attacks");
 }
+
+void test_new_pawn_attacks() {
+	int color = black;
+	bitboard bb = pawn_attack[color][sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0x100000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_pawn_attacks");
+	bb = pawn_attack[color][sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0x200000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_pawn_attacks");
+	bb = pawn_attack[color][sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x200, bb.p[1]);
+	print_bitboard(bb, "test_new_pawn_attacks");
+	color = white;
+	bb = pawn_attack[color][sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0x400000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_pawn_attacks");
+	bb = pawn_attack[color][sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0x800000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_pawn_attacks");
+	bb = pawn_attack[color][sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x800, bb.p[1]);
+	print_bitboard(bb, "test_new_pawn_attacks");
+}

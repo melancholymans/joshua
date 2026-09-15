@@ -16,6 +16,8 @@ __m256i bishop_attack_to_mask[81][2];
 bitboard king_attack[81];
 bitboard gold_attack[2][81];
 bitboard silver_attack[2][81];
+bitboard knight_attack[2][81];
+bitboard pawn_attack[2][81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -42,6 +44,7 @@ void init_tables() {
 	new_king_attacks();
 	new_gold_attacks();
 	new_silver_attacks();
+	new_pawn_attacks();
 }
 
 //座標sqごとにbitが立っている配列を生成している
@@ -415,6 +418,23 @@ void new_silver_attacks() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
 			silver_attack[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack[sq].m, in_front_mask[c][set_rank(sq)].m), bishop_attack(sq, all_one_bb).m);
+		}
+	}
+}
+
+/*pawnAttackが必要、bishopStepAttacksが必要、constFirstOneFromSQ11が必要
+void new_knight_attacks() {
+	for (int c = black; c <= white; c += 1) {
+		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+			knight_attack[c][sq]
+		}
+	}
+}*/
+
+void new_pawn_attacks() {
+	for (int c = black; c <= white; c += 1) {
+		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+			pawn_attack[c][sq].m = _mm_xor_si128(silver_attack[c][sq].m,bishop_attack(sq,all_one_bb).m);
 		}
 	}
 }
