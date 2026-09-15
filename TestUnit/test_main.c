@@ -54,6 +54,9 @@ void test_bitboard() {
 	test_new_king_attacks();
 	test_new_gold_attacks();
 	test_new_silver_attacks();
+	test_first_one_from_nodelete();
+	test_star_attacks();
+	test_new_knight_attacks();
 	test_new_pawn_attacks();
 }
 

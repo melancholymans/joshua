@@ -45,6 +45,7 @@ void init_tables() {
 	new_gold_attacks();
 	new_silver_attacks();
 	new_pawn_attacks();
+	new_knight_attacks();	// new_pawn_attackが実行していることが前提
 }
 
 //座標sqごとにbitが立っている配列を生成している
@@ -422,14 +423,38 @@ void new_silver_attacks() {
 	}
 }
 
-/*pawnAttackが必要、bishopStepAttacksが必要、constFirstOneFromSQ11が必要
+// 渡されたbitBoardを0から80までスキャンして最初bitが立っていたindexを返す
+int first_one_from_nodelete(bitboard bb) {
+	unsigned long sq;
+	if (bb.p[0] != 0) {
+		_BitScanForward64(&sq, bb.p[0]);
+		return (int)sq;
+	}
+	if (bb.p[1] != 0) {
+		_BitScanForward64(&sq, bb.p[1]);
+		return (int)sq + 63;
+	}
+	return -1; // ビットが立っていない場合は-1を返す
+}
+
+// sqを中心に右斜め、左斜めの利きbitboardを返す
+bitboard star_attacks(int sq) {	
+	bitboard bb;
+	bb.m = _mm_and_si128(silver_attack[black][sq].m, silver_attack[white][sq].m);
+	return bb;
+}
+
 void new_knight_attacks() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
-			knight_attack[c][sq]
+			knight_attack[c][sq].m = _mm_setzero_si128();
+			const bitboard bb = pawn_attack[c][sq];
+			if (bb.p[0] > 0 || bb.p[1] > 0) {
+				knight_attack[c][sq].m = _mm_and_si128(star_attacks(first_one_from_nodelete(bb)).m, in_front_mask[c][set_rank(sq)].m);
+			}
 		}
 	}
-}*/
+}
 
 void new_pawn_attacks() {
 	for (int c = black; c <= white; c += 1) {

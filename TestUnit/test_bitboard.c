@@ -957,28 +957,84 @@ void test_new_silver_attacks() {
 	bitboard bb = silver_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xA0102800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, "test_new_silver_attacks");
 	bb = silver_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x205000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, "test_new_silver_attacks");
 	bb = silver_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x205, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, "test_new_silver_attacks");
 	color = white;
 	bb = silver_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xA0402800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, "test_new_silver_attacks");
 	bb = silver_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x805000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, "test_new_silver_attacks");
 	bb = silver_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x805, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, "test_new_silver_attacks");
+}
+
+void test_first_one_from_nodelete() {
+	bitboard bb = set_board(0x298060C0A1121B45, 0x3abad);
+	TEST_ASSERT_EQUAL_INT(0, first_one_from_nodelete(bb));
+	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B45, bb.p[0]);	//bbに変化がないことを確認
+	TEST_ASSERT_EQUAL_HEX64(0x3abad, bb.p[1]);
+	bb = set_board(0x282d026660282000, 0x28b5b);
+	TEST_ASSERT_EQUAL_INT(13, first_one_from_nodelete(bb));
+	TEST_ASSERT_EQUAL_HEX64(0x282d026660282000, bb.p[0]);	//bbに変化がないことを確認
+	TEST_ASSERT_EQUAL_HEX64(0x28b5b, bb.p[1]);
+}
+
+void test_star_attacks() {
+	bitboard bb = star_attacks(sq4g);
+	TEST_ASSERT_EQUAL_HEX64(0xA0002800000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, "test_star_attacks");
+	bb = star_attacks(sq7e);
+	TEST_ASSERT_EQUAL_HEX64(0x5000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
+	//print_bitboard(bb, "test_star_attacks");
+	bb = star_attacks(sq9b);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x05, bb.p[1]);
+	//print_bitboard(bb, "test_star_attacks");
+}
+
+void test_new_knight_attacks() {
+	int color = black;
+	bitboard bb = knight_attack[color][sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0x10000400000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_knight_attacks");
+	bb = knight_attack[color][sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0x800000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
+	print_bitboard(bb, "test_new_knight_attacks");
+	bb = knight_attack[color][sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_knight_attacks");
+	color = white;
+	bb = knight_attack[color][sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0x100004000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_knight_attacks");
+	bb = knight_attack[color][sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0x8000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x40, bb.p[1]);
+	print_bitboard(bb, "test_new_knight_attacks");
+	bb = knight_attack[color][sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x08, bb.p[1]);
+	print_bitboard(bb, "test_new_knight_attacks");
+
 }
 
 void test_new_pawn_attacks() {
@@ -986,26 +1042,26 @@ void test_new_pawn_attacks() {
 	bitboard bb = pawn_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x100000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, "test_new_pawn_attacks");
 	bb = pawn_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x200000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, "test_new_pawn_attacks");
 	bb = pawn_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x200, bb.p[1]);
-	print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, "test_new_pawn_attacks");
 	color = white;
 	bb = pawn_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x400000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, "test_new_pawn_attacks");
 	bb = pawn_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x800000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, "test_new_pawn_attacks");
 	bb = pawn_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x800, bb.p[1]);
-	print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, "test_new_pawn_attacks");
 }
