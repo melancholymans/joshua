@@ -2,14 +2,14 @@
 #include "../shogi/bitboard.h"
 #include "../shogi/position.h"
 
-void test_new_set_mask_bb(__m128i bb);
+void test_new_set_mask_bb(bitboard bb);
 void test_new_file_mask();
 void test_new_rank_mask();
 void test_new_all_one_bb();
-void test_all_zero_bb();
 void test_new_in_front_mask();
 void test_new_enemy_field();
 void test_set_biton();
+void test_set_board();
 void test_first_one_from();
 void test_lance_block_mask();
 void test_index_to_occupied();
@@ -28,3 +28,6 @@ void test_decrement256();
 void test_byte_reverse256();
 void test_merge256();
 void test_bishop_attack();
+void test_new_king_attacks();
+void test_new_gold_attacks();
+void test_new_silver_attacks();
