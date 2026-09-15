@@ -17,6 +17,8 @@ extern bitboard lance_attack[2][81][128];
 extern bitboard rook_attack_rank_to_mask[81][2];
 extern __m256i bishop_attack_to_mask[81][2];
 extern bitboard king_attack[81];
+extern bitboard gold_attack[2][81];
+extern bitboard silver_attack[2][81];
 extern const int slide[81];
 
 void init_tables();
@@ -45,6 +47,7 @@ __m256i byte_reverse256(__m256i bb);
 __m128i merge256(__m256i bb);
 bitboard bishop_attack(const int sq, const bitboard occ);
 void new_king_attacks();
+void new_gold_attacks();
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);
 void set_biton(const int sq, bitboard* bb);

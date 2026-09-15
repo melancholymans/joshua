@@ -52,6 +52,7 @@ void test_bitboard() {
 	test_merge256();
 	test_bishop_attack();
 	test_new_king_attacks();
+	test_new_gold_attacks();
 }
 
 void test_simd() {

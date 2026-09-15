@@ -28,3 +28,5 @@ void test_decrement256();
 void test_byte_reverse256();
 void test_merge256();
 void test_bishop_attack();
+void test_new_king_attacks();
+void test_new_gold_attacks();

@@ -912,13 +912,43 @@ void test_new_king_attacks() {
 	bitboard bb = king_attack[sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xe0503800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_king_attacks");
+	//print_bitboard(bb, "test_new_king_attacks");
 	bb = king_attack[sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0xa07000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x38, bb.p[1]);
-	print_bitboard(bb, "test_new_king_attacks");
+	//print_bitboard(bb, "test_new_king_attacks");
 	bb = king_attack[sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xa07, bb.p[1]);
-	print_bitboard(bb, "test_new_king_attacks");
+	//print_bitboard(bb, "test_new_king_attacks");
+}
+
+void test_new_gold_attacks() {
+	int color = black;
+	bitboard bb = gold_attack[color][sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0x60501800000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_gold_attacks");
+	bb = gold_attack[color][sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0xA03000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x18, bb.p[1]);
+	print_bitboard(bb, "test_new_gold_attacks");
+	bb = gold_attack[color][sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xa03, bb.p[1]);
+	print_bitboard(bb, "test_new_gold_attacks");
+	color = white;
+	bb = gold_attack[color][sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0xC0503000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_gold_attacks");
+	bb = gold_attack[color][sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0xA06000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x30, bb.p[1]);
+	print_bitboard(bb, "test_new_gold_attacks");
+	bb = gold_attack[color][sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xa06, bb.p[1]);
+	print_bitboard(bb, "test_new_gold_attacks");
+
 }

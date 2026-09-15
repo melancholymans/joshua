@@ -14,6 +14,8 @@ bitboard lance_attack[2][81][128];
 bitboard rook_attack_rank_to_mask[81][2];
 __m256i bishop_attack_to_mask[81][2];
 bitboard king_attack[81];
+bitboard gold_attack[2][81];
+bitboard silver_attack[2][81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -38,6 +40,7 @@ void init_tables() {
 	new_rook_attacks();
 	new_bishop_attacks();
 	new_king_attacks();
+	new_gold_attacks();
 }
 
 //À•Wsq‚²‚Æ‚Ébit‚ª—§‚Á‚Ä‚¢‚é”z—ñ‚ğ¶¬‚µ‚Ä‚¢‚é
@@ -396,6 +399,22 @@ bitboard bishop_attack(const int sq, const bitboard occ) {
 void new_king_attacks() {
 	for (int sq = sq1a; sq <= sq9i; sq += 1){
 		king_attack[sq].m = _mm_or_si128(rook_attack(sq, all_one_bb).m, bishop_attack(sq, all_one_bb).m);
+	}
+}
+
+void new_gold_attacks() {
+	for (int c = black; c <= white; c += 1) {
+		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+			gold_attack[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack[sq].m, in_front_mask[c][set_rank(sq)].m), rook_attack(sq, all_one_bb).m);
+		}
+	}
+}
+
+void new_silver_attacks() {
+	for (int c = black; c <= white; c += 1) {
+		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+			silver_attack[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack[sq].m, in_front_mask[c][set_rank(sq)].m), bishop_attack(sq, all_one_bb).m);
+		}
 	}
 }
 
