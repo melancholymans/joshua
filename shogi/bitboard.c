@@ -41,6 +41,7 @@ void init_tables() {
 	new_bishop_attacks();
 	new_king_attacks();
 	new_gold_attacks();
+	new_silver_attacks();
 }
 
 //À•Wsq‚²‚Æ‚Ébit‚ª—§‚Á‚Ä‚¢‚é”z—ñ‚ğ¶¬‚µ‚Ä‚¢‚é

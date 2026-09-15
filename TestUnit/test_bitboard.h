@@ -30,3 +30,4 @@ void test_merge256();
 void test_bishop_attack();
 void test_new_king_attacks();
 void test_new_gold_attacks();
+void test_new_silver_attacks();

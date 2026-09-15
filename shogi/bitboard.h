@@ -48,6 +48,7 @@ __m128i merge256(__m256i bb);
 bitboard bishop_attack(const int sq, const bitboard occ);
 void new_king_attacks();
 void new_gold_attacks();
+void new_silver_attacks();
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);
 void set_biton(const int sq, bitboard* bb);
