@@ -13,6 +13,7 @@ bitboard enemy_field[2];
 bitboard lance_attack[2][81][128];
 bitboard rook_attack_rank_to_mask[81][2];
 __m256i bishop_attack_to_mask[81][2];
+bitboard king_attack[81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -36,6 +37,7 @@ void init_tables() {
 	new_lance_attack();
 	new_rook_attacks();
 	new_bishop_attacks();
+	new_king_attacks();
 }
 
 //À•Wsq‚²‚Æ‚Ébit‚ª—§‚Á‚Ä‚¢‚é”z—ñ‚ğ¶¬‚µ‚Ä‚¢‚é
@@ -389,6 +391,12 @@ bitboard bishop_attack(const int sq, const bitboard occ) {
 	bitboard bb;
 	bb.m = merge256(_mm256_or_si256(byte_reverse256(hi), lo));
 	return bb;
+}
+
+void new_king_attacks() {
+	for (int sq = sq1a; sq <= sq9i; sq += 1){
+		king_attack[sq].m = _mm_or_si128(rook_attack(sq, all_one_bb).m, bishop_attack(sq, all_one_bb).m);
+	}
 }
 
 bitboard set_board(const int64_t idx0,const int64_t idx1) {

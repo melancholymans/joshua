@@ -907,3 +907,18 @@ void test_bishop_attack() {
 	TEST_ASSERT_EQUAL_HEX64(0x5000, mg.p[1]);
 	//print_bitboard(mg, "test_bishop_attack"); ;
 }
+
+void test_new_king_attacks() {
+	bitboard bb = king_attack[sq4g];
+	TEST_ASSERT_EQUAL_HEX64(0xe0503800000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_king_attacks");
+	bb = king_attack[sq7e];
+	TEST_ASSERT_EQUAL_HEX64(0xa07000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x38, bb.p[1]);
+	print_bitboard(bb, "test_new_king_attacks");
+	bb = king_attack[sq9b];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0xa07, bb.p[1]);
+	print_bitboard(bb, "test_new_king_attacks");
+}
