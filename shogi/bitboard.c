@@ -468,10 +468,10 @@ void new_between_bb() {
 				continue;
 			}
 			const int direct = square_relation(sq1, sq2);
-			if (direct == direct_cross) {
+			if (direct & direct_cross) {
 				between_bb[sq1][sq2].m = _mm_and_si128(rook_attack(sq1, mask_bb[sq2]).m, rook_attack(sq2, mask_bb[sq1]).m);
 			}
-			else if (direct == direct_diag) {
+			else if (direct & direct_diag) {
 				between_bb[sq1][sq2].m = _mm_and_si128(bishop_attack(sq1, mask_bb[sq2]).m, bishop_attack(sq2, mask_bb[sq1]).m);
 			}
 		}

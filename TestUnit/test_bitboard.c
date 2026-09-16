@@ -1068,5 +1068,24 @@ void test_new_pawn_attacks() {
 }
 
 void test_new_between_bb() {
-	
+	int sq1 = sq3c;
+	int sq2 = sq9i;
+	int sq3 = sq9c;
+	int sq4 = sq2h;
+	bitboard bb = between_bb[sq1][sq3];
+	TEST_ASSERT_EQUAL_HEX64(0x100804020000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
+	print_bitboard(bb, "test_new_between_bb");
+	bb = between_bb[sq1][sq2];
+	TEST_ASSERT_EQUAL_HEX64(0x1004010040000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x80, bb.p[1]);
+	print_bitboard(bb, "test_new_between_bb");
+	bb = between_bb[sq3][sq2];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1F000, bb.p[1]);
+	print_bitboard(bb, "test_new_between_bb");
+	bb = between_bb[sq4][sq2];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_between_bb");
 }
