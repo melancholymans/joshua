@@ -18,6 +18,7 @@ bitboard gold_attack[2][81];
 bitboard silver_attack[2][81];
 bitboard knight_attack[2][81];
 bitboard pawn_attack[2][81];
+bitboard between_bb[81][81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -30,23 +31,6 @@ const int slide[81] = {
 	10,10,10,10,10,10,10,10,10
 };
 
-//各種テーブルの初期化
-void init_tables() {
-	new_mask_bb();
-	new_file_mask();
-	new_rank_mask();
-	new_all_one_bb();
-	new_in_front_mask();
-	new_enemy_field();
-	new_lance_attack();
-	new_rook_attacks();
-	new_bishop_attacks();
-	new_king_attacks();
-	new_gold_attacks();
-	new_silver_attacks();
-	new_pawn_attacks();
-	new_knight_attacks();	// new_pawn_attackが実行していることが前提
-}
 
 //座標sqごとにbitが立っている配列を生成している
 void new_mask_bb() {
@@ -460,6 +444,36 @@ void new_pawn_attacks() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
 			pawn_attack[c][sq].m = _mm_xor_si128(silver_attack[c][sq].m,bishop_attack(sq,all_one_bb).m);
+		}
+	}
+}
+
+//飛、角の利きの間にあるbitboardをかえす
+// sq1 x x x x x sq2 (sq1,sq2のbitは返さない) =>direct_cross
+// sq1  => direct_cross 
+//  x                            
+//  x                             
+// sq2       
+
+//sq1   => diect_diag          sq1 =>direct_diag
+//   x                        x
+//    x                      x
+//     x                    x
+//      sq2              sq2
+void new_between_bb() {
+	for (int sq1 = sq1a; sq1 <= sq9i; sq1 += 1) {
+		for (int sq2 = sq1a; sq2 <= sq9i; sq2 += 1) {
+			between_bb[sq1][sq2].m = _mm_setzero_si128();
+			if (sq1 == sq2) {
+				continue;
+			}
+			const int direct = square_relation(sq1, sq2);
+			if (direct == direct_cross) {
+				between_bb[sq1][sq2].m = _mm_and_si128(rook_attack(sq1, mask_bb[sq2]).m, rook_attack(sq2, mask_bb[sq1]).m);
+			}
+			else if (direct == direct_diag) {
+				between_bb[sq1][sq2].m = _mm_and_si128(bishop_attack(sq1, mask_bb[sq2]).m, bishop_attack(sq2, mask_bb[sq1]).m);
+			}
 		}
 	}
 }

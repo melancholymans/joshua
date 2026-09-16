@@ -1,5 +1,34 @@
 #include "position.h"
 
+int square_relation_direct[81][81];
+
+void new_square_relation_direct() {
+	for (int sq1 = sq1a; sq1 <= sq9i; sq1 += 1) {
+		const f1 = set_file(sq1);
+		const r1 = set_rank(sq1);
+		for (int sq2 = sq1a; sq2 <= sq9i; sq2 += 1) {
+			const f2 = set_file(sq2);
+			const r2 = set_rank(sq2);
+			square_relation_direct[sq1][sq2] = direct_misc;
+			if (sq1 == sq2) {
+				continue;
+			}
+			if (f1 == f2) {
+				square_relation_direct[sq1][sq2] = direct_file;	//c•ûŒü
+			}
+			else if (r1 == r2) {
+				square_relation_direct[sq1][sq2] = direct_rank;	//‰¡•ûŒü
+			}
+			else if ((r1 - r2) == (f1 - f2)) {
+				square_relation_direct[sq1][sq2] = direct_diag_nesw;	//‰Eã‚©‚ç¶‰º
+			}
+			else if ((r1 - r2) == (f2 - f1)) {
+				square_relation_direct[sq1][sq2] = direct_diag_nwse;	//¶ã‚©‚ç‰E‰º 
+			}
+		}
+	}
+}
+
 //file‚Ærank‚ðŽw’è‚µ‚ÄÀ•W’l‚ð•Ô‚·
 int set_square(int f, int r) {
 	return f * 9 + r;
@@ -14,3 +43,9 @@ int set_file(int sq) {
 int set_rank(int sq) {
 	return sq % 9;
 }
+
+//“n‚³‚ê‚½sqÀ•W“¯Žm‚ÌˆÊ’uŠÖŒW‚ð•Ô‚·
+int square_relation(const int sq1, const int sq2) {
+	return square_relation_direct[sq1][sq2];
+}
+

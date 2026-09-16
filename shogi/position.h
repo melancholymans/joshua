@@ -1,6 +1,6 @@
 #pragma once
-// 盤面の座標を表す定数を定義しています。これにより、将棋の盤面上の各マスを簡単に参照できます。
 
+// 盤面の座標を表す定数を定義しています。これにより、将棋の盤面上の各マスを簡単に参照できます。
 enum {
 	sq1a = 0,	
 	sq1b = 1,
@@ -113,11 +113,26 @@ enum {
 	delta_se = -8
 };
 
+//ボナンザに使われていた方向定数
+enum {
+	direct_misc = 0,	//ない
+	direct_file = 2,	//縦方向
+	direct_rank = 3,	//横方向
+	direct_diag_nesw = 4,	//右上から左下
+	direct_diag_nwse = 5,	//左上から右下 
+	direct_cross = 2,	//十字方向（縦横）
+	direct_diag = 4
+};
+
 enum {
 	black = 0,
 	white = 1
 };
 
+extern int square_relation_direct[81][81];
+
+void new_square_relation_direct();
 int set_square(int f, int r);
 int set_file(int sq);
 int set_rank(int sq);
+int square_relation(const int sq1, const int sq2);

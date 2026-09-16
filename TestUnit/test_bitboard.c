@@ -1,4 +1,6 @@
 #include "unity.h"
+#include "../shogi/bitboard.h"
+#include "../shogi/position.h"
 #include "test_bitboard.h"
 
 void test_new_set_mask_bb(bitboard bb) {
@@ -1012,29 +1014,28 @@ void test_new_knight_attacks() {
 	bitboard bb = knight_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x10000400000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, "test_new_knight_attacks");
 	bb = knight_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x800000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, "test_new_knight_attacks");
 	bb = knight_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, "test_new_knight_attacks");
 	color = white;
 	bb = knight_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x100004000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, "test_new_knight_attacks");
 	bb = knight_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x8000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x40, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, "test_new_knight_attacks");
 	bb = knight_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x08, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_attacks");
-
+	//print_bitboard(bb, "test_new_knight_attacks");
 }
 
 void test_new_pawn_attacks() {
@@ -1064,4 +1065,8 @@ void test_new_pawn_attacks() {
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x800, bb.p[1]);
 	//print_bitboard(bb, "test_new_pawn_attacks");
+}
+
+void test_new_between_bb() {
+	
 }

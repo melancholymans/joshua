@@ -1,6 +1,4 @@
 #pragma once
-#include "../shogi/bitboard.h"
-#include "../shogi/position.h"
 
 void test_new_set_mask_bb(bitboard bb);
 void test_new_file_mask();
@@ -35,3 +33,4 @@ void test_first_one_from_nodelete();
 void test_star_attacks();
 void test_new_knight_attacks();
 void test_new_pawn_attacks();
+void test_new_between_bb();

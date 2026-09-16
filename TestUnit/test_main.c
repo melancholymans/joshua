@@ -3,6 +3,7 @@
 
 #include "unity.h"
 #include "simd_learn.h"
+#include "../shogi/init.h"
 #include "../shogi/bitboard.h"
 #include "../shogi/position.h"
 #include "test_bitboard.h"
@@ -14,9 +15,12 @@ void tearDown(void) {}
 
 void test_position() {
 	printf("-----------test_position----------------------------------\n");
+	init_tables();
 	test_set_file();
 	test_set_rank();
 	TEST_ASSERT_TRUE(test_set_square());
+	test_new_square_relation_direct();
+	test_square_relation();
 }
 
 void test_bitboard() {
@@ -58,6 +62,7 @@ void test_bitboard() {
 	test_star_attacks();
 	test_new_knight_attacks();
 	test_new_pawn_attacks();
+	test_new_between_bb();
 }
 
 void test_simd() {

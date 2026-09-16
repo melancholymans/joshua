@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\shogi\bitboard.c" />
+    <ClCompile Include="..\shogi\init.c" />
     <ClCompile Include="..\shogi\position.c" />
     <ClCompile Include="simd_learn.c" />
     <ClCompile Include="test_bitboard.c" />

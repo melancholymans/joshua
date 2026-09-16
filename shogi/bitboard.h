@@ -2,6 +2,7 @@
 #include <immintrin.h>
 #include <intrin.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef union {
 	__m128i m;
@@ -21,9 +22,9 @@ extern bitboard gold_attack[2][81];
 extern bitboard silver_attack[2][81];
 extern bitboard knight_attack[2][81];
 extern bitboard pawn_attack[2][81];
+extern bitboard between_bb[81][81];
 extern const int slide[81];
 
-void init_tables();
 void new_mask_bb();
 void new_file_mask();
 void new_rank_mask();
@@ -55,6 +56,7 @@ int first_one_from_nodelete(bitboard bb);
 bitboard star_attacks(int sq);
 void new_knight_attacks();
 void new_pawn_attacks();
+void new_between_bb();
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);
 void set_biton(const int sq, bitboard* bb);
