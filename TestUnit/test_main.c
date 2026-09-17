@@ -21,6 +21,7 @@ void test_position() {
 	TEST_ASSERT_TRUE(test_set_square());
 	test_new_square_relation_direct();
 	test_square_relation();
+	test_opposite_color();
 }
 
 void test_bitboard() {
@@ -63,6 +64,9 @@ void test_bitboard() {
 	test_new_knight_attacks();
 	test_new_pawn_attacks();
 	test_new_between_bb();
+	test_new_attack_to_edge();
+	test_new_gold_check_table();
+	test_new_silver_check_table();
 }
 
 void test_simd() {

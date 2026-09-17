@@ -4,7 +4,6 @@
 
 //各種テーブルの初期化
 void init_tables() {
-	// bitboard init
 	new_mask_bb();
 	new_file_mask();
 	new_rank_mask();
@@ -20,5 +19,8 @@ void init_tables() {
 	new_pawn_attacks();
 	new_knight_attacks();	// new_pawn_attackが実行していることが前提
 	new_square_relation_direct();
-	new_between_bb();	//new_square_relation_directが実行していることが前提
+	new_between_bb();		//new_square_relation_directが実行していることが前提
+	new_attack_to_edge();	//rook_attack,bishop_attack,lance_attackが成立していることが前提
+	new_gold_check_table();
+	new_silver_check_table();
 }

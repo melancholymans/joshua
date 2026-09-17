@@ -136,3 +136,4 @@ int set_square(int f, int r);
 int set_file(int sq);
 int set_rank(int sq);
 int square_relation(const int sq1, const int sq2);
+int opposite_color(const int c);

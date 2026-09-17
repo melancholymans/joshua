@@ -85,3 +85,10 @@ void test_square_relation() {
 	TEST_ASSERT_EQUAL_INT(direct_diag_nwse, square_relation(sq1,sq6));
 	TEST_ASSERT_EQUAL_INT(direct_diag_nwse, square_relation(sq6, sq1));
 }
+
+void test_opposite_color() {
+	int color = black;
+	TEST_ASSERT_EQUAL_INT(white, opposite_color(color));
+	color = white;
+	TEST_ASSERT_EQUAL_INT(black, opposite_color(color));
+}

@@ -10,7 +10,7 @@ bitboard rank_mask[9];
 bitboard all_one_bb;
 bitboard in_front_mask[2][9];
 bitboard enemy_field[2];
-bitboard lance_attack[2][81][128];
+bitboard lance_attack_mask[2][81][128];
 bitboard rook_attack_rank_to_mask[81][2];
 __m256i bishop_attack_to_mask[81][2];
 bitboard king_attack[81];
@@ -19,6 +19,11 @@ bitboard silver_attack[2][81];
 bitboard knight_attack[2][81];
 bitboard pawn_attack[2][81];
 bitboard between_bb[81][81];
+bitboard rook_attack_to_edge[81];
+bitboard bishop_attack_to_edge[81];
+bitboard lance_attack_to_edge[2][81];
+bitboard gold_check_table[2][81];
+bitboard silver_check_table[2][81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -210,10 +215,17 @@ void new_lance_attack() {
 			bitboard block_mask = lance_block_mask(sq);
 			for(int i=0;i<128;i+=1){
 				bitboard occ = index_to_occupied(i,block_mask);
-				lance_attack[c][sq][i] = lance_attack_calc(c,sq,occ);
+				lance_attack_mask[c][sq][i] = lance_attack_calc(c,sq,occ);
 			}
 		}
 	}
+}
+
+// lanceの利きを返す
+bitboard lance_attack(const int c, const int sq, const bitboard occ) {
+	int part = (int)(sq > sq7i);
+	int index = (occ.p[part] >> (slide[sq])) & 127;
+	return lance_attack_mask[c][sq][index];
 }
 
 // 飛車の利きの右方向と角の利きの右上、右下方向を求める時に使う。
@@ -285,7 +297,7 @@ bitboard rook_attack_file(const int sq, const bitboard occ) {
 	int part = (int)(sq > sq7i);
 	int index = (occ.p[part] >> (slide[sq])) & 127;
 	bitboard bb;
-	bb.m = _mm_or_si128(lance_attack[black][sq][index].m, lance_attack[white][sq][index].m);
+	bb.m = _mm_or_si128(lance_attack_mask[black][sq][index].m, lance_attack_mask[white][sq][index].m);
 	return bb;
 }
 
@@ -474,6 +486,86 @@ void new_between_bb() {
 			else if (direct & direct_diag) {
 				between_bb[sq1][sq2].m = _mm_and_si128(bishop_attack(sq1, mask_bb[sq2]).m, bishop_attack(sq2, mask_bb[sq1]).m);
 			}
+		}
+	}
+}
+
+// 障害物がないときのrook,bishop,lance[black],lence[white]の利きbitboard
+// edgeは端っこまで伸びきった利きという意味,他から活用されているか疑問
+void new_attack_to_edge() {
+	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+		bitboard occ;
+		occ.m = _mm_setzero_si128();
+		rook_attack_to_edge[sq] = rook_attack(sq, occ);
+		bishop_attack_to_edge[sq] = bishop_attack(sq, occ);
+		lance_attack_to_edge[black][sq] = lance_attack(black, sq, occ);
+		lance_attack_to_edge[white][sq] = lance_attack(white, sq, occ);
+	}
+}
+
+// sq = sq3cにいる駒にあと２手で金が当たりを付けることのできる座標のbitboard(black側)
+//  9 8 7 6 5 4 3 2 1
+//a . . . . . . X . .
+//b . . . . . X . X .
+//c . . . . X . S . X
+//d . . . . X . . . X
+//e . . . . X X X X X
+//f . . . . . . . . .
+//g . . . . . . . . .
+//h . . . . . . . . .
+//i . . . . . . . . .
+void new_gold_check_table() {
+	for (int c = black; c <= white; c+=1) {
+		int opp = opposite_color(c);
+		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+			gold_check_table[c][sq].m = _mm_setzero_si128();
+			bitboard check_bb = gold_attack[opp][sq];
+			while (check_bb.p[0] > 0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				gold_check_table[c][sq].m = _mm_or_si128(gold_check_table[c][sq].m ,gold_attack[opp][check_sq].m);
+			}
+			gold_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, gold_attack[opp][sq].m), gold_check_table[c][sq].m);
+		}
+	}
+}
+
+// sq = sq3cにいる駒にあと２手で銀が当たりを付けることのできる座標のbitboard(black側)
+//  9 8 7 6 5 4 3 2 1
+//a . . . . . . X . .
+//b . . . . . X . X .
+//c . . . . X . S . X
+//d . . . . X . . . X
+//e . . . . X X X X X
+//f . . . . . . . . .
+//g . . . . . . . . .
+//h . . . . . . . . .
+//i . . . . . . . . .
+void new_silver_check_table() {
+	for (int c = black; c <= white; c+=1) {
+		int opp = opposite_color(c);
+		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+			silver_check_table[c][sq].m = _mm_setzero_si128();
+			bitboard check_bb = silver_attack[opp][sq];
+			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m, silver_attack[opp][check_sq].m);
+			}
+			//const Bitboard TRank123BB = (c == Black ? inFrontMask<Black, Rank4>() : inFrontMask<White, Rank6>());
+			const bitboard trank123bb = enemy_field[c];
+			check_bb = gold_attack[opp][sq];
+			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
+				int check_sq = first_one_from(&check_bb);
+				// 移動元が敵陣である位置なら、金に成って王手出来る。
+				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m,_mm_and_si128(silver_attack[opp][check_sq].m , trank123bb.m));
+			}
+			const bitboard trank4bb = (c == black ? rank_mask[rank4] : rank_mask[rank6]);
+			// 移動先が3段目で、4段目に移動したときも、成ることが出来る。
+			check_bb.m = _mm_and_si128(gold_attack[opp][sq].m , trank123bb.m);
+			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m,_mm_and_si128(silver_attack[opp][check_sq].m , trank4bb.m));
+			}
+			silver_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, silver_attack[opp][sq].m), silver_check_table[c][sq].m);
 		}
 	}
 }
