@@ -38,3 +38,4 @@ void test_new_attack_to_edge();
 void test_new_gold_check_table();
 void test_new_silver_check_table();
 void test_new_knight_check_table();
+void test_new_lance_check_table();

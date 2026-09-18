@@ -1164,12 +1164,12 @@ void test_new_silver_check_table() {
 	bitboard bb = silver_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x1F0A84C2A1F, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_check_table");
+	//print_bitboard(bb, "test_new_silver_check_table");
 	sq = sq8f;
 	bb = silver_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x2A1D000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x150C8, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_check_table");
+	//print_bitboard(bb, "test_new_silver_check_table");
 }
 
 //knight_check_table[black][sq3c]�̏ꍇ
@@ -1188,10 +1188,34 @@ void test_new_knight_check_table() {
 	bitboard bb = knight_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x50041401050, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_knight_check_table");
+	//print_bitboard(bb, "test_new_knight_check_table");
 	sq = sq8f;
 	bb = knight_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x400400000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x2002, bb.p[1]);
-	print_bitboard(bb, "test_new_silver_check_table");
+	//print_bitboard(bb, "test_new_knight_check_table");
+}
+
+// lance_check_table[black][sq3c];
+//  9 8 7 6 5 4 3 2 1
+//a . . . . . . . . .
+//b . . . . . . . . .
+//c . . . . . . S . .
+//d . . . . . X . X .
+//e . . . . . X X X .
+//f . . . . . X X X .
+//g . . . . . X X X .
+//h . . . . . X X X .
+//i . . . . . X X X .
+void test_new_lance_check_table() {
+	int sq = sq3c;
+	bitboard bb = lance_check_table[black][sq];
+	TEST_ASSERT_EQUAL_HEX64(0xFC7C3F000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, "test_new_lance_check_table");
+	sq = sq8f;
+	bb = lance_check_table[white][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0f, bb.p[1]);
+	print_bitboard(bb, "test_new_lance_check_table");
 }

@@ -24,5 +24,6 @@ void init_tables() {
 	new_gold_check_table();
 	new_silver_check_table();
 	new_knight_check_table();
+	new_lance_check_table();
 
 }
