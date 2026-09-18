@@ -23,4 +23,6 @@ void init_tables() {
 	new_attack_to_edge();	//rook_attack,bishop_attack,lance_attack‚ª¬—§‚µ‚Ä‚¢‚é‚±‚Æ‚ª‘O’ñ
 	new_gold_check_table();
 	new_silver_check_table();
+	new_knight_check_table();
+
 }

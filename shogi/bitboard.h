@@ -28,6 +28,7 @@ extern bitboard bishop_attack_to_edge[81];
 extern bitboard lance_attack_to_edge[2][81];
 extern bitboard gold_check_table[2][81];
 extern bitboard silver_check_table[2][81];
+extern bitboard knight_check_table[2][81];
 extern const int slide[81];
 
 void new_mask_bb();
@@ -64,6 +65,8 @@ void new_pawn_attacks();
 void new_between_bb();
 void new_attack_to_edge();
 void new_gold_check_table();
+void new_silver_check_table();
+void new_knight_check_table();
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);
 void set_biton(const int sq, bitboard* bb);
