@@ -26,6 +26,7 @@ bitboard gold_check_table[2][81];
 bitboard silver_check_table[2][81];
 bitboard knight_check_table[2][81];
 bitboard lance_check_table[2][81];
+bitboard pawn_check_table[2][81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -586,6 +587,28 @@ void new_lance_check_table() {
 				lance_check_table[c][sq].m = _mm_or_si128(lance_check_table[c][sq].m,lance_attack_to_edge[opp][check_sq].m);
 			}
 			lance_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, pawn_attack[opp][sq].m), lance_check_table[c][sq].m);
+		}
+	}
+}
+
+void new_pawn_check_table() {
+	for (int c = black; c <= white; c+=1) {
+		int opp = opposite_color(c);
+		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+			// •à‚Å‰¤Žè‚É‚È‚é‰Â”\«‚Ì‚ ‚é‚à‚Ì‚ÍA“G‹Ê‚©‚ç‚Q‚Â—£‚ê‚½•à(•s¬‚Å‚ÌˆÚ“®) + ksq‚É“G‚Ì‹à‚ð‚¨‚¢‚½”ÍˆÍ(enemyGold)‚É¬‚è‚ÅˆÚ“®‚Å‚«‚é
+			pawn_check_table[c][sq].m = _mm_setzero_si128();
+			bitboard check_bb = pawn_attack[opp][sq];
+			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m,pawn_attack[opp][check_sq].m);
+			}
+			const bitboard trank123bb = enemy_field[c];
+			check_bb.m = _mm_and_si128(gold_attack[opp][sq].m, trank123bb.m);
+			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m, pawn_attack[opp][check_sq].m);
+			}
+			pawn_check_table[c][sq].m = _mm_andnot_si128(mask_bb[sq].m, pawn_check_table[c][sq].m);
 		}
 	}
 }

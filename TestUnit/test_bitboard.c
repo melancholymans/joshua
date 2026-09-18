@@ -4,7 +4,7 @@
 #include "test_bitboard.h"
 
 void test_new_set_mask_bb(bitboard bb) {
-	//print_bitboard(bb, "test_set_mask_bb");
+	//print_bitboard(bb, __func__);
 	TEST_ASSERT_TRUE(is_biton(sq9a, bb));
 	TEST_ASSERT_TRUE(is_biton(sq8a, bb));
 	TEST_ASSERT_TRUE(is_biton(sq6a, bb));
@@ -49,7 +49,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file2;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -57,7 +57,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file3;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -65,7 +65,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file4;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -73,7 +73,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file5;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -81,7 +81,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file6;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -89,7 +89,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file7;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -97,7 +97,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file8;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -105,7 +105,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 	f = file9;
 	for (int r = 0; r < 9; r += 1) {
 		int sq = set_square(f, r);
@@ -113,7 +113,7 @@ void test_new_file_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[0]));
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[1]));
-	//print_bitboard(file_mask[f], "test_file_mask");
+	//print_bitboard(file_mask[f], __func__);
 }
 
 void test_new_rank_mask() {
@@ -124,7 +124,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank2;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -132,7 +132,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank3;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -140,7 +140,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank4;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -148,7 +148,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank5;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -156,7 +156,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank6;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -164,7 +164,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank7;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -172,7 +172,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank8;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -180,7 +180,7 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 	r = rank9;
 	for (int f = 0; f < 9; f += 1) {
 		int sq = set_square(f, r);
@@ -188,13 +188,13 @@ void test_new_rank_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(rank_mask[r].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
-	//print_bitboard(rank_mask[r], "test_rank_mask");
+	//print_bitboard(rank_mask[r], __func__);
 }
 
 void test_new_all_one_bb() {
 	TEST_ASSERT_EQUAL_INT(7 * 9, _mm_popcnt_u64(all_one_bb.p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 9, _mm_popcnt_u64(all_one_bb.p[1]));
-	//print_bitboard(all_one_bb, "test_all_one_bb");
+	//print_bitboard(all_one_bb, __func__);
 }
 
 void test_new_in_front_mask() {
@@ -202,7 +202,7 @@ void test_new_in_front_mask() {
 	int rank = rank1;
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank2;
 	for (int r=rank1,f = 0; f < 9; f += 1) {
@@ -211,7 +211,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank3;
 	for(int r=rank1;r<rank3;r += 1) {
@@ -222,7 +222,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7*2, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2*2, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank4;
 	for (int r = rank1; r < rank4; r += 1) {
@@ -233,7 +233,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 3, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 3, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank5;
 	for (int r = rank1; r < rank5; r += 1) {
@@ -244,7 +244,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 4, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 4, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank6;
 	for (int r = rank1; r < rank6; r += 1) {
@@ -255,7 +255,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 5, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 5, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank7;
 	for (int r = rank1; r < rank7; r += 1) {
@@ -266,7 +266,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 6, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 6, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank8;
 	for (int r = rank1; r < rank8; r += 1) {
@@ -277,7 +277,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 7, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 7, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank9;
 	for (int r = rank1; r < rank9; r += 1) {
@@ -288,13 +288,13 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 8, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 8, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	color = white;
 	rank = rank9;
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank8;
 	for (int r = rank9, f = 0; f < 9; f += 1) {
@@ -303,7 +303,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank7;
 	for (int r = rank8; r <= rank9; r += 1) {
@@ -314,7 +314,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 2, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 2, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank6;
 	for (int r = rank7; r <= rank9; r += 1) {
@@ -325,7 +325,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 3, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 3, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank5;
 	for (int r = rank6; r <= rank9; r += 1) {
@@ -336,7 +336,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 4, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 4, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank4;
 	for (int r = rank5; r < rank9; r += 1) {
@@ -347,7 +347,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 5, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 5, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank3;
 	for (int r = rank4; r <= rank9; r += 1) {
@@ -358,7 +358,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 6, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 6, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank2;
 	for (int r = rank3; r <= rank9; r += 1) {
@@ -369,7 +369,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 7, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 7, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank1;
 	for (int r = rank2; r <= rank9; r += 1) {
@@ -380,7 +380,7 @@ void test_new_in_front_mask() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 8, _mm_popcnt_u64(in_front_mask[color][rank].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 8, _mm_popcnt_u64(in_front_mask[color][rank].p[1]));
-	//print_bitboard(in_front_mask[color][rank], "test_in_front_mask");
+	//print_bitboard(in_front_mask[color][rank], __func__);
 }
 
 void test_new_enemy_field() {
@@ -393,7 +393,7 @@ void test_new_enemy_field() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 3, _mm_popcnt_u64(enemy_field[color].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 3, _mm_popcnt_u64(enemy_field[color].p[1]));
-	//print_bitboard(enemy_field[color], "test_enemy_field");
+	//print_bitboard(enemy_field[color], __func__);
 
 	color = white;
 	for (int r = rank7; r <= rank9; r += 1) {
@@ -404,7 +404,7 @@ void test_new_enemy_field() {
 	}
 	TEST_ASSERT_EQUAL_INT(7 * 3, _mm_popcnt_u64(enemy_field[color].p[0]));
 	TEST_ASSERT_EQUAL_INT(2 * 3, _mm_popcnt_u64(enemy_field[color].p[1]));
-	//print_bitboard(enemy_field[color], "test_enemy_field");
+	//print_bitboard(enemy_field[color], __func__);
 }
 
 void test_set_biton() {
@@ -420,14 +420,14 @@ void test_set_biton() {
 	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
 	TEST_ASSERT_TRUE(is_biton(sq1i, bb));
 	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
-	//print_bitboard(bb, "test_set_biton");
+	//print_bitboard(bb, __func__);
 }
 
 void test_set_board() {
 	bitboard bb = set_board(0x298060C0A1121B45, 0x3abad);
 	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B45, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x3abad, bb.p[1]);
-	//print_bitboard(bb, "test_set_board");
+	//print_bitboard(bb, __func__);
 }
 
 void test_first_one_from() {
@@ -445,39 +445,39 @@ void test_lance_block_mask() {
 	bitboard bb = lance_block_mask(sq9a);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1fc00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq8b);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xfe, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq7c);
 	TEST_ASSERT_EQUAL_HEX64(0x3f80000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq6d);
 	TEST_ASSERT_EQUAL_HEX64(0x1fc00000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq5e);
 	TEST_ASSERT_EQUAL_HEX64(0xFE000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq4f);
 	TEST_ASSERT_EQUAL_HEX64(0x7F0000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq3g);
 	TEST_ASSERT_EQUAL_HEX64(0x3F80000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq2h);
 	TEST_ASSERT_EQUAL_HEX64(0x1fc00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 	bb = lance_block_mask(sq1i);
 	TEST_ASSERT_EQUAL_HEX64(0xfe, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_lance_block_mask");
+	//print_bitboard(bb, __func__);
 }
 
 void test_index_to_occupied() {
@@ -486,43 +486,42 @@ void test_index_to_occupied() {
 	bitboard occ = index_to_occupied(0, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
-
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(1, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0x2000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(2, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0x4000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(3, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0x6000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(4, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0x8000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(5, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0xA000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(125, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0xFA000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 
 	occ = index_to_occupied(127, lbm);
 	TEST_ASSERT_EQUAL_HEX64(0xFE000000000, occ.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, occ.p[1]);
-	//print_bitboard(occ, "test_index_to_occupied");
+	//print_bitboard(occ, __func__);
 }
 
 void test_lance_attack_calc() {
@@ -708,38 +707,38 @@ void test_new_rook_attacks() {
 	TEST_ASSERT_EQUAL_HEX64(0x00, rook_attack_rank_to_mask[sq2e][0].p[1]);
 	TEST_ASSERT_EQUAL_HEX64(0x2010, rook_attack_rank_to_mask[sq2e][1].p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1000000000000000, rook_attack_rank_to_mask[sq2e][1].p[1]);
-	//print_bitboard(rook_attack_rank_to_mask[sq2e][0], "test_new_rook_attacks=2e");
-	//print_bitboard(rook_attack_rank_to_mask[sq2e][1], "test_new_rook_attacks=2e");
+	//print_bitboard(rook_attack_rank_to_mask[sq2e][0], __func__);
+	//print_bitboard(rook_attack_rank_to_mask[sq2e][1], __func__);
 }
 
 void test_rook_attack_rank() {
 	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
-	//print_bitboard(occ, "test_rook_attack_rank occ");
+	//print_bitboard(occ, __func__);
 
 	bitboard bb = rook_attack_rank(sq5e, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x402000080000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_rank 5e");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack_rank(sq5f, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x804000100804020, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_rank 5f");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack_rank(sq5g, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x1008000201000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x8040, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_rank 5g");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack_rank(sq5h, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x2010000402010080, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);	
-	//print_bitboard(bb, "test_rook_attack_rank 5h");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack_rank(sq5i, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x4020000804020000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x100, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_rank 5i");
+	//print_bitboard(bb, __func__);
 }
 
 // occ‚ð1‹Ø`7‹Ø‚Æ8,9‹Ø‚É•ª‚¯‚é(part‚ÅŒvŽZ‚µ‚Ä‚¢‚é)
@@ -773,17 +772,17 @@ void test_rook_attack_file() {
 	bitboard bb = rook_attack_file(sq5e, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x1E8000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_file 5e");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack_file(sq5f, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x1D8000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_file 5f");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack_file(sq9f, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xA000, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack_file 9f");
+	//print_bitboard(bb, __func__);
 }
 
 //rook‚Ìc‚Æ‰¡‚Ì—˜‚«bitboard‚ð‡¬‚µ‚Ä•Ô‚·
@@ -793,12 +792,12 @@ void test_rook_attack() {
 	bitboard bb = rook_attack(sq5e, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack 5e");
+	//print_bitboard(bb, __func__);
 
 	bb = rook_attack(sq2f, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_rook_attack 2f");
+	//print_bitboard(bb, __func__);
 }
 
 void test_new_bishop_attacks() {
@@ -878,9 +877,9 @@ void test_byte_reverse256() {
 
 void test_merge256() {
 	//bitboard occ1 = set_board(0x802008000080200, 0x10040);
-	//print_bitboard(occ1, "test_merge256");
+	//print_bitboard(occ1, __func__);
 	//bitboard occ2 = set_board(0x202000202020, 0x00);
-	//print_bitboard(occ2, "test_merge256");
+	//print_bitboard(occ2, __func__);
 	__m256i bb = _mm256_set_epi64x(0x10040, 0x802008000080200, 0x00, 0x202000202020);
 	__m128i mg = merge256(bb);
 	int64_t tmp[2];
@@ -889,40 +888,40 @@ void test_merge256() {
 	TEST_ASSERT_EQUAL_HEX64(0x0000000000010040,tmp[1]);
 	//bitboard bd;
 	//bd.m = merge256(bb);
-	//print_bitboard(bd, "test_merge256");
+	//print_bitboard(bd, __func__);
 
 }
 
 void test_bishop_attack() {
 	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
-	//print_bitboard(occ, "test_bishop_attack");
+	//print_bitboard(occ, __func__);
 	bitboard mg = bishop_attack(sq4g, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x2220a0002822008, mg.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x04, mg.p[1]);
-	//print_bitboard(mg, "test_bishop_attack"); ;
+	//print_bitboard(mg, __func__); ;
 	mg = bishop_attack(sq3b, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x28000a00, mg.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, mg.p[1]);
-	//print_bitboard(mg, "test_bishop_attack"); ;
+	//print_bitboard(mg, __func__); ;
 	mg = bishop_attack(sq8e, occ);
 	TEST_ASSERT_EQUAL_HEX64(0xa00802008000000, mg.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x5000, mg.p[1]);
-	//print_bitboard(mg, "test_bishop_attack"); ;
+	//print_bitboard(mg, __func__); ;
 }
 
 void test_new_king_attacks() {
 	bitboard bb = king_attack[sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xe0503800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_king_attacks");
+	//print_bitboard(bb, __func__);
 	bb = king_attack[sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0xa07000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x38, bb.p[1]);
-	//print_bitboard(bb, "test_new_king_attacks");
+	//print_bitboard(bb, __func__);
 	bb = king_attack[sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xa07, bb.p[1]);
-	//print_bitboard(bb, "test_new_king_attacks");
+	//print_bitboard(bb, __func__);
 }
 
 void test_new_gold_attacks() {
@@ -930,28 +929,28 @@ void test_new_gold_attacks() {
 	bitboard bb = gold_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x60501800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_attacks");
+	//print_bitboard(bb, __func__);
 	bb = gold_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0xA03000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x18, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_attacks");
+	//print_bitboard(bb, __func__);
 	bb = gold_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xa03, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_attacks");
+	//print_bitboard(bb, __func__);
 	color = white;
 	bb = gold_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xC0503000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_attacks");
+	//print_bitboard(bb, __func__);
 	bb = gold_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0xA06000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x30, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_attacks");
+	//print_bitboard(bb, __func__);
 	bb = gold_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0xa06, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_attacks");
+	//print_bitboard(bb, __func__);
 }
 
 void test_new_silver_attacks() {
@@ -959,28 +958,28 @@ void test_new_silver_attacks() {
 	bitboard bb = silver_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xA0102800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, __func__);
 	bb = silver_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x205000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, __func__);
 	bb = silver_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x205, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, __func__);
 	color = white;
 	bb = silver_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xA0402800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, __func__);
 	bb = silver_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x805000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, __func__);
 	bb = silver_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x805, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_attacks");
+	//print_bitboard(bb, __func__);
 }
 
 void test_first_one_from_nodelete() {
@@ -998,15 +997,15 @@ void test_star_attacks() {
 	bitboard bb = star_attacks(sq4g);
 	TEST_ASSERT_EQUAL_HEX64(0xA0002800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_star_attacks");
+	//print_bitboard(bb, __func__);
 	bb = star_attacks(sq7e);
 	TEST_ASSERT_EQUAL_HEX64(0x5000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
-	//print_bitboard(bb, "test_star_attacks");
+	//print_bitboard(bb, __func__);
 	bb = star_attacks(sq9b);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x05, bb.p[1]);
-	//print_bitboard(bb, "test_star_attacks");
+	//print_bitboard(bb, __func__);
 }
 
 void test_new_knight_attacks() {
@@ -1014,28 +1013,28 @@ void test_new_knight_attacks() {
 	bitboard bb = knight_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x10000400000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, __func__);
 	bb = knight_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x800000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, __func__);
 	bb = knight_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, __func__);
 	color = white;
 	bb = knight_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x100004000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, __func__);
 	bb = knight_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x8000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x40, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, __func__);
 	bb = knight_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x08, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_attacks");
+	//print_bitboard(bb, __func__);
 }
 
 void test_new_pawn_attacks() {
@@ -1043,28 +1042,28 @@ void test_new_pawn_attacks() {
 	bitboard bb = pawn_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x100000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, __func__);
 	bb = pawn_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x200000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, __func__);
 	bb = pawn_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x200, bb.p[1]);
-	//print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, __func__);
 	color = white;
 	bb = pawn_attack[color][sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0x400000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, __func__);
 	bb = pawn_attack[color][sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x800000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, __func__);
 	bb = pawn_attack[color][sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x800, bb.p[1]);
-	//print_bitboard(bb, "test_new_pawn_attacks");
+	//print_bitboard(bb, __func__);
 }
 
 void test_new_between_bb() {
@@ -1075,19 +1074,19 @@ void test_new_between_bb() {
 	bitboard bb = between_bb[sq1][sq3];
 	TEST_ASSERT_EQUAL_HEX64(0x100804020000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
-	//print_bitboard(bb, "test_new_between_bb");
+	//print_bitboard(bb, __func__);
 	bb = between_bb[sq1][sq2];
 	TEST_ASSERT_EQUAL_HEX64(0x1004010040000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x80, bb.p[1]);
-	//print_bitboard(bb, "test_new_between_bb");
+	//print_bitboard(bb, __func__);
 	bb = between_bb[sq3][sq2];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1F000, bb.p[1]);
-	//print_bitboard(bb, "test_new_between_bb");
+	//print_bitboard(bb, __func__);
 	bb = between_bb[sq4][sq2];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_between_bb");
+	//print_bitboard(bb, __func__);
 }
 
 //rook_attack_edge[sq3c]‚Ìê‡
@@ -1109,19 +1108,19 @@ void test_new_attack_to_edge() {
 	bitboard bb = rook_attack_to_edge[sq1];
 	TEST_ASSERT_EQUAL_HEX64(0x100804027EC0804, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x804, bb.p[1]);
-	//print_bitboard(bb, "test_new_attack_to_edge");
+	//print_bitboard(bb, __func__);
 	bb = bishop_attack_to_edge[sq2];
 	TEST_ASSERT_EQUAL_HEX64(0x1400050444100401, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x20888, bb.p[1]);
-	//print_bitboard(bb, "test_new_attack_to_edge");
+	//print_bitboard(bb, __func__);
 	bb = lance_attack_to_edge[white][sq3];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1FC, bb.p[1]);
-	//print_bitboard(bb, "test_new_attack_to_edge");
+	//print_bitboard(bb, __func__);
 	bb = lance_attack_to_edge[black][sq4];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1FE00, bb.p[1]);
-	//print_bitboard(bb, "test_new_attack_to_edge");
+	//print_bitboard(bb, __func__);
 }
 
 //  9 8 7 6 5 4 3 2 1
@@ -1139,12 +1138,12 @@ void test_new_gold_check_table() {
 	bitboard bb = gold_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x1C09044241C, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_check_table");
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = gold_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x1207000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x9088, bb.p[1]);
-	//print_bitboard(bb, "test_new_gold_check_table");
+	//print_bitboard(bb, __func__);
 }
 
 //silver_check_table[black][sq3c]‚Ìê‡
@@ -1164,12 +1163,12 @@ void test_new_silver_check_table() {
 	bitboard bb = silver_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x1F0A84C2A1F, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_check_table");
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = silver_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x2A1D000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x150C8, bb.p[1]);
-	//print_bitboard(bb, "test_new_silver_check_table");
+	//print_bitboard(bb, __func__);
 }
 
 //knight_check_table[black][sq3c]‚Ìê‡
@@ -1188,12 +1187,12 @@ void test_new_knight_check_table() {
 	bitboard bb = knight_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x50041401050, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_check_table");
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = knight_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x400400000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x2002, bb.p[1]);
-	//print_bitboard(bb, "test_new_knight_check_table");
+	//print_bitboard(bb, __func__);
 }
 
 // lance_check_table[black][sq3c];
@@ -1212,10 +1211,18 @@ void test_new_lance_check_table() {
 	bitboard bb = lance_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0xFC7C3F000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	print_bitboard(bb, "test_new_lance_check_table");
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = lance_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x0f, bb.p[1]);
-	print_bitboard(bb, "test_new_lance_check_table");
+	//print_bitboard(bb, __func__);
+}
+
+void test_new_pawn_check_table() {
+	int sq = sq3c;
+	bitboard bb = pawn_check_table[black][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x40401000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, __func__);
 }

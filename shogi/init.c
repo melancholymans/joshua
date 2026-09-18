@@ -17,13 +17,13 @@ void init_tables() {
 	new_gold_attacks();
 	new_silver_attacks();
 	new_pawn_attacks();
-	new_knight_attacks();	// new_pawn_attackが実行していることが前提
+	new_knight_attacks();	// new_pawn_attackが成立していることが前提
 	new_square_relation_direct();
-	new_between_bb();		//new_square_relation_directが実行していることが前提
+	new_between_bb();		//new_square_relation_directが成立していることが前提
 	new_attack_to_edge();	//rook_attack,bishop_attack,lance_attackが成立していることが前提
 	new_gold_check_table();
 	new_silver_check_table();
 	new_knight_check_table();
 	new_lance_check_table();
-
+	new_pawn_check_table();
 }

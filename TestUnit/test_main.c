@@ -69,6 +69,7 @@ void test_bitboard() {
 	test_new_silver_check_table();
 	test_new_knight_check_table();
 	test_new_lance_check_table();
+	test_new_pawn_check_table();
 }
 
 void test_simd() {
