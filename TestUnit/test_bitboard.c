@@ -1124,6 +1124,16 @@ void test_new_attack_to_edge() {
 	print_bitboard(bb, "test_new_attack_to_edge");
 }
 
+//  9 8 7 6 5 4 3 2 1
+//a . . . . . . X . .
+//b . . . . . X . X .
+//c . . . . X . S . X
+//d . . . . X . . . X
+//e . . . . X X X X X
+//f . . . . . . . . .
+//g . . . . . . . . .
+//h . . . . . . . . .
+//i . . . . . . . . .
 void test_new_gold_check_table() {
 	int sq = sq3c;
 	bitboard bb = gold_check_table[black][sq];
@@ -1136,12 +1146,28 @@ void test_new_gold_check_table() {
 	TEST_ASSERT_EQUAL_HEX64(0x9088, bb.p[1]);
 	print_bitboard(bb, "test_new_gold_check_table");
 }
-Ç≠ÇΩÇ—ÇÍÇΩÅAÇ‹ÇΩñæì˙
+
+//silver_check_table[black][sq3c]ÇÃèÍçá
+//  9 8 7 6 5 4 3 2 1
+//a . . . . X X X X X
+//b . . . . X . X . X
+//c . . . . X X S X X
+//d . . . . X . . . X
+//e . . . . X X X X X
+//f . . . . . . . . .
+//g . . . . . . . . .
+//h . . . . . . . . .
+//i . . . . . . . . .
+//ã‚ÇÕìGêwì‡Ç≈ê¨ÇÈÇ±Ç∆Ç™Ç≈Ç´ÇÈÇÃÇ≈ã‚ÇÃóòÇ´Ç∆ÅAê¨ã‚ÇÃóòÇ´Ç™çáÇÌÇ≥Ç¡ÇƒÇ¢ÇÈ
 void test_new_silver_check_table() {
 	int sq = sq3c;
 	bitboard bb = silver_check_table[black][sq];
-	//TEST_ASSERT_EQUAL_HEX64(0x1C09044241C, bb.p[0]);
-	//TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x1F0A84C2A1F, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	print_bitboard(bb, "test_new_silver_check_table");
-
+	sq = sq8f;
+	bb = silver_check_table[white][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x2A1D000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x150C8, bb.p[1]);
+	print_bitboard(bb, "test_new_silver_check_table");
 }
