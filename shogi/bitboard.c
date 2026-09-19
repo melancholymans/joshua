@@ -19,6 +19,7 @@ bitboard silver_attack[2][81];
 bitboard knight_attack[2][81];
 bitboard pawn_attack[2][81];
 bitboard between_bb[81][81];
+bitboard star_bb[81];
 bitboard rook_attack_to_edge[81];
 bitboard bishop_attack_to_edge[81];
 bitboard lance_attack_to_edge[2][81];
@@ -27,6 +28,8 @@ bitboard silver_check_table[2][81];
 bitboard knight_check_table[2][81];
 bitboard lance_check_table[2][81];
 bitboard pawn_check_table[2][81];
+bitboard bishop_check_table[2][81];
+
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -437,10 +440,10 @@ int first_one_from_nodelete(bitboard bb) {
 }
 
 // sq‚ğ’†S‚É‰EÎ‚ßA¶Î‚ß‚Ì—˜‚«bitboard‚ğ•Ô‚·
-bitboard star_attacks(int sq) {	
-	bitboard bb;
-	bb.m = _mm_and_si128(silver_attack[black][sq].m, silver_attack[white][sq].m);
-	return bb;
+void new_star_bb() {	
+	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+		star_bb[sq].m = _mm_and_si128(silver_attack[black][sq].m, silver_attack[white][sq].m);
+	}
 }
 
 void new_knight_attacks() {
@@ -449,7 +452,7 @@ void new_knight_attacks() {
 			knight_attack[c][sq].m = _mm_setzero_si128();
 			const bitboard bb = pawn_attack[c][sq];
 			if (bb.p[0] > 0 || bb.p[1] > 0) {
-				knight_attack[c][sq].m = _mm_and_si128(star_attacks(first_one_from_nodelete(bb)).m, in_front_mask[c][set_rank(sq)].m);
+				knight_attack[c][sq].m = _mm_and_si128(star_bb[first_one_from_nodelete(bb)].m, in_front_mask[c][set_rank(sq)].m);
 			}
 		}
 	}
@@ -609,6 +612,32 @@ void new_pawn_check_table() {
 				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m, pawn_attack[opp][check_sq].m);
 			}
 			pawn_check_table[c][sq].m = _mm_andnot_si128(mask_bb[sq].m, pawn_check_table[c][sq].m);
+		}
+	}
+}
+
+void new_bishop_check_table() {
+	for (int c = black; c <= white; c+=1) {
+		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+			bitboard occ;
+			occ.m = _mm_setzero_si128();
+			bishop_check_table[c][sq] = occ;
+			bishop_check_table[c][sq] = bishop_attack(sq, occ);			
+			const bitboard trank123bb = enemy_field[c];
+			bitboard check_bb;
+			check_bb.m = _mm_and_si128(king_attack[sq].m, trank123bb.m);
+			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
+				int check_sq = first_one_from(&check_bb);
+				// ˆÚ“®æ‚ª“Gw == ¬‚ê‚é == ‰¤‚Ì“®‚«
+				bishop_check_table[c][sq].m = _mm_or_si128(bishop_check_table[c][sq].m,bishop_attack(check_sq, occ).m);
+			}
+			check_bb = king_attack[sq];
+			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				// ˆÚ“®Œ³‚ª“Gw == ¬‚ê‚é == ‰¤‚Ì“®‚«
+				bishop_check_table[c][sq].m = _mm_or_si128(_mm_and_si128(bishop_attack(check_sq, occ).m, trank123bb.m), bishop_check_table[c][sq].m);
+			}
+			bishop_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, star_bb[sq].m), bishop_check_table[c][sq].m);
 		}
 	}
 }

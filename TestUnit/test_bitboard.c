@@ -993,16 +993,16 @@ void test_first_one_from_nodelete() {
 	TEST_ASSERT_EQUAL_HEX64(0x28b5b, bb.p[1]);
 }
 
-void test_star_attacks() {
-	bitboard bb = star_attacks(sq4g);
+void test_star_bb() {
+	bitboard bb = star_bb[sq4g];
 	TEST_ASSERT_EQUAL_HEX64(0xA0002800000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//print_bitboard(bb, __func__);
-	bb = star_attacks(sq7e);
+	bb = star_bb[sq7e];
 	TEST_ASSERT_EQUAL_HEX64(0x5000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x28, bb.p[1]);
 	//print_bitboard(bb, __func__);
-	bb = star_attacks(sq9b);
+	bb = star_bb[sq9b];
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x05, bb.p[1]);
 	//print_bitboard(bb, __func__);
@@ -1092,7 +1092,7 @@ void test_new_between_bb() {
 //rook_attack_edge[sq3c]�̏ꍇ
 //             x
 //             x
-// x x x x x x s x x
+// x x x x x x S x x
 //             x
 //             x
 //             x
@@ -1219,10 +1219,50 @@ void test_new_lance_check_table() {
 	//print_bitboard(bb, __func__);
 }
 
+// pawn_check_table[black][sq3c];
+//  9 8 7 6 5 4 3 2 1
+//a . . . . . . . . .
+//b . . . . . . . . .
+//c . . . . . . S . .
+//d . . . . . X . X .
+//e . . . . . . X . .
+//f . . . . . . . . .
+//g . . . . . . . . .
+//h . . . . . . . . .
+//i . . . . . . . . .
 void test_new_pawn_check_table() {
 	int sq = sq3c;
 	bitboard bb = pawn_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x40401000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, __func__);
+	sq = sq8f;
+	bb = pawn_check_table[white][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x08, bb.p[1]);
+	//print_bitboard(bb, __func__);
+}
+
+//bitboard bb = bishop_check_table[black][sq3c];
+//  9 8 7 6 5 4 3 2 1
+//a . . X X X X X X X
+//b . . . X X . X . X
+//c . . . . X X S X X
+//d . . . X X . X . X
+//e . . X X X X . X X
+//f . X X X X . . . X
+//g X X X X . . . . .
+//h X X X . . . . . .
+//i X X . . . . . . .
+void test_new_bishop_check_table() {
+	int sq = sq3c;
+	bitboard bb = bishop_check_table[black][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x3C4F63F0A82C2A3F, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x381E0, bb.p[1]);
+	print_bitboard(bb, __func__);
+	sq = sq8f;
+	bb = bishop_check_table[white][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x683F1DCC741C0601, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x340C0, bb.p[1]);
 	print_bitboard(bb, __func__);
 }

@@ -30,7 +30,7 @@ void test_new_king_attacks();
 void test_new_gold_attacks();
 void test_new_silver_attacks();
 void test_first_one_from_nodelete();
-void test_star_attacks();
+void test_star_bb();
 void test_new_knight_attacks();
 void test_new_pawn_attacks();
 void test_new_between_bb();
@@ -40,4 +40,5 @@ void test_new_silver_check_table();
 void test_new_knight_check_table();
 void test_new_lance_check_table();
 void test_new_pawn_check_table();
+void test_new_bishop_check_table();
 
