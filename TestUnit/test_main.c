@@ -49,13 +49,11 @@ void test_bitboard() {
 	test_new_rook_attacks();
 	test_rook_attack_rank();
 	test_rook_attack_file();
-	test_rook_attack();
 	test_new_bishop_attacks();
 	test_unpack256();
 	test_decrement256();
 	test_byte_reverse256();
 	test_merge256();
-	test_bishop_attack();
 	test_new_king_attacks();
 	test_new_gold_attacks();
 	test_new_silver_attacks();
@@ -71,6 +69,11 @@ void test_bitboard() {
 	test_new_lance_check_table();
 	test_new_pawn_check_table();
 	test_new_bishop_check_table();
+	test_new_horse_check_table();
+	test_lance_attack();
+	test_bishop_attack();
+	test_rook_attack();
+	test_horse_attack();
 }
 
 void test_simd() {

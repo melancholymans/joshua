@@ -29,6 +29,7 @@ bitboard knight_check_table[2][81];
 bitboard lance_check_table[2][81];
 bitboard pawn_check_table[2][81];
 bitboard bishop_check_table[2][81];
+bitboard horse_check_table[2][81];
 
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
@@ -384,7 +385,7 @@ __m128i merge256(__m256i bb) {
 	return _mm_or_si128(_mm256_castsi256_si128(bb), _mm256_extracti128_si256(bb, 1));
 }
 
-//　bishopのクロスの利き返す
+//　bishopの利き返す
 bitboard bishop_attack(const int sq, const bitboard occ) {
 	__m256i mask_lo = bishop_attack_to_mask[sq][0];
 	__m256i mask_hi = bishop_attack_to_mask[sq][1];
@@ -400,6 +401,13 @@ bitboard bishop_attack(const int sq, const bitboard occ) {
 	unpack256(t1, t0, &hi, &lo);
 	bitboard bb;
 	bb.m = merge256(_mm256_or_si256(byte_reverse256(hi), lo));
+	return bb;
+}
+
+//horseの利きを返す
+bitboard horse_attack(const int sq, const bitboard occ) {
+	bitboard bb;
+	bb.m = _mm_or_si128(bishop_attack(sq, occ).m, king_attack[sq].m);
 	return bb;
 }
 
@@ -641,6 +649,22 @@ void new_bishop_check_table() {
 		}
 	}
 }
+
+/*void new_horse_check_table() {
+	for (int c = black; c <= white; c+=1) {
+		int opp = oppositeColor(c);
+		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+			horse_check_table[c][sq].m = _mm_setzero_si128();
+			bitboard check_bb = horseAttack(sq, allZeroBB());
+			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
+				int check_sq = first_one_from(&check_bb);
+				horse_check_table[c][sq] |= horse_attack(check_sq, allZeroBB());
+			}
+			horse_check_table[c][sq].m = _mm_andnot_si128(mask_bb[sq].m, horse_check_table[c][sq].m);
+		}
+	}
+
+}*/
 
 bitboard set_board(const int64_t idx0,const int64_t idx1) {
 	bitboard bb;

@@ -33,6 +33,8 @@ extern bitboard knight_check_table[2][81];
 extern bitboard lance_check_table[2][81];
 extern bitboard pawn_check_table[2][81];
 extern bitboard bishop_check_table[2][81];
+extern bitboard horse_check_table[2][81];
+
 extern const int slide[81];
 
 void new_mask_bb();
@@ -52,13 +54,15 @@ void decrement(const bitboard hi_in, const bitboard lo_in, bitboard* hi_out, bit
 void new_rook_attacks();
 bitboard rook_attack_rank(const int sq,const bitboard occ);
 bitboard rook_attack_file(const int sq,const bitboard occ);
-bitboard rook_attack(const int sq, const bitboard occ);
 void new_bishop_attacks();
 void unpack256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out);
 void decrement256(const __m256i hi_in, const __m256i lo_in, __m256i* hi_out, __m256i* lo_out);
 __m256i byte_reverse256(__m256i bb);
 __m128i merge256(__m256i bb);
+bitboard lance_attack(const int c, const int sq, const bitboard occ);
 bitboard bishop_attack(const int sq, const bitboard occ);
+bitboard rook_attack(const int sq, const bitboard occ);
+bitboard horse_attack(const int sq, const bitboard occ);
 void new_king_attacks();
 void new_gold_attacks();
 void new_silver_attacks();
@@ -74,6 +78,7 @@ void new_knight_check_table();
 void new_lance_check_table();
 void new_pawn_check_table();
 void new_bishop_check_table();
+//void new_horse_check_table();
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);
 void set_biton(const int sq, bitboard* bb);

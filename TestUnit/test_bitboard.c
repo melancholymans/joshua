@@ -785,21 +785,6 @@ void test_rook_attack_file() {
 	//print_bitboard(bb, __func__);
 }
 
-//rookÇÃècÇ∆â°ÇÃóòÇ´bitboardÇçáê¨ÇµÇƒï‘Ç∑
-void test_rook_attack() {
-	int64_t tmp[2];
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
-	bitboard bb = rook_attack(sq5e, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, bb.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
-	//print_bitboard(bb, __func__);
-
-	bb = rook_attack(sq2f, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, bb.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
-	//print_bitboard(bb, __func__);
-}
-
 void test_new_bishop_attacks() {
 	int64_t tmp[4];
 	__m256i bb = bishop_attack_to_mask[sq4e][0];
@@ -890,23 +875,6 @@ void test_merge256() {
 	//bd.m = merge256(bb);
 	//print_bitboard(bd, __func__);
 
-}
-
-void test_bishop_attack() {
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
-	//print_bitboard(occ, __func__);
-	bitboard mg = bishop_attack(sq4g, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x2220a0002822008, mg.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x04, mg.p[1]);
-	//print_bitboard(mg, __func__); ;
-	mg = bishop_attack(sq3b, occ);
-	TEST_ASSERT_EQUAL_HEX64(0x28000a00, mg.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x00, mg.p[1]);
-	//print_bitboard(mg, __func__); ;
-	mg = bishop_attack(sq8e, occ);
-	TEST_ASSERT_EQUAL_HEX64(0xa00802008000000, mg.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x5000, mg.p[1]);
-	//print_bitboard(mg, __func__); ;
 }
 
 void test_new_king_attacks() {
@@ -1259,10 +1227,84 @@ void test_new_bishop_check_table() {
 	bitboard bb = bishop_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x3C4F63F0A82C2A3F, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x381E0, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = bishop_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x683F1DCC741C0601, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x340C0, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
+}
+
+void test_new_horse_check_table() {
+
+}
+
+void test_lance_attack() {
+	int c = black;
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	//print_bitboard(occ, __func__);
+	bitboard bb = lance_attack(c, sq4g, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x180000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, __func__); 
+	c = white;
+	bb = lance_attack(c, sq3d, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x1C00000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, __func__);
+	c = black;
+	bb = lance_attack(c, sq8e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x08, bb.p[1]);
+	//print_bitboard(bb, __func__); ;
+}
+
+
+void test_bishop_attack() {
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	//print_bitboard(occ, __func__);
+	bitboard bb = bishop_attack(sq4g, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x2220a0002822008, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
+	//print_bitboard(bb, __func__); ;
+	bb = bishop_attack(sq3b, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x28000a00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, __func__); ;
+	bb = bishop_attack(sq8e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0xa00802008000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x5000, bb.p[1]);
+	//print_bitboard(bb, __func__); ;
+}
+
+void test_horse_attack() {
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	//print_bitboard(occ, __func__);
+	bitboard bb = horse_attack(sq4g, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x2220E0503822008, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x04, bb.p[1]);
+	//print_bitboard(bb, __func__);
+	bb = horse_attack(sq3b, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x38140E00, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, __func__);
+	bb = horse_attack(sq8e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0xE00802008000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x7028, bb.p[1]);
+	//print_bitboard(bb, __func__); ;
+}
+
+
+//rookÇÃècÇ∆â°ÇÃóòÇ´bitboardÇçáê¨ÇµÇƒï‘Ç∑
+void test_rook_attack() {
+	int64_t tmp[2];
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb = rook_attack(sq5e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
+	//print_bitboard(bb, __func__);
+	bb = rook_attack(sq2f, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	//print_bitboard(bb, __func__);
 }
