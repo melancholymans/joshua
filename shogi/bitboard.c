@@ -20,9 +20,11 @@ bitboard knight_attack[2][81];
 bitboard pawn_attack[2][81];
 bitboard between_bb[81][81];
 bitboard star_bb[81];
-bitboard rook_attack_to_edge[81];
-bitboard bishop_attack_to_edge[81];
 bitboard lance_attack_to_edge[2][81];
+bitboard bishop_attack_to_edge[81];
+bitboard rook_attack_to_edge[81];
+bitboard horse_attack_to_edge[81];
+bitboard dragon_attack_to_edge[81];
 bitboard gold_check_table[2][81];
 bitboard silver_check_table[2][81];
 bitboard knight_check_table[2][81];
@@ -516,10 +518,12 @@ void new_attack_to_edge() {
 	for (int sq = sq1a; sq <= sq9i; sq += 1) {
 		bitboard occ;
 		occ.m = _mm_setzero_si128();
-		rook_attack_to_edge[sq] = rook_attack(sq, occ);
-		bishop_attack_to_edge[sq] = bishop_attack(sq, occ);
 		lance_attack_to_edge[black][sq] = lance_attack(black, sq, occ);
 		lance_attack_to_edge[white][sq] = lance_attack(white, sq, occ);
+		bishop_attack_to_edge[sq] = bishop_attack(sq, occ);
+		rook_attack_to_edge[sq] = rook_attack(sq, occ);
+		dragon_attack_to_edge[sq].m = _mm_or_si128(rook_attack_to_edge[sq].m, king_attack[sq].m);
+		horse_attack_to_edge[sq].m = _mm_or_si128(bishop_attack_to_edge[sq].m, king_attack[sq].m);
 	}
 }
 
