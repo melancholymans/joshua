@@ -1259,6 +1259,30 @@ void test_new_horse_check_table() {
 	print_bitboard(bb, __func__);
 }
 
+// bitboard bb = neighbor5x5[sq3c];
+//  9 8 7 6 5 4 3 2 1
+//a .  .  . . X X X X X
+//b .  .  . . X X X X X
+//c .  .  . . X X S X X
+//d .  .  . . X X X X X
+//e .  .  . . X X X X X
+//f .  .  . . . . . . .
+//g .  .  . . . . . . .
+//h .  .  . . . . . . .
+//i .  .  . . . . . . .
+void test_new_neighbor5x5() {
+	int sq = sq3c;
+	bitboard bb = neighbor5x5[sq];
+	TEST_ASSERT_EQUAL_HEX64(0x1F0F86C3E1F, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x0, bb.p[1]);
+	print_bitboard(bb, __func__);
+	sq = sq8f;
+	bb = neighbor5x5[sq];
+	TEST_ASSERT_EQUAL_HEX64(0x3E1F000000000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x1F0D8, bb.p[1]);
+	print_bitboard(bb, __func__);
+}
+
 void test_lance_attack() {
 	int c = black;
 	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
@@ -1278,7 +1302,6 @@ void test_lance_attack() {
 	TEST_ASSERT_EQUAL_HEX64(0x08, bb.p[1]);
 	//print_bitboard(bb, __func__); ;
 }
-
 
 void test_bishop_attack() {
 	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
@@ -1313,7 +1336,6 @@ void test_horse_attack() {
 	TEST_ASSERT_EQUAL_HEX64(0x7028, bb.p[1]);
 	//print_bitboard(bb, __func__); ;
 }
-
 
 //rookÇÃècÇ∆â°ÇÃóòÇ´bitboardÇçáê¨ÇµÇƒï‘Ç∑
 void test_rook_attack() {

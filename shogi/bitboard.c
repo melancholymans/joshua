@@ -30,7 +30,7 @@ bitboard lance_check_table[2][81];
 bitboard pawn_check_table[2][81];
 bitboard bishop_check_table[2][81];
 bitboard horse_check_table[2][81];
-
+bitboard neighbor5x5[81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -666,6 +666,21 @@ void new_horse_check_table() {
 			}
 			horse_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m,king_attack[sq].m) ,horse_check_table[c][sq].m);
 		}
+	}
+}
+
+// 25‹ß–T
+void new_neighbor5x5() {
+	bitboard occ;
+	occ.m = _mm_setzero_si128();
+	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+		neighbor5x5[sq] = occ;
+		bitboard tobb = king_attack[sq];
+		while (tobb.p[0] > 0 || tobb.p[1] > 0) {
+			int to = first_one_from(&tobb);
+			neighbor5x5[sq].m = _mm_or_si128(neighbor5x5[sq].m, king_attack[to].m);
+		}
+		neighbor5x5[sq].m = _mm_andnot_si128(mask_bb[sq].m, neighbor5x5[sq].m);
 	}
 }
 

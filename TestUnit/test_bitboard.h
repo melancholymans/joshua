@@ -40,6 +40,7 @@ void test_new_lance_check_table();
 void test_new_pawn_check_table();
 void test_new_bishop_check_table();
 void test_new_horse_check_table();
+void test_new_neighbor5x5();
 void test_lance_attack();
 void test_bishop_attack();
 void test_rook_attack();

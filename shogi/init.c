@@ -29,4 +29,5 @@ void init_tables() {
 	new_pawn_check_table();
 	new_bishop_check_table();
 	new_horse_check_table();
+	new_neighbor5x5();
 }

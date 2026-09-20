@@ -70,6 +70,7 @@ void test_bitboard() {
 	test_new_pawn_check_table();
 	test_new_bishop_check_table();
 	test_new_horse_check_table();
+	test_new_neighbor5x5();
 	test_lance_attack();
 	test_bishop_attack();
 	test_rook_attack();

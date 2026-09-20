@@ -34,7 +34,7 @@ extern bitboard lance_check_table[2][81];
 extern bitboard pawn_check_table[2][81];
 extern bitboard bishop_check_table[2][81];
 extern bitboard horse_check_table[2][81];
-
+extern bitboard neighbor5x5[81];
 extern const int slide[81];
 
 void new_mask_bb();
@@ -78,7 +78,8 @@ void new_knight_check_table();
 void new_lance_check_table();
 void new_pawn_check_table();
 void new_bishop_check_table();
-//void new_horse_check_table();
+void new_horse_check_table();
+void new_neighbor5x5();
 bitboard set_board(const int64_t idx0, const int64_t idx1);
 bool is_biton(const int sq,const bitboard bb);
 void set_biton(const int sq, bitboard* bb);
