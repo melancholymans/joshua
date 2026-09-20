@@ -1213,30 +1213,50 @@ void test_new_pawn_check_table() {
 
 //bitboard bb = bishop_check_table[black][sq3c];
 //  9 8 7 6 5 4 3 2 1
-//a . . X X X X X X X
-//b . . . X X . X . X
-//c . . . . X X S X X
-//d . . . X X . X . X
-//e . . X X X X . X X
-//f . X X X X . . . X
-//g X X X X . . . . .
-//h X X X . . . . . .
-//i X X . . . . . . .
+//a X . X X X X X X X
+//b . X . X X . X . X
+//c X . X . X X . X X
+//d . X . X X . X . X
+//e X . X X X X X X X
+//f . X X X X X . X X
+//g X X X X X . X . X
+//h X X X X . X . X .
+//i X X X . X . X . X
 void test_new_bishop_check_table() {
 	int sq = sq3c;
 	bitboard bb = bishop_check_table[black][sq];
-	TEST_ASSERT_EQUAL_HEX64(0x3C4F63F0A82C2A3F, bb.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x381E0, bb.p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x7D5F77F5AD6D6B7F, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x3ABEA, bb.p[1]);
 	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = bishop_check_table[white][sq];
-	TEST_ASSERT_EQUAL_HEX64(0x683F1DCC741C0601, bb.p[0]);
-	TEST_ASSERT_EQUAL_HEX64(0x340C0, bb.p[1]);
+	TEST_ASSERT_EQUAL_HEX64(0x697F5DDD755D5755, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x34ACA, bb.p[1]);
 	//print_bitboard(bb, __func__);
 }
 
+//bitboard bb = horse_check_table[black][sq3c];
+//  9 8 7 6 5 4 3 2 1
+//a X . X X X X X X X
+//b . X . X X . . . X
+//c X . X . X . S . X
+//d . X . X X . . . X
+//e X . X X X X X X X
+//f . X X X X X . X X
+//g X X X X X . X . X
+//h X X X X . X . X .
+//i X X X . X . X . X
 void test_new_horse_check_table() {
-
+	int sq = sq3c;
+	bitboard bb = horse_check_table[black][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x7D5F77F58D45637F, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x3ABEA, bb.p[1]);
+	print_bitboard(bb, __func__);
+	sq = sq8f;
+	bb = horse_check_table[white][sq];
+	TEST_ASSERT_EQUAL_HEX64(0x637FDDFD7D5D5755, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x31A8A, bb.p[1]);
+	print_bitboard(bb, __func__);
 }
 
 void test_lance_attack() {

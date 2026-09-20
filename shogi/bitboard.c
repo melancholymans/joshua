@@ -625,14 +625,17 @@ void new_pawn_check_table() {
 }
 
 void new_bishop_check_table() {
+	bitboard occ;
+	occ.m = _mm_setzero_si128();
 	for (int c = black; c <= white; c+=1) {
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
-			bitboard occ;
-			occ.m = _mm_setzero_si128();
 			bishop_check_table[c][sq] = occ;
-			bishop_check_table[c][sq] = bishop_attack(sq, occ);			
+			bitboard check_bb = bishop_attack(sq, occ);
+			while (check_bb.p[0] > 0 || check_bb.p[1] > 0) {
+				int check_sq = first_one_from(&check_bb);
+				bishop_check_table[c][sq].m = _mm_or_si128(bishop_check_table[c][sq].m,bishop_attack(check_sq,occ).m);
+			}
 			const bitboard trank123bb = enemy_field[c];
-			bitboard check_bb;
 			check_bb.m = _mm_and_si128(king_attack[sq].m, trank123bb.m);
 			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
 				int check_sq = first_one_from(&check_bb);
@@ -650,21 +653,21 @@ void new_bishop_check_table() {
 	}
 }
 
-/*void new_horse_check_table() {
+void new_horse_check_table() {
+	bitboard occ;
+	occ.m = _mm_setzero_si128();
 	for (int c = black; c <= white; c+=1) {
-		int opp = oppositeColor(c);
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
-			horse_check_table[c][sq].m = _mm_setzero_si128();
-			bitboard check_bb = horseAttack(sq, allZeroBB());
+			horse_check_table[c][sq] = occ;
+			bitboard check_bb = horse_attack(sq, occ);
 			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
 				int check_sq = first_one_from(&check_bb);
-				horse_check_table[c][sq] |= horse_attack(check_sq, allZeroBB());
+				horse_check_table[c][sq].m = _mm_or_si128(horse_check_table[c][sq].m, horse_attack(check_sq, occ).m);
 			}
-			horse_check_table[c][sq].m = _mm_andnot_si128(mask_bb[sq].m, horse_check_table[c][sq].m);
+			horse_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m,king_attack[sq].m) ,horse_check_table[c][sq].m);
 		}
 	}
-
-}*/
+}
 
 bitboard set_board(const int64_t idx0,const int64_t idx1) {
 	bitboard bb;
