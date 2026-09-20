@@ -315,6 +315,12 @@ bitboard rook_attack(const int sq, const bitboard occ) {
 	return bb;
 }
 
+bitboard dragon_attack(const int sq, const bitboard occ) {
+	bitboard bb;
+	bb.m = _mm_or_si128(rook_attack(sq, occ).m, king_attack[sq].m);
+	return bb;
+}
+
 //nw  ne
 // \ /
 // / \

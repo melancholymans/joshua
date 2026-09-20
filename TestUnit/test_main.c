@@ -75,6 +75,7 @@ void test_bitboard() {
 	test_bishop_attack();
 	test_rook_attack();
 	test_horse_attack();
+	test_dragon_attack();
 }
 
 void test_simd() {

@@ -43,6 +43,7 @@ void test_new_horse_check_table();
 void test_new_neighbor5x5();
 void test_lance_attack();
 void test_bishop_attack();
-void test_rook_attack();
 void test_horse_attack();
+void test_rook_attack();
+void test_dragon_attack();
 

@@ -1251,12 +1251,12 @@ void test_new_horse_check_table() {
 	bitboard bb = horse_check_table[black][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x7D5F77F58D45637F, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x3ABEA, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = horse_check_table[white][sq];
 	TEST_ASSERT_EQUAL_HEX64(0x637FDDFD7D5D5755, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x31A8A, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 }
 
 // bitboard bb = neighbor5x5[sq3c];
@@ -1275,12 +1275,12 @@ void test_new_neighbor5x5() {
 	bitboard bb = neighbor5x5[sq];
 	TEST_ASSERT_EQUAL_HEX64(0x1F0F86C3E1F, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x0, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 	sq = sq8f;
 	bb = neighbor5x5[sq];
 	TEST_ASSERT_EQUAL_HEX64(0x3E1F000000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x1F0D8, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 }
 
 void test_lance_attack() {
@@ -1349,4 +1349,21 @@ void test_rook_attack() {
 	TEST_ASSERT_EQUAL_HEX64(0x80402010083B020, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
 	//print_bitboard(bb, __func__);
+}
+
+void test_dragon_attack() {
+	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	print_bitboard(occ, __func__);
+	bitboard bb = dragon_attack(sq4g, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x10080E0D83800000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x8040, bb.p[1]);
+	print_bitboard(bb, __func__);
+	bb = dragon_attack(sq3b, occ);
+	TEST_ASSERT_EQUAL_HEX64(0x402038140E02, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
+	print_bitboard(bb, __func__);
+	bb = dragon_attack(sq8e, occ);
+	TEST_ASSERT_EQUAL_HEX64(0xE02010080000000, bb.p[0]);
+	TEST_ASSERT_EQUAL_HEX64(0x7028, bb.p[1]);
+	print_bitboard(bb, __func__); ;
 }
