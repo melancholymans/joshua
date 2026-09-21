@@ -4,22 +4,24 @@
 #include "bitboard.h"
 #include "position.h"
 
-bitboard mask_bb[81];
+bitboard sq_mask[81];
 bitboard file_mask[9];
 bitboard rank_mask[9];
-bitboard all_one_bb;
+bitboard all_one_mask;
+bitboard all_zero_mask;
 bitboard in_front_mask[2][9];
-bitboard enemy_field[2];
+bitboard enemy_mask[2];
 bitboard lance_attack_mask[2][81][128];
 bitboard rook_attack_rank_to_mask[81][2];
 __m256i bishop_attack_to_mask[81][2];
-bitboard king_attack[81];
-bitboard gold_attack[2][81];
-bitboard silver_attack[2][81];
-bitboard knight_attack[2][81];
-bitboard pawn_attack[2][81];
-bitboard between_bb[81][81];
-bitboard star_bb[81];
+bitboard king_attack_mask[81];
+bitboard gold_attack_mask[2][81];
+bitboard silver_attack_mask[2][81];
+bitboard knight_attack_mask[2][81];
+bitboard pawn_attack_mask[2][81];
+bitboard between_mask[81][81];
+bitboard star_mask[81];
+bitboard neighbor_5x5_mask[81];
 bitboard lance_attack_to_edge[2][81];
 bitboard bishop_attack_to_edge[81];
 bitboard rook_attack_to_edge[81];
@@ -32,7 +34,6 @@ bitboard lance_check_table[2][81];
 bitboard pawn_check_table[2][81];
 bitboard bishop_check_table[2][81];
 bitboard horse_check_table[2][81];
-bitboard neighbor5x5[81];
 const int slide[81] = {
 	1,1,1,1,1,1,1,1,1,
 	10,10,10,10,10,10,10,10,10,
@@ -47,14 +48,14 @@ const int slide[81] = {
 
 
 //座標sqごとにbitが立っている配列を生成している
-void new_mask_bb() {
+void new_sq_mask() {
 	for (int i = 0; i < 63; i += 1) {
-		mask_bb[i].p[0] = (int64_t)1 << i;
-		mask_bb[i].p[1] = 0x00;
+		sq_mask[i].p[0] = (int64_t)1 << i;
+		sq_mask[i].p[1] = 0x00;
 	}
 	for (int i = 63; i < 81; i += 1){
-		mask_bb[i].p[0] = 0x00;
-		mask_bb[i].p[1] = (int64_t)1 << (i - 63);
+		sq_mask[i].p[0] = 0x00;
+		sq_mask[i].p[1] = (int64_t)1 << (i - 63);
 	}
 }
 
@@ -76,15 +77,19 @@ void new_rank_mask() {
 	}
 }
 
-void new_all_one_bb() {
-	all_one_bb.p[0] = 0x7fffffffffffffff;
-	all_one_bb.p[1] = 0x000000000003ffff;
+void new_all_one_mask() {
+	all_one_mask.p[0] = 0x7fffffffffffffff;
+	all_one_mask.p[1] = 0x000000000003ffff;
+}
+
+void new_all_zero_mask() {
+	all_zero_mask.m = _mm_setzero_si128();
 }
 
 // Rankを指定するとそのRankより前段のRankをbitで埋めていく。カラーによって前段の方向は反対になる
 // RankMaskが設定されていることが前提、AllZeroBBが設定されていることが前提
 void new_in_front_mask() {
-	in_front_mask[black][0].m = _mm_setzero_si128();
+	in_front_mask[black][0] = all_zero_mask;
 	in_front_mask[black][1] = rank_mask[0];
 	in_front_mask[black][2].m = _mm_or_si128(in_front_mask[black][1].m, rank_mask[1].m);
 	in_front_mask[black][3].m = _mm_or_si128(in_front_mask[black][2].m, rank_mask[2].m);
@@ -93,7 +98,7 @@ void new_in_front_mask() {
 	in_front_mask[black][6].m = _mm_or_si128(in_front_mask[black][5].m, rank_mask[5].m);
 	in_front_mask[black][7].m = _mm_or_si128(in_front_mask[black][6].m, rank_mask[6].m);
 	in_front_mask[black][8].m = _mm_or_si128(in_front_mask[black][7].m, rank_mask[7].m);
-	in_front_mask[white][8].m = _mm_setzero_si128();
+	in_front_mask[white][8] = all_zero_mask;
 	in_front_mask[white][7] = rank_mask[8];
 	in_front_mask[white][6].m = _mm_or_si128(in_front_mask[white][7].m, rank_mask[7].m);
 	in_front_mask[white][5].m = _mm_or_si128(in_front_mask[white][6].m, rank_mask[6].m);
@@ -106,13 +111,13 @@ void new_in_front_mask() {
 
 // 敵陣を表現する。Black側だとRank1,2,3のbitが立っている、White側だとRank7,8,9のbitが立っている
 // RankMaskが設定されていることが前提条件
-void new_enemy_field() {
-	enemy_field[black].m = _mm_or_si128(_mm_or_si128(rank_mask[rank1].m, rank_mask[rank2].m), rank_mask[rank3].m);
-	enemy_field[white].m = _mm_or_si128(_mm_or_si128(rank_mask[rank7].m, rank_mask[rank8].m), rank_mask[rank9].m);
+void new_enemy_mask() {
+	enemy_mask[black].m = _mm_or_si128(_mm_or_si128(rank_mask[rank1].m, rank_mask[rank2].m), rank_mask[rank3].m);
+	enemy_mask[white].m = _mm_or_si128(_mm_or_si128(rank_mask[rank7].m, rank_mask[rank8].m), rank_mask[rank9].m);
 }
 
 // new_lance_attack関数のヘルパー関数,sq座標があるfile_maskから1段と9段のbitを除いたbitBoardを返す
-// all_one_bbとのAndNotはC/C++のチルダ演算子（bit反転）と同等の演算となる
+// all_one_maskとのAndNotはC/C++のチルダ演算子（bit反転）と同等の演算となる
 //rank1  0     0    0       rank1とrank9はlanceにとって死駒になるので移動可能範囲から除外する
 //       x     x    x　　　　つまりlance_block_maskは座標sq軸のlanceの移動可能範囲（block）を表す
 //       ...   ...  ...
@@ -123,7 +128,7 @@ void new_enemy_field() {
 // rank9 0     0    0 
 bitboard lance_block_mask(const int sq) {
 	bitboard bb;
-	bb.m = _mm_andnot_si128(_mm_or_si128(rank_mask[rank1].m, rank_mask[rank9].m), all_one_bb.m);
+	bb.m = _mm_andnot_si128(_mm_or_si128(rank_mask[rank1].m, rank_mask[rank9].m), all_one_mask.m);
 	bb.m = _mm_and_si128(file_mask[set_file(sq)].m, bb.m);
 	return bb;
 }
@@ -162,8 +167,7 @@ int first_one_from(bitboard* bb) {
 // 5i     0          0          0                                 0
 bitboard lance_attack_calc(const int color, const int square, const bitboard occ) {
 	int f = set_file(square);
-	bitboard bb;
-	bb.m = _mm_setzero_si128();
+	bitboard bb = all_zero_mask;
 	//上方向
 	for(int r = set_rank(square); r > rank1; ){
 		r -= 1;
@@ -203,7 +207,7 @@ bitboard lance_attack_calc(const int color, const int square, const bitboard occ
 bitboard index_to_occupied(const int idx, const bitboard block_mask) {
 	bitboard tmp = block_mask;
 	bitboard result;
-	result.m = _mm_setzero_si128();
+	result = all_zero_mask;
 	for(int i = 0;i < 7;i += 1){
 		int sq = first_one_from(&tmp);
 		if(sq == -1){
@@ -218,7 +222,7 @@ bitboard index_to_occupied(const int idx, const bitboard block_mask) {
 }
 
 // lanceの利きbitboardを生成する
-void new_lance_attack() {
+void new_lance_attack_mask() {
 	for(int c = black;c <= white;c+=1){
 		for (int sq = sq1a; sq <= sq9i;sq+=1) {
 			bitboard block_mask = lance_block_mask(sq);
@@ -259,20 +263,18 @@ void decrement(const bitboard hi_in, const bitboard lo_in, bitboard* hi_out, bit
 }
 
 // 座標s	qごとの飛車の横利きをrook_attack_rank_to_mask配列に保存しておく
-void new_rook_attacks() {
+void new_rook_attack_rank_to_mask() {
 	for (int f = file1; f <= file9; f+=1) {
 		for (int r = rank1; r <= rank9; r+=1) {
-			bitboard left;
-			left.m = _mm_setzero_si128();
-			bitboard right;
-			right.m = _mm_setzero_si128();
+			bitboard left = all_zero_mask;
+			bitboard right = all_zero_mask;
 			//sq座標から左方向
 			for (int f2 = f + 1; f2 <= file9; f2+=1) {
-				left.m = _mm_or_si128(left.m,mask_bb[set_square(f2, r)].m);
+				left.m = _mm_or_si128(left.m,sq_mask[set_square(f2, r)].m);
 			}
 			//sq座標から右方向
 			for (int f2 = f - 1; f2 >= file1; f2-=1) {
-				right.m = _mm_or_si128(right.m,mask_bb[set_square(f2, r)].m);
+				right.m = _mm_or_si128(right.m,sq_mask[set_square(f2, r)].m);
 			}
 			bitboard right_rev = byte_reverse(right);
 			bitboard hi, lo;
@@ -319,7 +321,7 @@ bitboard rook_attack(const int sq, const bitboard occ) {
 
 bitboard dragon_attack(const int sq, const bitboard occ) {
 	bitboard bb;
-	bb.m = _mm_or_si128(rook_attack(sq, occ).m, king_attack[sq].m);
+	bb.m = _mm_or_si128(rook_attack(sq, occ).m, king_attack_mask[sq].m);
 	return bb;
 }
 
@@ -327,7 +329,7 @@ bitboard dragon_attack(const int sq, const bitboard occ) {
 // \ /
 // / \
 //sw  se
-void new_bishop_attacks() {
+void new_bishop_attack_to_mask() {
 	int bishop_delta[4] = {
 		delta_nw,	//左上
 		delta_sw,	//左下
@@ -339,8 +341,7 @@ void new_bishop_attacks() {
 			int sq = set_square(f, r);
 			bitboard bishop_to_bb[4];
 			for (int i = 0; i < 4; i += 1) {
-				bitboard bb;
-				bb.m = _mm_setzero_si128();
+				bitboard bb = all_zero_mask;
 				int delta = bishop_delta[i];
 				// 四方にそれぞれリーチを伸ばし壁に突き当たるまで歩進する
 				int sq2 = sq;
@@ -350,7 +351,7 @@ void new_bishop_attacks() {
 					if ((delta == delta_nw || delta == delta_sw) && set_file(sq2) == file9) break;
 					if ((delta == delta_ne || delta == delta_se) && set_file(sq2) == file1) break;
 					sq2 += delta;
-					bb.m = _mm_or_si128(bb.m, mask_bb[sq2].m);
+					bb.m = _mm_or_si128(bb.m, sq_mask[sq2].m);
 				}
 				bishop_to_bb[i] = bb;
 			}
@@ -415,28 +416,28 @@ bitboard bishop_attack(const int sq, const bitboard occ) {
 //horseの利きを返す
 bitboard horse_attack(const int sq, const bitboard occ) {
 	bitboard bb;
-	bb.m = _mm_or_si128(bishop_attack(sq, occ).m, king_attack[sq].m);
+	bb.m = _mm_or_si128(bishop_attack(sq, occ).m, king_attack_mask[sq].m);
 	return bb;
 }
 
-void new_king_attacks() {
+void new_king_attack_mask() {
 	for (int sq = sq1a; sq <= sq9i; sq += 1){
-		king_attack[sq].m = _mm_or_si128(rook_attack(sq, all_one_bb).m, bishop_attack(sq, all_one_bb).m);
+		king_attack_mask[sq].m = _mm_or_si128(rook_attack(sq, all_one_mask).m, bishop_attack(sq, all_one_mask).m);
 	}
 }
 
-void new_gold_attacks() {
+void new_gold_attack_mask() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
-			gold_attack[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack[sq].m, in_front_mask[c][set_rank(sq)].m), rook_attack(sq, all_one_bb).m);
+			gold_attack_mask[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack_mask[sq].m, in_front_mask[c][set_rank(sq)].m), rook_attack(sq, all_one_mask).m);
 		}
 	}
 }
 
-void new_silver_attacks() {
+void new_silver_attack_mask() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
-			silver_attack[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack[sq].m, in_front_mask[c][set_rank(sq)].m), bishop_attack(sq, all_one_bb).m);
+			silver_attack_mask[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack_mask[sq].m, in_front_mask[c][set_rank(sq)].m), bishop_attack(sq, all_one_mask).m);
 		}
 	}
 }
@@ -456,28 +457,28 @@ int first_one_from_nodelete(bitboard bb) {
 }
 
 // sqを中心に右斜め、左斜めの利きbitboardを返す
-void new_star_bb() {	
+void new_star_mask() {	
 	for (int sq = sq1a; sq <= sq9i; sq += 1) {
-		star_bb[sq].m = _mm_and_si128(silver_attack[black][sq].m, silver_attack[white][sq].m);
+		star_mask[sq].m = _mm_and_si128(silver_attack_mask[black][sq].m, silver_attack_mask[white][sq].m);
 	}
 }
 
-void new_knight_attacks() {
+void new_knight_attack_mask() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
-			knight_attack[c][sq].m = _mm_setzero_si128();
-			const bitboard bb = pawn_attack[c][sq];
+			knight_attack_mask[c][sq] = all_zero_mask;
+			const bitboard bb = pawn_attack_mask[c][sq];
 			if (bb.p[0] > 0 || bb.p[1] > 0) {
-				knight_attack[c][sq].m = _mm_and_si128(star_bb[first_one_from_nodelete(bb)].m, in_front_mask[c][set_rank(sq)].m);
+				knight_attack_mask[c][sq].m = _mm_and_si128(star_mask[first_one_from_nodelete(bb)].m, in_front_mask[c][set_rank(sq)].m);
 			}
 		}
 	}
 }
 
-void new_pawn_attacks() {
+void new_pawn_attack_mask() {
 	for (int c = black; c <= white; c += 1) {
 		for (int sq = sq1a; sq <= sq9i; sq += 1) {
-			pawn_attack[c][sq].m = _mm_xor_si128(silver_attack[c][sq].m,bishop_attack(sq,all_one_bb).m);
+			pawn_attack_mask[c][sq].m = _mm_xor_si128(silver_attack_mask[c][sq].m,bishop_attack(sq,all_one_mask).m);
 		}
 	}
 }
@@ -494,19 +495,19 @@ void new_pawn_attacks() {
 //    x                      x
 //     x                    x
 //      sq2              sq2
-void new_between_bb() {
+void new_between_mask() {
 	for (int sq1 = sq1a; sq1 <= sq9i; sq1 += 1) {
 		for (int sq2 = sq1a; sq2 <= sq9i; sq2 += 1) {
-			between_bb[sq1][sq2].m = _mm_setzero_si128();
+			between_mask[sq1][sq2] = all_zero_mask;
 			if (sq1 == sq2) {
 				continue;
 			}
 			const int direct = square_relation(sq1, sq2);
 			if (direct & direct_cross) {
-				between_bb[sq1][sq2].m = _mm_and_si128(rook_attack(sq1, mask_bb[sq2]).m, rook_attack(sq2, mask_bb[sq1]).m);
+				between_mask[sq1][sq2].m = _mm_and_si128(rook_attack(sq1, sq_mask[sq2]).m, rook_attack(sq2, sq_mask[sq1]).m);
 			}
 			else if (direct & direct_diag) {
-				between_bb[sq1][sq2].m = _mm_and_si128(bishop_attack(sq1, mask_bb[sq2]).m, bishop_attack(sq2, mask_bb[sq1]).m);
+				between_mask[sq1][sq2].m = _mm_and_si128(bishop_attack(sq1, sq_mask[sq2]).m, bishop_attack(sq2, sq_mask[sq1]).m);
 			}
 		}
 	}
@@ -516,14 +517,13 @@ void new_between_bb() {
 // edgeは端っこまで伸びきった利きという意味,他から活用されているか疑問
 void new_attack_to_edge() {
 	for (int sq = sq1a; sq <= sq9i; sq += 1) {
-		bitboard occ;
-		occ.m = _mm_setzero_si128();
+		bitboard occ = all_zero_mask;
 		lance_attack_to_edge[black][sq] = lance_attack(black, sq, occ);
 		lance_attack_to_edge[white][sq] = lance_attack(white, sq, occ);
 		bishop_attack_to_edge[sq] = bishop_attack(sq, occ);
 		rook_attack_to_edge[sq] = rook_attack(sq, occ);
-		dragon_attack_to_edge[sq].m = _mm_or_si128(rook_attack_to_edge[sq].m, king_attack[sq].m);
-		horse_attack_to_edge[sq].m = _mm_or_si128(bishop_attack_to_edge[sq].m, king_attack[sq].m);
+		dragon_attack_to_edge[sq].m = _mm_or_si128(rook_attack_to_edge[sq].m, king_attack_mask[sq].m);
+		horse_attack_to_edge[sq].m = _mm_or_si128(bishop_attack_to_edge[sq].m, king_attack_mask[sq].m);
 	}
 }
 
@@ -532,13 +532,13 @@ void new_gold_check_table() {
 	for (int c = black; c <= white; c+=1) {
 		int opp = opposite_color(c);
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
-			gold_check_table[c][sq].m = _mm_setzero_si128();
-			bitboard check_bb = gold_attack[opp][sq];
+			gold_check_table[c][sq] = all_zero_mask;
+			bitboard check_bb = gold_attack_mask[opp][sq];
 			while (check_bb.p[0] > 0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				gold_check_table[c][sq].m = _mm_or_si128(gold_check_table[c][sq].m ,gold_attack[opp][check_sq].m);
+				gold_check_table[c][sq].m = _mm_or_si128(gold_check_table[c][sq].m ,gold_attack_mask[opp][check_sq].m);
 			}
-			gold_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, gold_attack[opp][sq].m), gold_check_table[c][sq].m);
+			gold_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(sq_mask[sq].m, gold_attack_mask[opp][sq].m), gold_check_table[c][sq].m);
 		}
 	}
 }
@@ -548,27 +548,27 @@ void new_silver_check_table() {
 	for (int c = black; c <= white; c+=1) {
 		int opp = opposite_color(c);
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
-			silver_check_table[c][sq].m = _mm_setzero_si128();
-			bitboard check_bb = silver_attack[opp][sq];
+			silver_check_table[c][sq] = all_zero_mask;
+			bitboard check_bb = silver_attack_mask[opp][sq];
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m, silver_attack[opp][check_sq].m);
+				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m, silver_attack_mask[opp][check_sq].m);
 			}
-			const bitboard trank123bb = enemy_field[c];
-			check_bb = gold_attack[opp][sq];
+			const bitboard trank123bb = enemy_mask[c];
+			check_bb = gold_attack_mask[opp][sq];
 			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
 				int check_sq = first_one_from(&check_bb);
 				// 移動元が敵陣である位置なら、金に成って王手出来る。
-				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m,_mm_and_si128(silver_attack[opp][check_sq].m , trank123bb.m));
+				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m,_mm_and_si128(silver_attack_mask[opp][check_sq].m , trank123bb.m));
 			}
 			const bitboard trank4bb = (c == black ? rank_mask[rank4] : rank_mask[rank6]);
 			// 移動先が3段目で、4段目に移動したときも、成ることが出来る。
-			check_bb.m = _mm_and_si128(gold_attack[opp][sq].m , trank123bb.m);
+			check_bb.m = _mm_and_si128(gold_attack_mask[opp][sq].m , trank123bb.m);
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m,_mm_and_si128(silver_attack[opp][check_sq].m , trank4bb.m));
+				silver_check_table[c][sq].m = _mm_or_si128(silver_check_table[c][sq].m,_mm_and_si128(silver_attack_mask[opp][check_sq].m , trank4bb.m));
 			}
-			silver_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, silver_attack[opp][sq].m), silver_check_table[c][sq].m);
+			silver_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(sq_mask[sq].m, silver_attack_mask[opp][sq].m), silver_check_table[c][sq].m);
 		}
 	}
 }
@@ -578,17 +578,17 @@ void new_knight_check_table() {
 	for (int c = black; c <= white; c+=1) {
 		int opp = opposite_color(c);
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
-			knight_check_table[c][sq].m = _mm_setzero_si128();
-			bitboard check_bb = knight_attack[opp][sq];
+			knight_check_table[c][sq] = all_zero_mask;
+			bitboard check_bb = knight_attack_mask[opp][sq];
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				knight_check_table[c][sq].m = _mm_or_si128(knight_check_table[c][sq].m,knight_attack[opp][check_sq].m);
+				knight_check_table[c][sq].m = _mm_or_si128(knight_check_table[c][sq].m,knight_attack_mask[opp][check_sq].m);
 			}
-			const bitboard trank123bb = enemy_field[c];
-			check_bb.m = _mm_and_si128(gold_attack[opp][sq].m, trank123bb.m);
+			const bitboard trank123bb = enemy_mask[c];
+			check_bb.m = _mm_and_si128(gold_attack_mask[opp][sq].m, trank123bb.m);
 			while (check_bb.p[0] > 0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				knight_check_table[c][sq].m = _mm_or_si128(knight_check_table[c][sq].m,knight_attack[opp][check_sq].m);
+				knight_check_table[c][sq].m = _mm_or_si128(knight_check_table[c][sq].m,knight_attack_mask[opp][check_sq].m);
 			}
 		}
 	}
@@ -600,14 +600,14 @@ void new_lance_check_table() {
 		int opp = opposite_color(c);
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
 			lance_check_table[c][sq] = lance_attack_to_edge[opp][sq];
-			bitboard trank123bb = enemy_field[c];
+			bitboard trank123bb = enemy_mask[c];
 			bitboard check_bb;
-			check_bb.m = _mm_and_si128(gold_attack[opp][sq].m, trank123bb.m);
+			check_bb.m = _mm_and_si128(gold_attack_mask[opp][sq].m, trank123bb.m);
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
 				lance_check_table[c][sq].m = _mm_or_si128(lance_check_table[c][sq].m,lance_attack_to_edge[opp][check_sq].m);
 			}
-			lance_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, pawn_attack[opp][sq].m), lance_check_table[c][sq].m);
+			lance_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(sq_mask[sq].m, pawn_attack_mask[opp][sq].m), lance_check_table[c][sq].m);
 		}
 	}
 }
@@ -617,26 +617,25 @@ void new_pawn_check_table() {
 		int opp = opposite_color(c);
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
 			// 歩で王手になる可能性のあるものは、敵玉から２つ離れた歩(不成での移動) + ksqに敵の金をおいた範囲(enemyGold)に成りで移動できる
-			pawn_check_table[c][sq].m = _mm_setzero_si128();
-			bitboard check_bb = pawn_attack[opp][sq];
+			pawn_check_table[c][sq] = all_zero_mask;
+			bitboard check_bb = pawn_attack_mask[opp][sq];
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m,pawn_attack[opp][check_sq].m);
+				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m,pawn_attack_mask[opp][check_sq].m);
 			}
-			const bitboard trank123bb = enemy_field[c];
-			check_bb.m = _mm_and_si128(gold_attack[opp][sq].m, trank123bb.m);
+			const bitboard trank123bb = enemy_mask[c];
+			check_bb.m = _mm_and_si128(gold_attack_mask[opp][sq].m, trank123bb.m);
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
-				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m, pawn_attack[opp][check_sq].m);
+				pawn_check_table[c][sq].m = _mm_or_si128(pawn_check_table[c][sq].m, pawn_attack_mask[opp][check_sq].m);
 			}
-			pawn_check_table[c][sq].m = _mm_andnot_si128(mask_bb[sq].m, pawn_check_table[c][sq].m);
+			pawn_check_table[c][sq].m = _mm_andnot_si128(sq_mask[sq].m, pawn_check_table[c][sq].m);
 		}
 	}
 }
 
 void new_bishop_check_table() {
-	bitboard occ;
-	occ.m = _mm_setzero_si128();
+	bitboard occ = all_zero_mask;
 	for (int c = black; c <= white; c+=1) {
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
 			bishop_check_table[c][sq] = occ;
@@ -645,27 +644,26 @@ void new_bishop_check_table() {
 				int check_sq = first_one_from(&check_bb);
 				bishop_check_table[c][sq].m = _mm_or_si128(bishop_check_table[c][sq].m,bishop_attack(check_sq,occ).m);
 			}
-			const bitboard trank123bb = enemy_field[c];
-			check_bb.m = _mm_and_si128(king_attack[sq].m, trank123bb.m);
+			const bitboard trank123bb = enemy_mask[c];
+			check_bb.m = _mm_and_si128(king_attack_mask[sq].m, trank123bb.m);
 			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
 				int check_sq = first_one_from(&check_bb);
 				// 移動先が敵陣 == 成れる == 王の動き
 				bishop_check_table[c][sq].m = _mm_or_si128(bishop_check_table[c][sq].m,bishop_attack(check_sq, occ).m);
 			}
-			check_bb = king_attack[sq];
+			check_bb = king_attack_mask[sq];
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
 				int check_sq = first_one_from(&check_bb);
 				// 移動元が敵陣 == 成れる == 王の動き
 				bishop_check_table[c][sq].m = _mm_or_si128(_mm_and_si128(bishop_attack(check_sq, occ).m, trank123bb.m), bishop_check_table[c][sq].m);
 			}
-			bishop_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m, star_bb[sq].m), bishop_check_table[c][sq].m);
+			bishop_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(sq_mask[sq].m, star_mask[sq].m), bishop_check_table[c][sq].m);
 		}
 	}
 }
 
 void new_horse_check_table() {
-	bitboard occ;
-	occ.m = _mm_setzero_si128();
+	bitboard occ = all_zero_mask;
 	for (int c = black; c <= white; c+=1) {
 		for (int sq = sq1a; sq <= sq9i; sq+=1) {
 			horse_check_table[c][sq] = occ;
@@ -674,23 +672,22 @@ void new_horse_check_table() {
 				int check_sq = first_one_from(&check_bb);
 				horse_check_table[c][sq].m = _mm_or_si128(horse_check_table[c][sq].m, horse_attack(check_sq, occ).m);
 			}
-			horse_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(mask_bb[sq].m,king_attack[sq].m) ,horse_check_table[c][sq].m);
+			horse_check_table[c][sq].m = _mm_andnot_si128(_mm_or_si128(sq_mask[sq].m,king_attack_mask[sq].m) ,horse_check_table[c][sq].m);
 		}
 	}
 }
 
 // 25近傍
 void new_neighbor5x5() {
-	bitboard occ;
-	occ.m = _mm_setzero_si128();
+	bitboard occ = all_zero_mask;
 	for (int sq = sq1a; sq <= sq9i; sq += 1) {
-		neighbor5x5[sq] = occ;
-		bitboard tobb = king_attack[sq];
+		neighbor_5x5_mask[sq] = occ;
+		bitboard tobb = king_attack_mask[sq];
 		while (tobb.p[0] > 0 || tobb.p[1] > 0) {
 			int to = first_one_from(&tobb);
-			neighbor5x5[sq].m = _mm_or_si128(neighbor5x5[sq].m, king_attack[to].m);
+			neighbor_5x5_mask[sq].m = _mm_or_si128(neighbor_5x5_mask[sq].m, king_attack_mask[to].m);
 		}
-		neighbor5x5[sq].m = _mm_andnot_si128(mask_bb[sq].m, neighbor5x5[sq].m);
+		neighbor_5x5_mask[sq].m = _mm_andnot_si128(sq_mask[sq].m, neighbor_5x5_mask[sq].m);
 	}
 }
 
@@ -703,12 +700,12 @@ bitboard set_board(const int64_t idx0,const int64_t idx1) {
 
 //引数bbのsq座標にビットが立っていればtrueを返す
 bool is_biton(const int sq, const bitboard bb) {
-	return !(bool)_mm_testz_si128(mask_bb[sq].m,bb.m);
+	return !(bool)_mm_testz_si128(sq_mask[sq].m,bb.m);
 }
 
 // 引数bbのsq座標にビットを立てる
 void set_biton(const int sq, bitboard* bb) {
-	bb->m = _mm_or_si128(bb->m, mask_bb[sq].m);
+	bb->m = _mm_or_si128(bb->m, sq_mask[sq].m);
 }
 
 //debug用のbitboard表示
