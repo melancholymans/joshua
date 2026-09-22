@@ -18,11 +18,11 @@ void init_tables() {
 	new_gold_attack_mask();
 	new_silver_attack_mask();
 	new_pawn_attack_mask();
-	new_knight_attack_mask();	// new_pawn_attackが成立していることが前提
+	new_star_mask();			// new_silver_attacksが成立していることが前提
+	new_knight_attack_mask();	// star_mask,new_pawn_attackが成立していることが前提
 	new_square_relation_direct();
-	new_between_mask();		//new_square_relation_directが成立していることが前提
-	new_star_mask();			//new_silver_attacksが成立していることが前提
-	new_attack_to_edge();	//rook_attack,bishop_attack,lance_attackが成立していることが前提
+	new_between_mask();		// new_square_relation_directが成立していることが前提
+	new_attack_to_edge();	// rook_attack,bishop_attack,lance_attackが成立していることが前提
 	new_gold_check_table();
 	new_silver_check_table();
 	new_knight_check_table();

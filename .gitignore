@@ -370,3 +370,5 @@ TestUnit/TestUnit.vcxproj
 shogi/shogi.vcxproj.filters
 shogi/shogi.vcxproj
 Docs/
+TestUnit/simd_learn.c
+TestUnit/simd_learn.h
