@@ -129,6 +129,55 @@ enum {
 	white = 1
 };
 
+enum piece_type {	//‹îíAÚ“ª«‚Ìpro‚ª‚Â‚­‚Ì‚Í¬‹î‚ÌˆÓ–¡(Œ³‚Ì‹î‚É+8)
+	pawn = 1,
+	lance = 2,
+	knight = 3,
+	silver = 4,
+	bishop = 5,
+	rook = 6,
+	gold = 7,
+	king = 8,
+	propawn = 9,
+	prolance = 10,
+	proknight = 11,
+	prosilver = 12,
+	horse = 13,
+	dragon = 14
+};
+
+enum piece {	//‹î”Ô piece_type‚Écolor‚ğ‰Á‚¦‚½‚à‚Ì
+	empty = 0,
+	bpawn = 1,
+	blance = 2,
+	bknight = 3,
+	bsilver = 4,
+	bbishop = 5,
+	brook = 6,
+	bgold = 7,
+	bking = 8,
+	bpropawn = 9,
+	bprolance = 10,
+	bproknight = 11,
+	bprosilver = 12,
+	bhorse = 13,
+	bdrgon = 14,
+	wpawn = 17,
+	wlance = 18,
+	wknight = 19,
+	wsilver = 20,
+	wbishop = 21,
+	wrook = 22,
+	wgold = 23,
+	wking = 24,
+	wpropawn = 25,
+	wprolance = 26,
+	wproknight = 27,
+	wprosilver = 28,
+	whorse = 29,
+	wdrgon = 30,
+};
+
 extern int square_relation_direct[81][81];
 
 void new_square_relation_direct();
@@ -137,3 +186,4 @@ int set_file(int sq);
 int set_rank(int sq);
 int square_relation(const int sq1, const int sq2);
 int opposite_color(const int c);
+int inverse(const int pc);

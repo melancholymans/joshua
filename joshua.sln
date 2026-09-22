@@ -8,9 +8,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestUnit", "TestUnit\TestUnit.vcxproj", "{D4EE33FB-EA5C-472C-9447-D58C27BCF75F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{2022CB0F-8BAF-F49E-0C48-8EF4C96EC109}"
-	ProjectSection(SolutionItems) = preProject
-		Docs\bitboard_def.c = Docs\bitboard_def.c
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

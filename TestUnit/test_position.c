@@ -92,3 +92,12 @@ void test_opposite_color() {
 	color = white;
 	TEST_ASSERT_EQUAL_INT(black, opposite_color(color));
 }
+
+void test_inverse() {
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(wpawn+i, inverse(bpawn+i));
+	}
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(bpawn + i, inverse(wpawn + i));
+	}
+}

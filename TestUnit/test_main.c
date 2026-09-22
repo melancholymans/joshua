@@ -22,6 +22,7 @@ void test_position() {
 	test_new_square_relation_direct();
 	test_square_relation();
 	test_opposite_color();
+	test_inverse();
 }
 
 void test_bitboard() {

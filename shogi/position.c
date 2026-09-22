@@ -49,6 +49,12 @@ int square_relation(const int sq1, const int sq2) {
 	return square_relation_direct[sq1][sq2];
 }
 
+//è”Ô‚ğØ‘Ö‚¦‚é
 int opposite_color(const int c) {
 	return c ^ 1;
+}
+
+//‹î”Ô‚ğblack->white,white->black‚É‚·‚é(bpawn->wpawn)
+int inverse(const int pc) {
+	return pc ^ 0x10;
 }

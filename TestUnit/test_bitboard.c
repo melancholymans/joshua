@@ -1099,11 +1099,11 @@ void test_new_attack_to_edge() {
 	bb = dragon_attack_to_edge[sq1];
 	TEST_ASSERT_EQUAL_HEX64(0x100804077EC1C04, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x804, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 	bb = horse_attack_to_edge[sq2];
 	TEST_ASSERT_EQUAL_HEX64(0x1C0A070444100401, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x20888, bb.p[1]);
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 
 }
 
