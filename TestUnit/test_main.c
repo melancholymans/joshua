@@ -21,6 +21,10 @@ void test_position() {
 	test_square_relation();
 	test_opposite_color();
 	test_inverse();
+	test_piece_to_piecetype();
+	test_piece_to_color();
+	test_piecetype_to_piece();
+	test_is_jump();
 }
 
 void test_bitboard() {

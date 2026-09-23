@@ -1,4 +1,16 @@
+#include <stdint.h>
+
 #include "position.h"
+
+/*
+*   sq:	sqare 座標
+*   f:  file 筋
+*   r:  rank 段
+*	c:	color 手番
+*   pt:	piecetype 駒種
+*   pc:	piece 駒番 
+*/
+
 
 int square_relation_direct[81][81];
 
@@ -44,17 +56,37 @@ int set_rank(int sq) {
 	return sq % 9;
 }
 
-//渡されたsq座標同士の位置関係を返す
+// 渡されたsq座標同士の位置関係を返す
 int square_relation(const int sq1, const int sq2) {
 	return square_relation_direct[sq1][sq2];
 }
 
-//手番を切替える
+// 手番を切替える
 int opposite_color(const int c) {
 	return c ^ 1;
 }
 
-//駒番をblack->white,white->blackにする(bpawn->wpawn)
+// 駒番をblack->white,white->blackにする(bpawn->wpawn)
 int inverse(const int pc) {
 	return pc ^ 0x10;
+}
+
+// 駒番を駒種に変換
+int piece_to_piecetype(const int pc) {
+	return pc & 15;
+}
+
+// 駒番から手番（color）を判定する
+int piece_to_color(const int pc) {
+	return pc >> 4;
+}
+
+// colorと駒種を指定して駒番を作る
+int piecetype_to_piece(const int c, const int pt) { 
+	return (c << 4) | pt; 
+}
+
+//jump駒かどうかの判定、lance,bishp,rook,horse,dragonならtrue
+_Bool is_jump(const int pc) {
+	return (0x60646064 & (1 << pc)) != 0;
 }

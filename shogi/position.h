@@ -129,7 +129,7 @@ enum {
 	white = 1
 };
 
-enum piece_type {	//駒種、接頭辞のproがつくのは成駒の意味(元の駒に+8)
+enum piecetype {	//駒種、接頭辞のproがつくのは成駒の意味(元の駒に+8)
 	pawn = 1,
 	lance = 2,
 	knight = 3,
@@ -161,7 +161,7 @@ enum piece {	//駒番 piece_typeにcolorを加えたもの
 	bproknight = 11,
 	bprosilver = 12,
 	bhorse = 13,
-	bdrgon = 14,
+	bdragon = 14,
 	wpawn = 17,
 	wlance = 18,
 	wknight = 19,
@@ -175,7 +175,19 @@ enum piece {	//駒番 piece_typeにcolorを加えたもの
 	wproknight = 27,
 	wprosilver = 28,
 	whorse = 29,
-	wdrgon = 30,
+	wdragon = 30,
+};
+
+
+//移植元のコードではhpawn=0であった、どっちが良いのか不明、とりあえずpiece_typeとの互換性を優先して定義
+enum {	
+	hpawn = 1,
+	hlance = 2,
+	hknight = 3,
+	hsilver = 4,
+	hbishop = 5,
+	hrook = 6,
+	hgold = 7,
 };
 
 extern int square_relation_direct[81][81];
@@ -187,3 +199,7 @@ int set_rank(int sq);
 int square_relation(const int sq1, const int sq2);
 int opposite_color(const int c);
 int inverse(const int pc);
+int piece_to_piecetype(const int pc);
+int piece_to_color(const int pc);
+int piecetype_to_piece(const int c, const int pt);
+_Bool is_jump(const int pc);

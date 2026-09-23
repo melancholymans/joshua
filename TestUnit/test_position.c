@@ -101,3 +101,78 @@ void test_inverse() {
 		TEST_ASSERT_EQUAL_INT(bpawn + i, inverse(wpawn + i));
 	}
 }
+
+void test_piece_to_piecetype() {
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(pawn + i, piece_to_piecetype(bpawn + i));
+	}
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(pawn + i, piece_to_piecetype(wpawn + i));
+	}
+}
+
+void test_piece_to_color() {
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(black, piece_to_color(bpawn+i));
+	}
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(white, piece_to_color(wpawn + i));
+	}
+}
+
+void test_piecetype_to_piece() {
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(bpawn + i, piecetype_to_piece(black, pawn + i));
+	}
+	for (int i = 0; i < 14; i += 1) {
+		TEST_ASSERT_EQUAL_INT(wpawn + i, piecetype_to_piece(white, pawn + i));
+	}
+}
+
+// lance,bishop,rook,horse,dragon‚Ì‚Ý‚ð‘I•Ê‚·‚é
+// 0x60646064 & (1 << (bpawn + i) i‚Í0‚©‚ç13‚Ü‚Å•Ï‰»‚µ‚Äpawn‚©‚çdragon‚Ü‚Å•Ï‰»‚·‚é
+//pawn		0x00
+//lance		0x04
+//knight	0x00
+//silver	0x00
+//bishop	0x20
+//rook		0x40
+//gold		0x00
+//king		0x00
+//propawn	0x00
+//prolance	0x00
+//proknight	0x00
+//prosilver	0x00
+//horse		0x2000
+//dragon	0x4000
+//orŒ‹‡    0x6064
+void test_is_jump() {
+	TEST_ASSERT_FALSE(is_jump(bpawn));
+	TEST_ASSERT_TRUE(is_jump(blance));
+	TEST_ASSERT_FALSE(is_jump(bknight));
+	TEST_ASSERT_FALSE(is_jump(bsilver));
+	TEST_ASSERT_TRUE(is_jump(bbishop));
+	TEST_ASSERT_TRUE(is_jump(brook));
+	TEST_ASSERT_FALSE(is_jump(bgold));
+	TEST_ASSERT_FALSE(is_jump(bking));
+	TEST_ASSERT_FALSE(is_jump(bpropawn));
+	TEST_ASSERT_FALSE(is_jump(bprolance));
+	TEST_ASSERT_FALSE(is_jump(bproknight));
+	TEST_ASSERT_FALSE(is_jump(bprosilver));
+	TEST_ASSERT_TRUE(is_jump(bhorse));
+	TEST_ASSERT_TRUE(is_jump(bdragon));
+	TEST_ASSERT_FALSE(is_jump(wpawn));
+	TEST_ASSERT_TRUE(is_jump(wlance));
+	TEST_ASSERT_FALSE(is_jump(wknight));
+	TEST_ASSERT_FALSE(is_jump(wsilver));
+	TEST_ASSERT_TRUE(is_jump(wbishop));
+	TEST_ASSERT_TRUE(is_jump(wrook));
+	TEST_ASSERT_FALSE(is_jump(wgold));
+	TEST_ASSERT_FALSE(is_jump(wking));
+	TEST_ASSERT_FALSE(is_jump(wpropawn));
+	TEST_ASSERT_FALSE(is_jump(wprolance));
+	TEST_ASSERT_FALSE(is_jump(wproknight));
+	TEST_ASSERT_FALSE(is_jump(wprosilver));
+	TEST_ASSERT_TRUE(is_jump(whorse));
+	TEST_ASSERT_TRUE(is_jump(wdragon));
+}
