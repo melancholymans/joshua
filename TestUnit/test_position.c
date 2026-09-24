@@ -177,3 +177,50 @@ void test_is_jump() {
 	TEST_ASSERT_TRUE(is_jump(wdragon));
 }
 
+// rank1 -> a,rank9 -> i
+void test_rank_usi_string() {
+	for (int r = rank1; r <= rank9; r += 1) {
+		TEST_ASSERT_EQUAL_INT8('a' + r, rank_usi_string(r));
+	}
+}
+
+// file1 -> 1,file9 -> 9
+void test_file_usi_string() {
+	for (int f = file1; f <= file9; f += 1) {
+		TEST_ASSERT_EQUAL_INT8('1' + f, file_usi_string(f));
+	}
+}
+
+// square_usi_string_table[81]‚Ì‰Šú’l‚ª³‚µ‚¢‚©Šm”F‚µ‚Ä‚¢‚é
+void test_square_usi_string() {
+	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+		char str[8];		
+		square_usi_string(sq, str);
+		TEST_ASSERT_EQUAL_STRING(str, square_usi_string_table[sq]);
+	}
+}
+
+// sq1a = 81-1-0=80=sq9i
+// sq5c = 81-1-38=sq5g
+// sq6b = 81-1-46=sq4h
+// sq9i = 81-1-80=sq1a
+void test_square_inverse() {
+	TEST_ASSERT_EQUAL_INT(sq9i, square_inverse(sq1a));
+	TEST_ASSERT_EQUAL_INT(sq5g, square_inverse(sq5c));
+	TEST_ASSERT_EQUAL_INT(sq4h, square_inverse(sq6b));
+	TEST_ASSERT_EQUAL_INT(sq1a, square_inverse(sq9i));
+}
+
+// file1 = 9-1-0=8=file9
+// file3 = 9-1-2=6=file7
+void test_file_inverse() {
+	TEST_ASSERT_EQUAL_INT(file9, file_inverse(file1));
+	TEST_ASSERT_EQUAL_INT(file7, file_inverse(file3));
+}
+
+// rank1 = 9-1-0=8=rank9
+// rank3 = 9-1-2=6=rank7
+void test_rank_inverse() {
+	TEST_ASSERT_EQUAL_INT(rank9, rank_inverse(rank1));
+	TEST_ASSERT_EQUAL_INT(rank7, rank_inverse(rank3));
+}

@@ -203,6 +203,7 @@ enum {
 };
 
 extern int square_relation_direct[81][81];
+extern char* square_usi_string_table[81];
 
 void new_square_relation_direct();
 int set_square(int f, int r);
@@ -215,4 +216,9 @@ int piece_to_piecetype(const int pc);
 int piece_to_color(const int pc);
 int piecetype_to_piece(const int c, const int pt);
 _Bool is_jump(const int pc);
-
+char rank_usi_string(const int r);
+char file_usi_string(const int f);
+void square_usi_string(const int sq, char* str);
+int square_inverse(const int sq);
+int file_inverse(const int f);
+int rank_inverse(const int r);

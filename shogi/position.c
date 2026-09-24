@@ -13,6 +13,17 @@
 
 // ２つの座標の位置関係のテーブル
 int square_relation_direct[81][81];
+// 座標文字列
+char* square_usi_string_table[81] = {"1a","1b","1c","1d","1e","1f","1g","1h","1i",
+							         "2a","2b","2c","2d","2e","2f","2g","2h","2i",
+							         "3a","3b","3c","3d","3e","3f","3g","3h","3i",
+							         "4a","4b","4c","4d","4e","4f","4g","4h","4i",
+							         "5a","5b","5c","5d","5e","5f","5g","5h","5i",
+							         "6a","6b","6c","6d","6e","6f","6g","6h","6i",
+							         "7a","7b","7c","7d","7e","7f","7g","7h","7i",
+							         "8a","8b","8c","8d","8e","8f","8g","8h","8i",
+							         "9a","9b","9c","9d","9e","9f","9g","9h","9i"
+};
 
 // 2つの位置関係のテーブル,sq1とsq2の関係がdirect_file=縦方向、direct_rank,direct_diag_nesw,direct_diag_nwse方向なのかを即答してくれるテーブル、それ以外はdirect_misc
 void new_square_relation_direct() {
@@ -92,3 +103,48 @@ _Bool is_jump(const int pc) {
 	return (0x60646064 & (1 << pc)) != 0;
 }
 
+// 座標sqの段の文字を返す
+char rank_usi_string(const int r) {
+	return 'a' + r;
+}
+
+// 座標sqの筋の文字を返す
+char file_usi_string(const int f) {
+	return '1' + f;
+}
+
+// 座標の文字列を返す
+void square_usi_string(const int sq, char* str) {
+	const int r = set_rank(sq);
+	const int f = set_file(sq);
+	char ch[] = { file_usi_string(f),rank_usi_string(r),'\0' };
+	strcpy_s(str, 3, ch);
+}
+
+// 後手の位置を先手の位置へ変換
+// sq1a = 81-1-0=80=sq9i
+// sq5c = 81-1-38=sq5g
+// sq6b = 81-1-46=sq4h
+// sq9i = 81-1-80=sq1a
+int square_inverse(const int sq) { 
+	return 81 - 1 - sq; 
+}
+
+// 左右変換
+// file1 = 9-1-0=8=file9
+// file3 = 9-1-2=6=file7
+int file_inverse(const int f) {
+	return 9 - 1 - f; 
+}
+
+// 上下変換
+// rank1 = 9-1-0=8=rank9
+// rank3 = 9-1-2=6=rank7
+int rank_inverse(const int r) {
+	return 9 - 1 - r;
+}
+
+// 
+_Bool can_promote(const int c, const int from_or_to_rank) {
+	return (0x1c00007u & (1u << ((c << 4) + from_or_to_rank)));
+}

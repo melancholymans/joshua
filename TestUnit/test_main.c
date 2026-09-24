@@ -25,6 +25,12 @@ void test_position() {
 	test_piece_to_color();
 	test_piecetype_to_piece();
 	test_is_jump();
+	test_rank_usi_string();
+	test_file_usi_string();
+	test_square_usi_string();
+	test_square_inverse();
+	test_file_inverse();
+	test_rank_inverse();
 }
 
 void test_bitboard() {
