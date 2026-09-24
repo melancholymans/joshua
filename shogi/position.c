@@ -11,9 +11,10 @@
 *   pc:	piece 駒番 
 */
 
-
+// ２つの座標の位置関係のテーブル
 int square_relation_direct[81][81];
 
+// 2つの位置関係のテーブル,sq1とsq2の関係がdirect_file=縦方向、direct_rank,direct_diag_nesw,direct_diag_nwse方向なのかを即答してくれるテーブル、それ以外はdirect_misc
 void new_square_relation_direct() {
 	for (int sq1 = sq1a; sq1 <= sq9i; sq1 += 1) {
 		const f1 = set_file(sq1);
@@ -76,7 +77,7 @@ int piece_to_piecetype(const int pc) {
 	return pc & 15;
 }
 
-// 駒番から手番（color）を判定する
+// 駒番から手番（color）を判定する.blackかwhiteが返る
 int piece_to_color(const int pc) {
 	return pc >> 4;
 }
@@ -89,4 +90,22 @@ int piecetype_to_piece(const int c, const int pt) {
 //jump駒かどうかの判定、lance,bishp,rook,horse,dragonならtrue
 _Bool is_jump(const int pc) {
 	return (0x60646064 & (1 << pc)) != 0;
+}
+
+// 座標sqの段の文字を返す
+char rank_usi_string(const int r) {
+	return 'a' + r;
+}
+
+// 座標sqの筋の文字を返す
+char file_usi_string(const int f) {
+	return '1' + f;
+}
+
+// 座標の文字列を返す
+void square_usi_string(const int sq,char* str) {
+	const int r = set_rank(sq);
+	const int f = set_file(sq);
+	char ch[] = { file_usi_string(f),rank_usi_string(r),'\0' };
+	strcpy_s(str, 3, ch);
 }
