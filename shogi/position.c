@@ -92,20 +92,3 @@ _Bool is_jump(const int pc) {
 	return (0x60646064 & (1 << pc)) != 0;
 }
 
-// 座標sqの段の文字を返す
-char rank_usi_string(const int r) {
-	return 'a' + r;
-}
-
-// 座標sqの筋の文字を返す
-char file_usi_string(const int f) {
-	return '1' + f;
-}
-
-// 座標の文字列を返す
-void square_usi_string(const int sq,char* str) {
-	const int r = set_rank(sq);
-	const int f = set_file(sq);
-	char ch[] = { file_usi_string(f),rank_usi_string(r),'\0' };
-	strcpy_s(str, 3, ch);
-}

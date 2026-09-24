@@ -215,7 +215,4 @@ int piece_to_piecetype(const int pc);
 int piece_to_color(const int pc);
 int piecetype_to_piece(const int c, const int pt);
 _Bool is_jump(const int pc);
-char rank_usi_string(const int r);
-char file_usi_string(const int f);
-void square_usi_string(const int sq,char* str);
 

@@ -177,31 +177,3 @@ void test_is_jump() {
 	TEST_ASSERT_TRUE(is_jump(wdragon));
 }
 
-// rank1 -> a,rank9 -> i
-void test_rank_usi_string() {
-	for (int r = rank1; r <= rank9; r += 1) {
-		TEST_ASSERT_EQUAL_INT8('a' + r, rank_usi_string(r));
-	}
-}
-
-// file1 -> 1,file9 -> 9
-void test_file_usi_string() {
-	for (int f = file1; f <= file9; f += 1) {
-		TEST_ASSERT_EQUAL_INT8('1' + f, file_usi_string(f));
-	}
-}
-
-// sq1a -> "1a"
-void test_square_usi_string() {
-	char str[8];
-	square_usi_string(sq1a, str);
-	TEST_ASSERT_EQUAL_STRING("1a",str);
-	square_usi_string(sq5d, str);
-	TEST_ASSERT_EQUAL_STRING("5d", str);
-	square_usi_string(sq9i, str);
-	TEST_ASSERT_EQUAL_STRING("9i", str);
-	square_usi_string(sq9a, str);
-	TEST_ASSERT_EQUAL_STRING("9a", str);
-	square_usi_string(sq1i, str);
-	TEST_ASSERT_EQUAL_STRING("1i", str);
-}
