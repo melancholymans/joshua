@@ -222,3 +222,4 @@ void square_usi_string(const int sq, char* str);
 int square_inverse(const int sq);
 int file_inverse(const int f);
 int rank_inverse(const int r);
+_Bool can_promote(const int c, const int from_or_to_rank);

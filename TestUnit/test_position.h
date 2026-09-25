@@ -18,3 +18,4 @@ void test_square_usi_string();
 void test_square_inverse();
 void test_file_inverse();
 void test_rank_inverse();
+void test_can_promote();

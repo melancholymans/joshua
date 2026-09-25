@@ -22,8 +22,7 @@ char* square_usi_string_table[81] = {"1a","1b","1c","1d","1e","1f","1g","1h","1i
 							         "6a","6b","6c","6d","6e","6f","6g","6h","6i",
 							         "7a","7b","7c","7d","7e","7f","7g","7h","7i",
 							         "8a","8b","8c","8d","8e","8f","8g","8h","8i",
-							         "9a","9b","9c","9d","9e","9f","9g","9h","9i"
-};
+							         "9a","9b","9c","9d","9e","9f","9g","9h","9i"};
 
 // 2つの位置関係のテーブル,sq1とsq2の関係がdirect_file=縦方向、direct_rank,direct_diag_nesw,direct_diag_nwse方向なのかを即答してくれるテーブル、それ以外はdirect_misc
 void new_square_relation_direct() {
@@ -144,7 +143,7 @@ int rank_inverse(const int r) {
 	return 9 - 1 - r;
 }
 
-// 
+// 駒の移動元(from)移動先(to)が成れるエリア（敵陣エリア）かどうかで成りのフラグを返す
 _Bool can_promote(const int c, const int from_or_to_rank) {
 	return (0x1c00007u & (1u << ((c << 4) + from_or_to_rank)));
 }

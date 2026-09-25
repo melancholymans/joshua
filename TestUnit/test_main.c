@@ -31,6 +31,7 @@ void test_position() {
 	test_square_inverse();
 	test_file_inverse();
 	test_rank_inverse();
+	test_can_promote();
 }
 
 void test_bitboard() {
