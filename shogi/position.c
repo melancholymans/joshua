@@ -113,6 +113,7 @@ char file_usi_string(const int f) {
 }
 
 // 座標の文字列を返す
+// C言語での簡単な文字列処理に関するアイデアがないのでとりあえずこれで(TODO:)
 void square_usi_string(const int sq, char* str) {
 	const int r = set_rank(sq);
 	const int f = set_file(sq);
@@ -147,3 +148,11 @@ int rank_inverse(const int r) {
 _Bool can_promote(const int c, const int from_or_to_rank) {
 	return (0x1c00007u & (1u << ((c << 4) + from_or_to_rank)));
 }
+
+/*
+* やねうら王から移植された壁つきの升表現というSquareWithWallがあるがいまのところ実装は後回し(TODO:)
+*/
+
+/*
+*  やねうら王から移植されたLong Effect Libraryがあるがいまのところ実装は後回し(TODO:)
+*/

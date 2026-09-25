@@ -106,6 +106,7 @@ enum {
 	file9 = 8
 };
 
+// 局面の方向
 // white
 // 
 // .NW . N . NE. . .
@@ -201,6 +202,82 @@ enum {
 	hrook = 6,
 	hgold = 7,
 };
+
+// gameの結果
+enum {
+	draw = 0,
+	black_win = 1,
+	white_win = 2,
+};
+
+// 千日手状態
+enum {
+	not_repetition = 0,		//千日手ではない
+	repetition_draw = 1,	//普通の千日手
+	repetition_win = 2,		//自陣が勝ち
+	repetition_lose = 3,		//自陣が負け
+	repetition_superior = 4,	//相手陣が駒得
+	repetition_tnferior = 5		//相手陣が駒損
+};
+
+/*
+* CheckInfo
+* 非常に重要な構造体あと回し(TODO:)
+*/
+
+/*
+* StatInfo
+* 非常に重要な構造体あと回し(TODO:)
+*/
+
+/*
+* class BitStream今のところなにをするものかすら不明
+* (TODO:)
+*/
+
+/*
+* union HuffmanCode局面をハッシュ化にするための符号化方式
+* (TODO:)
+*/ 
+
+/*
+* やねうら王のpacked sfen
+* (TODO:)
+*/ 
+
+/*
+* initMate1Ply
+* (TODO:)
+*/ 
+
+/*
+* class Move
+* (TODO:)
+*/ 
+
+/*
+* class Position
+* 
+* 重要そうなデータ
+*	pipece_[81]
+*	Square kingSquare_[2]
+*	Hand hand_[2]
+*	Color turn_
+*	StateInfo startState_;
+*	StateInfo* st_;
+*	Ply gamePly_;
+*	static Key zobrist_[PieceTypeNum][SquareNum][ColorNum];
+*	static const Key zobTurn_ = 1;
+*	static Key zobHand_[HandPieceNum][ColorNum];
+*/ 
+
+/*
+* class CharToPieceUSI
+* Position classでsetメソッドで使われている
+* setはsfen stringで局面を生成している
+*/ 
+
+
 
 extern int square_relation_direct[81][81];
 extern char* square_usi_string_table[81];
