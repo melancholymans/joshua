@@ -5,11 +5,17 @@
 #include "../shogi/init.h"
 #include "../shogi/bitboard.h"
 #include "../shogi/position.h"
+#include "../shogi/usi.h"
 #include "test_bitboard.h"
 #include "test_position.h"
 
 void setUp(void) {}
 void tearDown(void) {}
+
+void test_usi() {
+	printf("-----------test_usi----------------------------------\n");
+		test_shorten_space();
+}
 
 void test_position() {
 	printf("-----------test_position----------------------------------\n");
@@ -91,6 +97,7 @@ int main() {
 	//テスト用関数にtest_とつけるのは慣用でありルールではない。テスト関数には引数なし、返り値なしで記述する
 	RUN_TEST(test_bitboard);
 	RUN_TEST(test_position);
+	RUN_TEST(test_usi);
 	return UNITY_END();;
 }
 

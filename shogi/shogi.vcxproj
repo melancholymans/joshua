@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="bitboard.c" />
+    <ClCompile Include="usi.c" />
     <ClCompile Include="init.c" />
     <ClCompile Include="main.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -139,6 +140,7 @@
     <ClInclude Include="bitboard.h" />
     <ClInclude Include="init.h" />
     <ClInclude Include="position.h" />
+    <ClInclude Include="usi.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

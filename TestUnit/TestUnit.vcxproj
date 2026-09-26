@@ -130,14 +130,17 @@
     <ClCompile Include="..\shogi\bitboard.c" />
     <ClCompile Include="..\shogi\init.c" />
     <ClCompile Include="..\shogi\position.c" />
+    <ClCompile Include="..\shogi\usi.c" />
     <ClCompile Include="test_bitboard.c" />
     <ClCompile Include="test_main.c" />
     <ClCompile Include="test_position.c" />
+    <ClCompile Include="test_usi.c" />
     <ClCompile Include="unity.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_bitboard.h" />
     <ClInclude Include="test_position.h" />
+    <ClInclude Include="test_usi.h" />
     <ClInclude Include="unity.h" />
     <ClInclude Include="unity_internals.h" />
   </ItemGroup>
