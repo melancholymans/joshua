@@ -8,7 +8,7 @@
 
 int main() {
 	init_tables();
-	usi_handler_t* hd = new_usi_handler(stdin);
+	usi_handler_t hd = new_usi_handler(stdout);
 	bitboard bb = set_board(0x298060C0A1121B45, 0x3abad);	
 	print_bitboard(bb, "test");
 	char buf[1048];
@@ -16,8 +16,7 @@ int main() {
 		if (fgets(buf, sizeof(buf), stdin) != NULL) {
 			buf[strcspn(buf, "\n")] = '\0';
 		}
-		printf("return -> %s\n", buf);
-		if (handle(hd,buf) != NULL){
+		if (handle(&hd,buf) != NULL){
 			break;
 		}
 	}
