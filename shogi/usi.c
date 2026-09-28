@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <errno.h>
+#include "position.h"
 #include "usi.h"
 
 usi_handler_t new_usi_handler(FILE* out) {
@@ -24,55 +25,64 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		token = strtok_s(NULL, " ",&ptr);
 	}
 	if (!strcmp("usi", cmds[0])) {
-		handle_usi(cmds);
+		return handle_usi(usi_hd,cmds);
 	}else if(!strcmp("isready", cmds[0])){
-		handle_is_ready(cmds);
+		return handle_is_ready(usi_hd,cmds);
 	}
 	else if (!strcmp("setoption",cmds[0])) {
-		handle_setoption(cmds);
+		return handle_setoption(cmds);
 	}
 	else if (!strcmp("usinewgame", cmds[0])) {
-		handle_usi_newgame(cmds);
+		return handle_usi_newgame(cmds);
 	}
 	else if (!strcmp("stop", cmds[0])) {
-		handle_stop(cmds);
+		return handle_stop(cmds);
 	}
 	else if (!strcmp("go", cmds[0])) {
-		handle_go(cmds);
+		return handle_go(cmds);
 	}
 	else if (!strcmp("position", cmds[0])) {
-		handle_position(cmds);
+		return handle_position(cmds);
 	}
 	else if (!strcmp("ponderhit", cmds[0])) {
-		handle_ponder_hit(cmds);
+		return handle_ponder_hit(cmds);
 	}
 	else if (!strcmp("quit", cmds[0])) {
-		handle_quit(cmds);
+		return handle_quit(cmds);
 	}
 	else if (!strcmp("gameover", cmds[0])) {
-		handle_gameover(cmds);
+		return handle_gameover(cmds);
 	}
 	else if (!strcmp("debug", cmds[0])) {
-		handle_debug(usi_hd,cmds,count);
+		return handle_debug(usi_hd,cmds,count);
 	}
 	else {
 		char msg[32];
 		strcpy_s(msg,12, "unknow cmd ");
 		strcat_s(msg,12+16,cmds[0]);
 		put_debug(usi_hd,msg);
+		return 201;
 	}
+}
+
+errno_t handle_usi(usi_handler_t* hd,char* cmds) {
+	char msg[32];
+	strcpy_s(msg, 12, "id name ");
+	strcat_s(msg, 12 + 16, hd->name);
+	put_send(hd, msg);
+	strcpy_s(msg, 12, "id author ");
+	strcat_s(msg, 12 + 16, hd->author);
+	put_send(hd, msg);
+	put_send(hd, "usiok");
+	fflush(hd->stream);
 	return NULL;
 }
 
-errno_t handle_usi(char* cmds) {
-	//:TODO
-	printf("%s\n",__func__);
-	return NULL;
-}
-
-errno_t handle_is_ready(char* cmds) {
+errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
 	//TODO:
-	printf("%s\n", __func__);
+	//printf("%s\n", __func__);
+	hd->bd = new_board();
+	put_send(hd, "readyok");
 	return NULL;
 }
 
@@ -113,9 +123,7 @@ errno_t handle_ponder_hit(char* cmds) {
 }
 
 errno_t handle_quit(char* cmds) {
-	//:TODO
-	printf("%s\n", __func__);
-	return NULL;
+	return 200;
 }
 
 errno_t handle_gameover(char* cmds) {
@@ -125,7 +133,6 @@ errno_t handle_gameover(char* cmds) {
 }
 
 errno_t handle_debug(usi_handler_t *hd,char** msg[],int size) {
-	//:TODO
 	printf("%s\n", __func__);
 	for (int i = 0; i < size; i += 1) {
 		put_debug(hd, msg[i]);
@@ -133,14 +140,12 @@ errno_t handle_debug(usi_handler_t *hd,char** msg[],int size) {
 	return NULL;
 }
 
-
-void send(usi_handler_t *hd,char* msg) {
-	fputs(msg, hd->stream);
+void put_send(usi_handler_t *hd,char* msg) {
+	fprintf(hd->stream,"%s\n",msg);
 }
 
 void put_debug(usi_handler_t *hd,char* msg) {
-	//:TODO
-	send(hd, msg);
+	put_send(hd, msg);
 }
 
 

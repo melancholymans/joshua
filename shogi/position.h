@@ -270,6 +270,13 @@ enum {
 *	static const Key zobTurn_ = 1;
 *	static Key zobHand_[HandPieceNum][ColorNum];
 */ 
+//‚Æ‚è‚ ‚¦‚¸board_t‚ğ’è‹`
+//mb‚Ímain board,hb‚Íhand board,turn‚Íƒ^[ƒ“
+typedef struct {
+	int mb[81];
+	int hb[2][8];
+	int turn;
+}board_t;
 
 /*
 * class CharToPieceUSI
@@ -300,3 +307,4 @@ int square_inverse(const int sq);
 int file_inverse(const int f);
 int rank_inverse(const int r);
 _Bool can_promote(const int c, const int from_or_to_rank);
+board_t* new_board();

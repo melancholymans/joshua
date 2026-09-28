@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 
 #include "position.h"
@@ -156,3 +157,19 @@ _Bool can_promote(const int c, const int from_or_to_rank) {
 /*
 *  やねうら王から移植されたLong Effect Libraryがあるがいまのところ実装は後回し(TODO:)
 */
+
+/*
+* とりあえずusi.cからの要求でboardを作る
+*/ 
+board_t* new_board() {
+	printf("%s\n", __func__);
+	board_t* bd = malloc(sizeof(board_t));
+	if (bd == NULL) {
+		fprintf(stderr, "board_tの確保に失敗した");
+		return NULL;
+	}
+	/*
+	*	ここでboard_tをいろいろ設定、いまはパス
+	*/ 
+	return bd;
+}
