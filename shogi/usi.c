@@ -102,6 +102,7 @@ errno_t handle_position(char** cmds[], int size) {
 	//:TODO
 	printf("%s\n", __func__);
 	char sfen[128];
+	int mark = 0;
 	sfen[0] = '\0';
 	if (!strcmp("sfen", cmds[1])) {
 		for (int i = 2; i < 6; i += 1) {
@@ -110,9 +111,11 @@ errno_t handle_position(char** cmds[], int size) {
 				strcat_s(sfen, strlen(cmds[2]) + 6 + 1, " ");
 			}
 		}
+		mark = 6;	//次に見る配列のindex
 	}
 	else if (!strcmp("start", cmds[1])) {
 		strcpy_s(sfen,63+1,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+		mark = 2;	//次に見る配列のindex
 	}
 	//以降はboardを初期化することになるが準備ができていないのでパス
 	//TODO:
