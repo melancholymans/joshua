@@ -98,9 +98,24 @@ errno_t handle_usi_newgame(char* cmds) {
 	return NULL;
 }
 
-errno_t handle_position(char* cmds) {
+errno_t handle_position(char** cmds[], int size) {
 	//:TODO
 	printf("%s\n", __func__);
+	char sfen[128];
+	sfen[0] = '\0';
+	if (!strcmp("sfen", cmds[1])) {
+		for (int i = 2; i < 6; i += 1) {
+			strcat_s(sfen, strlen(cmds[2])+6+1, cmds[i]);
+			if (i < 5) {
+				strcat_s(sfen, strlen(cmds[2]) + 6 + 1, " ");
+			}
+		}
+	}
+	else if (!strcmp("start", cmds[1])) {
+		strcpy_s(sfen,63+1,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	}
+	//ˆÈ~‚Íboard‚ð‰Šú‰»‚·‚é‚±‚Æ‚É‚È‚é‚ª€”õ‚ª‚Å‚«‚Ä‚¢‚È‚¢‚Ì‚ÅƒpƒX
+	//TODO:
 	return NULL;
 }
 
