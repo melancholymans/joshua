@@ -98,10 +98,10 @@ errno_t handle_usi_newgame(char* cmds) {
 	return 200;
 }
 
-errno_t handle_position(usi_handler_t* hd,char** cmds[],int count) {
+errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	//:TODO
-	// test position startpos moves 2g2f 8c8d 2f2e
-	// test position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b
+	// position startpos moves 2g2f 8c8d 2f2e
+	// position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b
 	printf("%s\n", __func__);
 	char sfen[128];
 	int mark = 0;
@@ -115,19 +115,20 @@ errno_t handle_position(usi_handler_t* hd,char** cmds[],int count) {
 		}
 		mark = 6;	//次に見る配列のindex
 	}
-	else if (!strcmp("start", cmds[1])) {
+	else if (!strcmp("startpos", cmds[1])) {
 		strcpy_s(sfen,63+1,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 		mark = 2;	//次に見る配列のindex
 	}
 	//以降はboardを初期化することになるが準備ができていないのでパス
 	//TODO:
-	//set_board(hd, sfen);
-	if (cmds[mark] != "moves") {	//sfen文字列にmovesの文字列がなかったら、ここで終わり
+	set_board(hd, sfen);
+	if (strcmp(cmds[mark],"moves")) {	//sfen文字列にmovesの文字列がなかったら、ここで終わり
 		return 200;
 	}
-	int size = count - mark;
-	for (int i=0;i<=size;i+=1) {
-		printf("moves = %s\n", cmds[i]);
+	int size = count - mark - 1;
+	for (int i=0;i<size;i+=1) {
+		//TODO: boardを更新するpush_moveみたいな関数をここに書く
+		printf("moves = %s\n", cmds[mark + 1 + i]);
 	}
 	return 200;	//no error
 }

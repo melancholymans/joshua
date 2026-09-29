@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "position.h"
 
@@ -173,5 +174,18 @@ board_t* new_board(void) {
 }
 
 void set_board(usi_handler_t* hd, char* sfen) {
+	//予想されるsfen文字列
+	// lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
+	// lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1
+	char* parts[4];	//sfenをセパレートで区切った後にできるポインタ配列
+	int count = 0;
+	char* ptr = NULL;
+	char* token = strtok_s(sfen, " ", &ptr);
+	for (; token != NULL && count < 4;) {
+		parts[count++] = token;
+		token = strtok_s(NULL, " ", &ptr);
+	}
+
+	//hd->bd
 	return;
 }
