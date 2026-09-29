@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "position.h"
+
 #include "usi.h"
 
 usi_handler_t new_usi_handler(FILE* out) {
@@ -42,7 +42,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		return handle_go(cmds);
 	}
 	else if (!strcmp("position", cmds[0])) {
-		return handle_position(cmds);
+		return handle_position(usi_hd,cmds,count);
 	}
 	else if (!strcmp("ponderhit", cmds[0])) {
 		return handle_ponder_hit(cmds);
@@ -61,7 +61,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		strcpy_s(msg,12, "unknow cmd ");
 		strcat_s(msg,12+16,cmds[0]);
 		put_debug(usi_hd,msg);
-		return 201;
+		return 202;
 	}
 }
 
@@ -75,15 +75,16 @@ errno_t handle_usi(usi_handler_t* hd,char* cmds) {
 	put_send(hd, msg);
 	put_send(hd, "usiok");
 	fflush(hd->stream);
-	return NULL;
+	return 200;
 }
 
 errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
-	//TODO:
-	//printf("%s\n", __func__);
 	hd->bd = new_board();
+	if (hd->bd == NULL) {
+		return 203;
+	}
 	put_send(hd, "readyok");
-	return NULL;
+	return 200;
 }
 
 errno_t handle_setoption(char* cmds) {
@@ -93,13 +94,14 @@ errno_t handle_setoption(char* cmds) {
 }
 
 errno_t handle_usi_newgame(char* cmds) {
-	//:TODO
-	printf("%s\n", __func__);
-	return NULL;
+	//:nothing
+	return 200;
 }
 
-errno_t handle_position(char** cmds[], int size) {
+errno_t handle_position(usi_handler_t* hd,char** cmds[],int count) {
 	//:TODO
+	// test position startpos moves 2g2f 8c8d 2f2e
+	// test position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b
 	printf("%s\n", __func__);
 	char sfen[128];
 	int mark = 0;
@@ -119,7 +121,15 @@ errno_t handle_position(char** cmds[], int size) {
 	}
 	//以降はboardを初期化することになるが準備ができていないのでパス
 	//TODO:
-	return NULL;
+	//set_board(hd, sfen);
+	if (cmds[mark] != "moves") {	//sfen文字列にmovesの文字列がなかったら、ここで終わり
+		return 200;
+	}
+	int size = count - mark;
+	for (int i=0;i<=size;i+=1) {
+		printf("moves = %s\n", cmds[i]);
+	}
+	return 200;	//no error
 }
 
 errno_t handle_go(char* cmds) {
@@ -141,7 +151,7 @@ errno_t handle_ponder_hit(char* cmds) {
 }
 
 errno_t handle_quit(char* cmds) {
-	return 200;
+	return 201;		
 }
 
 errno_t handle_gameover(char* cmds) {

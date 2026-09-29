@@ -26,7 +26,7 @@ char* square_usi_string_table[81] = {"1a","1b","1c","1d","1e","1f","1g","1h","1i
 							         "9a","9b","9c","9d","9e","9f","9g","9h","9i"};
 
 // 2つの位置関係のテーブル,sq1とsq2の関係がdirect_file=縦方向、direct_rank,direct_diag_nesw,direct_diag_nwse方向なのかを即答してくれるテーブル、それ以外はdirect_misc
-void new_square_relation_direct() {
+void new_square_relation_direct(void) {
 	for (int sq1 = sq1a; sq1 <= sq9i; sq1 += 1) {
 		const f1 = set_file(sq1);
 		const r1 = set_rank(sq1);
@@ -161,15 +161,17 @@ _Bool can_promote(const int c, const int from_or_to_rank) {
 /*
 * とりあえずusi.cからの要求でboardを作る
 */ 
-board_t* new_board() {
+// handle_is_readyからの対局準備としてboard_tのメモリを確保、設定は別の関数で行う
+board_t* new_board(void) {
 	printf("%s\n", __func__);
 	board_t* bd = malloc(sizeof(board_t));
 	if (bd == NULL) {
 		fprintf(stderr, "board_tの確保に失敗した");
 		return NULL;
 	}
-	/*
-	*	ここでboard_tをいろいろ設定、いまはパス
-	*/ 
 	return bd;
+}
+
+void set_board(usi_handler_t* hd, char* sfen) {
+	return;
 }

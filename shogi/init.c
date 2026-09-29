@@ -3,7 +3,7 @@
 #include "position.h"
 
 //各種テーブルの初期化
-void init_tables() {
+void init_tables(void) {
 	new_sq_mask();
 	new_file_mask();
 	new_rank_mask();

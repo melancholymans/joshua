@@ -431,18 +431,18 @@ void test_set_biton() {
 }
 
 void test_set_board() {
-	bitboard bb = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B45, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x3abad, bb.p[1]);
 	//print_bitboard(bb, __func__);
 }
 
 void test_first_one_from() {
-	bitboard bb = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	TEST_ASSERT_EQUAL_INT(0,first_one_from(&bb));
 	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B44, bb.p[0]);	//bbから最初の1bitを0にした値が返ることを確認
 	TEST_ASSERT_EQUAL_HEX64(0x3abad, bb.p[1]);
-	bb = set_board(0x282d026660282000, 0x28b5b);
+	bb = set_bitboard(0x282d026660282000, 0x28b5b);
 	TEST_ASSERT_EQUAL_INT(13, first_one_from(&bb));
 	TEST_ASSERT_EQUAL_HEX64(0x282D026660280000, bb.p[0]);	//bbから最初の1bitを0にした値が返ることを確認
 	TEST_ASSERT_EQUAL_HEX64(0x28b5b, bb.p[1]);
@@ -719,7 +719,7 @@ void test_new_rook_attack_rank_to_mask() {
 }
 
 void test_rook_attack_rank() {
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	//print_bitboard(occ, __func__);
 
 	bitboard bb = rook_attack_rank(sq5e, occ);
@@ -775,7 +775,7 @@ void test_rook_attack_rank() {
 // 最後の & 127は2段～8段だけを抽出する。抽出したパターンはlance_attack[color][sq][index]のどれかに該当する
 // blackとwhiteをor結合すればrookの縦利きになる
 void test_rook_attack_file() {
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	bitboard bb = rook_attack_file(sq5e, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x1E8000000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x00, bb.p[1]);
@@ -868,9 +868,9 @@ void test_byte_reverse256() {
 }
 
 void test_merge256() {
-	//bitboard occ1 = set_board(0x802008000080200, 0x10040);
+	//bitboard occ1 = set_bitboard(0x802008000080200, 0x10040);
 	//print_bitboard(occ1, __func__);
-	//bitboard occ2 = set_board(0x202000202020, 0x00);
+	//bitboard occ2 = set_bitboard(0x202000202020, 0x00);
 	//print_bitboard(occ2, __func__);
 	__m256i bb = _mm256_set_epi64x(0x10040, 0x802008000080200, 0x00, 0x202000202020);
 	__m128i mg = merge256(bb);
@@ -958,11 +958,11 @@ void test_new_silver_attack_mask() {
 }
 
 void test_first_one_from_nodelete() {
-	bitboard bb = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard bb = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	TEST_ASSERT_EQUAL_INT(0, first_one_from_nodelete(bb));
 	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B45, bb.p[0]);	//bbに変化がないことを確認
 	TEST_ASSERT_EQUAL_HEX64(0x3abad, bb.p[1]);
-	bb = set_board(0x282d026660282000, 0x28b5b);
+	bb = set_bitboard(0x282d026660282000, 0x28b5b);
 	TEST_ASSERT_EQUAL_INT(13, first_one_from_nodelete(bb));
 	TEST_ASSERT_EQUAL_HEX64(0x282d026660282000, bb.p[0]);	//bbに変化がないことを確認
 	TEST_ASSERT_EQUAL_HEX64(0x28b5b, bb.p[1]);
@@ -1301,7 +1301,7 @@ void test_new_neighbor_5x5_mask() {
 
 void test_lance_attack() {
 	int c = black;
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	//print_bitboard(occ, __func__);
 	bitboard bb = lance_attack(c, sq4g, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x180000000, bb.p[0]);
@@ -1320,7 +1320,7 @@ void test_lance_attack() {
 }
 
 void test_bishop_attack() {
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	//print_bitboard(occ, __func__);
 	bitboard bb = bishop_attack(sq4g, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x2220a0002822008, bb.p[0]);
@@ -1337,7 +1337,7 @@ void test_bishop_attack() {
 }
 
 void test_horse_attack() {
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	//print_bitboard(occ, __func__);
 	bitboard bb = horse_attack(sq4g, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x2220E0503822008, bb.p[0]);
@@ -1356,7 +1356,7 @@ void test_horse_attack() {
 //rookの縦と横の利きbitboardを合成して返す
 void test_rook_attack() {
 	int64_t tmp[2];
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	bitboard bb = rook_attack(sq5e, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x4021E8080000000, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x2010, bb.p[1]);
@@ -1368,7 +1368,7 @@ void test_rook_attack() {
 }
 
 void test_dragon_attack() {
-	bitboard occ = set_board(0x298060C0A1121B45, 0x3abad);
+	bitboard occ = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	//print_bitboard(occ, __func__);
 	bitboard bb = dragon_attack(sq4g, occ);
 	TEST_ASSERT_EQUAL_HEX64(0x10080E0D83800000, bb.p[0]);

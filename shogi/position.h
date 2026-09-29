@@ -1,5 +1,7 @@
 #pragma once
 
+#include "init.h"
+
 // 盤面の座標を表す定数を定義しています。これにより、将棋の盤面上の各マスを簡単に参照できます。
 enum {
 	sq1a = 0,	
@@ -270,13 +272,6 @@ enum {
 *	static const Key zobTurn_ = 1;
 *	static Key zobHand_[HandPieceNum][ColorNum];
 */ 
-//とりあえずboard_tを定義
-//mbはmain board,hbはhand board,turnはターン
-typedef struct {
-	int mb[81];
-	int hb[2][8];
-	int turn;
-}board_t;
 
 /*
 * class CharToPieceUSI
@@ -289,7 +284,7 @@ typedef struct {
 extern int square_relation_direct[81][81];
 extern char* square_usi_string_table[81];
 
-void new_square_relation_direct();
+void new_square_relation_direct(void);
 int set_square(int f, int r);
 int set_file(int sq);
 int set_rank(int sq);
@@ -307,4 +302,5 @@ int square_inverse(const int sq);
 int file_inverse(const int f);
 int rank_inverse(const int r);
 _Bool can_promote(const int c, const int from_or_to_rank);
-board_t* new_board();
+board_t* new_board(void);
+void set_board(usi_handler_t* hd, char* sfen);
