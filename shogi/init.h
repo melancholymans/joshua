@@ -7,6 +7,7 @@ typedef struct {
 	int mb[81];
 	int hb[2][8];
 	int turn;
+	int move_number;
 }board_t;
 
 typedef struct {

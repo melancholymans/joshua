@@ -79,7 +79,7 @@ errno_t handle_usi(usi_handler_t* hd,char* cmds) {
 }
 
 errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
-	hd->bd = new_board();
+	new_board(hd);
 	if (hd->bd == NULL) {
 		return 203;
 	}

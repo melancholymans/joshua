@@ -145,6 +145,7 @@ enum {
 };
 
 enum piecetype {	//‹îíAÚ“ª«‚Ìpro‚ª‚Â‚­‚Ì‚Í¬‹î‚ÌˆÓ–¡(Œ³‚Ì‹î‚É+8)
+	empty = 0,
 	pawn = 1,
 	lance = 2,
 	knight = 3,
@@ -162,7 +163,6 @@ enum piecetype {	//‹îíAÚ“ª«‚Ìpro‚ª‚Â‚­‚Ì‚Í¬‹î‚ÌˆÓ–¡(Œ³‚Ì‹î‚É+8)
 };
 
 enum piece {	//‹î”Ô piece_type‚Écolor‚ğ‰Á‚¦‚½‚à‚Ì
-	empty = 0,
 	bpawn = 1,
 	blance = 2,
 	bknight = 3,
@@ -302,5 +302,5 @@ int square_inverse(const int sq);
 int file_inverse(const int f);
 int rank_inverse(const int r);
 _Bool can_promote(const int c, const int from_or_to_rank);
-board_t* new_board(void);
+void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);

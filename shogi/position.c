@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
 
 #include "position.h"
 
@@ -25,6 +28,7 @@ char* square_usi_string_table[81] = {"1a","1b","1c","1d","1e","1f","1g","1h","1i
 							         "7a","7b","7c","7d","7e","7f","7g","7h","7i",
 							         "8a","8b","8c","8d","8e","8f","8g","8h","8i",
 							         "9a","9b","9c","9d","9e","9f","9g","9h","9i"};
+char piece_symbol[17] = {' ','p','l','n','s','b','r','g','k','P','L','N','S','B','R','G','K' };
 
 // 2つの位置関係のテーブル,sq1とsq2の関係がdirect_file=縦方向、direct_rank,direct_diag_nesw,direct_diag_nwse方向なのかを即答してくれるテーブル、それ以外はdirect_misc
 void new_square_relation_direct(void) {
@@ -163,14 +167,21 @@ _Bool can_promote(const int c, const int from_or_to_rank) {
 * とりあえずusi.cからの要求でboardを作る
 */ 
 // handle_is_readyからの対局準備としてboard_tのメモリを確保、設定は別の関数で行う
-board_t* new_board(void) {
+void new_board(usi_handler_t* hd) {
 	printf("%s\n", __func__);
-	board_t* bd = malloc(sizeof(board_t));
-	if (bd == NULL) {
+	hd->bd = (board_t*)malloc(sizeof(board_t));
+	if (hd->bd == NULL) {
 		fprintf(stderr, "board_tの確保に失敗した");
 		return NULL;
 	}
-	return bd;
+	for (int sq = 0; sq < 81; sq += 1) {
+		hd->bd->mb[sq] = empty;
+	}
+	for (int c = 0; c < 2; c += 1) {
+		for (int pt = 0; pt < 8; pt += 1) {
+			hd->bd->hb[c][pt] = 0;
+		}
+	}
 }
 
 void set_board(usi_handler_t* hd, char* sfen) {
@@ -185,7 +196,42 @@ void set_board(usi_handler_t* hd, char* sfen) {
 		parts[count++] = token;
 		token = strtok_s(NULL, " ", &ptr);
 	}
-
-	//hd->bd
+	board_t* b = hd->bd;
+	int square_index = 0;
+	int previous_was_plus = 0;
+	for (int i=0; i < strlen(parts[0]); i += 1) {
+		char r = parts[0][i];
+		if (isdigit((int)r)) {
+			square_index += (int)(r - 48);
+		}
+		else if ('+' == r) {
+			previous_was_plus = 8;
+		}
+		else if ('/' == r) {
+			continue;
+		}
+		else {
+			for (int pt = 1; pt < 17; pt += 1) {
+				if (piece_symbol[pt] == r) {
+					if (1 <= pt && 8 >= pt) {
+						b->mb[square_index] = pt + 16 + previous_was_plus;
+					}
+					else {
+						b->mb[square_index] = pt - 8 + previous_was_plus;
+					}
+					break;
+				}
+			}
+			square_index += 1;
+			previous_was_plus = 0;
+		}
+	}
+	if (strcmp("w",parts[1])==0) {
+		b->turn = white;
+	}
+	else {
+		b->turn = black;
+	}
+	b->move_number = atoi(parts[3]);
 	return;
 }
