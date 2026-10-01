@@ -163,15 +163,12 @@ _Bool can_promote(const int c, const int from_or_to_rank) {
 *  やねうら王から移植されたLong Effect Libraryがあるがいまのところ実装は後回し(TODO:)
 */
 
-/*
-* とりあえずusi.cからの要求でboardを作る
-*/ 
 // handle_is_readyからの対局準備としてboard_tのメモリを確保、設定は別の関数で行う
 void new_board(usi_handler_t* hd) {
 	hd->bd = (board_t*)malloc(sizeof(board_t));
 	if (hd->bd == NULL) {
 		fprintf(stderr, "board_tの確保に失敗した");
-		return NULL;
+		return;
 	}
 	board_t* b = hd->bd;
 	for (int sq = 0; sq < 81; sq += 1) {
@@ -182,13 +179,14 @@ void new_board(usi_handler_t* hd) {
 			b->hb[c][pt] = 0;
 		}
 	}
+	b->turn = 0;
+	b->move_number = 0;
+	return;
 }
 
 void set_board(usi_handler_t* hd, char* sfen) {
-	//予想されるsfen文字列
-	// lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1
-	// lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1
-	char* parts[4];	//sfenをセパレートで区切った後にできるポインタ配列
+	//parts: sfenをセパレートで区切った後にできるポインタ配列
+	char* parts[4];	
 	int count = 0;
 	char* ptr = NULL;
 	char* token = strtok_s(sfen, " ", &ptr);
