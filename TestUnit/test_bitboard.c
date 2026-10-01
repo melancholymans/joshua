@@ -430,7 +430,7 @@ void test_set_biton() {
 	//print_bitboard(bb, __func__);
 }
 
-void test_set_board() {
+void test_set_bitboard(void) {
 	bitboard bb = set_bitboard(0x298060C0A1121B45, 0x3abad);
 	TEST_ASSERT_EQUAL_HEX64(0x298060C0A1121B45, bb.p[0]);
 	TEST_ASSERT_EQUAL_HEX64(0x3abad, bb.p[1]);

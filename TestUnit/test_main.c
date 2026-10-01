@@ -38,6 +38,7 @@ void test_position() {
 	test_file_inverse();
 	test_rank_inverse();
 	test_can_promote();
+	test_set_board();
 }
 
 void test_bitboard() {
@@ -51,7 +52,7 @@ void test_bitboard() {
 	test_new_in_front_mask();
 	test_new_enemy_mask();
 	test_set_biton();
-	test_set_board();
+	test_set_bitboard();
 	test_first_one_from();
 	test_lance_block_mask();
 	test_index_to_occupied();

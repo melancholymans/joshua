@@ -1,9 +1,12 @@
+#include <string.h>
 #include "unity.h"
 
 #include "../shogi/position.h"
+#include "../shogi/usi.h"
 #include "test_position.h"
 
-void test_set_file() {
+
+void test_set_file(void) {
 	TEST_ASSERT_EQUAL_INT(0, set_file(0));
 	TEST_ASSERT_EQUAL_INT(1, set_file(10));
 	TEST_ASSERT_EQUAL_INT(2, set_file(20));
@@ -23,7 +26,7 @@ void test_set_file() {
 	TEST_ASSERT_EQUAL_INT(0, set_file(8));
 }
 
-void test_set_rank() {
+void test_set_rank(void) {
 	TEST_ASSERT_EQUAL_INT(0, set_rank(0));
 	TEST_ASSERT_EQUAL_INT(1, set_rank(10));
 	TEST_ASSERT_EQUAL_INT(2, set_rank(20));
@@ -43,7 +46,7 @@ void test_set_rank() {
 	TEST_ASSERT_EQUAL_INT(8, set_rank(8));
 }
 
-bool test_set_square() {
+bool test_set_square(void) {
 	for (int sq = 0; sq < 81; sq += 1) {
 		if (set_square(set_file(sq), set_rank(sq)) != sq) {
 			return false;
@@ -52,7 +55,7 @@ bool test_set_square() {
 	return true;
 }
 
-void test_new_square_relation_direct() {
+void test_new_square_relation_direct(void) {
 	int sq1 = sq7b;
 	int sq2 = sq2b;
 	int sq3 = sq2d;
@@ -69,7 +72,7 @@ void test_new_square_relation_direct() {
 	TEST_ASSERT_EQUAL_INT(direct_diag_nwse, square_relation_direct[sq6][sq1]);
 }
 
-void test_square_relation() {
+void test_square_relation(void) {
 	int sq1 = sq7b;
 	int sq2 = sq2b;
 	int sq3 = sq2d;
@@ -86,14 +89,14 @@ void test_square_relation() {
 	TEST_ASSERT_EQUAL_INT(direct_diag_nwse, square_relation(sq6, sq1));
 }
 
-void test_opposite_color() {
+void test_opposite_color(void) {
 	int color = black;
 	TEST_ASSERT_EQUAL_INT(white, opposite_color(color));
 	color = white;
 	TEST_ASSERT_EQUAL_INT(black, opposite_color(color));
 }
 
-void test_inverse() {
+void test_inverse(void) {
 	for (int i = 0; i < 14; i += 1) {
 		TEST_ASSERT_EQUAL_INT(wpawn+i, inverse(bpawn+i));
 	}
@@ -102,7 +105,7 @@ void test_inverse() {
 	}
 }
 
-void test_piece_to_piecetype() {
+void test_piece_to_piecetype(void) {
 	for (int i = 0; i < 14; i += 1) {
 		TEST_ASSERT_EQUAL_INT(pawn + i, piece_to_piecetype(bpawn + i));
 	}
@@ -111,7 +114,7 @@ void test_piece_to_piecetype() {
 	}
 }
 
-void test_piece_to_color() {
+void test_piece_to_color(void) {
 	for (int i = 0; i < 14; i += 1) {
 		TEST_ASSERT_EQUAL_INT(black, piece_to_color(bpawn+i));
 	}
@@ -120,7 +123,7 @@ void test_piece_to_color() {
 	}
 }
 
-void test_piecetype_to_piece() {
+void test_piecetype_to_piece(void) {
 	for (int i = 0; i < 14; i += 1) {
 		TEST_ASSERT_EQUAL_INT(bpawn + i, piecetype_to_piece(black, pawn + i));
 	}
@@ -146,7 +149,7 @@ void test_piecetype_to_piece() {
 //horse		0x2000
 //dragon	0x4000
 //or結合    0x6064
-void test_is_jump() {
+void test_is_jump(void) {
 	TEST_ASSERT_FALSE(is_jump(bpawn));
 	TEST_ASSERT_TRUE(is_jump(blance));
 	TEST_ASSERT_FALSE(is_jump(bknight));
@@ -178,21 +181,21 @@ void test_is_jump() {
 }
 
 // rank1 -> a,rank9 -> i
-void test_rank_usi_string() {
+void test_rank_usi_string(void) {
 	for (int r = rank1; r <= rank9; r += 1) {
 		TEST_ASSERT_EQUAL_INT8('a' + r, rank_usi_string(r));
 	}
 }
 
 // file1 -> 1,file9 -> 9
-void test_file_usi_string() {
+void test_file_usi_string(void) {
 	for (int f = file1; f <= file9; f += 1) {
 		TEST_ASSERT_EQUAL_INT8('1' + f, file_usi_string(f));
 	}
 }
 
 // square_usi_string_table[81]の初期値が正しいか確認している
-void test_square_usi_string() {
+void test_square_usi_string(void) {
 	for (int sq = sq1a; sq <= sq9i; sq += 1) {
 		char str[8];		
 		square_usi_string(sq, str);
@@ -204,7 +207,7 @@ void test_square_usi_string() {
 // sq5c = 81-1-38=sq5g
 // sq6b = 81-1-46=sq4h
 // sq9i = 81-1-80=sq1a
-void test_square_inverse() {
+void test_square_inverse(void) {
 	TEST_ASSERT_EQUAL_INT(sq9i, square_inverse(sq1a));
 	TEST_ASSERT_EQUAL_INT(sq5g, square_inverse(sq5c));
 	TEST_ASSERT_EQUAL_INT(sq4h, square_inverse(sq6b));
@@ -213,14 +216,14 @@ void test_square_inverse() {
 
 // file1 = 9-1-0=8=file9
 // file3 = 9-1-2=6=file7
-void test_file_inverse() {
+void test_file_inverse(void) {
 	TEST_ASSERT_EQUAL_INT(file9, file_inverse(file1));
 	TEST_ASSERT_EQUAL_INT(file7, file_inverse(file3));
 }
 
 // rank1 = 9-1-0=8=rank9
 // rank3 = 9-1-2=6=rank7
-void test_rank_inverse() {
+void test_rank_inverse(void) {
 	TEST_ASSERT_EQUAL_INT(rank9, rank_inverse(rank1));
 	TEST_ASSERT_EQUAL_INT(rank7, rank_inverse(rank3));
 }
@@ -230,7 +233,7 @@ void test_rank_inverse() {
 // white駒
 // rank7-9 true(white側エリアであれば成れる）
 // enemy_mask[2]というbitboardがあり、同じ趣旨であるが今のところ使い分けの判断は保留にしておく(TODO:)
-void test_can_promote() {
+void test_can_promote(void) {
 	for (int r = rank1; r <= rank9; r += 1) {
 		if (r <= rank3) {
 			TEST_ASSERT_EQUAL_INT(true, can_promote(black, r));
@@ -247,3 +250,263 @@ void test_can_promote() {
 	}
 }
 
+// test問題1
+// position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b
+// test問題2(コンピュータ将棋2問題1)
+// position sfen lR1B3nl/2gp5/ngk1+B5pPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b - 1
+// test問題3(コンピュータ将棋2問題46を改変)
+// position sfen l2g2ks1/4+P3+L/2p1+S2pn/p2p2+r1p/5+B3/P3S2PP/1PPP+b1P2/1rG2P3/LN2KG1+n b - 1
+void test_set_board(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	sfen[0] = '\0';
+	// test問題1
+	strcpy_s(sfen, sizeof(sfen), "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	board_t* b = hd.bd;
+	TEST_ASSERT_EQUAL_INT(wlance, b->mb[sq9a]);
+	TEST_ASSERT_EQUAL_INT(wknight, b->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(wsilver, b->mb[sq7a]);
+	TEST_ASSERT_EQUAL_INT(wgold, b->mb[sq6a]);
+	TEST_ASSERT_EQUAL_INT(wking, b->mb[sq5a]);
+	TEST_ASSERT_EQUAL_INT(wgold, b->mb[sq4a]);
+	TEST_ASSERT_EQUAL_INT(wsilver, b->mb[sq3a]);
+	TEST_ASSERT_EQUAL_INT(wknight, b->mb[sq2a]);
+	TEST_ASSERT_EQUAL_INT(wlance, b->mb[sq1a]);
+
+	for (int sq = sq9b; sq >= sq1b; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	for (int sq = sq9c; sq >= sq1c; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq]);
+	}
+
+	for (int sq = sq9d; sq >= sq1d; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	for (int sq = sq9e; sq >= sq1e; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	for (int sq = sq9f; sq >= sq1f; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	for (int sq = sq9g; sq >= sq1g; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9h]);
+	TEST_ASSERT_EQUAL_INT(bbishop, b->mb[sq8h]);
+	for (int sq = sq7h; sq >= sq3h; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(brook, b->mb[sq2h]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1h]);
+
+	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq9i]);
+	TEST_ASSERT_EQUAL_INT(bknight, b->mb[sq8i]);
+	TEST_ASSERT_EQUAL_INT(bsilver, b->mb[sq7i]);
+	TEST_ASSERT_EQUAL_INT(bgold, b->mb[sq6i]);
+	TEST_ASSERT_EQUAL_INT(bking, b->mb[sq5i]);
+	TEST_ASSERT_EQUAL_INT(bgold, b->mb[sq4i]);
+	TEST_ASSERT_EQUAL_INT(bsilver, b->mb[sq3i]);
+	TEST_ASSERT_EQUAL_INT(bknight, b->mb[sq2i]);
+	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq1i]);
+
+	TEST_ASSERT_EQUAL_INT(white, b->turn);
+	TEST_ASSERT_EQUAL_INT(1, b->move_number);
+
+	// test問題2
+	sfen[0] = '\0';
+	strcpy_s(sfen, sizeof(sfen), "lR1B3nl/2gp5/ngk1+BspPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	b = hd.bd;
+	TEST_ASSERT_EQUAL_INT(wlance, b->mb[sq9a]);
+	TEST_ASSERT_EQUAL_INT(brook, b->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq7a]);
+	TEST_ASSERT_EQUAL_INT(bbishop, b->mb[sq6a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq5a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3a]);
+	TEST_ASSERT_EQUAL_INT(wknight, b->mb[sq2a]);
+	TEST_ASSERT_EQUAL_INT(wlance, b->mb[sq1a]);
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9b]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq8b]);
+	TEST_ASSERT_EQUAL_INT(wgold, b->mb[sq7b]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq6b]);
+	for (int sq = sq5b; sq >= sq1b; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(wknight, b->mb[sq9c]);
+	TEST_ASSERT_EQUAL_INT(wgold, b->mb[sq8c]);
+	TEST_ASSERT_EQUAL_INT(wking, b->mb[sq7c]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq6c]);
+	TEST_ASSERT_EQUAL_INT(bhorse, b->mb[sq5c]);
+	TEST_ASSERT_EQUAL_INT(wsilver, b->mb[sq4c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq3c]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq1c]);
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9d]);
+	TEST_ASSERT_EQUAL_INT(wsilver, b->mb[sq8d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq7d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq6d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq5d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1d]);
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9d]);
+	TEST_ASSERT_EQUAL_INT(wsilver, b->mb[sq8d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq7d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq6d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq5d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1d]);
+
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq9e]);
+	for (int sq = sq8e; sq >= sq5e; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bsilver, b->mb[sq4e]);
+	for (int sq = sq3e; sq >= sq1e; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9f]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq8f]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq7f]);
+	for (int sq = sq6f; sq >= sq1f; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq9g]);
+	for (int sq = sq8g; sq >= sq4g; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq3g]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq2g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq1g]);
+
+	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq9h]);
+	TEST_ASSERT_EQUAL_INT(bgold, b->mb[sq8h]);
+	TEST_ASSERT_EQUAL_INT(bgold, b->mb[sq7h]);
+	for (int sq = sq6h; sq >= sq1h; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(bking, b->mb[sq9i]);
+	TEST_ASSERT_EQUAL_INT(bknight, b->mb[sq8i]);
+	for (int sq = sq7i; sq >= sq3i; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bknight, b->mb[sq2i]);
+	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq1i]);
+
+
+	// test問題3
+	sfen[0] = '\0';
+	strcpy_s(sfen, sizeof(sfen), "l2g2ks1/4+P3+L/2p1+S2pn/p2p2+r1p/5+B3/P3S2PP/1PPP+b1P2/1rG2P3/LN2KG1+n b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	b = hd.bd;
+	TEST_ASSERT_EQUAL_INT(wlance, b->mb[sq9a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq7a]);
+	TEST_ASSERT_EQUAL_INT(wgold, b->mb[sq6a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq5a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4a]);
+	TEST_ASSERT_EQUAL_INT(wking, b->mb[sq3a]);
+	TEST_ASSERT_EQUAL_INT(wsilver, b->mb[sq2a]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1a]);
+
+	for (int sq = sq9b; sq >= sq6b; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bpropawn, b->mb[sq5b]);
+	for (int sq = sq4b; sq >= sq2b; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bprolance, b->mb[sq1b]);
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9c]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq8c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq7c]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq6c]);
+	TEST_ASSERT_EQUAL_INT(bprosilver, b->mb[sq5c]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4c]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(wknight, b->mb[sq1c]);
+
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq9d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq8d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq7d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq6d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq5d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4d]);
+	TEST_ASSERT_EQUAL_INT(wdragon, b->mb[sq3d]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, b->mb[sq1d]);
+
+	for (int sq = sq9e; sq >= sq5e; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bhorse, b->mb[sq4e]);
+	for (int sq = sq3e; sq >= sq1e; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq9f]);
+	for (int sq = sq8f; sq >= sq6f; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+	TEST_ASSERT_EQUAL_INT(bsilver, b->mb[sq5f]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4f]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3f]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq2f]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq1f]);
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq8g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq7g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq6g]);
+	TEST_ASSERT_EQUAL_INT(whorse, b->mb[sq5g]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq4g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq3g]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq2g]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1g]);
+
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq9h]);
+	TEST_ASSERT_EQUAL_INT(wrook, b->mb[sq8h]);
+	TEST_ASSERT_EQUAL_INT(bgold, b->mb[sq7h]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq6h]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq5h]);
+	TEST_ASSERT_EQUAL_INT(bpawn, b->mb[sq4h]);
+	for (int sq = sq3h; sq >= sq1h; sq -= 9) {
+		TEST_ASSERT_EQUAL_INT(empty, b->mb[sq]);
+	}
+
+	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq9i]);
+	TEST_ASSERT_EQUAL_INT(bknight, b->mb[sq8i]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq7i]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq6i]);
+	TEST_ASSERT_EQUAL_INT(bking, b->mb[sq5i]);
+	TEST_ASSERT_EQUAL_INT(bgold, b->mb[sq4i]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3i]);
+	TEST_ASSERT_EQUAL_INT(wproknight, b->mb[sq2i]);
+	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1i]);
+
+
+	// moveができていないので、hd(持ち駒)のテストはできていない
+}

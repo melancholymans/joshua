@@ -168,18 +168,18 @@ _Bool can_promote(const int c, const int from_or_to_rank) {
 */ 
 // handle_is_readyからの対局準備としてboard_tのメモリを確保、設定は別の関数で行う
 void new_board(usi_handler_t* hd) {
-	printf("%s\n", __func__);
 	hd->bd = (board_t*)malloc(sizeof(board_t));
 	if (hd->bd == NULL) {
 		fprintf(stderr, "board_tの確保に失敗した");
 		return NULL;
 	}
+	board_t* b = hd->bd;
 	for (int sq = 0; sq < 81; sq += 1) {
-		hd->bd->mb[sq] = empty;
+		b->mb[sq] = empty;
 	}
 	for (int c = 0; c < 2; c += 1) {
 		for (int pt = 0; pt < 8; pt += 1) {
-			hd->bd->hb[c][pt] = 0;
+			b->hb[c][pt] = 0;
 		}
 	}
 }
@@ -197,33 +197,33 @@ void set_board(usi_handler_t* hd, char* sfen) {
 		token = strtok_s(NULL, " ", &ptr);
 	}
 	board_t* b = hd->bd;
-	int square_index = 0;
-	int previous_was_plus = 0;
+	int sq = sq9a;
+	int pmoto = 0;
 	for (int i=0; i < strlen(parts[0]); i += 1) {
 		char r = parts[0][i];
 		if (isdigit((int)r)) {
-			square_index += (int)(r - 48);
+			sq += delta_e * (int)(r - 48);
 		}
 		else if ('+' == r) {
-			previous_was_plus = 8;
+			pmoto = 8;
 		}
 		else if ('/' == r) {
-			continue;
+			sq += (delta_w * 9) + delta_s;
 		}
 		else {
 			for (int pt = 1; pt < 17; pt += 1) {
 				if (piece_symbol[pt] == r) {
 					if (1 <= pt && 8 >= pt) {
-						b->mb[square_index] = pt + 16 + previous_was_plus;
+						b->mb[sq] = pt + 16 + pmoto;
 					}
 					else {
-						b->mb[square_index] = pt - 8 + previous_was_plus;
+						b->mb[sq] = pt - 8 + pmoto;
 					}
 					break;
 				}
 			}
-			square_index += 1;
-			previous_was_plus = 0;
+			sq += delta_e;
+			pmoto = 0;
 		}
 	}
 	if (strcmp("w",parts[1])==0) {
