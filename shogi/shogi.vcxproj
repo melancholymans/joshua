@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="bitboard.c" />
+    <ClCompile Include="move.c" />
     <ClCompile Include="usi.c" />
     <ClCompile Include="init.c" />
     <ClCompile Include="main.c">
@@ -139,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="bitboard.h" />
     <ClInclude Include="init.h" />
+    <ClInclude Include="move.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="usi.h" />
   </ItemGroup>

@@ -129,10 +129,12 @@
   <ItemGroup>
     <ClCompile Include="..\shogi\bitboard.c" />
     <ClCompile Include="..\shogi\init.c" />
+    <ClCompile Include="..\shogi\move.c" />
     <ClCompile Include="..\shogi\position.c" />
     <ClCompile Include="..\shogi\usi.c" />
     <ClCompile Include="test_bitboard.c" />
     <ClCompile Include="test_main.c" />
+    <ClCompile Include="test_move.c" />
     <ClCompile Include="test_position.c" />
     <ClCompile Include="test_usi.c" />
     <ClCompile Include="unity.c" />
