@@ -304,3 +304,4 @@ int rank_inverse(const int r);
 _Bool can_promote(const int c, const int from_or_to_rank);
 void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);
+void print_board(usi_handler_t* hd);

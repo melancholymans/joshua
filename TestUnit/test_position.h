@@ -20,3 +20,4 @@ void test_file_inverse(void);
 void test_rank_inverse(void);
 void test_can_promote(void);
 void test_set_board(void);
+void test_print_board(void);

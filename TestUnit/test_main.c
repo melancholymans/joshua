@@ -39,6 +39,7 @@ void test_position() {
 	test_rank_inverse();
 	test_can_promote();
 	test_set_board();
+	test_print_board();
 }
 
 void test_bitboard() {

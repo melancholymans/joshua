@@ -28,7 +28,44 @@ char* square_usi_string_table[81] = {"1a","1b","1c","1d","1e","1f","1g","1h","1i
 							         "7a","7b","7c","7d","7e","7f","7g","7h","7i",
 							         "8a","8b","8c","8d","8e","8f","8g","8h","8i",
 							         "9a","9b","9c","9d","9e","9f","9g","9h","9i"};
-char piece_symbol[17] = {' ','p','l','n','s','b','r','g','k','P','L','N','S','B','R','G','K' };
+/*
+ piece_symbolの意味
+ 1-8はset_boardでblackの駒を表す番号,17-24はwhiteの駒を表す番号,他はprint_boardで使うための番号
+ 0 ""
+ 1 P bpawn
+ 2 L blance
+ 3 N bknight
+ 4 S bsilver
+ 5 B bbishop
+ 6 R brook
+ 7 G bgold
+ 8 K bking
+ 9 A propawn
+ 10 C prolance
+ 11 V proknight
+ 12 I prosilver
+ 13 H horse
+ 14 D dragon
+ 15 ""
+ 16 ""
+ 17 p wpawn
+ 18 l wlance
+ 19 n wknight
+ 20 s wsilver
+ 21 b wbishop
+ 22 r wrook
+ 23 g wgold
+ 24 k wking
+ 25 a propawn
+ 26 c prolance
+ 27 v proknight
+ 28 i prosilver
+ 29 h horse
+ 30 d dragon
+*/
+char piece_symbol[31] = { ' ','P','L','N','S','B','R','G','K','A','C','V','I','H','D',' ',' ', 
+		                  'p','l','n','s','b','r','g','k','a','c','v','i','h','d' };
+
 
 // 2つの位置関係のテーブル,sq1とsq2の関係がdirect_file=縦方向、direct_rank,direct_diag_nesw,direct_diag_nwse方向なのかを即答してくれるテーブル、それ以外はdirect_misc
 void new_square_relation_direct(void) {
@@ -209,13 +246,13 @@ void set_board(usi_handler_t* hd, char* sfen) {
 			sq += (delta_w * 9) + delta_s;
 		}
 		else {
-			for (int pt = 1; pt < 17; pt += 1) {
+			for (int pt = 1; pt <= 30; pt += 1) {
 				if (piece_symbol[pt] == r) {
-					if (1 <= pt && 8 >= pt) {
-						b->mb[sq] = pt + 16 + pmoto;
+					if (1 <= pt && 8 >= pt) {	//black
+						b->mb[sq] = pt + pmoto;
 					}
-					else {
-						b->mb[sq] = pt - 8 + pmoto;
+					else if (17<=pt && 24>=pt){	//white
+						b->mb[sq] = pt + pmoto;
 					}
 					break;
 				}
@@ -232,4 +269,24 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	}
 	b->move_number = atoi(parts[3]);
 	return;
+}
+
+void print_board(usi_handler_t* hd) {
+	char rstr[] = "abcdefghi";
+	printf("     9  8  7  6  5  4  3  2  1\n");
+	for (int r = 0; r < 9; r += 1) {
+		printf("%c   ", rstr[r]);
+		for (int f = 8; f >= 0; f -= 1) {
+			int sq = set_square(f, r);
+			if (hd->bd->mb[sq] == empty) {
+				printf(" . ");
+			}
+			else {
+				printf(" %c ", piece_symbol[hd->bd->mb[sq]]);
+			}
+		}
+		printf("\n");
+	}
+	printf("a:ppawn c:plance v:knight i:psilver h:horse d:dragon\n");
+
 }
