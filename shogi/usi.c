@@ -51,7 +51,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		return handle_quit(cmds);
 	}
 	else if (!strcmp("gameover", cmds[0])) {
-		return handle_gameover(cmds);
+		return handle_gameover(usi_hd);
 	}
 	else if (!strcmp("debug", cmds[0])) {
 		return handle_debug(usi_hd,cmds,count);
@@ -119,8 +119,6 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		strcpy_s(sfen,63+1,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 		mark = 2;	//次に見る配列のindex
 	}
-	//以降はboardを初期化することになるが準備ができていないのでパス
-	//TODO:
 	set_board(hd, sfen);
 	if (strcmp(cmds[mark],"moves")) {	//sfen文字列にmovesの文字列がなかったら、ここで終わり
 		return 200;
@@ -130,7 +128,7 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		//TODO: boardを更新するpush_moveみたいな関数をここに書く
 		printf("moves = %s\n", cmds[mark + 1 + i]);
 	}
-	return 200;	//no error
+	return 200;
 }
 
 errno_t handle_go(char* cmds) {
@@ -155,10 +153,13 @@ errno_t handle_quit(char* cmds) {
 	return 201;		
 }
 
-errno_t handle_gameover(char* cmds) {
-	//:TODO
-	printf("%s\n", __func__);
-	return NULL;
+errno_t handle_gameover(usi_handler_t* hd) {
+	new_board(hd);
+	if (hd->bd == NULL) {
+		return 203;
+	}
+	put_send(hd, "readyok");
+	return 200;
 }
 
 errno_t handle_debug(usi_handler_t *hd,char** msg[],int size) {
