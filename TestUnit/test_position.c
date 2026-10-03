@@ -518,5 +518,5 @@ void test_print_board(void) {
 	sfen[0] = '\0';	
 	strcpy_s(sfen, sizeof(sfen), "l2g2ks1/4+P3+L/2p1+S2pn/p2p2+r1p/5+B3/P3S2PP/1PPP+b1P2/1rG2P3/LN2KG1+n b - 1");
 	set_board(&hd, sfen);
-	print_board(&hd, sfen);
+	print_board(&hd);
 }

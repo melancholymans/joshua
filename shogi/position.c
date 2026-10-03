@@ -273,9 +273,9 @@ void set_board(usi_handler_t* hd, char* sfen) {
 
 void print_board(usi_handler_t* hd) {
 	char rstr[] = "abcdefghi";
-	printf("     9  8  7  6  5  4  3  2  1\n");
+	printf("   9  8  7  6  5  4  3  2  1\n");
 	for (int r = 0; r < 9; r += 1) {
-		printf("%c   ", rstr[r]);
+		printf("%c ", rstr[r]);
 		for (int f = 8; f >= 0; f -= 1) {
 			int sq = set_square(f, r);
 			if (hd->bd->mb[sq] == empty) {
@@ -288,5 +288,4 @@ void print_board(usi_handler_t* hd) {
 		printf("\n");
 	}
 	printf("a:ppawn c:plance v:knight i:psilver h:horse d:dragon\n");
-
 }
