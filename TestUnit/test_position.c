@@ -47,7 +47,7 @@ void test_set_rank(void) {
 }
 
 bool test_set_square(void) {
-	for (int sq = 0; sq < 81; sq += 1) {
+	for (int sq = 0; sq < 81; sq++) {
 		if (set_square(set_file(sq), set_rank(sq)) != sq) {
 			return false;
 		}
@@ -97,37 +97,37 @@ void test_opposite_color(void) {
 }
 
 void test_inverse(void) {
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(wpawn+i, inverse(bpawn+i));
 	}
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(bpawn + i, inverse(wpawn + i));
 	}
 }
 
 void test_piece_to_piecetype(void) {
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(pawn + i, piece_to_piecetype(bpawn + i));
 	}
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(pawn + i, piece_to_piecetype(wpawn + i));
 	}
 }
 
 void test_piece_to_color(void) {
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(black, piece_to_color(bpawn+i));
 	}
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(white, piece_to_color(wpawn + i));
 	}
 }
 
 void test_piecetype_to_piece(void) {
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(bpawn + i, piecetype_to_piece(black, pawn + i));
 	}
-	for (int i = 0; i < 14; i += 1) {
+	for (int i = 0; i < 14; i++) {
 		TEST_ASSERT_EQUAL_INT(wpawn + i, piecetype_to_piece(white, pawn + i));
 	}
 }
@@ -182,21 +182,21 @@ void test_is_jump(void) {
 
 // rank1 -> a,rank9 -> i
 void test_rank_usi_string(void) {
-	for (int r = rank1; r <= rank9; r += 1) {
+	for (int r = rank1; r <= rank9; r++) {
 		TEST_ASSERT_EQUAL_INT8('a' + r, rank_usi_string(r));
 	}
 }
 
 // file1 -> 1,file9 -> 9
 void test_file_usi_string(void) {
-	for (int f = file1; f <= file9; f += 1) {
+	for (int f = file1; f <= file9; f++) {
 		TEST_ASSERT_EQUAL_INT8('1' + f, file_usi_string(f));
 	}
 }
 
 // square_usi_string_table[81]の初期値が正しいか確認している
 void test_square_usi_string(void) {
-	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int sq = sq1a; sq <= sq9i; sq++) {
 		char str[8];		
 		square_usi_string(sq, str);
 		TEST_ASSERT_EQUAL_STRING(str, square_usi_string_table[sq]);
@@ -234,7 +234,7 @@ void test_rank_inverse(void) {
 // rank7-9 true(white側エリアであれば成れる）
 // enemy_mask[2]というbitboardがあり、同じ趣旨であるが今のところ使い分けの判断は保留にしておく(TODO:)
 void test_can_promote(void) {
-	for (int r = rank1; r <= rank9; r += 1) {
+	for (int r = rank1; r <= rank9; r++) {
 		if (r <= rank3) {
 			TEST_ASSERT_EQUAL_INT(true, can_promote(black, r));
 		}

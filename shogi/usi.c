@@ -107,7 +107,7 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	int mark = 0;
 	sfen[0] = '\0';
 	if (!strcmp("sfen", cmds[1])) {
-		for (int i = 2; i < 6; i += 1) {
+		for (int i = 2; i < 6; i++) {
 			strcat_s(sfen, strlen(cmds[2])+6+1, cmds[i]);
 			if (i < 5) {
 				strcat_s(sfen, strlen(cmds[2]) + 6 + 1, " ");
@@ -124,7 +124,7 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		return 200;
 	}
 	int size = count - mark - 1;
-	for (int i=0;i<size;i+=1) {
+	for (int i=0;i<size;i++) {
 		//TODO: board‚ðXV‚·‚épush_move‚Ý‚½‚¢‚ÈŠÖ”‚ð‚±‚±‚É‘‚­
 		printf("moves = %s\n", cmds[mark + 1 + i]);
 	}
@@ -164,7 +164,7 @@ errno_t handle_gameover(usi_handler_t* hd) {
 
 errno_t handle_debug(usi_handler_t *hd,char** msg[],int size) {
 	printf("%s\n", __func__);
-	for (int i = 0; i < size; i += 1) {
+	for (int i = 0; i < size; i++) {
 		put_debug(hd, msg[i]);
 	}
 	return NULL;

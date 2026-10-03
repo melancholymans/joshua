@@ -49,29 +49,29 @@ const int slide[81] = {
 
 //座標sqごとにbitが立っている配列を生成している
 void new_sq_mask(void) {
-	for (int i = 0; i < 63; i += 1) {
+	for (int i = 0; i < 63; i++) {
 		sq_mask[i].p[0] = (int64_t)1 << i;
 		sq_mask[i].p[1] = 0x00;
 	}
-	for (int i = 63; i < 81; i += 1){
+	for (int i = 63; i < 81; i++){
 		sq_mask[i].p[0] = 0x00;
 		sq_mask[i].p[1] = (int64_t)1 << (i - 63);
 	}
 }
 
 void new_file_mask(void) {
-	for (int i = 0; i < 7; i += 1) {
+	for (int i = 0; i < 7; i++) {
 		file_mask[i].p[0] = (int64_t)0x1ff << (9 * i);
 		file_mask[i].p[1] = 0x00;
 	}
-	for (int i = 7; i < 9; i += 1) {
+	for (int i = 7; i < 9; i++) {
 		file_mask[i].p[0] = 0x00;
 		file_mask[i].p[1] = (int64_t)0x1ff << (9 * (i - 7));
 	}
 }
 
 void new_rank_mask(void) {
-	for (int i = 0; i < 9; i += 1) {
+	for (int i = 0; i < 9; i++) {
 		rank_mask[i].p[0] = (int64_t)0x40201008040201 << i;
 		rank_mask[i].p[1] = (int64_t)0x201 << i;
 	}
@@ -208,7 +208,7 @@ bitboard index_to_occupied(const int idx, const bitboard block_mask) {
 	bitboard tmp = block_mask;
 	bitboard result;
 	result = all_zero_mask;
-	for(int i = 0;i < 7;i += 1){
+	for(int i = 0;i < 7;i++){
 		int sq = first_one_from(&tmp);
 		if(sq == -1){
 			printf("Error: [%s : %d : %s()]\n", __FILE__, __LINE__, __func__);
@@ -223,10 +223,10 @@ bitboard index_to_occupied(const int idx, const bitboard block_mask) {
 
 // lanceの利きbitboardを生成する
 void new_lance_attack_mask(void) {
-	for(int c = black;c <= white;c+=1){
-		for (int sq = sq1a; sq <= sq9i;sq+=1) {
+	for(int c = black;c <= white; c++){
+		for (int sq = sq1a; sq <= sq9i;sq++) {
 			bitboard block_mask = lance_block_mask(sq);
-			for(int i=0;i<128;i+=1){
+			for(int i=0; i < 128; i++){
 				bitboard occ = index_to_occupied(i,block_mask);
 				lance_attack_mask[c][sq][i] = lance_attack_calc(c,sq,occ);
 			}
@@ -264,12 +264,12 @@ void decrement(const bitboard hi_in, const bitboard lo_in, bitboard* hi_out, bit
 
 // 座標s	qごとの飛車の横利きをrook_attack_rank_to_mask配列に保存しておく
 void new_rook_attack_rank_to_mask(void) {
-	for (int f = file1; f <= file9; f+=1) {
-		for (int r = rank1; r <= rank9; r+=1) {
+	for (int f = file1; f <= file9; f++) {
+		for (int r = rank1; r <= rank9; r++) {
 			bitboard left = all_zero_mask;
 			bitboard right = all_zero_mask;
 			//sq座標から左方向
-			for (int f2 = f + 1; f2 <= file9; f2+=1) {
+			for (int f2 = f + 1; f2 <= file9; f2++) {
 				left.m = _mm_or_si128(left.m,sq_mask[set_square(f2, r)].m);
 			}
 			//sq座標から右方向
@@ -336,11 +336,11 @@ void new_bishop_attack_to_mask(void) {
 		delta_ne,	//右上
 		delta_se	//右下
 	};
-	for (int f = file1; f <= file9; f += 1) {
-		for (int r = rank1; r <= rank9; r += 1) {
+	for (int f = file1; f <= file9; f++) {
+		for (int r = rank1; r <= rank9; r++) {
 			int sq = set_square(f, r);
 			bitboard bishop_to_bb[4];
-			for (int i = 0; i < 4; i += 1) {
+			for (int i = 0; i < 4; i++) {
 				bitboard bb = all_zero_mask;
 				int delta = bishop_delta[i];
 				// 四方にそれぞれリーチを伸ばし壁に突き当たるまで歩進する
@@ -427,16 +427,16 @@ void new_king_attack_mask(void) {
 }
 
 void new_gold_attack_mask(void) {
-	for (int c = black; c <= white; c += 1) {
-		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int c = black; c <= white; c++) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			gold_attack_mask[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack_mask[sq].m, in_front_mask[c][set_rank(sq)].m), rook_attack(sq, all_one_mask).m);
 		}
 	}
 }
 
 void new_silver_attack_mask(void) {
-	for (int c = black; c <= white; c += 1) {
-		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int c = black; c <= white; c++) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			silver_attack_mask[c][sq].m = _mm_or_si128(_mm_and_si128(king_attack_mask[sq].m, in_front_mask[c][set_rank(sq)].m), bishop_attack(sq, all_one_mask).m);
 		}
 	}
@@ -458,14 +458,14 @@ int first_one_from_nodelete(bitboard bb) {
 
 // sqを中心に右斜め、左斜めの利きbitboardを返す
 void new_star_mask(void) {	
-	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int sq = sq1a; sq <= sq9i; sq++) {
 		star_mask[sq].m = _mm_and_si128(silver_attack_mask[black][sq].m, silver_attack_mask[white][sq].m);
 	}
 }
 
 void new_knight_attack_mask(void) {
-	for (int c = black; c <= white; c += 1) {
-		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int c = black; c <= white; c++) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			knight_attack_mask[c][sq] = all_zero_mask;
 			const bitboard bb = pawn_attack_mask[c][sq];
 			if (bb.p[0] > 0 || bb.p[1] > 0) {
@@ -476,8 +476,8 @@ void new_knight_attack_mask(void) {
 }
 
 void new_pawn_attack_mask(void) {
-	for (int c = black; c <= white; c += 1) {
-		for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int c = black; c <= white; c++) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			pawn_attack_mask[c][sq].m = _mm_xor_si128(silver_attack_mask[c][sq].m,bishop_attack(sq,all_one_mask).m);
 		}
 	}
@@ -496,8 +496,8 @@ void new_pawn_attack_mask(void) {
 //     x                    x
 //      sq2              sq2
 void new_between_mask(void) {
-	for (int sq1 = sq1a; sq1 <= sq9i; sq1 += 1) {
-		for (int sq2 = sq1a; sq2 <= sq9i; sq2 += 1) {
+	for (int sq1 = sq1a; sq1 <= sq9i; sq1++) {
+		for (int sq2 = sq1a; sq2 <= sq9i; sq2++) {
 			between_mask[sq1][sq2] = all_zero_mask;
 			if (sq1 == sq2) {
 				continue;
@@ -516,7 +516,7 @@ void new_between_mask(void) {
 // 障害物がないときのrook,bishop,lance[black],lence[white]の利きbitboard
 // edgeは端っこまで伸びきった利きという意味,他から活用されているか疑問
 void new_attack_to_edge(void) {
-	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int sq = sq1a; sq <= sq9i; sq++) {
 		bitboard occ = all_zero_mask;
 		lance_attack_to_edge[black][sq] = lance_attack(black, sq, occ);
 		lance_attack_to_edge[white][sq] = lance_attack(white, sq, occ);
@@ -529,9 +529,9 @@ void new_attack_to_edge(void) {
 
 // 金が次の１手で王手が掛けられる位置bitboard
 void new_gold_check_table(void) {
-	for (int c = black; c <= white; c+=1) {
+	for (int c = black; c <= white; c++) {
 		int opp = opposite_color(c);
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			gold_check_table[c][sq] = all_zero_mask;
 			bitboard check_bb = gold_attack_mask[opp][sq];
 			while (check_bb.p[0] > 0 || check_bb.p[1] > 0) {
@@ -545,9 +545,9 @@ void new_gold_check_table(void) {
 
 // 銀が次の１手で王手が掛けられる位置bitboard
 void new_silver_check_table(void) {
-	for (int c = black; c <= white; c+=1) {
+	for (int c = black; c <= white; c++) {
 		int opp = opposite_color(c);
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			silver_check_table[c][sq] = all_zero_mask;
 			bitboard check_bb = silver_attack_mask[opp][sq];
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
@@ -575,9 +575,9 @@ void new_silver_check_table(void) {
 
 // 桂が次の１手で王手が掛けられる位置bitboard
 void new_knight_check_table(void) {
-	for (int c = black; c <= white; c+=1) {
+	for (int c = black; c <= white; c++) {
 		int opp = opposite_color(c);
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			knight_check_table[c][sq] = all_zero_mask;
 			bitboard check_bb = knight_attack_mask[opp][sq];
 			while (check_bb.p[0]>0 || check_bb.p[1] > 0) {
@@ -596,9 +596,9 @@ void new_knight_check_table(void) {
 
 // 香が次の１手で王手が掛けられる位置bitboard
 void new_lance_check_table(void) {
-	for (int c = black; c <= white; c+=1) {
+	for (int c = black; c <= white; c++) {
 		int opp = opposite_color(c);
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			lance_check_table[c][sq] = lance_attack_to_edge[opp][sq];
 			bitboard trank123bb = enemy_mask[c];
 			bitboard check_bb;
@@ -613,9 +613,9 @@ void new_lance_check_table(void) {
 }
 
 void new_pawn_check_table(void) {
-	for (int c = black; c <= white; c+=1) {
+	for (int c = black; c <= white; c++) {
 		int opp = opposite_color(c);
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			// 歩で王手になる可能性のあるものは、敵玉から２つ離れた歩(不成での移動) + ksqに敵の金をおいた範囲(enemyGold)に成りで移動できる
 			pawn_check_table[c][sq] = all_zero_mask;
 			bitboard check_bb = pawn_attack_mask[opp][sq];
@@ -636,8 +636,8 @@ void new_pawn_check_table(void) {
 
 void new_bishop_check_table(void) {
 	bitboard occ = all_zero_mask;
-	for (int c = black; c <= white; c+=1) {
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+	for (int c = black; c <= white; c++) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			bishop_check_table[c][sq] = occ;
 			bitboard check_bb = bishop_attack(sq, occ);
 			while (check_bb.p[0] > 0 || check_bb.p[1] > 0) {
@@ -664,8 +664,8 @@ void new_bishop_check_table(void) {
 
 void new_horse_check_table(void) {
 	bitboard occ = all_zero_mask;
-	for (int c = black; c <= white; c+=1) {
-		for (int sq = sq1a; sq <= sq9i; sq+=1) {
+	for (int c = black; c <= white; c++) {
+		for (int sq = sq1a; sq <= sq9i; sq++) {
 			horse_check_table[c][sq] = occ;
 			bitboard check_bb = horse_attack(sq, occ);
 			while (check_bb.p[0]>0 || check_bb.p[1]>0) {
@@ -680,7 +680,7 @@ void new_horse_check_table(void) {
 // 25近傍
 void new_neighbor5x5(void) {
 	bitboard occ = all_zero_mask;
-	for (int sq = sq1a; sq <= sq9i; sq += 1) {
+	for (int sq = sq1a; sq <= sq9i; sq++) {
 		neighbor_5x5_mask[sq] = occ;
 		bitboard tobb = king_attack_mask[sq];
 		while (tobb.p[0] > 0 || tobb.p[1] > 0) {
@@ -713,7 +713,7 @@ void print_bitboard(bitboard bb, const char* msg) {
 	char rstr[] = "abcdefghi";
 	printf("| %s |\n", msg);
 	printf("    9  8  7  6  5  4  3  2  1\n");
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		printf("%c ", rstr[r]);
 		for (int f = 8; f >= 0; f -= 1) {
 			int sq = set_square(f, r);

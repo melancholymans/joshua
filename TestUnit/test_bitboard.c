@@ -46,7 +46,7 @@ void test_new_sq_mask() {
 
 void test_new_file_mask() {
 	int f = file1;
-	for(int r = 0; r < 9; r += 1) {
+	for(int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -54,7 +54,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file2;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -62,7 +62,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file3;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -70,7 +70,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file4;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -78,7 +78,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file5;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -86,7 +86,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file6;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -94,7 +94,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file7;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -102,7 +102,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(0, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file8;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -110,7 +110,7 @@ void test_new_file_mask() {
 	TEST_ASSERT_EQUAL_INT(9, _mm_popcnt_u64(file_mask[f].p[1]));
 	//print_bitboard(file_mask[f], __func__);
 	f = file9;
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, file_mask[f]));
 	}
@@ -121,7 +121,7 @@ void test_new_file_mask() {
 
 void test_new_rank_mask() {
 	int r = rank1;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -129,7 +129,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank2;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -137,7 +137,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank3;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -145,7 +145,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank4;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -153,7 +153,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank5;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -161,7 +161,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank6;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -169,7 +169,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank7;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -177,7 +177,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank8;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -185,7 +185,7 @@ void test_new_rank_mask() {
 	TEST_ASSERT_EQUAL_INT(2, _mm_popcnt_u64(rank_mask[r].p[1]));
 	//print_bitboard(rank_mask[r], __func__);
 	r = rank9;
-	for (int f = 0; f < 9; f += 1) {
+	for (int f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, rank_mask[r]));
 	}
@@ -213,7 +213,7 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank2;
-	for (int r=rank1,f = 0; f < 9; f += 1) {
+	for (int r=rank1,f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 	}
@@ -222,8 +222,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank3;
-	for(int r=rank1;r<rank3;r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for(int r=rank1;r<rank3;r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -233,8 +233,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank4;
-	for (int r = rank1; r < rank4; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r < rank4; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -244,8 +244,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank5;
-	for (int r = rank1; r < rank5; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r < rank5; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -255,8 +255,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank6;
-	for (int r = rank1; r < rank6; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r < rank6; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -266,8 +266,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank7;
-	for (int r = rank1; r < rank7; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r < rank7; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -277,8 +277,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank8;
-	for (int r = rank1; r < rank8; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r < rank8; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -288,8 +288,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank9;
-	for (int r = rank1; r < rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r < rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -305,7 +305,7 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank8;
-	for (int r = rank9, f = 0; f < 9; f += 1) {
+	for (int r = rank9, f = 0; f < 9; f++) {
 		int sq = set_square(f, r);
 		TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 	}
@@ -314,8 +314,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank7;
-	for (int r = rank8; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank8; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -325,8 +325,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank6;
-	for (int r = rank7; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank7; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -336,8 +336,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank5;
-	for (int r = rank6; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank6; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -347,8 +347,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank4;
-	for (int r = rank5; r < rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank5; r < rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -358,8 +358,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank3;
-	for (int r = rank4; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank4; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -369,8 +369,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank2;
-	for (int r = rank3; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank3; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -380,8 +380,8 @@ void test_new_in_front_mask() {
 	//print_bitboard(in_front_mask[color][rank], __func__);
 
 	rank = rank1;
-	for (int r = rank2; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank2; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, in_front_mask[color][rank]));
 		}
@@ -393,8 +393,8 @@ void test_new_in_front_mask() {
 
 void test_new_enemy_mask() {
 	int color = black;
-	for (int r = rank1; r <= rank3; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank1; r <= rank3; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, enemy_mask[color]));
 		}
@@ -404,8 +404,8 @@ void test_new_enemy_mask() {
 	//print_bitboard(enemy_mask[color], __func__);
 
 	color = white;
-	for (int r = rank7; r <= rank9; r += 1) {
-		for (int f = 0; f < 9; f += 1) {
+	for (int r = rank7; r <= rank9; r++) {
+		for (int f = 0; f < 9; f++) {
 			int sq = set_square(f, r);
 			TEST_ASSERT_TRUE(is_biton(sq, enemy_mask[color]));
 		}
