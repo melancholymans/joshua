@@ -12,9 +12,14 @@
 void setUp(void) {}
 void tearDown(void) {}
 
+void test_move() {
+	printf("-----------test_move----------------------------------\n");
+	test_get_move();
+	test_strip_pmoto();
+}
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
-		test_shorten_space();
+	test_shorten_space();
 }
 
 void test_position() {
@@ -100,6 +105,7 @@ int main() {
 	RUN_TEST(test_bitboard);
 	RUN_TEST(test_position);
 	RUN_TEST(test_usi);
+	RUN_TEST(test_move);
 	return UNITY_END();;
 }
 

@@ -1,3 +1,5 @@
+
+#include "move.h"
 /*
  xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 32bit
  xxxxxxxx xxxxxxxx xxxxxxxx x1111111 to: 移動元座標
@@ -13,6 +15,15 @@
  cap = (pd >> 20) & 0x0f	//取った駒の種類を返す（駒種になる、駒番ではない、駒番がほしければ (pd >> 20) & 0x1f）
 
  このファイルには合法手の生成関数も置く
+*/
+/*
+ 新しいフォーマット
+ xxxxxxxx xxxxxxxx xxxxxxxx x1111111 to: 移動元座標
+ xxxxxxxx xxxxxxxx xx111111 1xxxxxxx from: 移動先座標 駒打ちの時はpiece(駒番)
+ xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx pmoto: 成:1 不成:0
+ xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board or hand board
+ xxxxxxxx xxx11111 xxxxxxxx xxxxxxxx 移動する駒のpiece(駒番),駒打ちの時は使用しない
+ xxx11111 xxxxxxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)駒番
 */
 /*
 gshogiのmove
@@ -81,4 +92,56 @@ gshogiのmove
 				rankIndex()
 			isDoublePawn()
 		指し手を生成する関数群がかなりのボリュームがある
+
+
+	gshogiのアルゴリズムをみると打つ手なのか移動する手なのかを判定するのに、いろいろ考えて判定しているが手を生成するとき
+	どっちなのかフラグを立てておけば、判定する必要はないのではないかと思う。Move構造体にフラグを追加すればよいのではないか。
+	 xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board or hand board
+	 このアイデアいかがでしょうか(TODO:)
+
  */
+
+
+
+void do_move(usi_handler_t* hd, const int move) {
+	hd->bd->move_number++;
+	int us = hd->bd->turn;
+	int to, from, pmoto, morh, piece, cap;
+	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	//10/5ここまで
+	/*if (morh) {
+		hd->bd->hb[piece]--;
+		hd->bd->mb[to] = piece;
+	}
+	else {
+		if (cap != empty) {
+			hd->bd->hb[us][piece_to_piecetype(cap)]++;
+		}
+		if (pmoto) {
+			piece = PIECE_PROMOTED_REVERSE[piece];
+		}
+		hd->bd->mb[from] = empty;
+		hd->bd->mb[to] = piece;*/
+	return;
+}
+
+void get_move(const int move,int* to,int* from,int* ispmoto,int* morh,int* piece,int* cap) {
+	*to = move & 0x7f;
+	*from = (move >> 7) & 0x7f;
+	*ispmoto = (move >> 14) & 0x01;
+	*morh = (move >> 15) & 0x01;
+	*piece = (move >> 16) & 0x1f;
+	*cap = (move >> 24) & 0x1f;
+}
+
+int strip_pmoto(int pc) {
+	if (pc >= 9 && pc <= 14) {
+		return pc - 8;
+	}
+	else if (pc >= 25 && pc <= 30) {
+		return pc - 8;
+	}
+	else {
+		return pc;
+	}
+}

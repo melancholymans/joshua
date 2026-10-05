@@ -14,6 +14,8 @@
 *	c:	color 手番
 *   pt:	piecetype 駒種
 *   pc:	piece 駒番 
+*	cap: captured piece 取った駒の駒番
+*	drop: drop piece 打った駒の駒番
 */
 
 // ２つの座標の位置関係のテーブル
@@ -208,13 +210,11 @@ void new_board(usi_handler_t* hd) {
 		return;
 	}
 	board_t* b = hd->bd;
-	for (int sq = 0; sq < 81; sq += 1) {
+	for (int sq = 0; sq < 81; sq++) {
 		b->mb[sq] = empty;
 	}
-	for (int c = 0; c < 2; c += 1) {
-		for (int pt = 0; pt < 8; pt += 1) {
-			b->hb[c][pt] = 0;
-		}
+	for (int pt = 0; pt < 25; pt++) {
+		b->hb[pt] = 0;
 	}
 	b->turn = 0;
 	b->move_number = 0;
@@ -234,7 +234,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	board_t* b = hd->bd;
 	int sq = sq9a;
 	int pmoto = 0;
-	for (int i=0; i < strlen(parts[0]); i += 1) {
+	for (int i=0; i < strlen(parts[0]); i++) {
 		char r = parts[0][i];
 		if (isdigit((int)r)) {
 			sq += delta_e * (int)(r - 48);
@@ -246,7 +246,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 			sq += (delta_w * 9) + delta_s;
 		}
 		else {
-			for (int pt = 1; pt <= 30; pt += 1) {
+			for (int pt = 1; pt <= 30; pt++) {
 				if (piece_symbol[pt] == r) {
 					if (1 <= pt && 8 >= pt) {	//black
 						b->mb[sq] = pt + pmoto;
@@ -274,9 +274,9 @@ void set_board(usi_handler_t* hd, char* sfen) {
 void print_board(usi_handler_t* hd) {
 	char rstr[] = "abcdefghi";
 	printf("   9  8  7  6  5  4  3  2  1\n");
-	for (int r = 0; r < 9; r += 1) {
+	for (int r = 0; r < 9; r++) {
 		printf("%c ", rstr[r]);
-		for (int f = 8; f >= 0; f -= 1) {
+		for (int f = 8; f >= 0; f--) {
 			int sq = set_square(f, r);
 			if (hd->bd->mb[sq] == empty) {
 				printf(" . ");
