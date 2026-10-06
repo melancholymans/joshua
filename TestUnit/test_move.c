@@ -45,3 +45,55 @@ void test_strip_pmoto() {
 	TEST_ASSERT_EQUAL_INT(wbishop, strip_pmoto(whorse));
 	TEST_ASSERT_EQUAL_INT(wrook, strip_pmoto(wdragon));
 }
+
+/*
+ ÉeÉXÉgä˚ïà
+ 26ï‡ 2g2f
+ 32ã‡ 4a3b
+ 25ï‡ 2f2e
+ 52ã‡ 6a5b
+ 76ï‡ 7g7f
+ 42â§ 5a4b
+ 78ã‡ 6i7h
+ 62ã‚ 7a6b
+ 68ã‚ 7i6h
+ 94ï‡ 9c9d
+ 77äp 8h7g
+ 93åj 8a9c
+ 24ï‡ 2e2d
+ ìØï‡ 2c2d
+ ìØîÚ 2h2d
+ 85åj 9c8e
+ 23ï‡ë≈ P*2c
+ 77åjê¨ 8e7g+
+ ìØåj 8i7g
+ 95ï‡ 9d9e
+ 38ã‚ 3i3h
+ 92îÚ 8b9b
+ 22ï‡ê¨ 2c2b+
+ ìØã‚ 3a2b
+ 26îÚ 2d2f
+ 23ã‚ 2b2c
+ 56äpë≈ B*5f
+ 25ï‡ë≈ P*2e
+ ìØîÚ 2f2e
+ 24ï‡ë≈ P*2d
+ 85îÚ 2e8e
+ 28äpë≈ B*2h
+ 83îÚê¨ 8e8c+
+ 19äpê¨ 2h1i+
+ 81ó≥ 8c8a
+ 25çÅë≈ L*2e
+ 21ó≥ 8a2a
+ 29çÅê¨ 2e2i+
+ 23äpê¨ 5f2c+
+ ìØã‡ 3b2c
+ 41ã‚ë≈ S*4a
+ 31åjë≈ N*3a
+ 32ó≥ 2a3b
+ 51â§ 4b5a
+ 52ó≥ 3b5b
+ ìäóπ
+
+ position startpos moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h 7a6b 7i6h 9c9d 8h7g 8a9c 2e2d 2c2d 2h2d 9c8e P*2c 8e7g+ 8i7g 9d9e 3i3h 8b9b 2c2b+ 3a2b 2d2f 2b2c B*5f P*2e 2f2e P*2d 2e8e B*2h 8e8c+ 2h1i+ 8c8a L*2e 8a2a 2e2i+ 5f2c+ 3b2c S*4a N*3a 2a3b 4b5a 3b5b
+*/

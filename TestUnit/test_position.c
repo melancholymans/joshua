@@ -507,7 +507,13 @@ void test_set_board(void) {
 	TEST_ASSERT_EQUAL_INT(wproknight, b->mb[sq2i]);
 	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1i]);
 
-
+	//test問題4
+	sfen[0] = '\0';
+	strcpy_s(sfen, sizeof(sfen), "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	
+	
 	// moveができていないので、hd(持ち駒)のテストはできていない
 }
 

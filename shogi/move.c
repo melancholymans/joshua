@@ -1,4 +1,5 @@
 
+#include "position.h"
 #include "move.h"
 /*
  xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 32bit
@@ -47,7 +48,7 @@ gshogiのmove
 			その駒を指定された座標に置く
 		
 			移動手なら移動元座標のPieceTypeを取り出す。
-			移動先座標駒があったなら、成り駒ならPIECE_PROMOTED_REVERSE[]配列で元の駒種に戻してPiecesInHand[color][PieceType]をプラス１する
+			移動先座標に駒があったなら、成り駒ならPIECE_PROMOTED_REVERSE[]配列で元の駒種に戻してPiecesInHand[color][PieceType]をプラス１する
 			移動元座標にnilを設定
 		ここからは移動手、駒打ち手共通の処理
 			移動先座標に駒を置く
@@ -101,27 +102,56 @@ gshogiのmove
 
  */
 
+initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G'};
+int initial_to_piecetype(char p) {
+	for (int pt = 1; pt <= 7; pt++) {
+		if (initial[pt] == p) {
+			return pt;
+		}
+	}
+	fprintf(stderr, "[ERROR] %s:%d: Array out of bounds\n", __FILE__, __LINE__);
+	exit(0);
+}
 
+void do_usi_move(usi_handler_t* hd, char *usi_move) {
+
+	int move;
+	if (strlen(usi_move) == 4) {	//通常の移動手、打つ手
+		if (usi_move[1] == '*') {
+			
+		}
+	}
+	else {	//成る手
+
+	}
+	do_move(hd, move);
+}
 
 void do_move(usi_handler_t* hd, const int move) {
 	hd->bd->move_number++;
 	int us = hd->bd->turn;
 	int to, from, pmoto, morh, piece, cap;
 	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
-	//10/5ここまで
-	/*if (morh) {
+	if (morh) {
 		hd->bd->hb[piece]--;
-		hd->bd->mb[to] = piece;
+		hd->bd->mb[to] = from;	//打つ手の時は駒番はfromに入る
+		//ここに駒打ちの時、詰めがかかるかのフラグ(moveIsCheck)による処理が入る(TODO:)
 	}
 	else {
 		if (cap != empty) {
-			hd->bd->hb[us][piece_to_piecetype(cap)]++;
+			int them = opposite_color(us);
+			cap = strip_pmoto(cap);
+			hd->bd->hb[cap]++;
 		}
+		//ここにkingSquare配列に関する処理が入るが今はパス(TODO:)
+		//ここに詰めが掛かってくる場合の処理がはいるがいまはパス(TODO:)
 		if (pmoto) {
-			piece = PIECE_PROMOTED_REVERSE[piece];
+			piece = piece + 8;
 		}
 		hd->bd->mb[from] = empty;
-		hd->bd->mb[to] = piece;*/
+		hd->bd->mb[to] = piece;
+	}
+	hd->bd->turn = opposite_color(us);
 	return;
 }
 
