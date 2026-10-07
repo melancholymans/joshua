@@ -99,9 +99,26 @@ errno_t handle_usi_newgame(char* cmds) {
 }
 
 errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
-	//:TODO
-	// position startpos moves 2g2f 8c8d 2f2e
-	// position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b
+	// “ü—Í‚³‚ê‚écmds[]
+	//	cmds[0] = position
+	//  cmds[1] = startpos <- sfen 
+	//  cmds[2] = moves 
+	//  cmds[3] = 2g2f
+	//  cmds[4] = 8c8d 
+	//  cmds[5] = 2f2e
+	//  ...
+	// –”‚Í
+	//  cmds[0] = position
+	//  cmds[1] = sfen 
+	//  cmds[2] = lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL sfen = cmds[2]+cmds[3]+cmds[4]+cmds[5]   
+	//  cmds[3] = w
+	//  cmds[4] = -
+	//  cmds[5] = 1
+	//  cmds[6] = moves 
+	//  cmds[7] = 5a6b
+	//  cmds[8] = 7g7f 
+	//  cmds[9] = 3a3b
+	//  ...
 	printf("%s\n", __func__);
 	char sfen[128];
 	int mark = 0;

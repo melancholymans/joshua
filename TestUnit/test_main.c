@@ -16,6 +16,9 @@ void test_move() {
 	printf("-----------test_move----------------------------------\n");
 	test_get_move();
 	test_strip_pmoto();
+	test_usisq_to_movesq();
+	test_initial_to_piecetype();
+	test_do_usi_move();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");

@@ -1,8 +1,13 @@
+#include <string.h>
+#include <stdlib.h>
+
 #include "unity.h"
 
 #include "../shogi/position.h"
+#include "../shogi/usi.h"
+#include "test_move.h"
 
-void test_get_move() {
+void test_get_move(void) {
 	int move;
 	move = sq7b | sq6a << 7 | 1 << 14 | 0 << 15 | bbishop << 16 | wgold<< 24;	//6a7b bbishop pmoto cap wgold
 	int to, from, ispmoto, morh, piece, cap;
@@ -15,7 +20,7 @@ void test_get_move() {
 	TEST_ASSERT_EQUAL_INT(wgold, cap);
 }
 
-void test_strip_pmoto() {
+void test_strip_pmoto(void) {
 	TEST_ASSERT_EQUAL_INT(bpawn, strip_pmoto(bpawn));
 	TEST_ASSERT_EQUAL_INT(blance, strip_pmoto(blance));
 	TEST_ASSERT_EQUAL_INT(bknight, strip_pmoto(bknight));
@@ -46,9 +51,65 @@ void test_strip_pmoto() {
 	TEST_ASSERT_EQUAL_INT(wrook, strip_pmoto(wdragon));
 }
 
+void test_usisq_to_movesq(void) {
+	char usi_sq[8] = "2g2f";
+	TEST_ASSERT_EQUAL_INT(sq2g, usisq_to_movesq(usi_sq));	//"2g"
+	TEST_ASSERT_EQUAL_INT(sq2f, usisq_to_movesq(usi_sq+2));	//"2f"
+	strcpy_s(usi_sq, sizeof(usi_sq), "4a3b");
+	TEST_ASSERT_EQUAL_INT(sq4a, usisq_to_movesq(usi_sq));	//"4a"
+	TEST_ASSERT_EQUAL_INT(sq3b, usisq_to_movesq(usi_sq+2));	//"3b"
+	strcpy_s(usi_sq, sizeof(usi_sq), "2c2d");
+	TEST_ASSERT_EQUAL_INT(sq2c, usisq_to_movesq(usi_sq));
+	TEST_ASSERT_EQUAL_INT(sq2d, usisq_to_movesq(usi_sq+2));
+	strcpy_s(usi_sq, sizeof(usi_sq), "4b5a");
+	TEST_ASSERT_EQUAL_INT(sq4b, usisq_to_movesq(usi_sq));
+	TEST_ASSERT_EQUAL_INT(sq5a, usisq_to_movesq(usi_sq+2));
+}
+
+void test_initial_to_piecetype(void) {
+	char p = 'P';
+	TEST_ASSERT_EQUAL_INT(pawn, initial_to_piecetype(p));
+	p = 'L';
+	TEST_ASSERT_EQUAL_INT(lance, initial_to_piecetype(p));
+	p = 'N';
+	TEST_ASSERT_EQUAL_INT(knight, initial_to_piecetype(p));
+	p = 'S';
+	TEST_ASSERT_EQUAL_INT(silver, initial_to_piecetype(p));
+	p = 'B';
+	TEST_ASSERT_EQUAL_INT(bishop, initial_to_piecetype(p));
+	p = 'R';
+	TEST_ASSERT_EQUAL_INT(rook, initial_to_piecetype(p));
+	p = 'G';
+	TEST_ASSERT_EQUAL_INT(gold, initial_to_piecetype(p));
+	//p = 'K';
+	//TEST_ASSERT_EQUAL_INT(gold, initial_to_piecetype(p));
+	//[ERROR] F:\joshua\shogi\move.c:122: Array out of bounds
+}
+
+void test_do_usi_move() {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	char* moves[8];
+	for (int i = 0; i < 3; i++) {
+		moves[i] = (char*)malloc(8);
+	}
+	new_board(&hd);
+	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	set_board(&hd, sfen);
+	strcpy_s(moves[0],8, "2g2f");
+	strcpy_s(moves[1],8, "4a3b");
+	strcpy_s(moves[2],8, "2f2e");
+	for (int i = 0; i < 3; i++) {
+		do_usi_move(hd, moves[i]);
+	}
+	for (int i = 0; i < 3; i++) {
+		free(moves[i]);
+	}
+}
+
 /*
  ƒeƒXƒgŠû•ˆ
- 26•à 2g2f
+ 26•à 2g2f 
  32‹à 4a3b
  25•à 2f2e
  52‹à 6a5b

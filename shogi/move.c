@@ -21,10 +21,17 @@
  新しいフォーマット
  xxxxxxxx xxxxxxxx xxxxxxxx x1111111 to: 移動元座標
  xxxxxxxx xxxxxxxx xx111111 1xxxxxxx from: 移動先座標 駒打ちの時はpiece(駒番)
- xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx pmoto: 成:1 不成:0
- xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board or hand board
+ xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx pmoto: 成:1 不成:0,駒打ちの時は0で決め打ち
+ xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board(0) or hand board(1)
  xxxxxxxx xxx11111 xxxxxxxx xxxxxxxx 移動する駒のpiece(駒番),駒打ちの時は使用しない
- xxx11111 xxxxxxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)駒番
+ xxx11111 xxxxxxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)駒番,駒打ちの時は使用しない
+ to = pd & 0x7f
+ from = (pd >> 7) & 0x7f
+ ispromoto = (pd >> 14) & 0x01
+ morh(main or hand) = pd >> 15 & 0x01
+ piece = pd >> 16 & 0x1f
+ cap piece pd >> 24 & 0x1f
+
 */
 /*
 gshogiのmove
@@ -99,8 +106,11 @@ gshogiのmove
 	どっちなのかフラグを立てておけば、判定する必要はないのではないかと思う。Move構造体にフラグを追加すればよいのではないか。
 	 xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board or hand board
 	 このアイデアいかがでしょうか(TODO:)
-
  */
+
+int usisq_to_movesq(char* usi_sq) {
+	return (usi_sq[0] - '1') * 9 + (usi_sq[1] - 'a');
+}
 
 initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G'};
 int initial_to_piecetype(char p) {
@@ -114,15 +124,26 @@ int initial_to_piecetype(char p) {
 }
 
 void do_usi_move(usi_handler_t* hd, char *usi_move) {
-
-	int move;
-	if (strlen(usi_move) == 4) {	//通常の移動手、打つ手
-		if (usi_move[1] == '*') {
-			
+	int move = 0;
+	if (strlen(usi_move) == 4) {
+		if (usi_move[1] == '*') {	//打つ手
+			if (hd->bd->turn) {
+				move = ((initial_to_piecetype(usi_move[1]) + 16) << 7) | usisq_to_movesq(usi_move[2]) | (1 << 15);
+			}
+			else {
+				move = ((initial_to_piecetype(usi_move[1])) << 7) | usisq_to_movesq(usi_move[2]) | (1 << 15);
+			}
+		}
+		else {	//移動手（不成）
+			int from = usisq_to_movesq(usi_move);
+			int to = usisq_to_movesq(usi_move+2);
+			move = hd->bd->mb[to] << 24 |hd->bd->mb[from] << 16 | from << 7 | to;
 		}
 	}
 	else {	//成る手
-
+		int from = usisq_to_movesq(usi_move[0]);
+		int to = usisq_to_movesq(usi_move[2]);
+		move = hd->bd->mb[to] << 24 | hd->bd->mb[from] << 16 | 1 << 14 | from << 7 | to;
 	}
 	do_move(hd, move);
 }
