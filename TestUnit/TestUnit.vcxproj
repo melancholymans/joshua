@@ -136,6 +136,7 @@
     <ClCompile Include="test_main.c" />
     <ClCompile Include="test_move.c" />
     <ClCompile Include="test_position.c" />
+    <ClCompile Include="test_stb_ds.c" />
     <ClCompile Include="test_usi.c" />
     <ClCompile Include="unity.c" />
   </ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="test_bitboard.h" />
     <ClInclude Include="test_move.h" />
     <ClInclude Include="test_position.h" />
+    <ClInclude Include="test_stb_ds.h" />
     <ClInclude Include="test_usi.h" />
     <ClInclude Include="unity.h" />
     <ClInclude Include="unity_internals.h" />

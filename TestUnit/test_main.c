@@ -12,6 +12,12 @@
 void setUp(void) {}
 void tearDown(void) {}
 
+
+void test_stb_ds() {
+	printf("-----------test_stb_ds---------------------------------\n");
+	test_stb_array();
+}
+
 void test_move() {
 	printf("-----------test_move----------------------------------\n");
 	test_get_move();
@@ -109,6 +115,7 @@ int main() {
 	RUN_TEST(test_position);
 	RUN_TEST(test_usi);
 	RUN_TEST(test_move);
+	RUN_TEST(test_stb_ds);
 	return UNITY_END();;
 }
 
