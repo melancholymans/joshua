@@ -267,7 +267,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	else {
 		b->turn = black;
 	}
-	b->move_number = atoi(parts[3]);
+	//b->move_number = atoi(parts[3]);	‚±‚±‚Åİ’è‚Í•s—v
 	return;
 }
 

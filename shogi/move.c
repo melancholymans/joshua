@@ -24,7 +24,7 @@
  xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx pmoto: 成:1 不成:0,駒打ちの時は0で決め打ち
  xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board(0) or hand board(1)
  xxxxxxxx xxx11111 xxxxxxxx xxxxxxxx 移動する駒のpiece(駒番),駒打ちの時は使用しない
- xxx11111 xxxxxxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)駒番,駒打ちの時は使用しない
+ xxx11111 xxxxxxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)駒番,そのままの駒番を保存colorの切替pmotoの削除は登録の時はしない,駒打ちの時は使用しない
  to = pd & 0x7f
  from = (pd >> 7) & 0x7f
  ispromoto = (pd >> 14) & 0x01
@@ -123,27 +123,27 @@ int initial_to_piecetype(char p) {
 	exit(0);
 }
 
-void do_usi_move(usi_handler_t* hd, char *usi_move) {
+void do_usi_move(usi_handler_t* hd, char* usi_move) {
 	int move = 0;
 	if (strlen(usi_move) == 4) {
 		if (usi_move[1] == '*') {	//打つ手
 			if (hd->bd->turn) {
-				move = ((initial_to_piecetype(usi_move[1]) + 16) << 7) | usisq_to_movesq(usi_move[2]) | (1 << 15);
+				move = (1 << 15) | ((initial_to_piecetype(usi_move[0]) + 16) << 7) | usisq_to_movesq(usi_move+2);	//morh:<<15,from(piece):<<7,to 
 			}
 			else {
-				move = ((initial_to_piecetype(usi_move[1])) << 7) | usisq_to_movesq(usi_move[2]) | (1 << 15);
+				move = (1 << 15) | ((initial_to_piecetype(usi_move[0])) << 7) | usisq_to_movesq(usi_move+2);	//morh:<<15,from(piece)<<7,to
 			}
 		}
 		else {	//移動手（不成）
 			int from = usisq_to_movesq(usi_move);
 			int to = usisq_to_movesq(usi_move+2);
-			move = hd->bd->mb[to] << 24 |hd->bd->mb[from] << 16 | from << 7 | to;
+			move = (hd->bd->mb[to]/*^0x10*/) << 24 | hd->bd->mb[from] << 16 | from << 7 | to;	//cap:<<24,piece:<<16,from:<<7,to
 		}
 	}
 	else {	//成る手
-		int from = usisq_to_movesq(usi_move[0]);
-		int to = usisq_to_movesq(usi_move[2]);
-		move = hd->bd->mb[to] << 24 | hd->bd->mb[from] << 16 | 1 << 14 | from << 7 | to;
+		int from = usisq_to_movesq(usi_move);
+		int to = usisq_to_movesq(usi_move+2);
+		move = (hd->bd->mb[to]/*^0x10*/) << 24 | hd->bd->mb[from] << 16 | 1 << 14 | from << 7 | to;	//cap:<<24,piece:<<16,pmoto:1<<14,from:<<7,to
 	}
 	do_move(hd, move);
 }
@@ -154,14 +154,13 @@ void do_move(usi_handler_t* hd, const int move) {
 	int to, from, pmoto, morh, piece, cap;
 	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
 	if (morh) {
-		hd->bd->hb[piece]--;
-		hd->bd->mb[to] = from;	//打つ手の時は駒番はfromに入る
+		hd->bd->hb[from]--;		//打つ手の時は駒番はfromに入る
+		hd->bd->mb[to] = from;
 		//ここに駒打ちの時、詰めがかかるかのフラグ(moveIsCheck)による処理が入る(TODO:)
 	}
 	else {
 		if (cap != empty) {
-			int them = opposite_color(us);
-			cap = strip_pmoto(cap);
+			cap = strip_pmoto(cap) ^ 0x10;	//取った駒のカラー切替え、不成への切替
 			hd->bd->hb[cap]++;
 		}
 		//ここにkingSquare配列に関する処理が入るが今はパス(TODO:)
@@ -174,6 +173,34 @@ void do_move(usi_handler_t* hd, const int move) {
 	}
 	hd->bd->turn = opposite_color(us);
 	return;
+}
+
+void undo_move(usi_handler_t* hd,const int move) {
+	int us = hd->bd->turn;
+	int to, from, pmoto, morh, piece, cap;
+	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	if (morh) {	//打ち手
+		//bitboard関係の操作が入るが今はパス(TODO:)
+		hd->bd->mb[to] = empty;
+		hd->bd->hb[from]++;			//打つ手の時は駒番はfromに入る
+	}
+	else {
+		//king専用の配列の操作がある、今はパス(TODO:)
+		if (cap) {
+			//bitboard関係の操作が入るが今はパス(TODO:)
+			hd->bd->mb[to] = cap;
+			cap = strip_pmoto(cap) ^ 0x10;
+			hd->bd->hb[cap]--;
+		}
+		else {
+			hd->bd->mb[to] = empty;
+		}
+		hd->bd->mb[from] = piece;	//ここでエラーになるかも成りの情報がなくなっているかも
+	}
+	//ここでbitboardの操作かある、今はパス(TODO:)
+	int them = hd->bd->turn;
+	hd->bd->turn = opposite_color(us);
+	hd->bd->move_number--;
 }
 
 void get_move(const int move,int* to,int* from,int* ispmoto,int* morh,int* piece,int* cap) {

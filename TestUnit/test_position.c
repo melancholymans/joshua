@@ -318,7 +318,7 @@ void test_set_board(void) {
 	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq1i]);
 
 	TEST_ASSERT_EQUAL_INT(white, b->turn);
-	TEST_ASSERT_EQUAL_INT(1, b->move_number);
+	TEST_ASSERT_EQUAL_INT(0, b->move_number);
 
 	// test–â‘è2
 	sfen[0] = '\0';

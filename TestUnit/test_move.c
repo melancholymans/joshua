@@ -86,75 +86,337 @@ void test_initial_to_piecetype(void) {
 	//[ERROR] F:\joshua\shogi\move.c:122: Array out of bounds
 }
 
+void test_whitepieceto_bloackpiece() {
+	//cap bpiece->wpiece
+	TEST_ASSERT_EQUAL_INT(wpawn, bpawn ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wlance, blance ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wknight, bknight ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wsilver, bsilver ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wbishop, bbishop ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wrook, brook ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wgold, bgold ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wking, bking ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wpropawn, bpropawn ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wprolance, bprolance ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wproknight, bproknight ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wprosilver, bprosilver ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(whorse, bhorse ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(wdragon, bdragon ^ 0x10);
+	//cap wpiece->bpiece
+	TEST_ASSERT_EQUAL_INT(bpawn, wpawn ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(blance, wlance ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bknight, wknight ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bsilver, wsilver ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bbishop, wbishop ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(brook, wrook ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bgold, wgold ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bking, wking ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bpropawn, wpropawn ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bprolance, wprolance ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bproknight, wproknight ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bprosilver, wprosilver ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bhorse, whorse ^ 0x10);
+	TEST_ASSERT_EQUAL_INT(bdragon, wdragon ^ 0x10);
+}
+
 void test_do_usi_move() {
+	/*
+	 ÉeÉXÉgä˚ïà
+	 26ï‡ 2g2f 32ã‡ 4a3b  25ï‡ 2f2e 52ã‡ 6a5b  76ï‡ 7g7f  42â§ 5a4b  78ã‡ 6i7h  62ã‚ 7a6b  68ã‚ 7i6h
+	 94ï‡ 9c9d 77äp 8h7g  93åj 8a9c 24ï‡ 2e2d  ìØï‡ 2c2d  ìØîÚ 2h2d  85åj 9c8e  23ï‡ë≈ P*2c  77åjê¨ 8e7g+
+	 ìØåj 8i7g  95ï‡ 9d9e  38ã‚ 3i3h  92îÚ 8b9b  22ï‡ê¨ 2c2b+  ìØã‚ 3a2b  26îÚ 2d2f  23ã‚ 2b2c  56äpë≈ B*5f
+	 25ï‡ë≈ P*2e  ìØîÚ 2f2e  24ï‡ë≈ P*2d  85îÚ 2e8e  28äpë≈ B*2h  83îÚê¨ 8e8c+  19äpê¨ 2h1i+  81ó≥ 8c8a
+	 25çÅë≈ L*2e  21ó≥ 8a2a  29çÅê¨ 2e2i+  23äpê¨ 5f2c+  ìØã‡ 3b2c  41ã‚ë≈ S*4a  31åjë≈ N*3a  32ó≥ 2a3b
+	 51â§ 4b5a  52ó≥ 3b5b  ìäóπ
+	 position startpos moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h 7a6b 7i6h 9c9d 8h7g 8a9c 2e2d 2c2d 2h2d 9c8e P*2c 8e7g+ 8i7g 9d9e 3i3h 8b9b 2c2b+ 3a2b 2d2f 2b2c B*5f P*2e 2f2e P*2d 2e8e B*2h 8e8c+ 2h1i+ 8c8a L*2e 8a2a 2e2i+ 5f2c+ 3b2c S*4a N*3a 2a3b 4b5a 3b5b
+	*/
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
-	char* moves[8];
-	for (int i = 0; i < 3; i++) {
-		moves[i] = (char*)malloc(8);
-	}
+	char moves[8];
 	new_board(&hd);
 	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
-	strcpy_s(moves[0],8, "2g2f");
-	strcpy_s(moves[1],8, "4a3b");
-	strcpy_s(moves[2],8, "2f2e");
-	for (int i = 0; i < 3; i++) {
-		do_usi_move(hd, moves[i]);
-	}
-	for (int i = 0; i < 3; i++) {
-		free(moves[i]);
-	}
+	strcpy_s(&moves,8, "2g2f");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty,hd.bd->mb[sq2g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2f]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->move_number);
+	strcpy_s(&moves,8, "4a3b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4a]);
+	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq3b]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(2, hd.bd->move_number);
+	strcpy_s(&moves,8, "2f2e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2f]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(3, hd.bd->move_number);
+	strcpy_s(&moves, 8, "6a5b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6a]);
+	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq5b]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(4, hd.bd->move_number);
+	strcpy_s(&moves, 8, "7g7f");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq7f]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(5, hd.bd->move_number);
+	strcpy_s(&moves, 8, "5a4b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5a]);
+	TEST_ASSERT_EQUAL_INT(wking, hd.bd->mb[sq4b]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(6, hd.bd->move_number);
+	strcpy_s(&moves, 8, "6i7h");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6i]);
+	TEST_ASSERT_EQUAL_INT(bgold, hd.bd->mb[sq7h]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(7, hd.bd->move_number);
+	strcpy_s(&moves, 8, "7a6b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7a]);
+	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq6b]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(8, hd.bd->move_number);
+	strcpy_s(&moves, 8, "7i6h");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7i]);
+	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq6h]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(9, hd.bd->move_number);
+	strcpy_s(&moves, 8, "9c9d");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq9d]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(10, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8h7g");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8h]);
+	TEST_ASSERT_EQUAL_INT(bbishop, hd.bd->mb[sq7g]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(11, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8a9c");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq9c]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(12, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2e2d");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(13, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2c2d");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wpawn]);	
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(14, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2h2d");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2h]);
+	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bpawn]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(15, hd.bd->move_number);
+	strcpy_s(&moves, 8, "9c8e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9c]);
+	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq8e]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(16, hd.bd->move_number);
+	strcpy_s(&moves, 8, "P*2c");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bpawn]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(17, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8e7g+");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8e]);
+	TEST_ASSERT_EQUAL_INT(wproknight, hd.bd->mb[sq7g]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wbishop]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(18, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8i7g");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8i]);
+	TEST_ASSERT_EQUAL_INT(bknight, hd.bd->mb[sq7g]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bknight]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(19, hd.bd->move_number);
+	strcpy_s(&moves, 8, "9d9e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq9e]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(20, hd.bd->move_number);
+	strcpy_s(&moves, 8, "3i3h");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3i]);
+	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq3h]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(21, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8b9b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8b]);
+	TEST_ASSERT_EQUAL_INT(wrook, hd.bd->mb[sq9b]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(22, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2c2b+");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(bpropawn, hd.bd->mb[sq2b]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bbishop]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(23, hd.bd->move_number);
+	strcpy_s(&moves, 8, "3a2b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3a]);
+	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq2b]);
+	TEST_ASSERT_EQUAL_INT(2, hd.bd->hb[wpawn]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(24, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2d2f");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq2f]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(25, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2b2c");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2b]);
+	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(26, hd.bd->move_number);
+	strcpy_s(&moves, 8, "B*5f");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(bbishop, hd.bd->mb[sq5f]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bbishop]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(27, hd.bd->move_number);
+	strcpy_s(&moves, 8, "P*2e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wpawn]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(28, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2f2e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2f]);
+	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bpawn]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(29, hd.bd->move_number);
+	strcpy_s(&moves, 8, "P*2d");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wpawn]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(30, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2e8e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq8e]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(31, hd.bd->move_number);
+	strcpy_s(&moves, 8, "B*2h");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(wbishop, hd.bd->mb[sq2h]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wbishop]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(32, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8e8c+");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8e]);
+	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq8c]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(33, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2h1i+");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2h]);
+	TEST_ASSERT_EQUAL_INT(whorse, hd.bd->mb[sq1i]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wlance]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(34, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8c8a");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8c]);
+	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(35, hd.bd->move_number);
+	strcpy_s(&moves, 8, "L*2e");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(wlance, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wlance]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(36, hd.bd->move_number);
+	strcpy_s(&moves, 8, "8a2a");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq2a]);
+	TEST_ASSERT_EQUAL_INT(2, hd.bd->hb[bknight]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(37, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2e2i+");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(wprolance, hd.bd->mb[sq2i]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wknight]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(38, hd.bd->move_number);
+	strcpy_s(&moves, 8, "5f2c+");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5f]);
+	TEST_ASSERT_EQUAL_INT(bhorse, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bsilver]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(39, hd.bd->move_number);
+	strcpy_s(&moves, 8, "3b2c");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3b]);
+	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wbishop]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(40, hd.bd->move_number);
+	strcpy_s(&moves, 8, "S*4a");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq4a]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bsilver]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(41, hd.bd->move_number);
+	strcpy_s(&moves, 8, "N*3a");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq3a]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wknight]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(42, hd.bd->move_number);
+	strcpy_s(&moves, 8, "2a3b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2a]);
+	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq3b]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(43, hd.bd->move_number);
+	strcpy_s(&moves, 8, "4b5a");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4b]);
+	TEST_ASSERT_EQUAL_INT(wking, hd.bd->mb[sq5a]);
+	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(44, hd.bd->move_number);
+	strcpy_s(&moves, 8, "3b5b");
+	do_usi_move(hd, &moves);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3b]);
+	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq5b]);
+	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
+	TEST_ASSERT_EQUAL_INT(45, hd.bd->move_number);
 }
 
-/*
- ÉeÉXÉgä˚ïà
- 26ï‡ 2g2f 
- 32ã‡ 4a3b
- 25ï‡ 2f2e
- 52ã‡ 6a5b
- 76ï‡ 7g7f
- 42â§ 5a4b
- 78ã‡ 6i7h
- 62ã‚ 7a6b
- 68ã‚ 7i6h
- 94ï‡ 9c9d
- 77äp 8h7g
- 93åj 8a9c
- 24ï‡ 2e2d
- ìØï‡ 2c2d
- ìØîÚ 2h2d
- 85åj 9c8e
- 23ï‡ë≈ P*2c
- 77åjê¨ 8e7g+
- ìØåj 8i7g
- 95ï‡ 9d9e
- 38ã‚ 3i3h
- 92îÚ 8b9b
- 22ï‡ê¨ 2c2b+
- ìØã‚ 3a2b
- 26îÚ 2d2f
- 23ã‚ 2b2c
- 56äpë≈ B*5f
- 25ï‡ë≈ P*2e
- ìØîÚ 2f2e
- 24ï‡ë≈ P*2d
- 85îÚ 2e8e
- 28äpë≈ B*2h
- 83îÚê¨ 8e8c+
- 19äpê¨ 2h1i+
- 81ó≥ 8c8a
- 25çÅë≈ L*2e
- 21ó≥ 8a2a
- 29çÅê¨ 2e2i+
- 23äpê¨ 5f2c+
- ìØã‡ 3b2c
- 41ã‚ë≈ S*4a
- 31åjë≈ N*3a
- 32ó≥ 2a3b
- 51â§ 4b5a
- 52ó≥ 3b5b
- ìäóπ
-
- position startpos moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h 7a6b 7i6h 9c9d 8h7g 8a9c 2e2d 2c2d 2h2d 9c8e P*2c 8e7g+ 8i7g 9d9e 3i3h 8b9b 2c2b+ 3a2b 2d2f 2b2c B*5f P*2e 2f2e P*2d 2e8e B*2h 8e8c+ 2h1i+ 8c8a L*2e 8a2a 2e2i+ 5f2c+ 3b2c S*4a N*3a 2a3b 4b5a 3b5b
-*/
