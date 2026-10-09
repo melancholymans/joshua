@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+
 //mbはmain board,hbはhand board,turnはターン
 /*
 * hb[24]の配列の中身は以下の通り

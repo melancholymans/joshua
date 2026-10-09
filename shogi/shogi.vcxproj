@@ -142,6 +142,7 @@
     <ClInclude Include="init.h" />
     <ClInclude Include="move.h" />
     <ClInclude Include="position.h" />
+    <ClInclude Include="stb_ds.h" />
     <ClInclude Include="usi.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

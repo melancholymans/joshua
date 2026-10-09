@@ -41,20 +41,18 @@ void test_stb_array(void) {
     int* array = NULL;
     arrput(array, 2);
     arrput(array, 3);
-    arrput(array, 5);
-    printf("array length %zu\n", arrlen(array));
+    arrput(array, 4);
+    TEST_ASSERT_EQUAL_INT(3, arrlen(array));
     arrsetcap(array, 16);   //ここでarrayのアドレスが変更になった
-    printf("array setlen %zu\n", arrlen(array));
-    printf("arr cap %zu\n", arrcap(array));
-    arrput(array, 6);
-
+    TEST_ASSERT_EQUAL_INT(3, arrlen(array));
+    TEST_ASSERT_EQUAL_INT(16, arrcap(array));
+    arrput(array, 5);
     for (int i = 0; i < arrlen(array); i++) {
-        printf("%d \n", array[i]);
+        TEST_ASSERT_EQUAL_INT(i + 2, array[i]);
     }
-    int t = arrpop(array);
-    printf("pop data %d \n", t);
-    printf("array length %zu\n", arrlen(array));
-    printf("arr cap %zu\n", arrcap(array));
+    TEST_ASSERT_EQUAL_INT(5, arrpop(array));
+    TEST_ASSERT_EQUAL_INT(3, arrlen(array));
+    TEST_ASSERT_EQUAL_INT(16, arrcap(array));
     arrput(array, 21);
     arrput(array, 22);
     arrput(array, 23);
@@ -72,6 +70,6 @@ void test_stb_array(void) {
     arrput(array, 35);
     arrput(array, 36);
     arrput(array, 37);
-    printf("array length %zu\n", arrlen(array));    //20
-    printf("arr cap %zu\n", arrcap(array)); //32
+    TEST_ASSERT_EQUAL_INT(20, arrlen(array));
+    TEST_ASSERT_EQUAL_INT(32, arrcap(array));
 }

@@ -25,6 +25,7 @@ void test_move() {
 	test_usisq_to_movesq();
 	test_initial_to_piecetype();
 	test_do_usi_move();
+	test_undo_move();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
