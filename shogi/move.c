@@ -124,10 +124,11 @@ int initial_to_piecetype(char p) {
 }
 
 void do_usi_move(usi_handler_t* hd, char* usi_move) {
+	board_t* bd = hd->bd;
 	int move = 0;
 	if (strlen(usi_move) == 4) {
 		if (usi_move[1] == '*') {	//打つ手
-			if (hd->bd->turn) {
+			if (bd->turn) {
 				move = (1 << 15) | ((initial_to_piecetype(usi_move[0]) + 16) << 7) | usisq_to_movesq(usi_move+2);	//morh:<<15,from(piece):<<7,to 
 			}
 			else {
@@ -137,70 +138,71 @@ void do_usi_move(usi_handler_t* hd, char* usi_move) {
 		else {	//移動手（不成）
 			int from = usisq_to_movesq(usi_move);
 			int to = usisq_to_movesq(usi_move+2);
-			move = (hd->bd->mb[to]/*^0x10*/) << 24 | hd->bd->mb[from] << 16 | from << 7 | to;	//cap:<<24,piece:<<16,from:<<7,to
+			move = (bd->mb[to]/*^0x10*/) << 24 | bd->mb[from] << 16 | from << 7 | to;	//cap:<<24,piece:<<16,from:<<7,to
 		}
 	}
 	else {	//成る手
 		int from = usisq_to_movesq(usi_move);
 		int to = usisq_to_movesq(usi_move+2);
-		move = (hd->bd->mb[to]/*^0x10*/) << 24 | hd->bd->mb[from] << 16 | 1 << 14 | from << 7 | to;	//cap:<<24,piece:<<16,pmoto:1<<14,from:<<7,to
+		move = (bd->mb[to]/*^0x10*/) << 24 | bd->mb[from] << 16 | 1 << 14 | from << 7 | to;	//cap:<<24,piece:<<16,pmoto:1<<14,from:<<7,to
 	}
 	do_move(hd, move);
 }
 
 void do_move(usi_handler_t* hd, const int move) {
-	hd->bd->move_number++;
-	int us = hd->bd->turn;
+	board_t* bd = hd->bd;
+	bd->move_number++;
+	int us = bd->turn;
 	int to, from, pmoto, morh, piece, cap;
 	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
 	if (morh) {
-		hd->bd->hb[from]--;		//打つ手の時は駒番はfromに入る
-		hd->bd->mb[to] = from;
+		bd->hb[from]--;		//打つ手の時は駒番はfromに入る
+		bd->mb[to] = from;
 		//ここに駒打ちの時、詰めがかかるかのフラグ(moveIsCheck)による処理が入る(TODO:)
 	}
 	else {
 		if (cap != empty) {
 			cap = strip_pmoto(cap) ^ 0x10;	//取った駒のカラー切替え、不成への切替
-			hd->bd->hb[cap]++;
+			bd->hb[cap]++;
 		}
 		//ここにkingSquare配列に関する処理が入るが今はパス(TODO:)
 		//ここに詰めが掛かってくる場合の処理がはいるがいまはパス(TODO:)
 		if (pmoto) {
 			piece = piece + 8;
 		}
-		hd->bd->mb[from] = empty;
-		hd->bd->mb[to] = piece;
+		bd->mb[from] = empty;
+		bd->mb[to] = piece;
 	}
-	hd->bd->turn = opposite_color(us);
+	bd->turn = opposite_color(us);
 	return;
 }
 
 void undo_move(usi_handler_t* hd,const int move) {
-	int us = hd->bd->turn;
+	board_t* bd = hd->bd;
+	int us = bd->turn;
 	int to, from, pmoto, morh, piece, cap;
 	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
 	if (morh) {	//打ち手
 		//bitboard関係の操作が入るが今はパス(TODO:)
-		hd->bd->mb[to] = empty;
-		hd->bd->hb[from]++;			//打つ手の時は駒番はfromに入る
+		bd->mb[to] = empty;
+		bd->hb[from]++;			//打つ手の時は駒番はfromに入る
 	}
 	else {
 		//king専用の配列の操作がある、今はパス(TODO:)
 		if (cap) {
 			//bitboard関係の操作が入るが今はパス(TODO:)
-			hd->bd->mb[to] = cap;
-			cap = strip_pmoto(cap) ^ 0x10;
-			hd->bd->hb[cap]--;
+			bd->mb[to] = cap;	//capには取られた駒の情報がそのまま入っている（color,pmoto情報がそのまま）
+			cap = strip_pmoto(cap) ^ 0x10;	//ここで成情報を除去、カラーを敵側に合わせて駒台に載せる
+			bd->hb[cap]--;
 		}
 		else {
-			hd->bd->mb[to] = empty;
+			bd->mb[to] = empty;
 		}
-		hd->bd->mb[from] = piece;	//ここでエラーになるかも成りの情報がなくなっているかも
+		bd->mb[from] = piece;
 	}
 	//ここでbitboardの操作かある、今はパス(TODO:)
-	int them = hd->bd->turn;
-	hd->bd->turn = opposite_color(us);
-	hd->bd->move_number--;
+	bd->turn = opposite_color(us);
+	bd->move_number--;
 }
 
 void get_move(const int move,int* to,int* from,int* ispmoto,int* morh,int* piece,int* cap) {
