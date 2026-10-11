@@ -86,10 +86,19 @@ gshogiのmove
 
 	PseudoLegalMoves関数 LegalMoves関数から呼ばれている。PseudoLegalMoves[]配列を生成する関数である。
 		PseudoLegalMoves[]配列の中には自殺手も含まれる。？？？
+		boardをスキャンして、座標に駒があり、その駒が自分の駒であればAttacksFrom関数を呼び出す
 		移動手はAttacksFrom関数から探索する
+		AttacksFrom関数ではカラーごと、駒種ごとに手を生成している、細かなチエックはしていないので
+		完全な合法手ではない。
+		チエックは、自駒は取らない、
+		CanMoveWithoutpromototion(s2,pt,truen)は死駒ではないことを確認（下段のpawn,lance,knight）
+		CanPromotoは成れる駒かどうかをチエックしている。成れる駒はリストに追加する
 		打つ駒は盤上の空き座標を探索して、そこに駒台にある駒を当てはめていく
+		打駒のチエックは２歩ではないこと、死駒ではないことをチエックしている
 		配下にある関数はPseudoLegalMoves関数から呼ばれている
 			AttacksFrom()
+			AttacksForm関数はカラーで分けられていて大きな関数、280行ある
+			次は駒種で分けられていてswitch文で切分けて行く
 				attacksBGold()
 				attacksBishop()
 				attacksRook()
@@ -98,6 +107,8 @@ gshogiのmove
 				attacksWGold()
 				fileIndex()
 				rankIndex()
+			CanMovewithoutpromototion()
+			CanPromoto()
 			isDoublePawn()
 		指し手を生成する関数群がかなりのボリュームがある
 
