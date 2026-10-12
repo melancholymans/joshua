@@ -4,6 +4,8 @@
 void test_set_file(void);
 void test_set_rank(void);
 bool test_set_square(void);
+void test_movesq_to_usisq(void);
+void test_usisq_to_movesq(void);
 void test_new_square_relation_direct(void);
 void test_square_relation(void);
 void test_opposite_color(void);

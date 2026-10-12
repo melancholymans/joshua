@@ -22,10 +22,10 @@ void test_move() {
 	printf("-----------test_move----------------------------------\n");
 	test_get_move();
 	test_strip_pmoto();
-	test_usisq_to_movesq();
 	test_initial_to_piecetype();
 	test_do_usi_move();
 	test_undo_move();
+	test_move_to_usi();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
@@ -38,6 +38,8 @@ void test_position() {
 	test_set_file();
 	test_set_rank();
 	TEST_ASSERT_TRUE(test_set_square());
+	test_usisq_to_movesq();
+	test_movesq_to_usisq();
 	test_new_square_relation_direct();
 	test_square_relation();
 	test_opposite_color();

@@ -112,6 +112,18 @@ int set_rank(int sq) {
 	return sq % 9;
 }
 
+void movesq_to_usisq(int sq,char* usi_sq) {
+	int f = set_file(sq);
+	int r = set_rank(sq);
+	usi_sq[0] = '1' + f;
+	usi_sq[1] = 'a' + r;
+	usi_sq[2] = '\0';
+}
+
+int usisq_to_movesq(char* usi_sq) {
+	return (usi_sq[0] - '1') * 9 + (usi_sq[1] - 'a');
+}
+
 // “n‚³‚ê‚½sqÀ•W“¯m‚ÌˆÊ’uŠÖŒW‚ğ•Ô‚·
 int square_relation(const int sq1, const int sq2) {
 	return square_relation_direct[sq1][sq2];

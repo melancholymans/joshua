@@ -39,7 +39,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		return handle_stop(cmds);
 	}
 	else if (!strcmp("go", cmds[0])) {
-		return handle_go(cmds);
+		return handle_go(usi_hd);
 	}
 	else if (!strcmp("position", cmds[0])) {
 		return handle_position(usi_hd,cmds,count);
@@ -148,20 +148,33 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	return 200;
 }
 
-errno_t handle_go(char* cmds) {
+
+errno_t handle_go(usi_handler_t* hd) {
 	//:TODO
+	// 思考開始に対応する
 	printf("%s\n", __func__);
-	return NULL;
+	int move = 0;
+	move = go(hd);
+
+	if (move == 0){
+		put_send(hd->stream, "bestmove resign");
+	}
+	else {
+		put_send(hd->stream, "bestmove mikann");
+	}
+	return 200;
 }
 
 errno_t handle_stop(char* cmds) {
 	//:TODO
+	// 即座に思考を中断しbestmoveを返す
 	printf("%s\n", __func__);
 	return NULL;
 }
 
 errno_t handle_ponder_hit(char* cmds) {
 	//:TODO
+	// ポンダ処理
 	printf("%s\n", __func__);
 	return NULL;
 }

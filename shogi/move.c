@@ -117,10 +117,42 @@ gshogiのmove
 	どっちなのかフラグを立てておけば、判定する必要はないのではないかと思う。Move構造体にフラグを追加すればよいのではないか。
 	 xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board or hand board
 	 このアイデアいかがでしょうか(TODO:)
+
+	 YaneuraOU-9.00のメモ
+	 F:\yaneuraOU/yaneuraOU-9.00/yaneuraOU.sln
+								source/ *.cpp,*.hpp
+								build/
+									Deep-ORT-CPU/
+										YaneuraOU.exe
+										book/
+											最初ここにはuserbook1.dbがあったがyaneuraOU9.00を動かすとエラーがでる（standard_book.dbがないというエラー）
+											そこでuserbook1.dbをリネームしたところプログラムからエラーが出なくなった
+										eval/
+											最初ここにはnn.binがあったがyaneuraOU9.00を動かすとエラーがでる（model.onnxファイルがない）
+											ファイルを探したら出てきたので、eval/においた
+	リリース版はbuild/Deep-ORT-CPUフォルダにできる
+
+	リリースモデルはこれで動くがDebugモデルではbook,evalファイルがないとエラーがでる。book,evalファイルをいろいろ動かしても改善されないので
+	bookはno-book、evalファイルもパスする
+
+	book
+	book.cppのread_book(filename,on_the_fly)のなかにファイルを読み込む処理がある。
+	pure_file変数が定跡なしでプログラムを動かすかどうかを決める変数(253行) ->コンパイルOK
+
+	eval
+	FukauraEngin.cppのinit_gpu()121行にevalファイルを読み込む処理がある。これをパスすると後工程でエラーがでたので
+	model_pathに直Pathを書いて実行させた
+	auto model_path = "F:\\yaneuraOu\\YaneuraOu-9.00\\build\\Deep-ORT-CPU\\eval\\model.onnx";  //Path::Combine(eval_dir, model_name);
+ 
+	usi
+	isready
  */
 
-int usisq_to_movesq(char* usi_sq) {
-	return (usi_sq[0] - '1') * 9 + (usi_sq[1] - 'a');
+int go(usi_handler_t* hd) {
+	printf("%s\n", __func__);
+	int best_move = 0;
+	/*まだまだこれから*/
+	return best_move;
 }
 
 initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G'};
@@ -149,13 +181,13 @@ void do_usi_move(usi_handler_t* hd, char* usi_move) {
 		else {	//移動手（不成）
 			int from = usisq_to_movesq(usi_move);
 			int to = usisq_to_movesq(usi_move+2);
-			move = (bd->mb[to]/*^0x10*/) << 24 | bd->mb[from] << 16 | from << 7 | to;	//cap:<<24,piece:<<16,from:<<7,to
+			move = (bd->mb[to]) << 24 | bd->mb[from] << 16 | from << 7 | to;	//cap:<<24,piece:<<16,from:<<7,to
 		}
 	}
 	else {	//成る手
 		int from = usisq_to_movesq(usi_move);
 		int to = usisq_to_movesq(usi_move+2);
-		move = (bd->mb[to]/*^0x10*/) << 24 | bd->mb[from] << 16 | 1 << 14 | from << 7 | to;	//cap:<<24,piece:<<16,pmoto:1<<14,from:<<7,to
+		move = (bd->mb[to]) << 24 | bd->mb[from] << 16 | 1 << 14 | from << 7 | to;	//cap:<<24,piece:<<16,pmoto:1<<14,from:<<7,to
 	}
 	do_move(hd, move);
 }
@@ -234,5 +266,24 @@ int strip_pmoto(int pc) {
 	}
 	else {
 		return pc;
+	}
+}
+
+//moveをsfen形式に変換する
+void move_to_usi(int mv, char* usi_move) {
+	int from, to, ispmoto, morh, piece, cap;
+	get_move(mv, &to, &from, &ispmoto, &morh, &piece, &cap);
+	if (morh){	//打手
+		usi_move[0] = initial[from & 0xf];
+		usi_move[1] = '*';
+		movesq_to_usisq(to, usi_move + 2);
+	}
+	else {
+		movesq_to_usisq(from, usi_move);
+		movesq_to_usisq(to, usi_move + 2);
+		if (ispmoto) {
+			usi_move[4] = '+';
+			usi_move[5] = '\0';
+		}
 	}
 }

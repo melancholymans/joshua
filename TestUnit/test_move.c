@@ -1061,3 +1061,193 @@ void test_undo_move(void) {
 	TEST_ASSERT_EQUAL_INT(bknight, hd.bd->mb[sq2i]);
 	TEST_ASSERT_EQUAL_INT(blance, hd.bd->mb[sq1i]);
 }
+
+void test_move_to_usi(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	char moves[8];
+	char str[8];
+	new_board(&hd);
+	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	set_board(&hd, sfen);
+	//1
+	strcpy_s(&moves, 8, "2g2f");
+	int mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2g2f", &str);
+	//2
+	strcpy_s(&moves, 8, "4a3b");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("4a3b", &str);
+	//3
+	strcpy_s(&moves, 8, "2f2e");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2f2e", &str);
+	//4
+	strcpy_s(&moves, 8, "6a5b");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("6a5b", &str);
+	//5
+	strcpy_s(&moves, 8, "7g7f");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("7g7f", &str);
+	//6
+	strcpy_s(&moves, 8, "5a4b");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("5a4b", &str);
+	//7
+	strcpy_s(&moves, 8, "6i7h");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("6i7h", &str);
+	//8
+	strcpy_s(&moves, 8, "7a6b");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("7a6b", &str);
+	//9
+	strcpy_s(&moves, 8, "7i6h");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("7i6h", &str);
+	//10
+	strcpy_s(&moves, 8, "9c9d");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("9c9d", &str);
+	//11
+	strcpy_s(&moves, 8, "8h7g");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("8h7g", &str);
+	//12
+	strcpy_s(&moves, 8, "8a9c");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("8a9c", &str);
+	//13
+	strcpy_s(&moves, 8, "2e2d");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2e2d", &str);
+	//14
+	strcpy_s(&moves, 8, "2c2d");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2c2d", &str);
+	//15
+	strcpy_s(&moves, 8, "2h2d");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2h2d", &str);
+	//16
+	strcpy_s(&moves, 8, "9c8e");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("9c8e", &str);
+	//17
+	strcpy_s(&moves, 8, "P*2c");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("P*2c", &str);
+	//18
+	strcpy_s(&moves, 8, "8e7g+");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("8e7g+", &str);
+	//19
+	strcpy_s(&moves, 8, "8i7g");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("8i7g", &str);
+	//20
+	strcpy_s(&moves, 8, "9d9e");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("9d9e", &str);
+	//21
+	strcpy_s(&moves, 8, "3i3h");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("3i3h", &str);
+	//22
+	strcpy_s(&moves, 8, "8b9b");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("8b9b", &str);
+	//23
+	strcpy_s(&moves, 8, "2c2b+");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2c2b+", &str);
+	//24
+	strcpy_s(&moves, 8, "3a2b");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("3a2b", &str);
+	//25
+	strcpy_s(&moves, 8, "2d2f");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2d2f", &str);
+	//26
+	strcpy_s(&moves, 8, "2b2c");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2b2c", &str);
+	//27
+	strcpy_s(&moves, 8, "B*5f");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("B*5f", &str);
+	//28
+	strcpy_s(&moves, 8, "P*2e");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("P*2e", &str);
+	//29
+	strcpy_s(&moves, 8, "2f2e");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("2f2e", &str);
+	//30
+	strcpy_s(&moves, 8, "P*2d");
+	mv = make_usi_move(&hd, &moves);
+	do_move(&hd, mv);
+	move_to_usi(mv, &str);
+	TEST_ASSERT_EQUAL_STRING("P*2d", &str);
+}

@@ -55,6 +55,44 @@ bool test_set_square(void) {
 	return true;
 }
 
+void test_movesq_to_usisq(void) {
+	char usi_sq[4];
+	movesq_to_usisq(sq1a, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("1a", usi_sq);
+	movesq_to_usisq(sq2b, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("2b", usi_sq);
+	movesq_to_usisq(sq3c, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("3c", usi_sq);
+	movesq_to_usisq(sq4d, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("4d", usi_sq);
+	movesq_to_usisq(sq5e, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("5e", usi_sq);
+	movesq_to_usisq(sq6f, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("6f", usi_sq);
+	movesq_to_usisq(sq7g, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("7g", usi_sq);
+	movesq_to_usisq(sq8h, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("8h", usi_sq);
+	movesq_to_usisq(sq9i, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("9i", usi_sq);
+	movesq_to_usisq(sq9a, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("9a", usi_sq);
+	movesq_to_usisq(sq8b, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("8b", usi_sq);
+	movesq_to_usisq(sq7c, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("7c", usi_sq);
+	movesq_to_usisq(sq6d, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("6d", usi_sq);
+	movesq_to_usisq(sq4f, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("4f", usi_sq);
+	movesq_to_usisq(sq3g, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("3g", usi_sq);
+	movesq_to_usisq(sq2h, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("2h", usi_sq);
+	movesq_to_usisq(sq1i, usi_sq);
+	TEST_ASSERT_EQUAL_STRING("1i", usi_sq);
+}
+
 void test_new_square_relation_direct(void) {
 	int sq1 = sq7b;
 	int sq2 = sq2b;

@@ -288,6 +288,8 @@ void new_square_relation_direct(void);
 int set_square(int f, int r);
 int set_file(int sq);
 int set_rank(int sq);
+int usisq_to_movesq(char* usi_sq);
+void movesq_to_usisq(int sq, char* usi_sq);
 int square_relation(const int sq1, const int sq2);
 int opposite_color(const int c);
 int inverse(const int pc);

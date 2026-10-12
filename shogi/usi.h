@@ -9,7 +9,7 @@ errno_t handle_is_ready(usi_handler_t* hd,char* cmds);
 errno_t handle_setoption(char* cmds);
 errno_t handle_usi_newgame(char* cmds);
 errno_t handle_position(usi_handler_t* hd,char* cmds[],int count);
-errno_t handle_go(char* cmds);
+errno_t handle_go(usi_handler_t* hd);
 errno_t handle_stop(char* cmds);
 errno_t handle_ponder_hit(char* cmds);
 errno_t handle_quit(char* cmds);

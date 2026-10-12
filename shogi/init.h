@@ -2,10 +2,9 @@
 
 #include <stdio.h>
 
-
 //mbはmain board,hbはhand board,turnはターン
 /*
-* hb[24]の配列の中身は以下の通り
+* hb[24]の配列の中身は以下の通り、番号はとんでいる。
 	hb[1] = bpawn = 1,
 	hb[2] = blance = 2,
 	hb[3] = bknight = 3,
