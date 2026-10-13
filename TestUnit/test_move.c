@@ -1155,3 +1155,12 @@ void test_move_to_usi(void) {
 	move_to_usi(32908, &str);
 	TEST_ASSERT_EQUAL_STRING("P*2d", &str);
 }
+
+void test_piece_color(void) {
+	for (int pc = bpawn; pc <= bdragon; pc++) {
+		TEST_ASSERT_EQUAL_INT(black, (pc & 0x10) >> 4);
+	}
+	for (int pc = wpawn; pc <= wdragon; pc++) {
+		TEST_ASSERT_EQUAL_INT(white, (pc & 0x10) >> 4);
+	}
+}

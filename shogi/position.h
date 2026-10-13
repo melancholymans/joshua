@@ -162,6 +162,10 @@ enum piecetype {	//‹îíAÚ“ª«‚Ìpro‚ª‚Â‚­‚Ì‚Í¬‹î‚ÌˆÓ–¡(Œ³‚Ì‹î‚É+8)
 	dragon = 14
 };
 
+/*
+(piece & 0x10) == 0 black
+(piece & 0x10) != 0 white
+*/
 enum piece {	//‹î”Ô piece_type‚Écolor‚ğ‰Á‚¦‚½‚à‚Ì
 	bpawn = 1,
 	blance = 2,

@@ -10,7 +10,7 @@ usi_handler_t new_usi_handler(FILE* out) {
 	hd.stream = out;
 	hd.name = "shogi";
 	hd.author = "joshua";
-	hd.mv = NULL;
+	hd.ml = NULL;
 	return hd;
 }
 
@@ -152,10 +152,8 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 errno_t handle_go(usi_handler_t* hd) {
 	//:TODO
 	// 思考開始に対応する
-	printf("%s\n", __func__);
 	int move = 0;
 	move = go(hd);
-
 	if (move == 0){
 		put_send(hd, "bestmove resign");
 	}

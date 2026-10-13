@@ -1,4 +1,7 @@
 
+#include <stdlib.h>
+
+#include "stb_ds.h"
 #include "position.h"
 #include "move.h"
 /*
@@ -148,14 +151,51 @@ gshogiのmove
 	isready
  */
 
+initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G' };
+
+//GUIから思考開始に対応する
 int go(usi_handler_t* hd) {
-	printf("%s\n", __func__);
+	/*printf("%s\n", __func__);
 	int best_move = 0;
-	/*まだまだこれから*/
+	move_list(hd,hd->ml);
+	srand((unsigned)time(NULL));
+	int len = arrlen(hd->ml);
+	best_move = hd->ml[rand() % len];
+	arrfree(hd->ml);
+	*/
+	int best_move = 0;
 	return best_move;
 }
 
-initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G'};
+//合法手（簡略版）生成
+/*void move_list(usi_handler_t* hd,int* ml) {
+	int* mv = NULL;
+	legal_moves(hd,mv);
+	for (int i = 0; i < arrlen(mv); i++) {
+		if (check_ok(mv[i])) {
+			arrput(ml, mv[i]);
+		}
+	}
+	return;
+}*/
+
+//盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
+void legal_moves(usi_handler_t* hd, int* ml) {
+	board_t* bd = hd->bd;
+	for (int sq = sq1a; sq <= sq9i; sq++) {
+		int p = bd->mb[sq];
+		if (p != 0 && ((p & 0x10) >> 4) == bd->turn) {
+			int to = attacks_from(ml,p, sq, bd->turn);
+			
+		}
+	}
+}
+
+//盤上での着手可能手をリストアップ
+int attacks_from(int* ml,int pt, int sq, int turn) {
+
+}
+
 int initial_to_piecetype(char p) {
 	for (int pt = 1; pt <= 7; pt++) {
 		if (initial[pt] == p) {

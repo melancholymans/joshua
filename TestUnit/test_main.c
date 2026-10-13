@@ -26,11 +26,11 @@ void test_move() {
 	test_do_usi_move();
 	test_undo_move();
 	test_move_to_usi();
+	test_piece_color();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
 	test_shorten_space();
-	test_handle_go();
 }
 
 void test_position() {
