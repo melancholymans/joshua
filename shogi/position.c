@@ -112,6 +112,7 @@ int set_rank(int sq) {
 	return sq % 9;
 }
 
+//move形式の座標をusi形式の座標に変換する(40->"5e")
 void movesq_to_usisq(int sq,char* usi_sq) {
 	int f = set_file(sq);
 	int r = set_rank(sq);
@@ -120,6 +121,7 @@ void movesq_to_usisq(int sq,char* usi_sq) {
 	usi_sq[2] = '\0';
 }
 
+//usi形式の座標をmove形式の座標に変換する("5e"->40)
 int usisq_to_movesq(char* usi_sq) {
 	return (usi_sq[0] - '1') * 9 + (usi_sq[1] - 'a');
 }

@@ -157,10 +157,14 @@ errno_t handle_go(usi_handler_t* hd) {
 	move = go(hd);
 
 	if (move == 0){
-		put_send(hd->stream, "bestmove resign");
+		put_send(hd, "bestmove resign");
 	}
 	else {
-		put_send(hd->stream, "bestmove mikann");
+		char usi_move[8];
+		char str[16];
+		move_to_usi(move, usi_move);
+		snprintf(str,sizeof(str), "bestmove %s", usi_move);
+		put_send(hd, str);
 	}
 	return 200;
 }

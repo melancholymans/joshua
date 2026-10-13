@@ -30,6 +30,7 @@ void test_move() {
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
 	test_shorten_space();
+	test_handle_go();
 }
 
 void test_position() {

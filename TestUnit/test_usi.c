@@ -7,3 +7,4 @@ void test_shorten_space() {
 	shorten_space(buf);
 	TEST_ASSERT_EQUAL_STRING("Hello world space", buf);
 }
+
