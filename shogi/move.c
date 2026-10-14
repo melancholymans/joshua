@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "stb_ds.h"
 #include "position.h"
@@ -169,31 +170,153 @@ int go(usi_handler_t* hd) {
 
 //合法手（簡略版）生成
 /*void move_list(usi_handler_t* hd,int* ml) {
-	int* mv = NULL;
-	legal_moves(hd,mv);
-	for (int i = 0; i < arrlen(mv); i++) {
-		if (check_ok(mv[i])) {
-			arrput(ml, mv[i]);
+	int* m = NULL;
+	legal_moves(hd,m);
+	for (int i = 0; i < arrlen(m); i++) {
+		if (check_ok(m[i])) {
+			arrput(ml, m[i]);
 		}
 	}
 	return;
-}*/
-
-//盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
-void legal_moves(usi_handler_t* hd, int* ml) {
-	board_t* bd = hd->bd;
-	for (int sq = sq1a; sq <= sq9i; sq++) {
-		int p = bd->mb[sq];
-		if (p != 0 && ((p & 0x10) >> 4) == bd->turn) {
-			int to = attacks_from(ml,p, sq, bd->turn);
-			
-		}
-	}
 }
 
-//盤上での着手可能手をリストアップ
-int attacks_from(int* ml,int pt, int sq, int turn) {
+//盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
+/*void legal_moves(usi_handler_t* hd, int* m) {
+	board_t* bd = hd->bd;
+	for (int sq = sq1a; sq <= sq9i; sq++) {
+		int pc = bd->mb[sq];
+		if (pc != 0 && ((pc & 0x10) >> 4) == bd->turn) {
+			int to = attacks_from(hd,m,pc, sq, bd->turn);
+			for (int sq2) {
+				int move = 0;
+				if (bd->mb[sq2] != 0 && ((bd->mb[sq2] & 0x10) >> 4) == bd->turn){	//s2はtoで移動先の駒が自陣側の駒だったパス
+					continue;
+				}
+				if (CanMoveWithoutPromotion()) {	//この条件なら着手可能手リストに追加してもよい
+					move = make_make(sq, sq2, false);
+					arrput(m, move);
+				}
+				if (CanPromote()) {	//この条件なら着手可能手に追加してもよい
+					move = make_make(sq, sq2, false);
+					arrput(m, move);
+				}
+			}
+		}
+	}
+	//ここあとに打手生成処理があるが今はパス
+}*/
 
+//盤上での着手可能手をリストアップ
+int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
+	board_t* bd = hd->bd;
+	int* m = NULL;
+	int to = 0;
+	int f, r;
+	switch (pc) {
+	case bpawn:
+		to = sq - 1;
+		arrput(m, to);
+		return m;
+	case blance:
+		f = set_file(sq);
+		r = set_rank(sq) - 1;
+		for (; r >= rank1; r -= 1) {
+			int to = set_square(f, r);
+			int topc = bd->mb[to];
+			if (topc == 0) {
+				arrput(m, to);
+				continue;
+			}
+			if (((topc & 0x10) >> 4) != turn) {
+				arrput(m, to);
+			}
+			break;
+		}
+		return m;
+	case bknight:
+		f = set_file(sq);
+		r = set_rank(sq);
+		switch (f) {
+		case file1:
+			to = sq + 7;
+			arrput(m, to);
+			return m;
+		case file9:
+			to = sq - 11;
+			arrput(m, to);
+			return m;
+		default:
+			to = sq + 7;
+			arrput(m, to);
+			to = sq - 11;
+			arrput(m, to);
+			return m;
+		}
+	case bsilver:
+		f = set_file(sq);
+		r = set_rank(sq);
+		switch (f){
+		case file1:
+			if (r == rank1) {
+				to = sq + 10;
+				arrput(m, to);
+				return m;
+			}
+			else if (r == rank8) {
+				to = sq + 8;
+				arrput(m, to);
+				to = sq + 1;
+				arrput(m, to);
+				return m;
+			}
+			else {
+				to = sq + 8;
+				arrput(m,to);
+				to = sq - 1;
+				arrput(m, to);
+				to = sq + 10;
+				arrput(m, to);
+				return m;
+			}
+			break;
+		case file9:
+			if (r == rank1) {
+				to = sq - 8;
+				arrput(m, to);
+				return m;
+			}
+			else if (r == rank9) {
+				to = sq - 1;
+				arrput(m, to);
+				to = sq + 10;
+				arrput(m, to);
+				return m;
+			}
+			else {
+				to = sq - 10;
+				arrput(m, to);
+				to = sq - 1;
+				arrput(m, to);
+				to = sq - 8;
+				arrput(m, to);
+				return m;
+			}
+			break;
+		default:
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+			to = sq + 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+			return m;
+		}
+		//white ,blackのbold,propawn,prolance,proknight,prosilver,bishop,rook,house,dragon,kingは今はパス
+	}
 }
 
 int initial_to_piecetype(char p) {

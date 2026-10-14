@@ -27,6 +27,7 @@ void test_move() {
 	test_undo_move();
 	test_move_to_usi();
 	test_piece_color();
+	test_attacks_from();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
