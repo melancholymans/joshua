@@ -28,7 +28,7 @@ void test_move() {
 	test_move_to_usi();
 	test_piece_color();
 	test_attacks_from();
-	test_canMove_without_promotion();
+	test_canmove_without_promotion();
 	test_can_promote();
 }
 void test_usi() {

@@ -7,6 +7,6 @@ void test_undo_move(void);
 void test_move_to_usi(void);
 void test_piece_color(void);
 void test_attacks_from(void);
-void test_canMove_without_promotion(void);
+void test_canmove_without_promotion(void);
 void test_can_promote(void);
 
