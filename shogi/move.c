@@ -178,25 +178,25 @@ int go(usi_handler_t* hd) {
 		}
 	}
 	return;
-}
+}*/
 
 //盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
 /*void legal_moves(usi_handler_t* hd, int* m) {
 	board_t* bd = hd->bd;
+	int* ml = NULL;
 	for (int sq = sq1a; sq <= sq9i; sq++) {
 		int pc = bd->mb[sq];
 		if (pc != 0 && ((pc & 0x10) >> 4) == bd->turn) {
-			int to = attacks_from(hd,m,pc, sq, bd->turn);
-			for (int sq2) {
-				int move = 0;
-				if (bd->mb[sq2] != 0 && ((bd->mb[sq2] & 0x10) >> 4) == bd->turn){	//s2はtoで移動先の駒が自陣側の駒だったパス
+			ml = attacks_from(hd,m,pc, sq, bd->turn);
+			for (int to = 0; to < arrlen(ml);to++ ) {
+				if (bd->mb[to] != 0 && ((bd->mb[to] & 0x10) >> 4) == bd->turn){	//toで移動先の駒が自陣側の駒だったパス
 					continue;
 				}
-				if (CanMoveWithoutPromotion()) {	//この条件なら着手可能手リストに追加してもよい
+				if (canmove_without_promotion(to,pc,bd->turn)) {	//この条件なら着手可能手リストに追加してもよい
 					move = make_make(sq, sq2, false);
 					arrput(m, move);
 				}
-				if (CanPromote()) {	//この条件なら着手可能手に追加してもよい
+				if (can_promote(from,pt)) {	//この条件なら着手可能手に追加してもよい
 					move = make_make(sq, sq2, false);
 					arrput(m, move);
 				}
@@ -205,6 +205,37 @@ int go(usi_handler_t* hd) {
 	}
 	//ここあとに打手生成処理があるが今はパス
 }*/
+
+//pawn,lance.knightが死駒にならないならtrueを返す 
+_Bool canmove_without_promotion(int to, int pt, int c) {
+	int r = set_rank(to);
+	if (c == black) {
+		return
+			(pt != bpawn && pt != blance && pt != bknight) ||
+			(pt == bpawn && r > rank1) ||
+			(pt == blance && r > rank1) ||
+			(pt == bknight && r > rank2);
+	}
+	else {
+		return
+			(pt != wpawn && pt != wlance && pt != wknight) ||
+			(pt == wpawn && r < rank9) ||
+			(pt == wlance && r < rank9) ||
+			(pt == wknight && r < rank8);
+	}
+}
+
+//成駒になる可能性のある着手ならtrue この関数はsqがto座標のみで成判定をしているので間違いであるがとりあえずはこれでOK(TODO:)
+_Bool can_promote(int sq,int pt) {
+	int r = set_rank(sq);
+	if (pt >= bpawn && pt <= brook) {
+		return r <= rank3;
+	}
+	else if(pt>=wpawn && pt<=wrook){
+		return r >= rank7;
+	}
+	return false;
+}
 
 //盤上での着手可能手をリストアップ
 int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {

@@ -271,19 +271,19 @@ void test_rank_inverse(void) {
 // white駒
 // rank7-9 true(white側エリアであれば成れる）
 // enemy_mask[2]というbitboardがあり、同じ趣旨であるが今のところ使い分けの判断は保留にしておく(TODO:)
-void test_can_promote(void) {
+void test_can_promote_area(void) {
 	for (int r = rank1; r <= rank9; r++) {
 		if (r <= rank3) {
-			TEST_ASSERT_EQUAL_INT(true, can_promote(black, r));
+			TEST_ASSERT_EQUAL_INT(true, can_promote_area(black, r));
 		}
 		else {
-			TEST_ASSERT_EQUAL_INT(false, can_promote(black, r));
+			TEST_ASSERT_EQUAL_INT(false, can_promote_area(black, r));
 		}
 		if (r >= rank7) {
-			TEST_ASSERT_EQUAL_INT(true, can_promote(white, r));
+			TEST_ASSERT_EQUAL_INT(true, can_promote_area(white, r));
 		}
 		else {
-			TEST_ASSERT_EQUAL_INT(false, can_promote(white, r));
+			TEST_ASSERT_EQUAL_INT(false, can_promote_area(white, r));
 		}
 	}
 }

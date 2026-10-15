@@ -28,6 +28,8 @@ void test_move() {
 	test_move_to_usi();
 	test_piece_color();
 	test_attacks_from();
+	test_canMove_without_promotion();
+	test_can_promote();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
@@ -56,7 +58,7 @@ void test_position() {
 	test_square_inverse();
 	test_file_inverse();
 	test_rank_inverse();
-	test_can_promote();
+	test_can_promote_area();
 	test_set_board();
 	test_print_board();
 }

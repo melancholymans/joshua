@@ -12,3 +12,5 @@ void move_to_usi(int mv, char* usi_move);
 /*int* move_list(void);*/
 /*void legal_moves(usi_handler_t* hd, int* m)*/
 int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn);
+_Bool canmove_without_promotion(int to, int pt, int c);
+_Bool can_promote(int sq, int pt);

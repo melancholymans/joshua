@@ -204,7 +204,7 @@ int rank_inverse(const int r) {
 }
 
 // 駒の移動元(from)移動先(to)が成れるエリア（敵陣エリア）かどうかで成りのフラグを返す
-_Bool can_promote(const int c, const int from_or_to_rank) {
+_Bool can_promote_area(const int c, const int from_or_to_rank) {
 	return (0x1c00007u & (1u << ((c << 4) + from_or_to_rank)));
 }
 

@@ -1197,3 +1197,125 @@ void test_attacks_from(void) {
 	TEST_ASSERT_EQUAL_INT(sq1c, ml[5]);
 	arrfree(ml);
 }
+
+void test_canMove_without_promotion(void) {
+	//bpawn
+	TEST_ASSERT_EQUAL_INT(0,canMove_without_promotion(sq5a,bpawn,black));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5b, bpawn, black));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5c, bpawn, black));
+	//blance
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5a, blance, black));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5b, blance, black));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5c, blance, black));
+	//bknight
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5a, bknight, black));
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5b, bknight, black));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5c, bknight, black));
+	//bsilver
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, bsilver, black));
+	//bbishop
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, bbishop, black));
+	//brook
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, brook, black));
+	//bgold
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, bgold, black));
+	//bking
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, bking, black));
+	//bhorse
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, bhorse, black));
+	//bdragon
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5a, bdragon, black));
+	//wpawn
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5i, wpawn, white));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5h, wpawn, white));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5g, wpawn, white));
+	//wlance
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5i, wlance, white));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5h, wlance, white));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5g, wlance, white));
+	//wknight
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5i, wknight, white));
+	TEST_ASSERT_EQUAL_INT(0, canMove_without_promotion(sq5h, wknight, white));
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5g, wknight, white));
+	//wsilver
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, wsilver, white));
+	//wbishop
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, wbishop, white));
+	//wrook
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, wrook, white));
+	//wgold
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, wgold, white));
+	//wking
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, wking, white));
+	//whorse
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, whorse, white));
+	//bdragon
+	TEST_ASSERT_EQUAL_INT(1, canMove_without_promotion(sq5i, wdragon, white));
+}
+
+void test_can_promote(void) {
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, bpawn));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5c, bpawn));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5b, bpawn));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5a, bpawn));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, blance));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5c, blance));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5b, blance));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5a, blance));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, bknight));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5c, bknight));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5b, bknight));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5a, bknight));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, bsilver));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5c, bsilver));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5b, bsilver));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5a, bsilver));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, bbishop));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5c, bbishop));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5b, bbishop));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5a, bbishop));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, brook));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5c, brook));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5b, brook));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5a, brook));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5d, bking));
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5c, bking));
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5b, bking));
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5a, bking));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5f, wpawn));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5g, wpawn));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5h, wpawn));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5i, wpawn));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5f, wlance));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5g, wlance));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5h, wlance));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5i, wlance));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5f, wsilver));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5g, wsilver));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5h, wsilver));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5i, wsilver));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5f, wbishop));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5g, wbishop));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5h, wbishop));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5i, wbishop));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5f, wrook));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5g, wrook));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5h, wrook));
+	TEST_ASSERT_EQUAL_INT(1, can_promote(sq5i, wrook));
+
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5f, wking));
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5g, wking));
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5h, wking));
+	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5i, wking));
+}
