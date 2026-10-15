@@ -1319,3 +1319,14 @@ void test_can_promote(void) {
 	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5h, wking));
 	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5i, wking));
 }
+
+void test_possible_moves(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	new_board(&hd);
+	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/LB5R1/LNSGKGSNL b - 1");
+	set_board(&hd, sfen);
+
+	int* ml = NULL;
+	possible_moves(&hd, ml);
+}

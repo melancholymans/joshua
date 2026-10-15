@@ -181,30 +181,35 @@ int go(usi_handler_t* hd) {
 }*/
 
 //盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
-/*void legal_moves(usi_handler_t* hd, int* m) {
+void possible_moves(usi_handler_t* hd, int* ml) {
 	board_t* bd = hd->bd;
-	int* ml = NULL;
-	for (int sq = sq1a; sq <= sq9i; sq++) {
-		int pc = bd->mb[sq];
+	int* sqml = NULL;
+	int move = 0;
+	for (int from = sq1a; from <= sq9i; from++) {
+		int pc = bd->mb[from];
+		if (pc != bpawn && pc != blance && pc != bknight && pc != bsilver) {	//生成している駒がbpawn,blance,bknight,bsilverしかないのでここでせき止めている
+			continue;
+		}
 		if (pc != 0 && ((pc & 0x10) >> 4) == bd->turn) {
-			ml = attacks_from(hd,m,pc, sq, bd->turn);
-			for (int to = 0; to < arrlen(ml);to++ ) {
+			sqml = attacks_from(hd,pc, from, bd->turn);
+			for (int i = 0; i < arrlen(sqml);i++ ) {
+				int to = sqml[i];
 				if (bd->mb[to] != 0 && ((bd->mb[to] & 0x10) >> 4) == bd->turn){	//toで移動先の駒が自陣側の駒だったパス
 					continue;
 				}
-				if (canmove_without_promotion(to,pc,bd->turn)) {	//この条件なら着手可能手リストに追加してもよい
-					move = make_make(sq, sq2, false);
-					arrput(m, move);
+				if (canmove_without_promotion(to,pc,bd->turn)) {	//不成の移動
+					move = bd->mb[to] << 24 | bd->mb[from] << 16 | from << 7 | to;
+					arrput(ml, move);
 				}
-				if (can_promote(from,pt)) {	//この条件なら着手可能手に追加してもよい
-					move = make_make(sq, sq2, false);
-					arrput(m, move);
+				if (can_promote(from,pc)) {	//成る移動
+					move = bd->mb[to] << 24 | bd->mb[from] << 16 | 1 << 14 | from << 7 | to;
+					arrput(ml, move);
 				}
 			}
 		}
 	}
-	//ここあとに打手生成処理があるが今はパス
-}*/
+	//ここのあとに打手生成処理があるが今はパス
+}
 
 //pawn,lance.knightが死駒にならないならtrueを返す 
 _Bool canmove_without_promotion(int to, int pt, int c) {
@@ -334,16 +339,31 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 			}
 			break;
 		default:
-			to = sq + 8;
-			arrput(m, to);
-			to = sq - 1;
-			arrput(m, to);
-			to = sq - 10;
-			arrput(m, to);
-			to = sq + 10;
-			arrput(m, to);
-			to = sq - 8;
-			arrput(m, to);
+			if (r == rank1) {
+				to = sq + 10;
+				arrput(m, to);
+				to = sq - 8;
+				arrput(m, to);
+			}else if(r == rank9){
+				to = sq + 8;
+				arrput(m, to);
+				to = sq - 1;
+				arrput(m, to);
+				to = sq - 10;
+				arrput(m, to);
+			}
+			else {
+				to = sq + 8;
+				arrput(m, to);
+				to = sq - 1;
+				arrput(m, to);
+				to = sq - 10;
+				arrput(m, to);
+				to = sq + 10;
+				arrput(m, to);
+				to = sq - 8;
+				arrput(m, to);
+			}
 			return m;
 		}
 		//white ,blackのbold,propawn,prolance,proknight,prosilver,bishop,rook,house,dragon,kingは今はパス

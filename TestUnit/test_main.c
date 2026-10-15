@@ -30,6 +30,7 @@ void test_move() {
 	test_attacks_from();
 	test_canmove_without_promotion();
 	test_can_promote();
+	test_possible_moves();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
