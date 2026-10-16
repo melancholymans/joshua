@@ -1320,13 +1320,40 @@ void test_can_promote(void) {
 	TEST_ASSERT_EQUAL_INT(0, can_promote(sq5i, wking));
 }
 
+//ƒwƒ‹ƒp[ŠÖ” move•Ï”‚Ìfrom,to,ispmoto,morh,piece,cap‚ðŽæ‚èo‚µˆø”‚Æ“¯‚¶‚È‚çtrue‚ð•Ô‚·
+_Bool cmp_move(int m, int from, int to, int pmoto, int morh, int piece, int cap) {
+	_Bool t1 = (to == (m & 0x7f));
+	_Bool t2 = (from == ((m >> 7) & 0x7f));
+	_Bool t3 = (pmoto == ((m >> 14) & 0x01));
+	_Bool t4 = (morh == ((m >> 15) & 0x01));
+	_Bool t5 = (piece == ((m >> 16) & 0x1f));
+	_Bool t6 = (cap == ((m >> 24) & 0x1f));
+	return t1 * t2 * t3 * t4 * t5 * t6;
+}
+
 void test_possible_moves(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	new_board(&hd);
-	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/LB5R1/LNSGKGSNL b - 1");
+	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 
 	int* ml = NULL;
-	possible_moves(&hd, ml);
+	ml = possible_moves(&hd, ml);
+	TEST_ASSERT_EQUAL_INT(15, arrlen(ml));
+	TEST_ASSERT_TRUE(cmp_move(ml[0], sq1g, sq1f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[1], sq1i, sq1h, 0, 0, blance, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[2], sq2g, sq2f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[3], sq3g, sq3f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[4], sq3i, sq4h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[5], sq3i, sq3h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[6], sq4g, sq4f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[7], sq5g, sq5f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[8], sq6g, sq6f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[9], sq7g, sq7f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[10], sq7i, sq7h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[11], sq7i, sq6h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[12], sq8g, sq8f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[13], sq9g, sq9f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[14], sq9i, sq9h, 0, 0, blance, empty));
 }

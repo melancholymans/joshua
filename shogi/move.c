@@ -5,38 +5,7 @@
 #include "stb_ds.h"
 #include "position.h"
 #include "move.h"
-/*
- xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx 32bit
- xxxxxxxx xxxxxxxx xxxxxxxx x1111111 to: 移動元座標
- xxxxxxxx xxxxxxxx xx111111 1xxxxxxx from: 移動先座標 駒打ちの時はpieceType + squareNumber - 1 <-この駒打ちの時のフォーマットは謎(TODO:)
- xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx pmoto: 成:1 不成:0
- xxxxxxxx xxxx1111 xxxxxxxx xxxxxxxx 移動する駒のpieceType,駒打ちの時は使用しない
- xxxxxxxx 1111xxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)
- promotoFlag = 1 << 14 不要
- to = pd & 0x7f
- from = (pd >> 7) & 0x7f
- ispromoto = (pd >> 14) & 0x01
- piece = (pd >> 16) & 0x0f	//移動する駒の種類を返す（駒種になる、駒番ではない、駒番がほしければ (pd >> 16) & 0x1f）
- cap = (pd >> 20) & 0x0f	//取った駒の種類を返す（駒種になる、駒番ではない、駒番がほしければ (pd >> 20) & 0x1f）
 
- このファイルには合法手の生成関数も置く
-*/
-/*
- 新しいフォーマット
- xxxxxxxx xxxxxxxx xxxxxxxx x1111111 to: 移動元座標
- xxxxxxxx xxxxxxxx xx111111 1xxxxxxx from: 移動先座標 駒打ちの時はpiece(駒番)
- xxxxxxxx xxxxxxxx x1xxxxxx xxxxxxxx pmoto: 成:1 不成:0,駒打ちの時は0で決め打ち
- xxxxxxxx xxxxxxxx 1xxxxxxx xxxxxxxx morh: main board(0) or hand board(1)
- xxxxxxxx xxx11111 xxxxxxxx xxxxxxxx 移動する駒のpiece(駒番),駒打ちの時は使用しない
- xxx11111 xxxxxxxx xxxxxxxx xxxxxxxx 取った駒の(captured piece)駒番,そのままの駒番を保存colorの切替pmotoの削除は登録の時はしない,駒打ちの時は使用しない
- to = pd & 0x7f
- from = (pd >> 7) & 0x7f
- ispromoto = (pd >> 14) & 0x01
- morh(main or hand) = pd >> 15 & 0x01
- piece = pd >> 16 & 0x1f
- cap piece pd >> 24 & 0x1f
-
-*/
 /*
 gshogiのmove
 	指し手の表記
@@ -181,7 +150,7 @@ int go(usi_handler_t* hd) {
 }*/
 
 //盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
-void possible_moves(usi_handler_t* hd, int* ml) {
+int* possible_moves(usi_handler_t* hd, int* ml) {
 	board_t* bd = hd->bd;
 	int* sqml = NULL;
 	int move = 0;
@@ -208,6 +177,7 @@ void possible_moves(usi_handler_t* hd, int* ml) {
 			}
 		}
 	}
+	return ml;
 	//ここのあとに打手生成処理があるが今はパス
 }
 
