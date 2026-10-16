@@ -1357,3 +1357,16 @@ void test_possible_moves(void) {
 	TEST_ASSERT_TRUE(cmp_move(ml[13], sq9g, sq9f, 0, 0, bpawn, empty));
 	TEST_ASSERT_TRUE(cmp_move(ml[14], sq9i, sq9h, 0, 0, blance, empty));
 }
+
+void test_go(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	new_board(&hd);
+	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	set_board(&hd, sfen);
+
+	int m = go(&hd);
+	int from, to, pmoto, morh, piece, cap;
+	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
+	printf("from->%d,to->%d,pmoto->%d,morh->%d,piece->%d,cap->%d \n", from, to, pmoto, morh, piece, cap);
+}

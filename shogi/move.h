@@ -17,6 +17,12 @@
  cap = (m >> 24) & 0x1f
 */
 
+int go(usi_handler_t* hd);
+int* legel_move(usi_handler_t* hd, int* ml);
+int* possible_moves(usi_handler_t* hd, int* ml);
+_Bool canmove_without_promotion(int to, int pt, int c);
+_Bool can_promote(int sq, int pt);
+int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn);	
 int initial_to_piecetype(char p);
 void do_usi_move(usi_handler_t* hd, char* usi_move);
 void do_move(usi_handler_t* hd, const int move);
@@ -24,8 +30,3 @@ void undo_move(usi_handler_t* hd, const int move);
 void get_move(const int move, int* to, int* from, int* ispmoto, int* morh, int* piece, int* cap);
 int strip_pmoto(int pc);
 void move_to_usi(int mv, char* usi_move);
-/*int* move_list(void);*/
-int* possible_moves(usi_handler_t* hd, int* ml);
-int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn);
-_Bool canmove_without_promotion(int to, int pt, int c);
-_Bool can_promote(int sq, int pt);

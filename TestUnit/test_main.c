@@ -31,6 +31,7 @@ void test_move() {
 	test_canmove_without_promotion();
 	test_can_promote();
 	test_possible_moves();
+	test_go();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");

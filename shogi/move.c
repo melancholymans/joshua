@@ -125,28 +125,64 @@ initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G' };
 
 //GUIから思考開始に対応する
 int go(usi_handler_t* hd) {
-	/*printf("%s\n", __func__);
+	printf("%s\n", __func__);
 	int best_move = 0;
-	move_list(hd,hd->ml);
+	hd->ml = legel_move(hd,hd->ml);
 	srand((unsigned)time(NULL));
 	int len = arrlen(hd->ml);
 	best_move = hd->ml[rand() % len];
-	arrfree(hd->ml);
-	*/
-	int best_move = 0;
+	arrfree(hd->ml);	
 	return best_move;
 }
 
 //合法手（簡略版）生成
-/*void move_list(usi_handler_t* hd,int* ml) {
-	int* m = NULL;
-	legal_moves(hd,m);
-	for (int i = 0; i < arrlen(m); i++) {
-		if (check_ok(m[i])) {
-			arrput(ml, m[i]);
+int* legel_move(usi_handler_t* hd,int* ml) {
+	int* pml = NULL;
+	pml = possible_moves(hd,pml);
+	/*for (int i = 0; i < arrlen(pml); i++) {
+		if (Is_suicide_or_check_by_dropping_pawn(hd,pml[i])) {
+			arrput(ml, pml[i]);
+		}
+	}*/
+	ml = pml;	//一時的に合法手のチエックをオミットしてpmlをそのままmlとする。将来変更する
+	return ml;
+}
+
+//ポーンを前進させての自殺手をチエックする
+//gshogiのこのへんのコードはTODOになっているので完成形ではないと思われるのでオミットする
+/*_Bool Is_suicide_or_check_by_dropping_pawn(usi_handler_t* hd,int m) {
+	do_move(hd, m);
+	//_Bool s = was_suicide();
+	_Bool d = was_check_by_dropping_pawn(m);
+	undo_move(hd, m);
+	return  d;
+}*/
+
+//自殺手である?
+/*_Bool was_suicide(void) {
+	return is_attacked_by(black, wking);
+}*/
+
+//gshogiのコードが理解できないのでこの関数はオミット
+/*_Bool is_attacked_by(usi_handler_t* hd,int c, int sq) {
+	board_t* bd = hd->bd;
+	int* sqml;
+	int s = c ? 0 : 16;	//blackならpcはwhite側の駒を選択する
+	for (int p = pawn + s; p <= dragon + s; p++) {
+		sqml = attacks_from(hd, p, sq, hd->bd->turn ^ 1);
+		for (int to = 0; to < arrlen(sqml); to++) {
+			int pc = bd->mb[to];
+			if (pc != empty && pc == p && 1) {
+				return true;
+			}
 		}
 	}
-	return;
+	return false;
+}*/
+
+//pawnを打つ手であればtrueを返す？
+/*int was_check_by_dropping_pawn(int m) {
+
 }*/
 
 //盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
