@@ -287,6 +287,7 @@ enum {
 
 extern int square_relation_direct[81][81];
 extern char* square_usi_string_table[81];
+extern char piece_symbol[31];
 
 void new_square_relation_direct(void);
 int set_square(int f, int r);

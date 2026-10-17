@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
 #include "position.h"
 #include "move.h"

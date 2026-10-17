@@ -1,6 +1,6 @@
 #include "unity.h"
 
-#define STB_DS_IMPLEMENTATION
+//#define STB_DS_IMPLEMENTATION
 #include "../shogi/stb_ds.h"
 #include "test_stb_ds.h"
 

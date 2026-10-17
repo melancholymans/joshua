@@ -2,6 +2,7 @@
 #include "bitboard.h"
 #include "position.h"
 
+
 //各種テーブルの初期化
 void init_tables(void) {
 	new_sq_mask();

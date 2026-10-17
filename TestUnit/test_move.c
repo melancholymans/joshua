@@ -1361,12 +1361,26 @@ void test_possible_moves(void) {
 void test_go(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
+	int from, to, pmoto, morh, piece, cap;
+	char usi_move[8];
 	new_board(&hd);
 	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 
 	int m = go(&hd);
-	int from, to, pmoto, morh, piece, cap;
 	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
-	printf("from->%d,to->%d,pmoto->%d,morh->%d,piece->%d,cap->%d \n", from, to, pmoto, morh, piece, cap);
+	move_to_usi(m, usi_move);
+	printf("%s with:%c\n", usi_move, piece_symbol[piece]);
+	do_move(&hd,m);
+	print_board(&hd);
+
+	do_usi_move(&hd, "8c8d");
+	print_board(&hd);
+
+	m = go(&hd);
+	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
+	move_to_usi(m, usi_move);
+	printf("%s with:%c\n", usi_move, piece_symbol[piece]);
+	do_move(&hd, m);
+	print_board(&hd);
 }

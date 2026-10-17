@@ -2,7 +2,9 @@
 #include <string.h>
 #include <errno.h>
 
+#include "move.h"
 #include "usi.h"
+
 
 usi_handler_t new_usi_handler(FILE* out) {
 	usi_handler_t hd;
@@ -73,7 +75,8 @@ errno_t handle_usi(usi_handler_t* hd,char* cmds) {
 	strcpy_s(msg, 12, "id author ");
 	strcat_s(msg, 12 + 16, hd->author);
 	put_send(hd, msg);
-	put_send(hd, "usiok");
+	put_send(hd,"option name USI_Ponder type check default false");
+	put_send(hd,"usiok");
 	fflush(hd->stream);
 	return 200;
 }
@@ -84,12 +87,12 @@ errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
 		return 203;
 	}
 	put_send(hd, "readyok");
+	fflush(hd->stream);
 	return 200;
 }
 
 errno_t handle_setoption(char* cmds) {
 	//TODO:
-	printf("%s\n", __func__);
 	return NULL;
 }
 
@@ -148,7 +151,7 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	return 200;
 }
 
-
+//goコマンドに対応する。思考を開始し、その結果moveを受取り局面を更新してGUIに手を返す
 errno_t handle_go(usi_handler_t* hd) {
 	//:TODO
 	// 思考開始に対応する
@@ -160,6 +163,7 @@ errno_t handle_go(usi_handler_t* hd) {
 	else {
 		char usi_move[8];
 		char str[16];
+		do_move(hd, move);
 		move_to_usi(move, usi_move);
 		snprintf(str,sizeof(str), "bestmove %s", usi_move);
 		put_send(hd, str);

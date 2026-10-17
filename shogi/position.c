@@ -20,7 +20,7 @@
 
 // ２つの座標の位置関係のテーブル
 int square_relation_direct[81][81];
-// 座標文字列
+// 座標文字列 これ使っていない、不要では
 char* square_usi_string_table[81] = {"1a","1b","1c","1d","1e","1f","1g","1h","1i",
 							         "2a","2b","2c","2d","2e","2f","2g","2h","2i",
 							         "3a","3b","3c","3d","3e","3f","3g","3h","3i",
@@ -171,7 +171,7 @@ char file_usi_string(const int f) {
 	return '1' + f;
 }
 
-// 座標の文字列を返す
+// 座標の文字列を返す、これ全然使っていないが不要では？
 // C言語での簡単な文字列処理に関するアイデアがないのでとりあえずこれで(TODO:)
 void square_usi_string(const int sq, char* str) {
 	const int r = set_rank(sq);
