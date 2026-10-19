@@ -77,7 +77,6 @@ errno_t handle_usi(usi_handler_t* hd,char* cmds) {
 	put_send(hd, msg);
 	put_send(hd,"option name USI_Ponder type check default false");
 	put_send(hd,"usiok");
-	fflush(hd->stream);
 	return 200;
 }
 
@@ -87,7 +86,6 @@ errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
 		return 203;
 	}
 	put_send(hd, "readyok");
-	fflush(hd->stream);
 	return 200;
 }
 

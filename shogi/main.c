@@ -15,6 +15,7 @@
 * 203 ƒƒ‚ƒŠ‚ªŠm•Û‚Å‚«‚È‚¢
 */ 
 int main(void) {
+	setvbuf(stdout, NULL, _IONBF, 0);
 	init_tables();
 	usi_handler_t hd = new_usi_handler(stdout);
 	//bitboard bb = set_bitboard(0x298060C0A1121B45, 0x3abad);	
