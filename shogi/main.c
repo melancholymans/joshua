@@ -14,12 +14,15 @@
 * 202 しらないコマンドです
 * 203 メモリが確保できない
 */ 
+errno_t wait_start(char* buf) {
+
+}
+
 int main(void) {
 	setvbuf(stdout, NULL, _IONBF, 0);
 	init_tables();
 	usi_handler_t hd = new_usi_handler(stdout);
-	//bitboard bb = set_bitboard(0x298060C0A1121B45, 0x3abad);	
-	//print_bitboard(bb, "test");
+	usi_start();
 	for (;;) {
 		char buf[1024];
 		if (fgets(buf, sizeof(buf), stdin) != NULL) {

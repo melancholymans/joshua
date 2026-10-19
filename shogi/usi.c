@@ -16,6 +16,81 @@ usi_handler_t new_usi_handler(FILE* out) {
 	return hd;
 }
 
+/*
+option:
+	エンジン固有の値をGUIに送るためのコマンド
+	usiコマンドとusiokの間に送る
+	option name <optionname> type <optiontype> <paramter>
+	これを送るとGUI側からsetoptionコマンドで送り返してくる
+	optionで送らなくても必ずGUI側から送ってくるoptionが２つある
+	USI_HashとUSI_Ponderになる
+
+	<optiontype<n>には6種類設定できる
+	check: エンジン設定ダイヤログでチックボックスになる指定
+	spin: 数値を指定
+	combo:ポップアップメニュー
+	string:文字列を指定
+	filename:ファイル名を指定
+	default:デフォルト値を指定
+	min,max:種類がspinなら上限下限を指定できる
+	var:種類がcomboなら選択できる文字列を指定できる（ポップアップに出てくる文字列を指定できる）
+	このoptionはGUIにエンジン登録するときに設定される値を送っている。
+setoption:
+	USI_HashとUSI_Ponderとエンジン登録時に行ったoptionを送ってくるので
+	その値を使ってエンジンの状態を決定する
+具体例:Lesserkai
+	option name BookFile type string default public.bin
+	option name UseBook type check default true
+
+	返ってくるsetoption
+	setoption name USI_Ponder value true	//これはoptionで設定しなくてもGUIから送ってくる
+	setoption name USI_Hash value 256		//これはoptionで設定しなくてもGUIから送ってくる
+	setoption name BookFile value public.bin	//optionで送った値がGUI側で保存してあるので便利
+	setoption name UseBook value true			//optionで送った値がGUI側で保存してあるので便利
+*/
+errno_t usi_start(usi_handler_t* hd) {
+	char cmds[64];
+	char msg[64];
+	for (;;) {
+		wait_command(cmds);
+		int len = strlen(cmds);
+		if (!strncmp(cmds, "usi", len)) {
+			sprintf_s(msg, sizeof(msg), "id name %s", hd->name);
+			put_send(hd, msg);
+			sprintf_s(msg, sizeof(msg), "id author %s", hd->author);
+			put_send(hd, "option name USI_Ponder type check default false");
+			put_send(hd, "usiok");
+		}
+		else if (!strncmp(cmds, "isready", len)) {
+			put_send(hd, "readyok");
+		}
+		else if (strncmp(cmds, "setoption", len)) {
+			if (strncmp(buf, "setoption name USI_Ponder value true", len) == 0) {
+				canPonder = true;
+			}
+			else if (strncmp(buf, "setoption name USI_Ponder value false", len) == 0) {
+				canPonder = false;
+			}
+			else if (strncmp(buf, "setoption name USI_Hash value ", strlen("setoption name USI_Hash value ")) == 0) {
+				string hashStr = buf + strlen("setoption name USI_Hash value ");
+				// int hashSize = atoi(hashStr.c_str());
+				// 本来であれば、この値を元にハッシュサイズを設定すべきである。
+			}
+			else if (strncmp(buf, "setoption name BookFile value ", strlen("setoption name BookFile value ")) == 0) {
+				bookFileStr = buf + strlen("setoption name BookFile value ");
+			}
+			else if (strncmp(buf, "setoption name UseBook value ", strlen("setoption name UseBook value ")) == 0) {
+				string useBookStr = buf + strlen("setoption name UseBook value ");
+				useJoseki = useBookStr == "true";
+			}
+
+		}
+
+	}
+
+}
+
+
 errno_t handle(usi_handler_t* usi_hd, char* buf){
 	char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
 	int count = 0;
@@ -65,19 +140,6 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		put_debug(usi_hd,msg);
 		return 202;
 	}
-}
-
-errno_t handle_usi(usi_handler_t* hd,char* cmds) {
-	char msg[32];
-	strcpy_s(msg, 12, "id name ");
-	strcat_s(msg, 12 + 16, hd->name);
-	put_send(hd, msg);
-	strcpy_s(msg, 12, "id author ");
-	strcat_s(msg, 12 + 16, hd->author);
-	put_send(hd, msg);
-	put_send(hd,"option name USI_Ponder type check default false");
-	put_send(hd,"usiok");
-	return 200;
 }
 
 errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
