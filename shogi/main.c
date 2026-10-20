@@ -14,15 +14,13 @@
 * 202 しらないコマンドです
 * 203 メモリが確保できない
 */ 
-errno_t wait_start(char* buf) {
 
-}
 
 int main(void) {
 	setvbuf(stdout, NULL, _IONBF, 0);
 	init_tables();
 	usi_handler_t hd = new_usi_handler(stdout);
-	usi_start();
+	usi_start(&hd);
 	for (;;) {
 		char buf[1024];
 		if (fgets(buf, sizeof(buf), stdin) != NULL) {

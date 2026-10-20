@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #include "move.h"
 #include "usi.h"
@@ -12,7 +13,11 @@ usi_handler_t new_usi_handler(FILE* out) {
 	hd.stream = out;
 	hd.name = "shogi";
 	hd.author = "joshua";
+	hd.book_file_name[0] = '\0';
 	hd.ml = NULL;
+	hd.hash_size = 0;
+	hd.can_ponder = false;
+	hd.use_book = false;
 	return hd;
 }
 
@@ -47,49 +52,61 @@ setoption:
 	setoption name USI_Hash value 256		//これはoptionで設定しなくてもGUIから送ってくる
 	setoption name BookFile value public.bin	//optionで送った値がGUI側で保存してあるので便利
 	setoption name UseBook value true			//optionで送った値がGUI側で保存してあるので便利
+エンジンから送るoptionはGUIにエンジン管理のために登録するもので、登録後はGUI側の設定が優先される
 */
-errno_t usi_start(usi_handler_t* hd) {
+errno_t wait_command(char* buf,int size) {
+	if (fgets(buf, size, stdin) != NULL) {
+		buf[strcspn(buf, "\n")] = '\0';
+	}
+	return 200;
+}
+
+int usi_start(usi_handler_t* hd) {
 	char cmds[64];
 	char msg[64];
+	char hash_size[16];
+	char use_book[8];
 	for (;;) {
-		wait_command(cmds);
+		wait_command(cmds,sizeof(cmds));
 		int len = strlen(cmds);
-		if (!strncmp(cmds, "usi", len)) {
+		if (strncmp(cmds, "usi", len)==0) {
 			sprintf_s(msg, sizeof(msg), "id name %s", hd->name);
 			put_send(hd, msg);
 			sprintf_s(msg, sizeof(msg), "id author %s", hd->author);
 			put_send(hd, "option name USI_Ponder type check default false");
+			put_send(hd, "option name UseBook type check default false");
 			put_send(hd, "usiok");
 		}
-		else if (!strncmp(cmds, "isready", len)) {
+		else if (strncmp(cmds, "isready", len)==0) {
 			put_send(hd, "readyok");
 		}
-		else if (strncmp(cmds, "setoption", len)) {
-			if (strncmp(buf, "setoption name USI_Ponder value true", len) == 0) {
-				canPonder = true;
-			}
-			else if (strncmp(buf, "setoption name USI_Ponder value false", len) == 0) {
-				canPonder = false;
-			}
-			else if (strncmp(buf, "setoption name USI_Hash value ", strlen("setoption name USI_Hash value ")) == 0) {
-				string hashStr = buf + strlen("setoption name USI_Hash value ");
-				// int hashSize = atoi(hashStr.c_str());
-				// 本来であれば、この値を元にハッシュサイズを設定すべきである。
-			}
-			else if (strncmp(buf, "setoption name BookFile value ", strlen("setoption name BookFile value ")) == 0) {
-				bookFileStr = buf + strlen("setoption name BookFile value ");
-			}
-			else if (strncmp(buf, "setoption name UseBook value ", strlen("setoption name UseBook value ")) == 0) {
-				string useBookStr = buf + strlen("setoption name UseBook value ");
-				useJoseki = useBookStr == "true";
-			}
-
+		else if (strncmp(cmds, "setoption name USI_Ponder value true", len)==0) {
+			hd->can_ponder = true;
 		}
-
+		else if (strncmp(cmds, "setoption name USI_Ponder value false", len)==0) {
+			hd->can_ponder = false;
+		}
+		else if (strncmp(cmds, "setoption name USI_Hash value ", strlen("setoption name USI_Hash value"))==0) {
+			strcpy_s(hash_size,sizeof(hash_size),cmds + strlen("setoption name USI_Hash value "));
+			hd->hash_size = atoi(hash_size);
+		}
+		else if (strncmp(cmds, "setoption name BookFile value ", strlen("setoption name BookFile value "))==0) {
+			strcpy_s(hd->book_file_name,sizeof(hd->book_file_name),cmds + strlen("setoption name BookFile value "));
+		}
+		else if (strncmp(cmds, "setoption name UseBook value ", strlen("setoption name UseBook value "))==0) {
+			strcpy_s(use_book,sizeof(use_book),cmds + strlen("setoption name UseBook value "));
+			if (strncmp(use_book, "true", 4) == 0) {
+				hd->use_book = true;
+			}
+			else {
+				hd->use_book = false;
+			}
+		}
+		else if (strncmp(cmds, "usinewgame", len)==0) {
+			return true;
+		}
 	}
-
 }
-
 
 errno_t handle(usi_handler_t* usi_hd, char* buf){
 	char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
@@ -101,16 +118,8 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		cmds[count++] = token;
 		token = strtok_s(NULL, " ",&ptr);
 	}
-	if (!strcmp("usi", cmds[0])) {
-		return handle_usi(usi_hd,cmds);
-	}else if(!strcmp("isready", cmds[0])){
-		return handle_is_ready(usi_hd,cmds);
-	}
-	else if (!strcmp("setoption",cmds[0])) {
+	if (!strcmp("setoption",cmds[0])) {
 		return handle_setoption(cmds);
-	}
-	else if (!strcmp("usinewgame", cmds[0])) {
-		return handle_usi_newgame(cmds);
 	}
 	else if (!strcmp("stop", cmds[0])) {
 		return handle_stop(cmds);
@@ -142,23 +151,10 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 	}
 }
 
-errno_t handle_is_ready(usi_handler_t* hd,char* cmds) {
-	new_board(hd);
-	if (hd->bd == NULL) {
-		return 203;
-	}
-	put_send(hd, "readyok");
-	return 200;
-}
 
 errno_t handle_setoption(char* cmds) {
 	//TODO:
 	return NULL;
-}
-
-errno_t handle_usi_newgame(char* cmds) {
-	//:nothing
-	return 200;
 }
 
 errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {

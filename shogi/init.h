@@ -33,7 +33,11 @@ typedef struct {
 	FILE* stream;
 	char* name;
 	char* author;
+	char book_file_name[32];
 	int* ml;
+	int hash_size;
+	_Bool can_ponder;
+	_Bool use_book;
 }usi_handler_t;
 
 

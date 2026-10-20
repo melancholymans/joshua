@@ -3,6 +3,7 @@
 #include "init.h"
 
 usi_handler_t new_usi_handler(FILE* out);
+int usi_start(usi_handler_t* hd);
 errno_t handle(usi_handler_t* usi_hd,char* buf);
 errno_t handle_usi(usi_handler_t* hd,char* cmds);
 errno_t handle_is_ready(usi_handler_t* hd,char* cmds);
