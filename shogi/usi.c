@@ -2,6 +2,8 @@
 #include <string.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <windows.h>
+#include <process.h>
 
 #include "move.h"
 #include "usi.h"
@@ -10,6 +12,7 @@
 usi_handler_t new_usi_handler(FILE* out) {
 	usi_handler_t hd;
 	hd.bd = NULL;
+	hd.ucq = malloc(sizeof(comman_queue_t));
 	hd.stream = out;
 	hd.name = "shogi";
 	hd.author = "joshua";
@@ -18,7 +21,96 @@ usi_handler_t new_usi_handler(FILE* out) {
 	hd.hash_size = 0;
 	hd.can_ponder = false;
 	hd.use_book = false;
+	hd.is_stop = false;
 	return hd;
+}
+
+int init_queue(comman_queue_t* q, int capacity) {
+	q->buffer = (char**)malloc(sizeof(char*) * capacity);
+	if (!q->buffer) {
+		return 1;
+	}
+	q->capacity = capacity;
+	q->head = 0;
+	q->tail = 0;
+	q->size = 0;
+	InitializeCriticalSection(&(q->cs));
+	InitializeConditionVariable(&(q->cv_not_full));
+	InitializeConditionVariable(&(q->cv_not_empty));
+	return 0;
+}
+
+void free_queue(comman_queue_t* q) {
+	EnterCriticalSection(&(q->cs));
+	for (; q->size > 0;) {
+		free(q->buffer[q->head]);
+		q->head = (q->head + 1) % q->capacity;
+		q->size--;
+	}
+	LeaveCriticalSection(&(q->cs));
+	DeleteCriticalSection(&(q->cs));
+	free(q->buffer);
+}
+
+void push_queue(comman_queue_t* q, const char* str) {
+	char* copy_str = _strdup(str);
+	EnterCriticalSection(&(q->cs));
+	for (; q->size >= q->capacity;) {
+		SleepConditionVariableCS(&(q->cv_not_full), &(q->cs), INFINITE);
+	}
+	q->buffer[q->tail] = copy_str;
+	q->tail = (q->tail + 1) % q->capacity;
+	q->size++;
+	WakeConditionVariable(&(q->cv_not_empty));
+	LeaveCriticalSection(&(q->cs));
+}
+
+char* pop_queue(comman_queue_t* q) {
+	EnterCriticalSection(&(q->cs));
+	for (; q->size <= 0;) {
+		SleepConditionVariableCS(&(q->cv_not_empty), &(q->cs), INFINITE);
+	}
+	char* str = q->buffer[q->head];
+	q->head = (q->head + 1) % q->capacity;
+	q->size--;
+	WakeConditionVariable(&(q->cv_not_full));
+	LeaveCriticalSection(&(q->cs));
+	return str;	//‚±‚±­‚µS”z
+}
+
+void receive_usi(void *arg) {
+	usi_handler_t* hd = (usi_handler_t*)arg;
+	char buf[1024];
+	for (;;) {
+		if (fget(buf, 2048, stdin) != NULL) {
+			buf[strcspn(buf, "\n")] = '\0';
+		}
+		if (!strncmp(buf, "quit", 4)) {
+			free_queue(hd->ucq);
+			exit(0);
+		}
+		if (!strncmp(buf, "stop", 4)) {
+			hd->is_stop = true;
+		}
+		if (!strncmp(buf, "ponderhit", 9)) {
+			hd->ponderhit_receive_time = timeGetTime();	//ponder‚ðŽóM‚µ‚½ŽžŠÔ(msec’PˆÊ)
+		}
+		if (strncmp(buf, "gameover", 8)) {
+			hd->is_stop = true;
+		}
+		push_queue(hd->ucq, buf);
+	}
+}
+
+_Bool begin_thread(usi_handler_t* hd) {
+	uintptr_t hdl = _beginthread(receive_usi, 0, hd);
+	return (hdl != -1);
+}
+
+errno_t wait_command(usi_handler_t* hd,char* buf) {
+	char* str = pop_queue(hd->ucq);
+	strcpy_s(buf, 1024, str);
+	free(buf);
 }
 
 /*
@@ -54,13 +146,6 @@ setoption:
 	setoption name UseBook value true			//option‚Å‘—‚Á‚½’l‚ªGUI‘¤‚Å•Û‘¶‚µ‚Ä‚ ‚é‚Ì‚Å•Ö—˜
 ƒGƒ“ƒWƒ“‚©‚ç‘—‚éoption‚ÍGUI‚ÉƒGƒ“ƒWƒ“ŠÇ—‚Ì‚½‚ß‚É“o˜^‚·‚é‚à‚Ì‚ÅA“o˜^Œã‚ÍGUI‘¤‚ÌÝ’è‚ª—Dæ‚³‚ê‚é
 */
-errno_t wait_command(char* buf,int size) {
-	if (fgets(buf, size, stdin) != NULL) {
-		buf[strcspn(buf, "\n")] = '\0';
-	}
-	return 200;
-}
-
 int usi_start(usi_handler_t* hd) {
 	char cmds[64];
 	char msg[64];
@@ -69,7 +154,7 @@ int usi_start(usi_handler_t* hd) {
 	for (;;) {
 		wait_command(cmds,sizeof(cmds));
 		int len = strlen(cmds);
-		if (strncmp(cmds, "usi", len)==0) {
+		if (!strncmp(cmds, "usi", len)) {
 			sprintf_s(msg, sizeof(msg), "id name %s", hd->name);
 			put_send(hd, msg);
 			sprintf_s(msg, sizeof(msg), "id author %s", hd->author);
@@ -77,32 +162,32 @@ int usi_start(usi_handler_t* hd) {
 			put_send(hd, "option name UseBook type check default false");
 			put_send(hd, "usiok");
 		}
-		else if (strncmp(cmds, "isready", len)==0) {
+		else if (!strncmp(cmds, "isready", len)) {
 			put_send(hd, "readyok");
 		}
-		else if (strncmp(cmds, "setoption name USI_Ponder value true", len)==0) {
+		else if (!strncmp(cmds, "setoption name USI_Ponder value true", len)) {
 			hd->can_ponder = true;
 		}
-		else if (strncmp(cmds, "setoption name USI_Ponder value false", len)==0) {
+		else if (!strncmp(cmds, "setoption name USI_Ponder value false", len)) {
 			hd->can_ponder = false;
 		}
-		else if (strncmp(cmds, "setoption name USI_Hash value ", strlen("setoption name USI_Hash value"))==0) {
+		else if (!strncmp(cmds, "setoption name USI_Hash value ", strlen("setoption name USI_Hash value"))) {
 			strcpy_s(hash_size,sizeof(hash_size),cmds + strlen("setoption name USI_Hash value "));
 			hd->hash_size = atoi(hash_size);
 		}
-		else if (strncmp(cmds, "setoption name BookFile value ", strlen("setoption name BookFile value "))==0) {
+		else if (!strncmp(cmds, "setoption name BookFile value ", strlen("setoption name BookFile value "))) {
 			strcpy_s(hd->book_file_name,sizeof(hd->book_file_name),cmds + strlen("setoption name BookFile value "));
 		}
-		else if (strncmp(cmds, "setoption name UseBook value ", strlen("setoption name UseBook value "))==0) {
+		else if (!strncmp(cmds, "setoption name UseBook value ", strlen("setoption name UseBook value "))) {
 			strcpy_s(use_book,sizeof(use_book),cmds + strlen("setoption name UseBook value "));
-			if (strncmp(use_book, "true", 4) == 0) {
+			if (!strncmp(use_book, "true", 4)) {
 				hd->use_book = true;
 			}
 			else {
 				hd->use_book = false;
 			}
 		}
-		else if (strncmp(cmds, "usinewgame", len)==0) {
+		else if (!strncmp(cmds, "usinewgame", len)) {
 			return true;
 		}
 	}

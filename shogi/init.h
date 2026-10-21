@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <Windows.h>
 
 //mbはmain board,hbはhand board,turnはターン
 /*
@@ -22,6 +23,17 @@
 	hb[24] = wking = 24,
 */
 typedef struct {
+	char** buffer;
+	int capacity;
+	int head;
+	int tail;
+	int size;
+	CRITICAL_SECTION cs;
+	CONDITION_VARIABLE cv_not_full;	//キューの空き待ち
+	CONDITION_VARIABLE cv_not_empty;	//キューのデータ追加待ち
+}comman_queue_t;
+
+typedef struct {
 	int mb[81];
 	int hb[25];
 	int turn;
@@ -30,14 +42,17 @@ typedef struct {
 
 typedef struct {
 	board_t* bd;
+	comman_queue_t* ucq;
 	FILE* stream;
 	char* name;
 	char* author;
 	char book_file_name[32];
 	int* ml;
 	int hash_size;
+	unsigned long ponderhit_receive_time;
 	_Bool can_ponder;
 	_Bool use_book;
+	_Bool is_stop;
 }usi_handler_t;
 
 

@@ -20,12 +20,18 @@ int main(void) {
 	setvbuf(stdout, NULL, _IONBF, 0);
 	init_tables();
 	usi_handler_t hd = new_usi_handler(stdout);
+	if (init_queue(&hd.ucq, 16) {
+		fprintf(stderr, "[ERROR] %s:%d: command queue memary out\n", __FILE__, __LINE__);
+		exit(1);
+	}
+	if (!begin_thread(&hd)) {
+		fprintf(stderr, "[ERROR] %s:%d: failed to begin thread\n", __FILE__, __LINE__);
+		exit(1);
+	}
 	usi_start(&hd);
 	for (;;) {
 		char buf[1024];
-		if (fgets(buf, sizeof(buf), stdin) != NULL) {
-			buf[strcspn(buf, "\n")] = '\0';
-		}
+		wait_command(hd, buf);
 		if (handle(&hd,buf) != 200){
 			break;
 		}
