@@ -25,18 +25,18 @@ usi_handler_t new_usi_handler(FILE* out) {
 	return hd;
 }
 
-int init_queue(comman_queue_t* q, int capacity) {
-	q->buffer = (char**)malloc(sizeof(char*) * capacity);
-	if (!q->buffer) {
+int init_queue(usi_handler_t* hd, int capacity) {
+	hd->ucq->buffer = (char**)malloc(sizeof(char*) * capacity);
+	if (!hd->ucq->buffer) {
 		return 1;
 	}
-	q->capacity = capacity;
-	q->head = 0;
-	q->tail = 0;
-	q->size = 0;
-	InitializeCriticalSection(&(q->cs));
-	InitializeConditionVariable(&(q->cv_not_full));
-	InitializeConditionVariable(&(q->cv_not_empty));
+	hd->ucq->capacity = capacity;
+	hd->ucq->head = 0;
+	hd->ucq->tail = 0;
+	hd->ucq->size = 0;
+	InitializeCriticalSection(&(hd->ucq->cs));
+	InitializeConditionVariable(&(hd->ucq->cv_not_full));
+	InitializeConditionVariable(&(hd->ucq->cv_not_empty));
 	return 0;
 }
 
@@ -82,7 +82,7 @@ void receive_usi(void *arg) {
 	usi_handler_t* hd = (usi_handler_t*)arg;
 	char buf[1024];
 	for (;;) {
-		if (fget(buf, 2048, stdin) != NULL) {
+		if (fgets(buf, 2048, stdin) != NULL) {
 			buf[strcspn(buf, "\n")] = '\0';
 		}
 		if (!strncmp(buf, "quit", 4)) {
@@ -93,7 +93,7 @@ void receive_usi(void *arg) {
 			hd->is_stop = true;
 		}
 		if (!strncmp(buf, "ponderhit", 9)) {
-			hd->ponderhit_receive_time = timeGetTime();	//ponderを受信した時間(msec単位)
+			hd->ponderhit_receive_time = timeGetTime();	//ponderを受信した時間(msec単位)追加のファイルに「Winmm.lib」を設定
 		}
 		if (strncmp(buf, "gameover", 8)) {
 			hd->is_stop = true;
@@ -107,10 +107,10 @@ _Bool begin_thread(usi_handler_t* hd) {
 	return (hdl != -1);
 }
 
-errno_t wait_command(usi_handler_t* hd,char* buf) {
+void wait_command(usi_handler_t* hd,char* buf) {
 	char* str = pop_queue(hd->ucq);
 	strcpy_s(buf, 1024, str);
-	free(buf);
+	free(str);
 }
 
 /*
@@ -146,13 +146,13 @@ setoption:
 	setoption name UseBook value true			//optionで送った値がGUI側で保存してあるので便利
 エンジンから送るoptionはGUIにエンジン管理のために登録するもので、登録後はGUI側の設定が優先される
 */
-int usi_start(usi_handler_t* hd) {
+errno_t  usi_start(usi_handler_t* hd) {
 	char cmds[64];
 	char msg[64];
 	char hash_size[16];
 	char use_book[8];
 	for (;;) {
-		wait_command(cmds,sizeof(cmds));
+		wait_command(hd,cmds);
 		int len = strlen(cmds);
 		if (!strncmp(cmds, "usi", len)) {
 			sprintf_s(msg, sizeof(msg), "id name %s", hd->name);
@@ -163,6 +163,10 @@ int usi_start(usi_handler_t* hd) {
 			put_send(hd, "usiok");
 		}
 		else if (!strncmp(cmds, "isready", len)) {
+			new_board(hd);
+			if (hd->bd == NULL) {
+				return 203;
+			}
 			put_send(hd, "readyok");
 		}
 		else if (!strncmp(cmds, "setoption name USI_Ponder value true", len)) {
@@ -188,7 +192,7 @@ int usi_start(usi_handler_t* hd) {
 			}
 		}
 		else if (!strncmp(cmds, "usinewgame", len)) {
-			return true;
+			return 200;
 		}
 	}
 }
@@ -229,8 +233,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 	}
 	else {
 		char msg[32];
-		strcpy_s(msg,12, "unknow cmd ");
-		strcat_s(msg,12+16,cmds[0]);
+		sprintf_s(msg,sizeof(msg), "unknow cmd %s", cmds[0]);
 		put_debug(usi_hd,msg);
 		return 202;
 	}
