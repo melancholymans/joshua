@@ -95,7 +95,7 @@ void receive_usi(void *arg) {
 		if (!strncmp(buf, "ponderhit", 9)) {
 			hd->ponderhit_receive_time = timeGetTime();	//ponderを受信した時間(msec単位)追加のファイルに「Winmm.lib」を設定
 		}
-		if (strncmp(buf, "gameover", 8)) {
+		if (!strncmp(buf, "gameover", 8)) {
 			hd->is_stop = true;
 		}
 		push_queue(hd->ucq, buf);
@@ -152,12 +152,16 @@ errno_t  usi_start(usi_handler_t* hd) {
 	char hash_size[16];
 	char use_book[8];
 	for (;;) {
-		wait_command(hd,cmds);
+		/*wait_command(hd,cmds);*/
+		if (fgets(cmds, 64, stdin) != NULL) {
+			cmds[strcspn(cmds, "\n")] = '\0';
+		}
 		int len = strlen(cmds);
 		if (!strncmp(cmds, "usi", len)) {
 			sprintf_s(msg, sizeof(msg), "id name %s", hd->name);
 			put_send(hd, msg);
 			sprintf_s(msg, sizeof(msg), "id author %s", hd->author);
+			put_send(hd, msg);
 			put_send(hd, "option name USI_Ponder type check default false");
 			put_send(hd, "option name UseBook type check default false");
 			put_send(hd, "usiok");
