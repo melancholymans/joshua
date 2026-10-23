@@ -75,7 +75,7 @@ char* pop_queue(comman_queue_t* q) {
 	q->size--;
 	WakeConditionVariable(&(q->cv_not_full));
 	LeaveCriticalSection(&(q->cs));
-	return str;	//‚±‚±­‚µS”z
+	return str;
 }
 
 void receive_usi(void *arg) {

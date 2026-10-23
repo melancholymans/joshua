@@ -36,6 +36,7 @@ void test_move() {
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
 	test_shorten_space();
+	test_command_queue();
 }
 
 void test_position() {
