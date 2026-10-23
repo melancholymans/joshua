@@ -1384,3 +1384,4 @@ void test_go(void) {
 	do_move(&hd, m);
 	print_board(&hd);
 }
+

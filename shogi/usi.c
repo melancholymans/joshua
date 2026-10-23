@@ -82,7 +82,7 @@ void receive_usi(void *arg) {
 	usi_handler_t* hd = (usi_handler_t*)arg;
 	char buf[1024];
 	for (;;) {
-		if (fgets(buf, 2048, stdin) != NULL) {
+		if (fgets(buf, 1024, stdin) != NULL) {
 			buf[strcspn(buf, "\n")] = '\0';
 		}
 		if (!strncmp(buf, "quit", 4)) {
@@ -202,6 +202,21 @@ errno_t  usi_start(usi_handler_t* hd) {
 }
 
 errno_t handle(usi_handler_t* usi_hd, char* buf){
+	/*
+	bufに渡される文字列
+	stop
+	go
+	ponderhit
+	quit->	receive_usi関数内でexit(0)で強制終了させるのでここには来ない
+	gameover
+	debug
+	postitionはいろいろなパターンがある
+		position startpos
+		position startpos moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h
+		position sfen lnsgkgsnl/1b5r1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1
+		position sfen lnsgkgsnl/1b5r1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h
+	ここにくるコマンド文字列ははreceive_usi関数のキューから渡ってくる
+	*/
 	char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
 	int count = 0;
 	shorten_space(buf);	
@@ -211,10 +226,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		cmds[count++] = token;
 		token = strtok_s(NULL, " ",&ptr);
 	}
-	if (!strcmp("setoption",cmds[0])) {
-		return handle_setoption(cmds);
-	}
-	else if (!strcmp("stop", cmds[0])) {
+	if (!strcmp("stop", cmds[0])) {
 		return handle_stop(cmds);
 	}
 	else if (!strcmp("go", cmds[0])) {
@@ -225,9 +237,6 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 	}
 	else if (!strcmp("ponderhit", cmds[0])) {
 		return handle_ponder_hit(cmds);
-	}
-	else if (!strcmp("quit", cmds[0])) {
-		return handle_quit(cmds);
 	}
 	else if (!strcmp("gameover", cmds[0])) {
 		return handle_gameover(usi_hd);
@@ -243,14 +252,11 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 	}
 }
 
-
-errno_t handle_setoption(char* cmds) {
-	//TODO:
-	return NULL;
-}
-
 errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	// 入力されるcmds[]
+	//	cmds[0] = position
+	//  cmds[1] = startpos <- sfen 
+	//  ...
 	//	cmds[0] = position
 	//  cmds[1] = startpos <- sfen 
 	//  cmds[2] = moves 
@@ -270,7 +276,6 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	//  cmds[8] = 7g7f 
 	//  cmds[9] = 3a3b
 	//  ...
-	printf("%s\n", __func__);
 	char sfen[128];
 	int mark = 0;
 	sfen[0] = '\0';
@@ -281,20 +286,23 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 				strcat_s(sfen, strlen(cmds[2]) + 6 + 1, " ");
 			}
 		}
+		set_board(hd, sfen);
+		if (count == 6) {	//文字列movesがないのでここで局面構成は終了
+			return 200;
+		}
 		mark = 6;	//次に見る配列のindex
 	}
 	else if (!strcmp("startpos", cmds[1])) {
 		strcpy_s(sfen,63+1,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+		set_board(hd, sfen);
+		if (count == 2) {	//文字列movesがないのでここで局面構成は終了
+			return 200;
+		}
 		mark = 2;	//次に見る配列のindex
 	}
-	set_board(hd, sfen);
-	if (strcmp(cmds[mark],"moves")) {	//sfen文字列にmovesの文字列がなかったら、ここで終わり
-		return 200;
-	}
 	int size = count - mark - 1;
-	for (int i=0;i<size;i++) {
-		//TODO: boardを更新するpush_moveみたいな関数をここに書く
-		printf("moves = %s\n", cmds[mark + 1 + i]);
+	for (int i = 0; i < size; i++) {
+		do_usi_move(hd, cmds[mark + 1 + i]);
 	}
 	return 200;
 }
@@ -331,10 +339,6 @@ errno_t handle_ponder_hit(char* cmds) {
 	// ポンダ処理
 	printf("%s\n", __func__);
 	return NULL;
-}
-
-errno_t handle_quit(char* cmds) {
-	return 201;		
 }
 
 errno_t handle_gameover(usi_handler_t* hd) {
