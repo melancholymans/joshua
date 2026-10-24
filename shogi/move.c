@@ -373,10 +373,61 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 			}
 			return m;
 		}
-		//white ,blackのbold,propawn,prolance,proknight,prosilver,bishop,rook,house,dragon,kingは今はパス
+	case bbishop:
+		return attacks_bbishop(sq, m);
+	case brook:
+		return attacks_brook(sq, m);
+	case bgold:
+		return attacks_bgold(sq, m);
+	case bking:
+		return attaks_bking(sq, m);
+	case bpropawn:
+		return attack_bgold(sq, m);
+	case bprolance:
+		return attacks_bgold(sq, m);
+	case bproknight:
+		return attacks_bgold(sq, m);
+	case bprosilver:
+		return attacks_bgold(sq, m);
+	case bhorse:
+		return attacks_bhorse(sq, m);
+	case bdragon:
+		return attacks_bdragon(sq, m);
+	//white ,blackのbold,propawn,prolance,proknight,prosilver,bishop,rook,house,dragon,kingは今はパス
 	}
 }
 
+//仮
+int attacks_bbishop(int sq, int* m) {
+	return m;
+}
+
+//仮
+int attacks_brook(int sq, int* m) {
+	return m;
+}
+
+//仮
+int attacks_bgold(int sq, int* m) {
+	return m;
+}
+
+//仮
+int attaks_bking(int sq, int* m) {
+	return m;
+}
+
+//仮
+int attacks_bhorse(int sq, int* m) {
+	return m;
+}
+
+//仮
+int attacks_bdragon(int sq, int* m) {
+	return m;
+}
+
+//usimove形式の打手の駒種を意味する大文字１文字を駒種に変換する
 int initial_to_piecetype(char p) {
 	for (int pt = 1; pt <= 7; pt++) {
 		if (initial[pt] == p) {
@@ -387,6 +438,7 @@ int initial_to_piecetype(char p) {
 	exit(0);
 }
 
+//usimove形式の文字列を受け取って局面を更新する。ここでは文字列をmve形式に変換して実際に局面を更新するのはdo_move関数
 void do_usi_move(usi_handler_t* hd, char* usi_move) {
 	board_t* bd = hd->bd;
 	int move = 0;

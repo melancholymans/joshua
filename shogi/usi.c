@@ -87,7 +87,7 @@ void receive_usi(void *arg) {
 		}
 		if (!strncmp(buf, "quit", 4)) {
 			free_queue(hd->ucq);
-			exit(0);
+			exit(EXIT_SUCCESS);
 		}
 		if (!strncmp(buf, "stop", 4)) {
 			hd->is_stop = true;

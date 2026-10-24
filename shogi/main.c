@@ -23,11 +23,11 @@ int main(void) {
 	usi_start(&hd);
 	if (init_queue(&hd, 16)) {
 		fprintf(stderr, "[ERROR] %s:%d: command queue memary out\n", __FILE__, __LINE__);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (!begin_thread(&hd)) {
 		fprintf(stderr, "[ERROR] %s:%d: failed to begin thread\n", __FILE__, __LINE__);
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	for (;;) {
 		char buf[1024];
@@ -36,5 +36,5 @@ int main(void) {
 			break;
 		}
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
