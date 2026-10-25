@@ -197,7 +197,7 @@ int* possible_moves(usi_handler_t* hd, int* ml) {
 			continue;
 		}
 		if (pc != 0 && ((pc & 0x10) >> 4) == bd->turn) {
-			sqml = attacks_from(hd,pc, from, bd->turn);
+			sqml = attacks_from(hd, pc, from, bd->turn);
 			for (int i = 0; i < arrlen(sqml);i++ ) {
 				int to = sqml[i];
 				if (bd->mb[to] != 0 && ((bd->mb[to] & 0x10) >> 4) == bd->turn){	//toで移動先の駒が自陣側の駒だったパス
@@ -277,6 +277,11 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 		}
 		return m;
 	case bknight:
+		/*knightのサーチ
+		1   2
+
+		  s
+		*/
 		f = set_file(sq);
 		r = set_rank(sq);
 		switch (f) {
@@ -296,83 +301,7 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 			return m;
 		}
 	case bsilver:
-		f = set_file(sq);
-		r = set_rank(sq);
-		switch (f){
-		case file1:
-			if (r == rank1) {
-				to = sq + 10;
-				arrput(m, to);
-				return m;
-			}
-			else if (r == rank8) {
-				to = sq + 8;
-				arrput(m, to);
-				to = sq + 1;
-				arrput(m, to);
-				return m;
-			}
-			else {
-				to = sq + 8;
-				arrput(m,to);
-				to = sq - 1;
-				arrput(m, to);
-				to = sq + 10;
-				arrput(m, to);
-				return m;
-			}
-			break;
-		case file9:
-			if (r == rank1) {
-				to = sq - 8;
-				arrput(m, to);
-				return m;
-			}
-			else if (r == rank9) {
-				to = sq - 1;
-				arrput(m, to);
-				to = sq + 10;
-				arrput(m, to);
-				return m;
-			}
-			else {
-				to = sq - 10;
-				arrput(m, to);
-				to = sq - 1;
-				arrput(m, to);
-				to = sq - 8;
-				arrput(m, to);
-				return m;
-			}
-			break;
-		default:
-			if (r == rank1) {
-				to = sq + 10;
-				arrput(m, to);
-				to = sq - 8;
-				arrput(m, to);
-			}else if(r == rank9){
-				to = sq + 8;
-				arrput(m, to);
-				to = sq - 1;
-				arrput(m, to);
-				to = sq - 10;
-				arrput(m, to);
-			}
-			else {
-				to = sq + 8;
-				arrput(m, to);
-				to = sq - 1;
-				arrput(m, to);
-				to = sq - 10;
-				arrput(m, to);
-				to = sq + 10;
-				arrput(m, to);
-				to = sq - 8;
-				arrput(m, to);
-			}
-			return m;
-		}
+		return attacks_bsilver(hd, sq, m);
 	case bbishop:
 		return attacks_bbishop(sq, m);
 	case brook:
@@ -382,7 +311,7 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 	case bking:
 		return attaks_bking(sq, m);
 	case bpropawn:
-		return attack_bgold(sq, m);
+		return attacks_bgold(sq, m);
 	case bprolance:
 		return attacks_bgold(sq, m);
 	case bproknight:
@@ -397,9 +326,144 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 	}
 }
 
+int* attacks_bsilver(int sq,int* m) {
+	/*silverのサーチ sはsqの略
+	1 2 3
+	  s
+	4   5
+	*/ 
+	int to = 0;
+	int f, r;
+	f = set_file(sq);
+	r = set_rank(sq);
+	switch (f) {
+	case file1:
+		if (r == rank1) {
+			to = sq + 10;
+			arrput(m, to);
+			return m;
+		}
+		else if (r == rank8) {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+			return m;
+		}
+		else {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq + 10;
+			arrput(m, to);
+			return m;
+		}
+		break;
+	case file9:
+		if (r == rank1) {
+			to = sq - 8;
+			arrput(m, to);
+			return m;
+		}
+		else if (r == rank9) {
+			to = sq - 1;
+			arrput(m, to);
+			to = sq + 10;
+			arrput(m, to);
+			return m;
+		}
+		else {
+			to = sq - 10;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+			return m;
+		}
+		break;
+	default:
+		if (r == rank1) {
+			to = sq + 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+		}
+		else if (r == rank9) {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+		}
+		else {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+			to = sq + 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+		}
+		return m;
+	}
+}
 //仮
-int attacks_bbishop(int sq, int* m) {
-	return m;
+int attacks_bbishop(usi_handler_t* hd, int sq, int* m) {
+	//1 2  +8    -10
+	// s       s
+	//3 4  +10   -8
+	//upper left
+	for (int to = sq + 8;; to += 8) {
+		if (set_file(to - 8) == file9 || set_rank(to - 8) == rank1) {//kokomade
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//upper right
+	for (int to = sq - 10;; to -= 10) {
+		if (set_file(to + 10) == file1) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//down left
+	for (int to = sq + 10;; to += 10) {
+		if (set_file(to - 10) == file9) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+
 }
 
 //仮
@@ -407,9 +471,106 @@ int attacks_brook(int sq, int* m) {
 	return m;
 }
 
-//仮
 int attacks_bgold(int sq, int* m) {
-	return m;
+	/*goldのサーチ sはsqの略
+	1 2 3     +8 -1 -10 
+	4 s 5     +9  s  -9
+	  6          +1
+	*/
+	int to = 0;
+	int f, r;
+	f = set_file(sq);
+	r = set_rank(sq);
+	switch (f) {
+	case file1:
+		if (r == rank1) {
+			to = sq + 9;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+			return m;
+		}
+		else if (r == rank9) {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq + 9;
+			arrput(m, to);
+			return m;
+		}
+		else {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq + 9;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+			return m;
+		}
+		break;
+	case file9:
+		if (r == rank1) {
+			to = sq - 9;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+			return m;
+		}
+		else if (r == rank9) {
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+			to = sq - 9;
+			arrput(m, to);
+			return m;
+		}
+		else {
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+			to = sq - 9;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+			return m;
+		}
+		break;
+	default:
+		if (r == rank1) {
+			to = sq + 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+		}
+		else if (r == rank9) {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+		}
+		else {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 1;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+			to = sq + 9;
+			arrput(m, to);
+			to = sq - 9;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+		}
+		return m;
+	}
 }
 
 //仮

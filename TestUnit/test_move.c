@@ -1181,12 +1181,6 @@ void test_attacks_from(void) {
 		arrfree(ml);
 	}
 	pc = blance;
-	ml = attacks_from(&hd, pc, sq9i, black);
-	if (ml != NULL) {
-		TEST_ASSERT_EQUAL_INT(1, arrlen(ml));
-		TEST_ASSERT_EQUAL_INT(sq9h, ml[0]);
-		arrfree(ml);
-	}
 	ml = attacks_from(&hd, pc, sq1i, black);
 	TEST_ASSERT_EQUAL_INT(6, arrlen(ml));
 	TEST_ASSERT_EQUAL_INT(sq1h, ml[0]);
@@ -1195,6 +1189,19 @@ void test_attacks_from(void) {
 	TEST_ASSERT_EQUAL_INT(sq1e, ml[3]);
 	TEST_ASSERT_EQUAL_INT(sq1d, ml[4]);
 	TEST_ASSERT_EQUAL_INT(sq1c, ml[5]);
+	arrfree(ml);
+	pc = bknight;
+	ml = attacks_from(&hd, pc, sq2i, black);
+	TEST_ASSERT_EQUAL_INT(2, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq3g, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq1g, ml[1]);
+	arrfree(ml);
+	pc = bsilver;
+	ml = attacks_from(&hd, pc, sq3i, black);
+	TEST_ASSERT_EQUAL_INT(3, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq4h, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq3h, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq2h, ml[2]);
 	arrfree(ml);
 }
 
