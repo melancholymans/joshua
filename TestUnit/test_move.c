@@ -1166,6 +1166,18 @@ void test_piece_color(void) {
 }
 
 void test_attacks_from(void) {
+/*
+   9  8  7  6  5  4  3  2  1
+a  l  n  s  g  k  g  s  n  l
+b  .  r  .  .  .  .  .  b  .
+c  p  p  p  p  p  p  p  p  p
+d  .  .  .  .  .  .  .  .  .
+e  .  .  .  .  .  B  .  .  P
+f  .  .  .  .  .  .  R  .  .
+g  P  P  P  P  P  P  P  P  .
+h  L  .  .  .  .  .  .  .  .
+i  .  N  S  G  K  G  S  N  L
+*/ 
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	new_board(&hd);
@@ -1225,6 +1237,34 @@ void test_attacks_from(void) {
 	TEST_ASSERT_EQUAL_INT(sq2f, ml[9]);
 	TEST_ASSERT_EQUAL_INT(sq1f, ml[10]);
 	arrfree(ml);
+	pc = bgold;
+	ml = attacks_from(&hd, pc, sq4i, black);
+	TEST_ASSERT_EQUAL_INT(3, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq5h, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq4h, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq3h, ml[2]);
+	arrfree(ml);
+	pc = bking;
+	ml = attacks_from(&hd, pc, sq5i, black);
+	TEST_ASSERT_EQUAL_INT(5, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq6h, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq5h, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq4h, ml[2]);
+	TEST_ASSERT_EQUAL_INT(sq6i, ml[3]);
+	TEST_ASSERT_EQUAL_INT(sq4i, ml[4]);
+	arrfree(ml);
+	pc = bhorse;
+	ml = attacks_from(&hd, pc, sq4e, black);
+	TEST_ASSERT_EQUAL_INT(9, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq5d, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq6c, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq3d, ml[2]);
+	TEST_ASSERT_EQUAL_INT(sq2c, ml[3]);
+	TEST_ASSERT_EQUAL_INT(sq5f, ml[4]);
+	TEST_ASSERT_EQUAL_INT(sq4d, ml[5]);
+	TEST_ASSERT_EQUAL_INT(sq5e, ml[6]);
+	TEST_ASSERT_EQUAL_INT(sq3e, ml[7]);
+	TEST_ASSERT_EQUAL_INT(sq4f, ml[8]);
 }
 
 void test_canmove_without_promotion(void) {
