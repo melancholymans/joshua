@@ -24,7 +24,8 @@ _Bool canmove_without_promotion(int to, int pt, int c);
 _Bool can_promote(int sq, int pt);
 int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn);	
 int* attacks_bsilver(int sq, int* m);
-
+int* attacks_bbishop(usi_handler_t* hd, int sq, int* m);
+int* attacks_brook(usi_handler_t* hd, int sq, int* m);
 int initial_to_piecetype(char p);
 void do_usi_move(usi_handler_t* hd, char* usi_move);
 void do_move(usi_handler_t* hd, const int move);

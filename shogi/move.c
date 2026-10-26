@@ -301,11 +301,11 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 			return m;
 		}
 	case bsilver:
-		return attacks_bsilver(hd, sq, m);
+		return attacks_bsilver(sq, m);
 	case bbishop:
-		return attacks_bbishop(sq, m);
+		return attacks_bbishop(hd,sq, m);
 	case brook:
-		return attacks_brook(sq, m);
+		return attacks_brook(hd, sq, m);
 	case bgold:
 		return attacks_bgold(sq, m);
 	case bking:
@@ -413,14 +413,17 @@ int* attacks_bsilver(int sq,int* m) {
 		return m;
 	}
 }
-//仮
-int attacks_bbishop(usi_handler_t* hd, int sq, int* m) {
-	//1 2  +8    -10
-	// s       s
-	//3 4  +10   -8
+
+//black bishop
+int* attacks_bbishop(usi_handler_t* hd, int sq, int* m) {
+	/*bishopのサーチ sはsqの略
+	  1 2  +8    -10
+	   s       s
+	  3 4  +10   -8
+	*/
 	//upper left
 	for (int to = sq + 8;; to += 8) {
-		if (set_file(to - 8) == file9 || set_rank(to - 8) == rank1) {//kokomade
+		if (set_file(to - 8) == file9 || set_rank(to - 8) == rank1) {
 			break;
 		}
 		int pc = hd->bd->mb[to];
@@ -435,7 +438,7 @@ int attacks_bbishop(usi_handler_t* hd, int sq, int* m) {
 	}
 	//upper right
 	for (int to = sq - 10;; to -= 10) {
-		if (set_file(to + 10) == file1) {
+		if (set_file(to + 10) == file1 || set_rank(to + 10)==rank1) {
 			break;
 		}
 		int pc = hd->bd->mb[to];
@@ -450,7 +453,7 @@ int attacks_bbishop(usi_handler_t* hd, int sq, int* m) {
 	}
 	//down left
 	for (int to = sq + 10;; to += 10) {
-		if (set_file(to - 10) == file9) {
+		if (set_file(to - 10) == file9 || set_rank(to - 10)==rank9) {
 			break;
 		}
 		int pc = hd->bd->mb[to];
@@ -463,11 +466,91 @@ int attacks_bbishop(usi_handler_t* hd, int sq, int* m) {
 		}
 		break;
 	}
-
+	//down right
+	for (int to = sq - 8;; to -= 8) {
+		if (set_file(to + 8) == file1 || set_rank(to + 8) == rank9) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	return m;
 }
 
-//仮
-int attacks_brook(int sq, int* m) {
+//black rook
+int* attacks_brook(usi_handler_t* hd, int sq, int* m) {
+	/*bishopのサーチ sはsqの略
+	    1         -1    
+	 2  s  3   +9  s  -9
+	    4         +1   
+	*/
+	//upper
+	for (int to = sq - 1;; to -= 1) {
+		if (set_rank(to + 1) == rank1) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//left
+	for (int to = sq + 9;; to += 9) {
+		if (set_file(to - 9) == file9) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//right
+	for (int to = sq - 9;; to -= 9) {
+		if (set_file(to + 9) == file1) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//down
+	for (int to = sq + 1;; to += 1) {
+		if (set_rank(to - 1) == rank9) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
 	return m;
 }
 

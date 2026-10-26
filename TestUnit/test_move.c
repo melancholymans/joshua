@@ -137,7 +137,7 @@ void test_do_usi_move() {
 	char sfen[128];
 	char moves[8];
 	new_board(&hd);
-	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 	strcpy_s(&moves,8, "2g2f");
 	do_usi_move(&hd, &moves);
@@ -455,7 +455,7 @@ void test_undo_move(void) {
 	char sfen[128];
 	char moves[8];
 	new_board(&hd);
-	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 	//1
 	strcpy_s(&moves, 8, "2g2f");
@@ -1169,7 +1169,7 @@ void test_attacks_from(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	new_board(&hd);
-	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPP1/LB5R1/1NSGKGSNL b - 1");
+	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/5B2P/6R2/PPPPPPPP1/L8/1NSGKGSNL b - 1");
 	set_board(&hd, sfen);
 
 	int* ml = NULL;
@@ -1182,13 +1182,10 @@ void test_attacks_from(void) {
 	}
 	pc = blance;
 	ml = attacks_from(&hd, pc, sq1i, black);
-	TEST_ASSERT_EQUAL_INT(6, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(3, arrlen(ml));
 	TEST_ASSERT_EQUAL_INT(sq1h, ml[0]);
 	TEST_ASSERT_EQUAL_INT(sq1g, ml[1]);
 	TEST_ASSERT_EQUAL_INT(sq1f, ml[2]);
-	TEST_ASSERT_EQUAL_INT(sq1e, ml[3]);
-	TEST_ASSERT_EQUAL_INT(sq1d, ml[4]);
-	TEST_ASSERT_EQUAL_INT(sq1c, ml[5]);
 	arrfree(ml);
 	pc = bknight;
 	ml = attacks_from(&hd, pc, sq2i, black);
@@ -1196,12 +1193,37 @@ void test_attacks_from(void) {
 	TEST_ASSERT_EQUAL_INT(sq3g, ml[0]);
 	TEST_ASSERT_EQUAL_INT(sq1g, ml[1]);
 	arrfree(ml);
+
 	pc = bsilver;
 	ml = attacks_from(&hd, pc, sq3i, black);
 	TEST_ASSERT_EQUAL_INT(3, arrlen(ml));
 	TEST_ASSERT_EQUAL_INT(sq4h, ml[0]);
 	TEST_ASSERT_EQUAL_INT(sq3h, ml[1]);
 	TEST_ASSERT_EQUAL_INT(sq2h, ml[2]);
+	arrfree(ml);
+	pc = bbishop;
+	ml = attacks_from(&hd, pc, sq4e, black);
+	TEST_ASSERT_EQUAL_INT(5, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq5d, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq6c, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq3d, ml[2]);
+	TEST_ASSERT_EQUAL_INT(sq2c, ml[3]);
+	TEST_ASSERT_EQUAL_INT(sq5f, ml[4]);
+	arrfree(ml);
+	pc = brook;
+	ml = attacks_from(&hd, pc, sq3f, black);
+	TEST_ASSERT_EQUAL_INT(11, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq3e, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq3d, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq3c, ml[2]);
+	TEST_ASSERT_EQUAL_INT(sq4f, ml[3]);
+	TEST_ASSERT_EQUAL_INT(sq5f, ml[4]);
+	TEST_ASSERT_EQUAL_INT(sq6f, ml[5]);
+	TEST_ASSERT_EQUAL_INT(sq7f, ml[6]);
+	TEST_ASSERT_EQUAL_INT(sq8f, ml[7]);
+	TEST_ASSERT_EQUAL_INT(sq9f, ml[8]);
+	TEST_ASSERT_EQUAL_INT(sq2f, ml[9]);
+	TEST_ASSERT_EQUAL_INT(sq1f, ml[10]);
 	arrfree(ml);
 }
 
@@ -1342,7 +1364,7 @@ void test_possible_moves(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	new_board(&hd);
-	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 
 	int* ml = NULL;
@@ -1371,7 +1393,7 @@ void test_go(void) {
 	int from, to, pmoto, morh, piece, cap;
 	char usi_move[8];
 	new_board(&hd);
-	strcpy_s(sfen, 63 + 1, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 
 	int m = go(&hd);
