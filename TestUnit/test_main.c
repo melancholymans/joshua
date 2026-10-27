@@ -32,6 +32,7 @@ void test_move() {
 	test_can_promote();
 	test_possible_moves();
 	test_go();
+	test_is_double_pawn();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");

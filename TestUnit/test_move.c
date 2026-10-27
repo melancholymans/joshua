@@ -6,7 +6,6 @@
 #include "../shogi/position.h"
 #include "../shogi/usi.h"
 #include "../shogi/move.h"
-//#define STB_DS_IMPLEMENTATION
 #include "../shogi/stb_ds.h"
 #include "test_move.h"
 
@@ -1265,6 +1264,25 @@ i  .  N  S  G  K  G  S  N  L
 	TEST_ASSERT_EQUAL_INT(sq5e, ml[6]);
 	TEST_ASSERT_EQUAL_INT(sq3e, ml[7]);
 	TEST_ASSERT_EQUAL_INT(sq4f, ml[8]);
+	arrfree(ml);
+	pc = bdragon;
+	ml = attacks_from(&hd, pc, sq3f, black);
+	TEST_ASSERT_EQUAL_INT(15, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(sq3e, ml[0]);
+	TEST_ASSERT_EQUAL_INT(sq3d, ml[1]);
+	TEST_ASSERT_EQUAL_INT(sq3c, ml[2]);
+	TEST_ASSERT_EQUAL_INT(sq4f, ml[3]);
+	TEST_ASSERT_EQUAL_INT(sq5f, ml[4]);
+	TEST_ASSERT_EQUAL_INT(sq6f, ml[5]);
+	TEST_ASSERT_EQUAL_INT(sq7f, ml[6]);
+	TEST_ASSERT_EQUAL_INT(sq8f, ml[7]);
+	TEST_ASSERT_EQUAL_INT(sq9f, ml[8]);
+	TEST_ASSERT_EQUAL_INT(sq2f, ml[9]);
+	TEST_ASSERT_EQUAL_INT(sq1f, ml[10]);
+	TEST_ASSERT_EQUAL_INT(sq4e, ml[11]);
+	TEST_ASSERT_EQUAL_INT(sq2e, ml[12]);
+	TEST_ASSERT_EQUAL_INT(sq4g, ml[13]);
+	TEST_ASSERT_EQUAL_INT(sq2g, ml[14]);
 }
 
 void test_canmove_without_promotion(void) {
@@ -1406,25 +1424,49 @@ void test_possible_moves(void) {
 	new_board(&hd);
 	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
+	hd.bd->hb[bpawn] = 1;
+	hd.bd->hb[blance] = 1;
+	hd.bd->hb[bknight] = 1;
+	hd.bd->hb[bsilver] = 1;
+	hd.bd->hb[bbishop] = 1;
+	hd.bd->hb[brook] = 1;
+	hd.bd->hb[bgold] = 1;
 
 	int* ml = NULL;
 	ml = possible_moves(&hd, ml);
-	TEST_ASSERT_EQUAL_INT(15, arrlen(ml));
+	TEST_ASSERT_EQUAL_INT(269, arrlen(ml));
+	//cmp_move -> from to pmoto morh piece cap
 	TEST_ASSERT_TRUE(cmp_move(ml[0], sq1g, sq1f, 0, 0, bpawn, empty));
 	TEST_ASSERT_TRUE(cmp_move(ml[1], sq1i, sq1h, 0, 0, blance, empty));
 	TEST_ASSERT_TRUE(cmp_move(ml[2], sq2g, sq2f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[3], sq3g, sq3f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[4], sq3i, sq4h, 0, 0, bsilver, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[5], sq3i, sq3h, 0, 0, bsilver, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[6], sq4g, sq4f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[7], sq5g, sq5f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[8], sq6g, sq6f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[9], sq7g, sq7f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[10], sq7i, sq7h, 0, 0, bsilver, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[11], sq7i, sq6h, 0, 0, bsilver, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[12], sq8g, sq8f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[13], sq9g, sq9f, 0, 0, bpawn, empty));
-	TEST_ASSERT_TRUE(cmp_move(ml[14], sq9i, sq9h, 0, 0, blance, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[3], sq2h, sq3h, 0, 0, brook, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[4], sq2h, sq4h, 0, 0, brook, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[5], sq2h, sq5h, 0, 0, brook, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[6], sq2h, sq6h, 0, 0, brook, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[7], sq2h, sq7h, 0, 0, brook, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[8], sq2h, sq1h, 0, 0, brook, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[9], sq3g, sq3f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[10], sq3i, sq4h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[11], sq3i, sq3h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[12], sq4g, sq4f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[13], sq4i, sq5h, 0, 0, bgold, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[14], sq4i, sq4h, 0, 0, bgold, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[15], sq4i, sq3h, 0, 0, bgold, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[16], sq5g, sq5f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[17], sq5i, sq6h, 0, 0, bking, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[18], sq5i, sq5h, 0, 0, bking, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[19], sq5i, sq4h, 0, 0, bking, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[20], sq6g, sq6f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[21], sq6i, sq7h, 0, 0, bgold, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[22], sq6i, sq6h, 0, 0, bgold, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[23], sq6i, sq5h, 0, 0, bgold, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[24], sq7g, sq7f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[25], sq7i, sq7h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[26], sq7i, sq6h, 0, 0, bsilver, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[27], sq8g, sq8f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[28], sq9g, sq9f, 0, 0, bpawn, empty));
+	TEST_ASSERT_TRUE(cmp_move(ml[29], sq9i, sq9h, 0, 0, blance, empty));
+
 }
 
 void test_go(void) {
@@ -1439,18 +1481,44 @@ void test_go(void) {
 	int m = go(&hd);
 	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
 	move_to_usi(m, usi_move);
-	printf("%s with:%c\n", usi_move, piece_symbol[piece]);
+	//printf("%s with:%c\n", usi_move, piece_symbol[piece]);
 	do_move(&hd,m);
-	print_board(&hd);
+	//print_board(&hd);
 
 	do_usi_move(&hd, "8c8d");
-	print_board(&hd);
+	//print_board(&hd);
 
 	m = go(&hd);
 	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
 	move_to_usi(m, usi_move);
-	printf("%s with:%c\n", usi_move, piece_symbol[piece]);
+	//printf("%s with:%c\n", usi_move, piece_symbol[piece]);
 	do_move(&hd, m);
+	//print_board(&hd);
+}
+
+void test_is_double_pawn(void) {
+	/*
+	   9  8  7  6  5  4  3  2  1
+	a  l  n  s  g  k  g  s  n  l
+	b  .  r  .  .  .  .  .  b  .
+	c  p  p  p  p  p  p  p  .  p
+	d  .  .  .  .  .  .  .  .  .
+	e  .  .  .  .  .  B  .  .  P
+	f  .  .  .  .  .  .  R  .  .
+	g  .  P  P  P  P  P  P  P  .
+	h  L  .  .  .  .  .  .  .  .
+	i  .  N  S  G  K  G  S  N  L
+	*/
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	new_board(&hd);
+	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppp1p/9/5B2P/6R2/1PPPPPPP1/L8/1NSGKGSNL b - 1");
+	set_board(&hd, sfen);
+
 	print_board(&hd);
+	TEST_ASSERT_FALSE(is_double_pawn(&hd, sq9e, bpawn));
+	TEST_ASSERT_TRUE(is_double_pawn(&hd, sq8e, bpawn));
+	TEST_ASSERT_TRUE(is_double_pawn(&hd, sq3e, wpawn));
+	TEST_ASSERT_FALSE(is_double_pawn(&hd, sq2e, wpawn));
 }
 

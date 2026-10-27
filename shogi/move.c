@@ -126,7 +126,6 @@ initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G' };
 
 //GUIから思考開始に対応する
 int go(usi_handler_t* hd) {
-	printf("%s\n", __func__);
 	int best_move = 0;
 	hd->ml = legel_move(hd,hd->ml);
 	srand((unsigned)time(NULL));
@@ -190,12 +189,10 @@ int* legel_move(usi_handler_t* hd,int* ml) {
 int* possible_moves(usi_handler_t* hd, int* ml) {
 	board_t* bd = hd->bd;
 	int* sqml = NULL;
+	int* empty_square = NULL;
 	int move = 0;
 	for (int from = sq1a; from <= sq9i; from++) {
 		int pc = bd->mb[from];
-		if (pc != bpawn && pc != blance && pc != bknight && pc != bsilver) {	//生成している駒がbpawn,blance,bknight,bsilverしかないのでここでせき止めている
-			continue;
-		}
 		if (pc != 0 && ((pc & 0x10) >> 4) == bd->turn) {
 			sqml = attacks_from(hd, pc, from, bd->turn);
 			for (int i = 0; i < arrlen(sqml);i++ ) {
@@ -213,9 +210,47 @@ int* possible_moves(usi_handler_t* hd, int* ml) {
 				}
 			}
 		}
+		else if(pc == 0) {
+			arrput(empty_square, from);
+		}
+	}
+	for (int pt = bpawn; pt <= bgold; pt++) {	//white側の駒台はパス
+		if (hd->bd->hb[pt] == 0) {
+			continue;
+		}
+		for (int i = 0; i < arrlen(empty_square); i++) {
+			int to = empty_square[i];
+			if (canmove_without_promotion(to, pt, black) && !is_double_pawn(hd, to, pt)) {
+				move = 1 << 15 | 0 << 14 | pt << 7 | to;
+				arrput(ml, move);
+			}
+		}
 	}
 	return ml;
-	//ここのあとに打手生成処理があるが今はパス
+}
+
+//2歩であればtrueを返す
+_Bool is_double_pawn(usi_handler_t* hd,int sq, int pc) {
+	if (pc != bpawn && pc != wpawn) {
+		return false;
+	}
+	board_t* bt = hd->bd;
+	int f = set_file(sq);
+	for (int r = set_rank(sq + 1); r <= rank9; r += 1) {
+		int s = set_square(f, r);
+		int p = bt->mb[s];
+		if (p != 0 && p == pc) {
+			return true;
+		}
+	}
+	for (int r = set_rank(sq - 1); r >= rank1; r -= 1) {
+		int s = set_square(f, r);
+		int p = bt->mb[s];
+		if (p != 0 && p == pc) {
+			return true;
+		}
+	}
+	return false;
 }
 
 //pawn,lance.knightが死駒にならないならtrueを返す 
@@ -278,9 +313,9 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 		return m;
 	case bknight:
 		/*knightのサーチ
-		1   2
+		1   2  +7   -11
 
-		  s
+		  s        s
 		*/
 		f = set_file(sq);
 		r = set_rank(sq);
@@ -321,7 +356,7 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 	case bhorse:
 		return attacks_bhorse(hd, sq, m);
 	case bdragon:
-		return attacks_bdragon(sq, m);
+		return attacks_bdragon(hd, sq, m);
 	//white ,blackのbold,propawn,prolance,proknight,prosilver,bishop,rook,house,dragon,kingは今はパス
 	}
 }
@@ -940,9 +975,149 @@ int* attacks_bhorse(usi_handler_t* hd, int sq, int* m) {
 	}
 }
 
-//仮
-int attacks_bdragon(int sq, int* m) {
-	return m;
+//dragon black
+int* attacks_bdragon(usi_handler_t* hd,int sq, int* m) {
+	/*dragonのサーチ sはsqの略
+	  1          -1    
+	2 s 3     +9  s  -9
+	  4          +1
+
+	+
+
+	5   6    +8     -10
+	  s          s  
+	7   8    +10    -8
+	*/
+	//upper
+	for (int to = sq - 1;; to -= 1) {
+		if (set_rank(to + 1) == rank1) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//left
+	for (int to = sq + 9;; to += 9) {
+		if (set_file(to - 9) == file9) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//right
+	for (int to = sq - 9;; to -= 9) {
+		if (set_file(to + 9) == file1) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	//down
+	for (int to = sq + 1;; to += 1) {
+		if (set_rank(to - 1) == rank9) {
+			break;
+		}
+		int pc = hd->bd->mb[to];
+		if (pc == empty) {
+			arrput(m, to);
+			continue;
+		}
+		if (((pc & 0x10) >> 4) != hd->bd->turn) {
+			arrput(m, to);
+		}
+		break;
+	}
+	int to = 0;
+	int f, r;
+	f = set_file(sq);
+	r = set_rank(sq);
+	switch (f) {
+	case file1:
+		if (r == rank1) {
+			to = sq + 10;
+			arrput(m, to);
+			return m;
+		}
+		else if (r == rank9) {
+			to = sq + 8;
+			arrput(m, to);
+			return m;
+		}
+		else {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq + 10;
+			arrput(m, to);
+			to = sq + 1;
+			arrput(m, to);
+			return m;
+		}
+		break;
+	case file9:
+		if (r == rank1) {
+			to = sq - 8;
+			arrput(m, to);
+			return m;
+		}
+		else if (r == rank9) {
+			to = sq - 10;
+			arrput(m, to);
+			return m;
+		}
+		else {
+			to = sq - 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+			return m;
+		}
+		break;
+	default:
+		if (r == rank1) {
+			to = sq + 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+		}
+		else if (r == rank9) {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+		}
+		else {
+			to = sq + 8;
+			arrput(m, to);
+			to = sq - 10;
+			arrput(m, to);
+			to = sq + 10;
+			arrput(m, to);
+			to = sq - 8;
+			arrput(m, to);
+		}
+		return m;
+	}
 }
 
 //usimove形式の打手の駒種を意味する大文字１文字を駒種に変換する
