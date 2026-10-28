@@ -235,8 +235,16 @@ void new_board(usi_handler_t* hd) {
 	return;
 }
 
+//sfen文字列をパースして局面を設定
 void set_board(usi_handler_t* hd, char* sfen) {
-	//parts: sfenをセパレートで区切った後にできるポインタ配列
+	/*
+	sfen = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"のような文字列で渡ってくる
+	strtok_s関数でsfen文字列を分割してpartsに切り分ける
+	parts[0] =  "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL"
+	parts[1] = "b"
+	parts[2] = "-"
+	parts[4] = "1"
+	*/
 	char* parts[4];	
 	int count = 0;
 	char* ptr = NULL;
@@ -246,6 +254,14 @@ void set_board(usi_handler_t* hd, char* sfen) {
 		token = strtok_s(NULL, " ", &ptr);
 	}
 	board_t* b = hd->bd;
+	//局面をクリアにする
+	for (int sq = 0; sq < 81; sq++) {
+		b->mb[sq] = empty;
+	}
+	for (int pt = 0; pt < 25; pt++) {
+		b->hb[pt] = 0;
+	}
+	//局面を設定する
 	int sq = sq9a;
 	int pmoto = 0;
 	for (int i=0; i < strlen(parts[0]); i++) {
@@ -281,7 +297,6 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	else {
 		b->turn = black;
 	}
-	//b->move_number = atoi(parts[3]);	ここで設定は不要
 	return;
 }
 

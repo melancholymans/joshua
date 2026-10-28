@@ -221,7 +221,7 @@ int* possible_moves(usi_handler_t* hd, int* ml) {
 		for (int i = 0; i < arrlen(empty_square); i++) {
 			int to = empty_square[i];
 			if (canmove_without_promotion(to, pt, black) && !is_double_pawn(hd, to, pt)) {
-				move = 1 << 15 | 0 << 14 | pt << 7 | to;
+				move = (1 << 15) | (pt << 7) | to;
 				arrput(ml, move);
 			}
 		}
@@ -1168,6 +1168,7 @@ void do_move(usi_handler_t* hd, const int move) {
 		bd->hb[from]--;		//‘Å‚Âè‚Ì‚Í‹î”Ô‚Ífrom‚É“ü‚é
 		bd->mb[to] = from;
 		//‚±‚±‚É‹î‘Å‚¿‚ÌA‹l‚ß‚ª‚©‚©‚é‚©‚Ìƒtƒ‰ƒO(moveIsCheck)‚É‚æ‚éˆ—‚ª“ü‚é(TODO:)
+
 	}
 	else {
 		if (cap != empty) {

@@ -8,7 +8,7 @@
 #include "move.h"
 #include "usi.h"
 
-
+//usi_handler_t構造体を組立て初期設定する
 usi_handler_t new_usi_handler(FILE* out) {
 	usi_handler_t hd;
 	hd.bd = NULL;
@@ -25,6 +25,7 @@ usi_handler_t new_usi_handler(FILE* out) {
 	return hd;
 }
 
+//GUIとのコマンドのやり取りをするためのキューの初期設定、GUIからのコマンドの受信、そのコマンドをプログラム内に流す部分が競合するのでクリティカルセッションでブロックしている
 int init_queue(usi_handler_t* hd, int capacity) {
 	hd->ucq->buffer = (char**)malloc(sizeof(char*) * capacity);
 	if (!hd->ucq->buffer) {
@@ -40,6 +41,7 @@ int init_queue(usi_handler_t* hd, int capacity) {
 	return 0;
 }
 
+//コマンドの受信に使うキューの廃棄
 void free_queue(comman_queue_t* q) {
 	EnterCriticalSection(&(q->cs));
 	for (; q->size > 0;) {
@@ -52,6 +54,7 @@ void free_queue(comman_queue_t* q) {
 	free(q->buffer);
 }
 
+//GUIからのコマンドをreceive_usi関数が受信しているのでそのコマンドをキューに登録する
 void push_queue(comman_queue_t* q, const char* str) {
 	char* copy_str = _strdup(str);
 	EnterCriticalSection(&(q->cs));
@@ -65,6 +68,7 @@ void push_queue(comman_queue_t* q, const char* str) {
 	LeaveCriticalSection(&(q->cs));
 }
 
+//GUIからのコマンドが入ったキューからコマンドを取り出す。取り出されたコマンドはwait_command関数に渡され、main関数に渡っていく
 char* pop_queue(comman_queue_t* q) {
 	EnterCriticalSection(&(q->cs));
 	for (; q->size <= 0;) {
@@ -78,6 +82,7 @@ char* pop_queue(comman_queue_t* q) {
 	return str;
 }
 
+//スレッドで動いて、常時stdinをモニタしてGUIからのコマンドを監視している。quitコマンドは即時終了させている。他のコマンドはキューに登録してmain関数内のhandler関数に渡るようにしている
 void receive_usi(void *arg) {
 	usi_handler_t* hd = (usi_handler_t*)arg;
 	char buf[1024];
@@ -102,57 +107,59 @@ void receive_usi(void *arg) {
 	}
 }
 
+//receive_usi関数をスレッドで起動している
 _Bool begin_thread(usi_handler_t* hd) {
 	uintptr_t hdl = _beginthread(receive_usi, 0, hd);
 	return (hdl != -1);
 }
 
+//GUIからのコマンドがキューに入っていくのでそれを取りにいっている。キュー内に入っているコマンド文字列はヒープ内で取得しているのでここで解放している(free(str))
 void wait_command(usi_handler_t* hd,char* buf) {
 	char* str = pop_queue(hd->ucq);
 	strcpy_s(buf, 1024, str);
 	free(str);
 }
 
-/*
-option:
-	エンジン固有の値をGUIに送るためのコマンド
-	usiコマンドとusiokの間に送る
-	option name <optionname> type <optiontype> <paramter>
-	これを送るとGUI側からsetoptionコマンドで送り返してくる
-	optionで送らなくても必ずGUI側から送ってくるoptionが２つある
-	USI_HashとUSI_Ponderになる
-
-	<optiontype<n>には6種類設定できる
-	check: エンジン設定ダイヤログでチックボックスになる指定
-	spin: 数値を指定
-	combo:ポップアップメニュー
-	string:文字列を指定
-	filename:ファイル名を指定
-	default:デフォルト値を指定
-	min,max:種類がspinなら上限下限を指定できる
-	var:種類がcomboなら選択できる文字列を指定できる（ポップアップに出てくる文字列を指定できる）
-	このoptionはGUIにエンジン登録するときに設定される値を送っている。
-setoption:
-	USI_HashとUSI_Ponderとエンジン登録時に行ったoptionを送ってくるので
-	その値を使ってエンジンの状態を決定する
-具体例:Lesserkai
-	option name BookFile type string default public.bin
-	option name UseBook type check default true
-
-	返ってくるsetoption
-	setoption name USI_Ponder value true	//これはoptionで設定しなくてもGUIから送ってくる
-	setoption name USI_Hash value 256		//これはoptionで設定しなくてもGUIから送ってくる
-	setoption name BookFile value public.bin	//optionで送った値がGUI側で保存してあるので便利
-	setoption name UseBook value true			//optionで送った値がGUI側で保存してあるので便利
-エンジンから送るoptionはGUIにエンジン管理のために登録するもので、登録後はGUI側の設定が優先される
-*/
+//GUIとのエンジン登録、対戦開始のコマンド処理をここでまとめて行っている。対戦開始後のGUIとのコマンド受信、送信はmain関数+handle関数で行う
 errno_t  usi_start(usi_handler_t* hd) {
+	/*
+	option:
+		エンジン固有の値をGUIに送るためのコマンド
+		usiコマンドとusiokの間に送る
+		option name <optionname> type <optiontype> <paramter>
+		これを送るとGUI側からsetoptionコマンドで送り返してくる
+		optionで送らなくても必ずGUI側から送ってくるoptionが２つある
+		USI_HashとUSI_Ponderになる
+
+		<optiontype<n>には6種類設定できる
+		check: エンジン設定ダイヤログでチックボックスになる指定
+		spin: 数値を指定
+		combo:ポップアップメニュー
+		string:文字列を指定
+		filename:ファイル名を指定
+		default:デフォルト値を指定
+		min,max:種類がspinなら上限下限を指定できる
+		var:種類がcomboなら選択できる文字列を指定できる（ポップアップに出てくる文字列を指定できる）
+		このoptionはGUIにエンジン登録するときに設定される値を送っている。
+	setoption:
+		USI_HashとUSI_Ponderとエンジン登録時に行ったoptionを送ってくるので
+		その値を使ってエンジンの状態を決定する
+	具体例:Lesserkai
+		option name BookFile type string default public.bin
+		option name UseBook type check default true
+
+		返ってくるsetoption
+		setoption name USI_Ponder value true	//これはoptionで設定しなくてもGUIから送ってくる
+		setoption name USI_Hash value 256		//これはoptionで設定しなくてもGUIから送ってくる
+		setoption name BookFile value public.bin	//optionで送った値がGUI側で保存してあるので便利
+		setoption name UseBook value true			//optionで送った値がGUI側で保存してあるので便利
+	エンジンから送るoptionはGUIにエンジン管理のために登録するもので、登録後はGUI側の設定が優先される
+	*/
 	char cmds[64];
 	char msg[64];
 	char hash_size[16];
 	char use_book[8];
 	for (;;) {
-		/*wait_command(hd,cmds);*/
 		if (fgets(cmds, 64, stdin) != NULL) {
 			cmds[strcspn(cmds, "\n")] = '\0';
 		}
@@ -201,6 +208,7 @@ errno_t  usi_start(usi_handler_t* hd) {
 	}
 }
 
+//GUIからのコマンド処理
 errno_t handle(usi_handler_t* usi_hd, char* buf){
 	/*
 	bufに渡される文字列
@@ -227,7 +235,7 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		token = strtok_s(NULL, " ",&ptr);
 	}
 	if (!strcmp("stop", cmds[0])) {
-		return handle_stop(cmds);
+		return handle_stop();
 	}
 	else if (!strcmp("go", cmds[0])) {
 		return handle_go(usi_hd);
@@ -236,22 +244,20 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		return handle_position(usi_hd,cmds,count);
 	}
 	else if (!strcmp("ponderhit", cmds[0])) {
-		return handle_ponder_hit(cmds);
+		return handle_ponder_hit();
 	}
 	else if (!strcmp("gameover", cmds[0])) {
 		return handle_gameover(usi_hd);
 	}
-	else if (!strcmp("debug", cmds[0])) {
-		return handle_debug(usi_hd,cmds,count);
-	}
 	else {
 		char msg[32];
 		sprintf_s(msg,sizeof(msg), "unknow cmd %s", cmds[0]);
-		put_debug(usi_hd,msg);
+		put_send(usi_hd,msg);
 		return 202;
 	}
 }
 
+//positionコマンド対応、送られてきたsfen文字列をパースして局面を設定している
 errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	// 入力されるcmds[]
 	//	cmds[0] = position
@@ -293,7 +299,7 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		mark = 6;	//次に見る配列のindex
 	}
 	else if (!strcmp("startpos", cmds[1])) {
-		strcpy_s(sfen,63+1,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+		strcpy_s(sfen,128,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 		set_board(hd, sfen);
 		if (count == 2) {	//文字列movesがないのでここで局面構成は終了
 			return 200;
@@ -327,20 +333,23 @@ errno_t handle_go(usi_handler_t* hd) {
 	return 200;
 }
 
-errno_t handle_stop(char* cmds) {
+//stopコマンド対応、まだ処理を考えていない
+errno_t handle_stop(void) {
 	//:TODO
 	// 即座に思考を中断しbestmoveを返す
 	printf("%s\n", __func__);
 	return NULL;
 }
 
-errno_t handle_ponder_hit(char* cmds) {
+//ponder hitコマンド対応、まだ処理を考えていない
+errno_t handle_ponder_hit(void) {
 	//:TODO
 	// ポンダ処理
 	printf("%s\n", __func__);
 	return NULL;
 }
 
+//gameoverコマンド対応、局面を再初期化して次のコマンドを待つ
 errno_t handle_gameover(usi_handler_t* hd) {
 	new_board(hd);
 	if (hd->bd == NULL) {
@@ -350,22 +359,10 @@ errno_t handle_gameover(usi_handler_t* hd) {
 	return 200;
 }
 
-errno_t handle_debug(usi_handler_t *hd,char** msg[],int size) {
-	printf("%s\n", __func__);
-	for (int i = 0; i < size; i++) {
-		put_debug(hd, msg[i]);
-	}
-	return NULL;
-}
-
+//GUIへのコマンド送信
 void put_send(usi_handler_t *hd,char* msg) {
 	fprintf(hd->stream,"%s\n",msg);
 }
-
-void put_debug(usi_handler_t *hd,char* msg) {
-	put_send(hd, msg);
-}
-
 
 //入力文字列の中に余分なスペースがあれば短縮する
 void shorten_space(char* buf) {
