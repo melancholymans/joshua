@@ -37,5 +37,6 @@ int main(void) {
 			break;
 		}
 	}
+	rm_usi_handler(&hd);
 	return EXIT_SUCCESS;
 }

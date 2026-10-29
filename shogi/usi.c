@@ -25,6 +25,11 @@ usi_handler_t new_usi_handler(FILE* out) {
 	return hd;
 }
 
+void rm_usi_handler(usi_handler_t* hd) {
+	free(hd->bd);
+	free_queue(hd->ucq);
+}
+
 //GUIとのコマンドのやり取りをするためのキューの初期設定、GUIからのコマンドの受信、そのコマンドをプログラム内に流す部分が競合するのでクリティカルセッションでブロックしている
 int init_queue(usi_handler_t* hd, int capacity) {
 	hd->ucq->buffer = (char**)malloc(sizeof(char*) * capacity);
