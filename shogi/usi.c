@@ -96,7 +96,7 @@ void receive_usi(void *arg) {
 			buf[strcspn(buf, "\n")] = '\0';
 		}
 		if (!strncmp(buf, "quit", 4)) {
-			free_queue(hd->ucq);
+			rm_usi_handler(hd);
 			exit(EXIT_SUCCESS);
 		}
 		if (!strncmp(buf, "stop", 4)) {
@@ -106,7 +106,7 @@ void receive_usi(void *arg) {
 			hd->ponderhit_receive_time = timeGetTime();	//ponderを受信した時間(msec単位)追加のファイルに「Winmm.lib」を設定
 		}
 		if (!strncmp(buf, "gameover", 8)) {
-			free_queue(hd->ucq);
+			rm_usi_handler(hd);
 			exit(EXIT_SUCCESS);
 		}
 		push_queue(hd->ucq, buf);
