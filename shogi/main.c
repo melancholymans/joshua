@@ -13,6 +13,7 @@
 * 201 system quit
 * 202 しらないコマンドです
 * 203 メモリが確保できない
+* 
 */ 
 
 
@@ -32,7 +33,7 @@ int main(void) {
 	for (;;) {
 		char buf[1024];
 		wait_command(&hd, buf);
-		if (handle(&hd,buf) != 200){
+		if (handle(&hd, buf) != 200) {
 			break;
 		}
 	}

@@ -209,13 +209,6 @@ enum {
 	hgold = 7,
 };
 
-// game‚ÌŒ‹‰Ê
-enum {
-	draw = 0,
-	black_win = 1,
-	white_win = 2,
-};
-
 // ç“úèó‘Ô
 enum {
 	not_repetition = 0,		//ç“úè‚Å‚Í‚È‚¢

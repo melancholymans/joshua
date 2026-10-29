@@ -101,7 +101,8 @@ void receive_usi(void *arg) {
 			hd->ponderhit_receive_time = timeGetTime();	//ponderを受信した時間(msec単位)追加のファイルに「Winmm.lib」を設定
 		}
 		if (!strncmp(buf, "gameover", 8)) {
-			hd->is_stop = true;
+			free_queue(hd->ucq);
+			exit(EXIT_SUCCESS);
 		}
 		push_queue(hd->ucq, buf);
 	}
@@ -246,9 +247,6 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 	else if (!strcmp("ponderhit", cmds[0])) {
 		return handle_ponder_hit();
 	}
-	else if (!strcmp("gameover", cmds[0])) {
-		return handle_gameover(usi_hd);
-	}
 	else {
 		char msg[32];
 		sprintf_s(msg,sizeof(msg), "unknow cmd %s", cmds[0]);
@@ -347,16 +345,6 @@ errno_t handle_ponder_hit(void) {
 	// ポンダ処理
 	printf("%s\n", __func__);
 	return NULL;
-}
-
-//gameoverコマンド対応、局面を再初期化して次のコマンドを待つ
-errno_t handle_gameover(usi_handler_t* hd) {
-	new_board(hd);
-	if (hd->bd == NULL) {
-		return 203;
-	}
-	put_send(hd, "readyok");
-	return 200;
 }
 
 //GUIへのコマンド送信

@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <Windows.h>
 
+
+// gameの結果
+enum {
+	draw = 0,
+	black_win = 1,
+	white_win = 2,
+};
+
 //mbはmain board,hbはhand board,turnはターン
 /*
  hb[24]の配列の中身は以下の通り、番号はとんでいる。
