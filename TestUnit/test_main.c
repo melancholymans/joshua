@@ -13,6 +13,11 @@ void setUp(void) {}
 void tearDown(void) {}
 
 
+void test_thinking() {
+	printf("-----------test_thinking---------------------------------\n");
+
+}
+
 void test_stb_ds() {
 	printf("-----------test_stb_ds---------------------------------\n");
 	test_stb_array();

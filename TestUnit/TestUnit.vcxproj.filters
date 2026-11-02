@@ -51,6 +51,12 @@
     <ClCompile Include="test_stb_ds.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\shogi\thinking.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test_thinking.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="unity.h">
@@ -72,6 +78,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="test_stb_ds.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="test_thinking.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

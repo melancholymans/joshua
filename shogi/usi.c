@@ -87,7 +87,7 @@ char* pop_queue(comman_queue_t* q) {
 	return str;
 }
 
-//スレッドで動いて、常時stdinをモニタしてGUIからのコマンドを監視している。quitコマンドは即時終了させている。他のコマンドはキューに登録してmain関数内のhandler関数に渡るようにしている
+//スレッドで動いて、常時stdinをモニタしてGUIからのコマンドを監視している。quit,gameoverコマンドは即時終了させている。他のコマンドはキューに登録してmain関数内のhandler関数に渡るようにしている
 void receive_usi(void *arg) {
 	usi_handler_t* hd = (usi_handler_t*)arg;
 	char buf[1024];

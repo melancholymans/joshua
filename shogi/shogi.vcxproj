@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="bitboard.c" />
     <ClCompile Include="move.c" />
+    <ClCompile Include="thinking.c" />
     <ClCompile Include="usi.c" />
     <ClCompile Include="init.c" />
     <ClCompile Include="main.c">
@@ -145,6 +146,7 @@
     <ClInclude Include="move.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="stb_ds.h" />
+    <ClInclude Include="thinking.h" />
     <ClInclude Include="usi.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
