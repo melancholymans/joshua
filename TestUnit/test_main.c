@@ -2,7 +2,6 @@
 #include <windows.h>
 
 #include "unity.h"
-#include "../shogi/init.h"
 #include "../shogi/bitboard.h"
 #include "../shogi/position.h"
 #include "../shogi/usi.h"

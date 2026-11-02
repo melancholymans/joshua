@@ -1,13 +1,7 @@
 #pragma once
-#include <immintrin.h>
-#include <intrin.h>
 #include <stdbool.h>
-#include <stdint.h>
 
-typedef union {
-	__m128i m;
-	int64_t p[2];
-}bitboard;
+#include "init.h"
 
 extern bitboard file_mask[9];
 extern bitboard rank_mask[9];

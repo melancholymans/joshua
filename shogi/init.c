@@ -1,4 +1,3 @@
-#include "init.h"
 #include "bitboard.h"
 #include "position.h"
 

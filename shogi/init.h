@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include <Windows.h>
+#include <immintrin.h>
+#include <intrin.h>
+#include <stdint.h>
 
 
 // game‚ÌŒ‹‰Ê
@@ -30,6 +33,12 @@ enum {
 	hb[23] = wgold = 23,
 	hb[24] = wking = 24,
 */
+
+typedef union {
+	__m128i m;
+	int64_t p[2];
+}bitboard;
+
 typedef struct {
 	char** buffer;
 	int capacity;
