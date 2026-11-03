@@ -14,7 +14,11 @@ void tearDown(void) {}
 
 void test_thinking() {
 	printf("-----------test_thinking---------------------------------\n");
-
+	test_attacks_from();
+	test_canmove_without_promotion();
+	test_can_promote();
+	test_possible_moves();
+	test_is_double_pawn();
 }
 
 void test_stb_ds() {
@@ -22,21 +26,16 @@ void test_stb_ds() {
 	test_stb_array();
 }
 
-void test_move() {
+void test_engine() {
 	printf("-----------test_engine----------------------------------\n");
-	test_get_move();
+	test_move_chop();
 	test_strip_pmoto();
 	test_initial_to_piecetype();
 	test_do_usi_move();
 	test_undo_move();
 	test_move_to_usi();
 	test_piece_color();
-	test_attacks_from();
-	test_canmove_without_promotion();
-	test_can_promote();
-	test_possible_moves();
 	test_go();
-	test_is_double_pawn();
 }
 void test_usi() {
 	printf("-----------test_usi----------------------------------\n");
@@ -130,8 +129,9 @@ int main() {
 	RUN_TEST(test_bitboard);
 	RUN_TEST(test_position);
 	RUN_TEST(test_usi);
-	RUN_TEST(test_move);
+	RUN_TEST(test_engine);
 	RUN_TEST(test_stb_ds);
+	RUN_TEST(test_thinking);
 	return UNITY_END();;
 }
 
