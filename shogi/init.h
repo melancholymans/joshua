@@ -62,7 +62,7 @@ typedef struct {
 	char* name;
 	char* author;
 	char book_file_name[32];
-	int* ml;
+	//int* ml;
 	int hash_size;
 	unsigned long ponderhit_receive_time;
 	_Bool can_ponder;

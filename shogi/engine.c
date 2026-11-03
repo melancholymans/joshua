@@ -126,12 +126,7 @@ initial[8] = { ' ', 'P', 'L', 'N', 'S', 'B', 'R', 'G' };
 
 //GUIから思考開始に対応する
 int go(usi_handler_t* hd) {
-	int best_move = 0;
-	hd->ml = do_thinking(hd,hd->ml);
-	srand((unsigned)time(NULL));
-	int len = arrlen(hd->ml);
-	best_move = hd->ml[rand() % len];
-	arrfree(hd->ml);	
+	int best_move = do_thinking(hd);
 	return best_move;
 }
 

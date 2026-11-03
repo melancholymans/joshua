@@ -17,7 +17,6 @@ usi_handler_t new_usi_handler(FILE* out) {
 	hd.name = "shogi";
 	hd.author = "joshua";
 	hd.book_file_name[0] = '\0';
-	hd.ml = NULL;
 	hd.hash_size = 0;
 	hd.can_ponder = false;
 	hd.use_book = false;

@@ -8,7 +8,8 @@
 
 
 //合法手（簡略版）生成
-int* do_thinking(usi_handler_t* hd, int* ml) {
+int do_thinking(usi_handler_t* hd) {
+	int best_move = 0;
 	int* pml = NULL;
 	pml = possible_moves(hd, pml);
 	/*for (int i = 0; i < arrlen(pml); i++) {
@@ -16,8 +17,11 @@ int* do_thinking(usi_handler_t* hd, int* ml) {
 			arrput(ml, pml[i]);
 		}
 	}*/
-	ml = pml;	//一時的に合法手のチエックをオミットしてpmlをそのままmlとする。将来変更する
-	return ml;
+	srand((unsigned)time(NULL));
+	int len = arrlen(pml);
+	best_move = pml[rand() % len];
+	arrfree(pml);
+	return best_move;
 }
 
 //盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む

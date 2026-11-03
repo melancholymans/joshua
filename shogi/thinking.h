@@ -1,6 +1,6 @@
 #pragma once
 
-int* do_thinking(usi_handler_t* hd, int* ml);
+int do_thinking(usi_handler_t* hd);
 int* possible_moves(usi_handler_t* hd, int* ml);
 _Bool is_double_pawn(usi_handler_t* hd, int sq, int pc);
 _Bool canmove_without_promotion(int to, int pt, int c);
