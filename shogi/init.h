@@ -15,8 +15,7 @@ enum {
 };
 
 //mbはmain board,hbはhand board,turnはターン
-/*
- hb[24]の配列の中身は以下の通り、番号はとんでいる。
+/* hb[24]の配列の中身は以下の通り、番号はとんでいる。
 	hb[1] = bpawn = 1,
 	hb[2] = blance = 2,
 	hb[3] = bknight = 3,
@@ -31,8 +30,7 @@ enum {
 	hb[21] = wbishop = 21,
 	hb[22] = wrook = 22,
 	hb[23] = wgold = 23,
-	hb[24] = wking = 24,
-*/
+	hb[24] = wking = 24,*/
 
 typedef union {
 	__m128i m;
@@ -64,7 +62,7 @@ typedef struct {
 	char* name;
 	char* author;
 	char book_file_name[32];
-	int* ml;
+	//int* ml;
 	int hash_size;
 	unsigned long ponderhit_receive_time;
 	_Bool can_ponder;
