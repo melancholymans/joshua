@@ -1163,7 +1163,7 @@ void do_move(usi_handler_t* hd, const int move) {
 	bd->move_number++;
 	int us = bd->turn;
 	int to, from, pmoto, morh, piece, cap;
-	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
 	if (morh) {
 		bd->hb[from]--;		//‘Å‚ÂŽè‚ÌŽž‚Í‹î”Ô‚Ífrom‚É“ü‚é
 		bd->mb[to] = from;
@@ -1191,7 +1191,7 @@ void undo_move(usi_handler_t* hd,const int move) {
 	board_t* bd = hd->bd;
 	int us = bd->turn;
 	int to, from, pmoto, morh, piece, cap;
-	get_move(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
 	if (morh) {	//‘Å‚¿Žè
 		//bitboardŠÖŒW‚Ì‘€ì‚ª“ü‚é‚ª¡‚ÍƒpƒX(TODO:)
 		bd->mb[to] = empty;
@@ -1215,7 +1215,7 @@ void undo_move(usi_handler_t* hd,const int move) {
 	bd->move_number--;
 }
 
-void get_move(const int move,int* to,int* from,int* ispmoto,int* morh,int* piece,int* cap) {
+void move_chop(const int move,int* to,int* from,int* ispmoto,int* morh,int* piece,int* cap) {
 	*to = move & 0x7f;
 	*from = (move >> 7) & 0x7f;
 	*ispmoto = (move >> 14) & 0x01;
@@ -1239,7 +1239,7 @@ int strip_pmoto(int pc) {
 //move‚ðsfenŒ`Ž®‚É•ÏŠ·‚·‚é
 void move_to_usi(int mv, char* usi_move) {
 	int from, to, ispmoto, morh, piece, cap;
-	get_move(mv, &to, &from, &ispmoto, &morh, &piece, &cap);
+	move_chop(mv, &to, &from, &ispmoto, &morh, &piece, &cap);
 	if (morh){	//‘ÅŽè
 		usi_move[0] = initial[from & 0xf];
 		usi_move[1] = '*';

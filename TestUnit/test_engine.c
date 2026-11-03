@@ -13,7 +13,7 @@ void test_get_move(void) {
 	int move;
 	move = sq7b | sq6a << 7 | 1 << 14 | 0 << 15 | bbishop << 16 | wgold<< 24;	//6a7b bbishop pmoto cap wgold
 	int to, from, ispmoto, morh, piece, cap;
-	get_move(move, &to, &from, &ispmoto, &morh, &piece, &cap);
+	move_chop(move, &to, &from, &ispmoto, &morh, &piece, &cap);
 	TEST_ASSERT_EQUAL_INT(sq7b, to);
 	TEST_ASSERT_EQUAL_INT(sq6a, from);
 	TEST_ASSERT_EQUAL_INT(1, ispmoto);
@@ -1479,7 +1479,7 @@ void test_go(void) {
 	set_board(&hd, sfen);
 
 	int m = go(&hd);
-	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
+	move_chop(m, &to, &from, &pmoto, &morh, &piece, &cap);
 	move_to_usi(m, usi_move);
 	//printf("%s with:%c\n", usi_move, piece_symbol[piece]);
 	do_move(&hd,m);
@@ -1489,7 +1489,7 @@ void test_go(void) {
 	//print_board(&hd);
 
 	m = go(&hd);
-	get_move(m, &to, &from, &pmoto, &morh, &piece, &cap);
+	move_chop(m, &to, &from, &pmoto, &morh, &piece, &cap);
 	move_to_usi(m, usi_move);
 	//printf("%s with:%c\n", usi_move, piece_symbol[piece]);
 	do_move(&hd, m);
