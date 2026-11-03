@@ -5,7 +5,7 @@
 #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
 #include "position.h"
-#include "move.h"
+#include "engine.h"
 
 /*
 gshogi‚Ìmove

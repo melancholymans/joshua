@@ -5,9 +5,9 @@
 
 #include "../shogi/position.h"
 #include "../shogi/usi.h"
-#include "../shogi/move.h"
+#include "../shogi/engine.h"
 #include "../shogi/stb_ds.h"
-#include "test_move.h"
+#include "test_engine.h"
 
 void test_get_move(void) {
 	int move;

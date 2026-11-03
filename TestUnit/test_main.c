@@ -23,7 +23,7 @@ void test_stb_ds() {
 }
 
 void test_move() {
-	printf("-----------test_move----------------------------------\n");
+	printf("-----------test_engine----------------------------------\n");
 	test_get_move();
 	test_strip_pmoto();
 	test_initial_to_piecetype();

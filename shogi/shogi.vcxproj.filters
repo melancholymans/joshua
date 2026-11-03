@@ -30,7 +30,7 @@
     <ClCompile Include="usi.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="move.c">
+    <ClCompile Include="engine.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="thinking.c">
@@ -50,7 +50,7 @@
     <ClInclude Include="usi.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="move.h">
+    <ClInclude Include="engine.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="stb_ds.h">

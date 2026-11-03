@@ -131,13 +131,13 @@
   <ItemGroup>
     <ClCompile Include="..\shogi\bitboard.c" />
     <ClCompile Include="..\shogi\init.c" />
-    <ClCompile Include="..\shogi\move.c" />
+    <ClCompile Include="..\shogi\engine.c" />
     <ClCompile Include="..\shogi\position.c" />
     <ClCompile Include="..\shogi\thinking.c" />
     <ClCompile Include="..\shogi\usi.c" />
     <ClCompile Include="test_bitboard.c" />
     <ClCompile Include="test_main.c" />
-    <ClCompile Include="test_move.c" />
+    <ClCompile Include="test_engine.c" />
     <ClCompile Include="test_position.c" />
     <ClCompile Include="test_stb_ds.c" />
     <ClCompile Include="test_thinking.c" />
@@ -146,7 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_bitboard.h" />
-    <ClInclude Include="test_move.h" />
+    <ClInclude Include="test_engine.h" />
     <ClInclude Include="test_position.h" />
     <ClInclude Include="test_stb_ds.h" />
     <ClInclude Include="test_thinking.h" />

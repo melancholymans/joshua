@@ -42,10 +42,10 @@
     <ClCompile Include="test_usi.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="test_move.c">
+    <ClCompile Include="test_engine.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\shogi\move.c">
+    <ClCompile Include="..\shogi\engine.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="test_stb_ds.c">
@@ -74,7 +74,7 @@
     <ClInclude Include="test_usi.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="test_move.h">
+    <ClInclude Include="test_engine.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="test_stb_ds.h">
