@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <process.h>
 
+#include "position.h"
 #include "engine.h"
 #include "usi.h"
 
@@ -18,15 +19,24 @@ usi_handler_t new_usi_handler(FILE* out) {
 	hd.author = "joshua";
 	hd.book_file_name[0] = '\0';
 	hd.hash_size = 0;
+	hd.ponderhit_receive_time = 0;
 	hd.can_ponder = false;
 	hd.use_book = false;
 	hd.is_stop = false;
+	hd.st = NULL;
 	return hd;
 }
 
 void rm_usi_handler(usi_handler_t* hd) {
-	free(hd->bd);
-	free_queue(hd->ucq);
+	if(hd->bd != NULL){
+		free(hd->bd);
+	}
+	if (hd->ucq != NULL) {
+		free_queue(hd->ucq);
+	}
+	if(hd->st != NULL) {
+		free(hd->st);
+	}
 }
 
 //GUIとのコマンドのやり取りをするためのキューの初期設定、GUIからのコマンドの受信、そのコマンドをプログラム内に流す部分が競合するのでクリティカルセッションでブロックしている
@@ -317,8 +327,6 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 
 //goコマンドに対応する。思考を開始し、その結果moveを受取り局面を更新してGUIに手を返す
 errno_t handle_go(usi_handler_t* hd) {
-	//:TODO
-	// 思考開始に対応する
 	int move = 0;
 	move = go(hd);
 	if (move == 0){

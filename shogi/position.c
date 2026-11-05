@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#include "bitboard.h"
 #include "position.h"
 
 /*
@@ -230,8 +231,16 @@ void new_board(usi_handler_t* hd) {
 	for (int pt = 0; pt < 25; pt++) {
 		b->hb[pt] = 0;
 	}
+	b->king_square[black] = 0;
+	b->king_square[white] = 0;
 	b->turn = 0;
 	b->move_number = 0;
+	for(int i = 0; i < 21; i++) {
+		b->bytype_bb[i] = all_zero_mask;
+	}
+	b->bycolor_bb[black] = all_zero_mask;
+	b->bycolor_bb[white] = all_zero_mask;
+	hd->st = (StateInfo_t*)malloc(sizeof(StateInfo_t));
 	return;
 }
 
@@ -280,9 +289,15 @@ void set_board(usi_handler_t* hd, char* sfen) {
 				if (piece_symbol[pt] == r) {
 					if (1 <= pt && 8 >= pt) {	//black
 						b->mb[sq] = pt + pmoto;
+						if (r == 'K') {
+							b->king_square[black] = sq;
+						}
 					}
 					else if (17<=pt && 24>=pt){	//white
 						b->mb[sq] = pt + pmoto;
+						if (r == 'k') {
+							b->king_square[white] = sq;
+						}
 					}
 					break;
 				}
@@ -297,6 +312,34 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	else {
 		b->turn = black;
 	}
+	//b->bytype_bb = ?
+	//b->bycolor_bb = ?
+	StateInfo_t* st = hd->st;
+	st->material_key = 0;
+	st->pawn_key = 0;
+	st->minor_piece_key = 0;
+	st->nonpawn_key[black] = 0;
+	st->nonpawn_key[white] = 0;
+	st->plies_from_null = 0;
+	st->continuous_check[black] = 0;
+	st->continuous_check[white] = 0;
+	st->board_key = 0;
+	st->hand_key = 0;
+	//st->checkersBB = ??
+	//st->blockers_for_king[black] = ??
+	//st->blockers_for_king[white] = ??
+	//st->pinners[black] = ??
+	//st->pinners[white] = ??
+	//for (int i = 0; i < 16; i++) {
+	//	st->check_squares[i] = ? ? ;
+	//}
+	st->captured_piece = 0;
+	st->repetition = 0;
+	st->repetition_times = 0;
+	st->repetition_type = 0;
+	st->hand = 0;
+	st->material_value = 0;
+	//st->previous = NULL;
 	return;
 }
 

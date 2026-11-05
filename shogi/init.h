@@ -51,9 +51,45 @@ typedef struct {
 typedef struct {
 	int mb[81];
 	int hb[25];
+	int king_square[2];
 	int turn;
 	int move_number;
+	bitboard bytype_bb[21];
+	bitboard bycolor_bb[2];
 }board_t;
+
+typedef struct {
+	uint64_t material_key;
+	uint64_t pawn_key;
+	uint64_t minor_piece_key;
+	uint64_t nonpawn_key[2];
+	int plies_from_null;
+	int continuous_check[2];
+	uint64_t board_key;
+	uint64_t hand_key;
+	//Œ»‹Ç–Ê‚Åè”Ô‘¤‚É‘Î‚µ‚Ä‰¤è‚ğ‚µ‚Ä‚¢‚é‹î‚Ìbitboard
+	bitboard checkersBB;
+	//©‹Ê‚É‘Î‚µ‚Ä(“G‹î‚É‚æ‚Á‚Ä)pin‚³‚ê‚Ä‚¢‚é‹î
+	bitboard blockers_for_king[2];
+	//©‹Ê‚É‘Î‚µ‚Äpin‚µ‚Ä‚¢‚é(‰Â”\«‚Ì‚ ‚é)“G‚Ì‘å‹îB
+	bitboard pinners[2];
+	//©‹î‚Ì‹îíX‚É‚æ‚Á‚Ä“G‹Ê‚ª‰¤è‚Æ‚È‚é¡‚Ìbitboard
+	bitboard check_squares[16];
+	//‚±‚Ì‹Ç–Ê‚Å•ßŠl‚³‚ê‚½‹îBæŒã‚Ì‹æ•Ê‚ ‚èB
+	int captured_piece;
+	//zŠÂ‹Ç–Ê‚Å‚ ‚é‚±‚Æ‚ğ¦‚·B
+	int repetition;
+	//ŒJ‚è•Ô‚³‚ê‚½‰ñ”
+	int repetition_times;
+	//ŒJ‚è•Ô‚µ‚Ìí—Ş
+	int repetition_type;
+	//‚±‚Ì‹Ç–Ê‚É‚¨‚¯‚éè”Ô‘¤‚Ì‚¿‹îB—D“™‹Ç–Ê‚Ì”»’è‚Ì‚½‚ß‚É•K—vB
+	int hand;
+	//‚±‚Ì‹Ç–Ê‚Å‚Ì•]‰¿ŠÖ”‚Ì‹îŠ„
+	int material_value;
+	//‘O‚Ì‹Ç–Ê‚É‘k‚é‚½‚ß‚Ìƒ|ƒCƒ“ƒ^B
+	//StateInfo_t* previous;
+}StateInfo_t;
 
 typedef struct {
 	board_t* bd;
@@ -62,12 +98,12 @@ typedef struct {
 	char* name;
 	char* author;
 	char book_file_name[32];
-	//int* ml;
 	int hash_size;
 	unsigned long ponderhit_receive_time;
 	_Bool can_ponder;
 	_Bool use_book;
 	_Bool is_stop;
+	StateInfo_t* st;
 }usi_handler_t;
 
 

@@ -13,3 +13,4 @@ int* attacks_bgold(int sq, int* m);
 int* attaks_bking(int sq, int* m);
 int* attacks_bhorse(usi_handler_t* hd, int sq, int* m);
 int* attacks_bdragon(usi_handler_t* hd, int sq, int* m);
+void do_move(const int move);

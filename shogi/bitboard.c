@@ -420,12 +420,14 @@ bitboard horse_attack(const int sq, const bitboard occ) {
 	return bb;
 }
 
+//king_attack_maskは指定の座標にあるkingの利きbitboardを返す、sq4gにいるkingはsq5f,sq4f,sq3f,sq5g,sq3g,sq5h,sq4h,sq3hにbitが立つ,kingの利きはカラーによって変わらないので、king_attack_maskはカラーを指定する必要がない
 void new_king_attack_mask(void) {
 	for (int sq = sq1a; sq <= sq9i; sq += 1){
 		king_attack_mask[sq].m = _mm_or_si128(rook_attack(sq, all_one_mask).m, bishop_attack(sq, all_one_mask).m);
 	}
 }
 
+//gold_attack_maskは指定の座標、指定のカラーにあるgoldの利きbitboardを返す、sq4gにいるblack goldはsq5f,sq4f,sq3f,sq5g,sq3g,sq4hにbitが立つ。sq7eにいるwhite goldはsq8f,sq7f,sq6f,sq8e,sq6e,sq7dにbitが立つ
 void new_gold_attack_mask(void) {
 	for (int c = black; c <= white; c++) {
 		for (int sq = sq1a; sq <= sq9i; sq++) {
@@ -434,6 +436,7 @@ void new_gold_attack_mask(void) {
 	}
 }
 
+//silver_attack_maskは指定の座標、指定のカラーにあるsilverの利きbitboardを返す、sq4gにいるblack silverはsq5f,sq4f,sq3f,sq5h,sq3hにbitが立つ。sq7eにいるwhite silverはsq8f,sq7f,sq6f,sq8d,sq6dにbitが立つ
 void new_silver_attack_mask(void) {
 	for (int c = black; c <= white; c++) {
 		for (int sq = sq1a; sq <= sq9i; sq++) {
@@ -463,6 +466,7 @@ void new_star_mask(void) {
 	}
 }
 
+//knight_attack_maskは指定の座標、指定のカラーにあるknightの利きbitboardを返す、sq4gにいるblack knightは,sq5e,sq3eにbitが立つ。sq7eにいるwhite knightはsq8g,sq6gにbitが立つ
 void new_knight_attack_mask(void) {
 	for (int c = black; c <= white; c++) {
 		for (int sq = sq1a; sq <= sq9i; sq++) {
@@ -475,6 +479,7 @@ void new_knight_attack_mask(void) {
 	}
 }
 
+//pawn_attack_maskは指定の座標、指定のカラーにあるpawnの利きbitboardを返す、sq4gにいるblack pawnはsq4fにbitが立つ。sq7eにいるwhite pawnはsq7fにbitが立つ
 void new_pawn_attack_mask(void) {
 	for (int c = black; c <= white; c++) {
 		for (int sq = sq1a; sq <= sq9i; sq++) {

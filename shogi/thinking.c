@@ -24,6 +24,14 @@ int do_thinking(usi_handler_t* hd) {
 	return best_move;
 }
 
+void push_pos(const int move) {
+	printf("Hello thinking do_move\n");
+}
+
+void pop_pos(const int move){
+	printf("Hello thinking undo_move\n");
+}
+
 //盤上、駒台をスキャンして着手可能手をリストアップする。ここでは合法手であるかのチエックは少ない。move_list関数で絞り込む
 int* possible_moves(usi_handler_t* hd, int* ml) {
 	board_t* bd = hd->bd;
