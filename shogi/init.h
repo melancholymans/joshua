@@ -58,7 +58,7 @@ typedef struct {
 	bitboard bycolor_bb[2];
 }board_t;
 
-typedef struct {
+typedef struct StateInfo {
 	uint64_t material_key;
 	uint64_t pawn_key;
 	uint64_t minor_piece_key;
@@ -88,7 +88,7 @@ typedef struct {
 	//この局面での評価関数の駒割
 	int material_value;
 	//前の局面に遡るためのポインタ。
-	//StateInfo_t* previous;
+	struct StateInfo* previous;
 }StateInfo_t;
 
 typedef struct {
