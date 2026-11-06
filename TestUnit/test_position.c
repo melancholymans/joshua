@@ -357,7 +357,8 @@ void test_set_board(void) {
 
 	TEST_ASSERT_EQUAL_INT(white, b->turn);
 	TEST_ASSERT_EQUAL_INT(0, b->move_number);
-
+	TEST_ASSERT_EQUAL_INT(sq5i, b->king_square[black]);
+	TEST_ASSERT_EQUAL_INT(sq5a, b->king_square[white]);
 	// test問題2
 	sfen[0] = '\0';
 	strcpy_s(sfen, sizeof(sfen), "lR1B3nl/2gp5/ngk1+BspPp/1s2p2p1/p4S3/1Pp6/P5P1P/LGG6/KN5NL b - 1");
@@ -450,7 +451,8 @@ void test_set_board(void) {
 	}
 	TEST_ASSERT_EQUAL_INT(bknight, b->mb[sq2i]);
 	TEST_ASSERT_EQUAL_INT(blance, b->mb[sq1i]);
-
+	TEST_ASSERT_EQUAL_INT(sq9i, b->king_square[black]);
+	TEST_ASSERT_EQUAL_INT(sq7c, b->king_square[white]);
 
 	// test問題3
 	sfen[0] = '\0';
@@ -544,14 +546,19 @@ void test_set_board(void) {
 	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq3i]);
 	TEST_ASSERT_EQUAL_INT(wproknight, b->mb[sq2i]);
 	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1i]);
+	TEST_ASSERT_EQUAL_INT(sq5i, b->king_square[black]);
+	TEST_ASSERT_EQUAL_INT(sq3a, b->king_square[white]);
 
 	//test問題4
 	sfen[0] = '\0';
 	strcpy_s(sfen, sizeof(sfen), "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b");
 	new_board(&hd);
 	set_board(&hd, sfen);
-	
-	
+	//printf("Q4\n");
+	//print_board(&hd);
+	//TEST_ASSERT_EQUAL_INT(sq5i, b->king_square[black]);
+	//TEST_ASSERT_EQUAL_INT(sq5a, b->king_square[white]);
+
 	// moveができていないので、hd(持ち駒)のテストはできていない
 }
 
@@ -563,5 +570,4 @@ void test_print_board(void) {
 	strcpy_s(sfen, sizeof(sfen), "l2g2ks1/4+P3+L/2p1+S2pn/p2p2+r1p/5+B3/P3S2PP/1PPP+b1P2/1rG2P3/LN2KG1+n b - 1");
 	set_board(&hd, sfen);
 	print_board(&hd);
-
 }

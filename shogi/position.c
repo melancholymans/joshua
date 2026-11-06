@@ -312,6 +312,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	else {
 		b->turn = black;
 	}
+	//update_bitboard(hd);	//bytype_bb ‚ðXV‚·‚é
 	//b->bytype_bb = ?
 	//b->bycolor_bb = ?
 	StateInfo_t* st = hd->st;
@@ -361,3 +362,14 @@ void print_board(usi_handler_t* hd) {
 	}
 	printf("a:ppawn c:plance v:knight i:psilver h:horse d:dragon\n");
 }
+
+/*void update_bitboard(usi_handler_t* hd) {
+	board_t* b = hd->bd;
+	//for (int pt = 1; pt <= 30; pt++) {
+	//	b->bytype_bb[pt] = all_zero_mask;
+	//}
+}*/
+
+/*bitboard piece_to_bitboard(const int pc, const board_t* b) {
+	return b->bytype_bb[pc];
+}*/
