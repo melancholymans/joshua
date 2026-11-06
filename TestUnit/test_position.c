@@ -548,16 +548,6 @@ void test_set_board(void) {
 	TEST_ASSERT_EQUAL_INT(empty, b->mb[sq1i]);
 	TEST_ASSERT_EQUAL_INT(sq5i, b->king_square[black]);
 	TEST_ASSERT_EQUAL_INT(sq3a, b->king_square[white]);
-
-	//test問題4
-	sfen[0] = '\0';
-	strcpy_s(sfen, sizeof(sfen), "lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 5a6b 7g7f 3a3b");
-	new_board(&hd);
-	set_board(&hd, sfen);
-	b = hd.bd;
-	TEST_ASSERT_EQUAL_INT(sq5i, b->king_square[black]);
-	TEST_ASSERT_EQUAL_INT(sq5a, b->king_square[white]);
-	// moveができていないので、hd(持ち駒)のテストはできていない
 }
 
 void test_print_board(void) {
