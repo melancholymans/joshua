@@ -306,6 +306,8 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		}
 		set_board(hd, sfen);
 		if (count == 6) {	//文字列movesがないのでここで局面構成は終了
+			hd->bd->move_number = 1;
+			hd->bd->turn = black;
 			return 200;
 		}
 		mark = 6;	//次に見る配列のindex
@@ -314,6 +316,8 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		strcpy_s(sfen,128,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 		set_board(hd, sfen);
 		if (count == 2) {	//文字列movesがないのでここで局面構成は終了
+			hd->bd->move_number = 1;
+			hd->bd->turn = black;
 			return 200;
 		}
 		mark = 2;	//次に見る配列のindex
@@ -322,6 +326,15 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	for (int i = 0; i < size; i++) {
 		do_usi_move(hd, cmds[mark + 1 + i]);
 	}
+	//ここで手番（先手なのか後手なのか）を決定する
+	if((hd->bd->move_number+1) % 2 != 0) {
+		hd->bd->turn = black;
+	}
+	else {
+		hd->bd->turn = white;
+	}
+	print_board(hd);
+	printf("debug trun %s move_number %d\n", hd->bd->turn ? "white" : "black",hd->bd->move_number+1);
 	return 200;
 }
 

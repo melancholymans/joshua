@@ -234,7 +234,6 @@ void new_board(usi_handler_t* hd) {
 	b->king_square[black] = 0;
 	b->king_square[white] = 0;
 	b->turn = 0;
-	b->move_number = 0;
 	for(int i = 0; i < 21; i++) {
 		b->bytype_bb[i] = all_zero_mask;
 	}
@@ -270,6 +269,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	for (int pt = 0; pt < 25; pt++) {
 		b->hb[pt] = 0;
 	}
+	b->move_number = 0;
 	//‹Ç–Ê‚ðÝ’è‚·‚é
 	int sq = sq9a;
 	int pmoto = 0;
@@ -306,12 +306,13 @@ void set_board(usi_handler_t* hd, char* sfen) {
 			pmoto = 0;
 		}
 	}
-	if (strcmp("w",parts[1])==0) {
+	//‚±‚±‚ÅæŽè/ŒãŽè‚ð”»’f‚·‚é‚Ì‚ÍŠÔˆá‚¢Ab->trun‚Íjoshua‚ª‚Ç‚Á‚¿‚ÌŽè”Ô‚È‚Ì‚©‚ð•ÛŽ‚·‚é•Ï”
+	/*if (strcmp("w",parts[1])==0) {
 		b->turn = white;
 	}
 	else {
 		b->turn = black;
-	}
+	}*/
 	//update_bitboard(hd);	//bytype_bb ‚ðXV‚·‚é
 	//b->bytype_bb = ?
 	//b->bycolor_bb = ?
@@ -360,6 +361,14 @@ void print_board(usi_handler_t* hd) {
 		}
 		printf("\n");
 	}
+	for (int pc = bpawn; pc <= bgold; pc++) {
+		printf("%c:%d ", piece_symbol[pc], hd->bd->hb[pc]);
+	}
+	printf("\n");
+	for (int pc = wpawn; pc <= wgold; pc++) {
+		printf("%c:%d ", piece_symbol[pc], hd->bd->hb[pc]);
+	}
+	printf("\n");
 	printf("a:ppawn c:plance v:knight i:psilver h:horse d:dragon\n");
 }
 

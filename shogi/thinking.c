@@ -61,7 +61,8 @@ int* possible_moves(usi_handler_t* hd, int* ml) {
 			arrput(empty_square, from);
 		}
 	}
-	for (int pt = bpawn; pt <= bgold; pt++) {	//white側の駒台はパス
+	int c = bd->turn ? 16 : 0;
+	for (int pt = pawn+c; pt <= gold+c; pt++) {	//white側の駒台はパス
 		if (hd->bd->hb[pt] == 0) {
 			continue;
 		}
@@ -204,8 +205,13 @@ int* attacks_from(usi_handler_t* hd, int pc, int sq, int turn) {
 		return attacks_bhorse(hd, sq, m);
 	case bdragon:
 		return attacks_bdragon(hd, sq, m);
-		//white ,blackのbold,propawn,prolance,proknight,prosilver,bishop,rook,house,dragon,kingは今はパス
+	case wpawn:
+		to = sq + 1;
+		arrput(m, to);
+		return m;
+	//white側 pawn以外は今はパス
 	}
+	return m;
 }
 
 int* attacks_bsilver(int sq, int* m) {
