@@ -306,13 +306,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 			pmoto = 0;
 		}
 	}
-	//‚±‚±‚ÅæŽè/ŒãŽè‚ð”»’f‚·‚é‚Ì‚ÍŠÔˆá‚¢Ab->trun‚Íjoshua‚ª‚Ç‚Á‚¿‚ÌŽè”Ô‚È‚Ì‚©‚ð•ÛŽ‚·‚é•Ï”
-	/*if (strcmp("w",parts[1])==0) {
-		b->turn = white;
-	}
-	else {
-		b->turn = black;
-	}*/
+	b->turn = black;
 	//update_bitboard(hd);	//bytype_bb ‚ðXV‚·‚é
 	//b->bytype_bb = ?
 	//b->bycolor_bb = ?

@@ -200,6 +200,7 @@ void do_move(usi_handler_t* hd, const int move) {
 void undo_move(usi_handler_t* hd,const int move) {
 	board_t* bd = hd->bd;
 	int us = bd->turn;
+	bd->turn = opposite_color(us);
 	int to, from, pmoto, morh, piece, cap;
 	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
 	if (morh) {	//‘Å‚¿è
@@ -221,7 +222,6 @@ void undo_move(usi_handler_t* hd,const int move) {
 		bd->mb[from] = piece;
 	}
 	//‚±‚±‚Åbitboard‚Ì‘€ì‚©‚ ‚éA¡‚ÍƒpƒX(TODO:)
-	bd->turn = opposite_color(us);
 	bd->move_number--;
 }
 

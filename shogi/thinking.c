@@ -62,7 +62,7 @@ int* possible_moves(usi_handler_t* hd, int* ml) {
 		}
 	}
 	int c = bd->turn ? 16 : 0;
-	for (int pt = pawn+c; pt <= gold+c; pt++) {	//white‘¤‚Ì‹î‘ä‚ÍƒpƒX
+	for (int pt = pawn+c; pt <= gold+c; pt++) {
 		if (hd->bd->hb[pt] == 0) {
 			continue;
 		}
