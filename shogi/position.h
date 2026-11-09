@@ -162,6 +162,16 @@ enum piecetype {	//‹îíAÚ“ª«‚Ìpro‚ª‚Â‚­‚Ì‚Í¬‹î‚ÌˆÓ–¡(Œ³‚Ì‹î‚É+8)
 	dragon = 14
 };
 
+enum BY_TYPE_BB {
+	ALL_PIECE = 0,
+	GOLDS = 15,
+	HDK = 16,
+	BISHOP_HORSE = 17,
+	ROOK_DRAGON = 18,
+	SILVER_HDK = 19,
+	GOLDS_HDK = 20
+};
+
 /*
 (piece & 0x10) == 0 black
 (piece & 0x10) != 0 white
@@ -278,6 +288,7 @@ enum {
 
 
 
+
 extern int square_relation_direct[81][81];
 extern char* square_usi_string_table[81];
 extern char piece_symbol[31];
@@ -291,7 +302,7 @@ void movesq_to_usisq(int sq, char* usi_sq);
 int square_relation(const int sq1, const int sq2);
 int opposite_color(const int c);
 int inverse(const int pc);
-int piece_to_piecetype(const int pc);
+//int piece_to_piecetype(const int pc);
 int piece_to_color(const int pc);
 int piecetype_to_piece(const int c, const int pt);
 _Bool is_jump(const int pc);
@@ -305,3 +316,9 @@ _Bool can_promote_area(const int c, const int from_or_to_rank);
 void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);
 void print_board(usi_handler_t* hd);
+void update_bytypebb(usi_handler_t* hd);
+
+// ‹î”Ô‚ğ‹îí‚É•ÏŠ·,inlineŠÖ”
+inline int piece_to_piecetype(const int pc) {
+	return pc & 15;
+}

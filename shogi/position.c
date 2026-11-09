@@ -142,11 +142,6 @@ int inverse(const int pc) {
 	return pc ^ 0x10;
 }
 
-// 駒番を駒種に変換
-int piece_to_piecetype(const int pc) {
-	return pc & 15;
-}
-
 // 駒番から手番（color）を判定する.blackかwhiteが返る
 int piece_to_color(const int pc) {
 	return pc >> 4;
@@ -285,16 +280,24 @@ void set_board(usi_handler_t* hd, char* sfen) {
 			sq += (delta_w * 9) + delta_s;
 		}
 		else {
-			for (int pt = 1; pt <= 30; pt++) {
-				if (piece_symbol[pt] == r) {
-					if (1 <= pt && 8 >= pt) {	//black
-						b->mb[sq] = pt + pmoto;
+			for (int pc = bpawn; pc <= wdragon; pc++) {
+				if (piece_symbol[pc] == r) {
+					if (1 <= pc && 8 >= pc) {	//black
+						pc = pc + pmoto;
+						b->mb[sq] = pc;
+						b->bytype_bb[piece_to_piecetype(pc)].m = _mm_or_si128(b->bytype_bb[piece_to_piecetype(pc)].m,sq_mask[sq].m);
+						b->bytype_bb[ALL_PIECE].m = _mm_or_si128(b->bytype_bb[ALL_PIECE].m, sq_mask[sq].m);
+						b->bycolor_bb[black].m = _mm_or_si128(b->bycolor_bb[black].m, sq_mask[sq].m);
 						if (r == 'K') {
 							b->king_square[black] = sq;
 						}
 					}
-					else if (17<=pt && 24>=pt){	//white
-						b->mb[sq] = pt + pmoto;
+					else if (17<=pc && 24>=pc){	//white
+						pc = pc + pmoto;
+						b->mb[sq] = pc;
+						b->bytype_bb[piece_to_piecetype(pc)].m = _mm_or_si128(b->bytype_bb[piece_to_piecetype(pc)].m, sq_mask[sq].m);
+						b->bytype_bb[ALL_PIECE].m = _mm_or_si128(b->bytype_bb[ALL_PIECE].m, sq_mask[sq].m);
+						b->bycolor_bb[white].m = _mm_or_si128(b->bycolor_bb[white].m, sq_mask[sq].m);
 						if (r == 'k') {
 							b->king_square[white] = sq;
 						}
@@ -307,7 +310,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 		}
 	}
 	b->turn = black;
-	//update_bitboard(hd);	//bytype_bb を更新する
+	update_bytypebb(hd);	//bytype_bb を更新する
 	//b->bytype_bb = ?
 	//b->bycolor_bb = ?
 	StateInfo_t* st = hd->st;
@@ -366,12 +369,36 @@ void print_board(usi_handler_t* hd) {
 	printf("a:ppawn c:plance v:knight i:psilver h:horse d:dragon\n");
 }
 
-/*void update_bitboard(usi_handler_t* hd) {
+void update_bytypebb(usi_handler_t* hd) {
 	board_t* b = hd->bd;
-	//for (int pt = 1; pt <= 30; pt++) {
-	//	b->bytype_bb[pt] = all_zero_mask;
-	//}
-}*/
+	/*for (int pt = 0; pt < 21; pt++) {
+		b->bytype_bb[pt] = all_zero_mask;
+	}*/
+	bitboard bishop_bb;
+	bitboard horse_bb;
+	bitboard rook_bb;
+	bitboard dragon_bb;
+	bitboard propawn_bb;
+	bitboard prolance_bb;
+	bitboard proknight_bb;
+	bitboard prosilver_bb;
+
+	bishop_bb.m = b->bytype_bb[bishop].m;
+	horse_bb.m = b->bytype_bb[horse].m;
+	rook_bb.m = b->bytype_bb[rook].m;
+	dragon_bb.m = b->bytype_bb[dragon].m;
+	propawn_bb.m = b->bytype_bb[propawn].m;
+	prolance_bb.m = b->bytype_bb[prolance].m;
+	proknight_bb.m = b->bytype_bb[proknight].m;
+	prosilver_bb.m = b->bytype_bb[prosilver].m;
+
+	b->bytype_bb[GOLDS].m = _mm_or_si128(_mm_or_si128(_mm_or_si128(_mm_or_si128(b->bytype_bb[gold].m, propawn_bb.m),prolance_bb.m),proknight_bb.m),prosilver_bb.m);
+	b->bytype_bb[HDK].m = _mm_or_si128(_mm_or_si128(b->bytype_bb[king].m, horse_bb.m), dragon_bb.m);
+	b->bytype_bb[BISHOP_HORSE].m = _mm_or_si128(bishop_bb.m, horse_bb.m);
+	b->bytype_bb[ROOK_DRAGON].m = _mm_or_si128(rook_bb.m, dragon_bb.m);
+	b->bytype_bb[SILVER_HDK].m = _mm_or_si128(b->bytype_bb[SILVER_HDK].m, b->bytype_bb[HDK].m);
+	b->bytype_bb[GOLDS_HDK].m = _mm_or_si128(b->bytype_bb[GOLDS_HDK].m, b->bytype_bb[HDK].m);
+}
 
 /*bitboard piece_to_bitboard(const int pc, const board_t* b) {
 	return b->bytype_bb[pc];

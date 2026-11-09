@@ -324,15 +324,8 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	for (int i = 0; i < size; i++) {
 		do_usi_move(hd, cmds[mark + 1 + i]);
 	}
-	//‚±‚±‚ÅŽè”ÔiæŽè‚È‚Ì‚©ŒãŽè‚È‚Ì‚©j‚ðŒˆ’è‚·‚é
-	/*if((hd->bd->move_number+1) % 2 != 0) {
-		hd->bd->turn = black;
-	}
-	else {
-		hd->bd->turn = white;
-	}*/
-	print_board(hd);
-	printf("debug trun %s move_number %d\n", hd->bd->turn ? "white" : "black",hd->bd->move_number+1);
+	//print_board(hd);
+	//printf("debug trun %s move_number %d\n", hd->bd->turn ? "white" : "black",hd->bd->move_number+1);
 	return 200;
 }
 

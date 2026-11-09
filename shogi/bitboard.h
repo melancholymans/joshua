@@ -3,6 +3,7 @@
 
 #include "init.h"
 
+extern bitboard sq_mask[81];
 extern bitboard file_mask[9];
 extern bitboard rank_mask[9];
 extern bitboard all_one_mask;
