@@ -309,7 +309,6 @@ void test_can_promote_area(void) {
 //P : 0 L : 0 N : 0 S : 0 B : 0 R : 0 G : 0
 //p : 0 l : 0 n : 0 s : 0 b : 0 r : 0 g : 0
 //a : ppawn c : plance v : knight i : psilver h : horse d : dragon
-
 void test_set_board(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
@@ -1238,7 +1237,7 @@ void test_set_board(void) {
 	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
 	TEST_ASSERT_TRUE(is_biton(sq5i, bb));
 	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
-	print_bitboard(bb, __func__);
+	//print_bitboard(bb, __func__);
 	bb = b->bytype_bb[GOLDS_HDK];
 	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
 	TEST_ASSERT_TRUE(is_biton(sq6i, bb));
@@ -1259,6 +1258,199 @@ void test_set_board(void) {
 	TEST_ASSERT_TRUE(is_biton(sq6h, bb));
 	TEST_ASSERT_TRUE(is_biton(sq9i, bb));
 	//print_bitboard(bb, __func__);
+}
+
+// test–â‘è1
+// position sfen ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1
+//   9  8  7  6  5  4  3  2  1
+//a  l  n  .  .  .  .  s  n  l
+//b  .  r  s  .  g  k  g  b  .
+//c  .  p  p  .  p  p  .  p  p
+//d  .  .  .  .  .  .  p  .  .
+//e  p  .  .  .  .  .  .  .  .
+//f  .  .  .  .  P  .  .  .  .
+//g  P  P  P  .  .  P  P  P  P
+//h  L  .  S  p  .  g  K  S  R
+//i  .  N  B  .  .  a  .  N  L
+
+//P : 0 L : 0 N : 0 S : 0 B : 0 R : 0 G : 0
+//p : 0 l : 0 n : 0 s : 0 b : 0 r : 0 g : 0
+
+// test–â‘è2
+// position sfen +Ln1+S2snl/1r2gkg2/p1pppp1p+R/6p2/2NP5/2P1PBP2/+nP+b2PGP1/3K5/+l1+l1G1+s2 b - 1
+
+void test_attacks_to() {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	sfen[0] = '\0';
+	// test–â‘è1
+	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	int sq = sq8a;
+	bitboard bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq8b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7b, bb));
+	//print_bitboard(bb, "test_set_state");
+	//TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	sq = sq3a;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq4b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	//print_bitboard(bb, "test_set_state");
+	sq = sq2a;
+	bb = attacks_to(&hd, sq);
+	//print_bitboard(bb, "test_set_state 2a");
+	sq = sq1a;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	//print_bitboard(bb, "test_set_state 1a");
+	sq = sq7b;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq8b, bb));
+	//print_bitboard(bb, "test_set_state 7b");
+	sq = sq5b;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq4b, bb));
+	//print_bitboard(bb, "test_set_state 5b");
+	sq = sq3b;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4b, bb));
+	//print_bitboard(bb, "test_set_state 3b");
+	sq = sq2b;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	//print_bitboard(bb, "test_set_state 2b");
+	sq = sq8c;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq8b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7b, bb));
+	//print_bitboard(bb, "test_set_state 8c");
+	sq = sq7c;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq8a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7b, bb));
+	//print_bitboard(bb, "test_set_state 7c");
+	sq = sq5c;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq5b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4b, bb));
+	//print_bitboard(bb, "test_set_state 5c");
+	sq = sq4c;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq5b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	//print_bitboard(bb, "test_set_state 4c");
+	sq = sq2c;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	//print_bitboard(bb, "test_set_state 2c");
+	sq = sq1c;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	//print_bitboard(bb, "test_set_state 1c");
+	sq = sq9e;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq9a, bb));
+	//print_bitboard(bb, "test_set_state 9e");
+	sq = sq6h;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq7i, bb));
+	//print_bitboard(bb, "test_set_state 6h");
+	sq = sq4h;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	//print_bitboard(bb, "test_set_state 4h");
+	sq = sq4i;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	//print_bitboard(bb, "test_set_state 4i");
+	sq = sq5f;
+	bb = attacks_to(&hd, sq);
+	//print_bitboard(bb, "test_set_state 5f");
+	sq = sq9g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq9h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq8i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7i, bb));
+	//print_bitboard(bb, "test_set_state 9g");
+	sq = sq8g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	//print_bitboard(bb, "test_set_state 8g");
+	sq = sq7g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq8i, bb));
+	//print_bitboard(bb, "test_set_state 7g");
+	sq = sq4g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	//print_bitboard(bb, "test_set_state 4g");
+	sq = sq3g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2i, bb));
+	//print_bitboard(bb, "test_set_state 3g");
+	sq = sq2g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	//print_bitboard(bb, "test_set_state 2g");
+	sq = sq1g;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2i, bb));
+	//print_bitboard(bb, "test_set_state 1g");
+	sq = sq9h;
+	bb = attacks_to(&hd, sq);
+	//print_bitboard(bb, "test_set_state 9h");
+	sq = sq7h;
+	bb = attacks_to(&hd, sq);
+	//print_bitboard(bb, "test_set_state 7h");
+	sq = sq3h;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	//print_bitboard(bb, "test_set_state 3h");
+	sq = sq2h;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1h, bb));
+	//print_bitboard(bb, "test_set_state 2h");
+	sq = sq1h;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq1i, bb));
+	//print_bitboard(bb, "test_set_state 1h");
+	sq = sq8i;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	//print_bitboard(bb, "test_set_state 8i");
+	sq = sq7i;
+	bb = attacks_to(&hd, sq);
+	//print_bitboard(bb, "test_set_state 7i");
+	sq = sq2i;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq3h, bb));
+	//print_bitboard(bb, "test_set_state 2i");
+	sq = sq1i;
+	bb = attacks_to(&hd, sq);
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1h, bb));
+	//print_bitboard(bb, "test_set_state 1i");
+	// test–â‘è2
+
 }
 
 void test_print_board(void) {

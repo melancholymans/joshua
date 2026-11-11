@@ -350,13 +350,7 @@ void set_state(usi_handler_t* hd) {
 	st->continuous_check[white] = 0;
 	//©‰¤‚É‰¤è‚µ‚Ä‚¢‚é“G‹î‚ÌˆÊ’ubitboard‚ğİ’è‚·‚é
 	int ksq = hd->bd->king_square[us];
-	st->checkersBB = attacks_to(hd,ksq, us);
-	/*test code start*/
-	print_bitboard(st->checkersBB, "checkersBB");
-	ksq = hd->bd->king_square[opposite_color(us)];
-	st->checkersBB = attacks_to(hd, ksq, opposite_color(us));
-	print_bitboard(st->checkersBB, "checkersBB");
-	/*test code end*/
+	st->checkersBB = attacks_to(hd,ksq);
 	//st->blockers_for_king[black] = ??
 	//st->blockers_for_king[white] = ??
 	//st->pinners[black] = ??
@@ -373,7 +367,7 @@ void set_state(usi_handler_t* hd) {
 	//st->previous = NULL;
 }
 
-bitboard attacks_to(usi_handler_t* hd,const int sq, const int c) {
+bitboard attacks_to(usi_handler_t* hd,const int sq) {
 	//white‘¤king‚É‰¤è‚ğ‚©‚¯‚Ä‚¢‚éblack‹î‚ÌˆÊ’ubitboard‚ğ•Ô‚·
 	board_t* bd = hd->bd;
 	bitboard bpawne;

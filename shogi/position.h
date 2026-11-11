@@ -317,7 +317,7 @@ void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);
 void update_bytypebb(usi_handler_t* hd);
 void set_state(usi_handler_t* hd);
-bitboard attacks_to(usi_handler_t* hd, const int sq, const int c);
+bitboard attacks_to(usi_handler_t* hd, const int sq);
 void print_board(usi_handler_t* hd);
 
 // ‹î”Ô‚ğ‹îí‚É•ÏŠ·,inlineŠÖ”
@@ -325,7 +325,7 @@ inline int piece_to_piecetype(const int pc) {
 	return pc & 15;
 }
 
-// è”Ô‚ğØ‘Ö‚¦‚é
+// è”Ô‚ğØ‘Ö‚¦‚é,inlineŠÖ”
 inline int opposite_color(const int c) {
 	return c ^ 1;
 }
