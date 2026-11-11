@@ -220,6 +220,9 @@ errno_t  usi_start(usi_handler_t* hd) {
 		else if (!strncmp(cmds, "usinewgame", len)) {
 			return 200;
 		}
+		else {
+			put_send(hd,"unknow command");
+		}
 	}
 }
 
