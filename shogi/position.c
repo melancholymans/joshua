@@ -132,11 +132,6 @@ int square_relation(const int sq1, const int sq2) {
 	return square_relation_direct[sq1][sq2];
 }
 
-// Žè”Ô‚ðØ‘Ö‚¦‚é
-int opposite_color(const int c) {
-	return c ^ 1;
-}
-
 // ‹î”Ô‚ðblack->white,white->black‚É‚·‚é(bpawn->wpawn)
 int inverse(const int pc) {
 	return pc ^ 0x10;
@@ -354,7 +349,14 @@ void set_state(usi_handler_t* hd) {
 	st->continuous_check[black] = 0;
 	st->continuous_check[white] = 0;
 	//Ž©‰¤‚É‰¤Žè‚µ‚Ä‚¢‚é“G‹î‚ÌˆÊ’ubitboard‚ðÝ’è‚·‚é
-	st->checkersBB = attacks_to(hd->bd->king_square[us], us);
+	int ksq = hd->bd->king_square[us];
+	st->checkersBB = attacks_to(hd,ksq, us);
+	/*test code start*/
+	print_bitboard(st->checkersBB, "checkersBB");
+	ksq = hd->bd->king_square[opposite_color(us)];
+	st->checkersBB = attacks_to(hd, ksq, opposite_color(us));
+	print_bitboard(st->checkersBB, "checkersBB");
+	/*test code end*/
 	//st->blockers_for_king[black] = ??
 	//st->blockers_for_king[white] = ??
 	//st->pinners[black] = ??
@@ -378,9 +380,8 @@ bitboard attacks_to(usi_handler_t* hd,const int sq, const int c) {
 	bitboard bknighte;
 	bitboard bsilvere;
 	bitboard bgolde;
-	bitboard blacke;
-	bitboard wpawne;
 	bitboard black_bb;
+	bitboard blacke;
 	bpawne.m = _mm_and_si128(pawn_attack_mask[white][sq].m,bd->bytype_bb[pawn].m);
 	bknighte.m = _mm_and_si128(knight_attack_mask[white][sq].m,bd->bytype_bb[knight].m);
 	bsilvere.m = _mm_and_si128(silver_attack_mask[white][sq].m,bd->bytype_bb[SILVER_HDK].m);
@@ -392,11 +393,8 @@ bitboard attacks_to(usi_handler_t* hd,const int sq, const int c) {
 	bitboard wknighte;
 	bitboard wsilvere;
 	bitboard wgolde;
-	bitboard whitee;
 	bitboard white_bb;
-	bitboard bwbishope;
-	bitboard bwrooke;
-	bitboard blancee;
+	bitboard whitee;
 	wpawne.m = _mm_and_si128(pawn_attack_mask[black][sq].m, bd->bytype_bb[pawn].m);
 	wknighte.m = _mm_and_si128(knight_attack_mask[black][sq].m, bd->bytype_bb[knight].m);
 	wsilvere.m = _mm_and_si128(silver_attack_mask[black][sq].m, bd->bytype_bb[SILVER_HDK].m);
@@ -408,6 +406,9 @@ bitboard attacks_to(usi_handler_t* hd,const int sq, const int c) {
 	bitboard bwrook = rook_attack(sq, bd->bytype_bb[ALL_PIECE]);
 	bitboard blance = lance_attack(black, sq, bd->bytype_bb[ALL_PIECE]);
 	bitboard wlance = lance_attack(white, sq, bd->bytype_bb[ALL_PIECE]);
+	bitboard bwbishope;
+	bitboard bwrooke;
+	bitboard blancee;
 	bwbishope.m = _mm_and_si128(bwbishop.m, bd->bytype_bb[BISHOP_HORSE].m);
 	bwrooke.m = _mm_and_si128(bwrook.m, bd->bytype_bb[ROOK_DRAGON].m);
 	blancee.m = _mm_and_si128(_mm_or_si128(blance.m, wlance.m), bd->bytype_bb[lance].m);

@@ -300,7 +300,7 @@ int set_rank(int sq);
 int usisq_to_movesq(char* usi_sq);
 void movesq_to_usisq(int sq, char* usi_sq);
 int square_relation(const int sq1, const int sq2);
-int opposite_color(const int c);
+//int opposite_color(const int c);
 int inverse(const int pc);
 //int piece_to_piecetype(const int pc);
 int piece_to_color(const int pc);
@@ -315,10 +315,17 @@ int rank_inverse(const int r);
 _Bool can_promote_area(const int c, const int from_or_to_rank);
 void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);
-void print_board(usi_handler_t* hd);
 void update_bytypebb(usi_handler_t* hd);
+void set_state(usi_handler_t* hd);
+bitboard attacks_to(usi_handler_t* hd, const int sq, const int c);
+void print_board(usi_handler_t* hd);
 
 // ‹î”Ô‚ğ‹îí‚É•ÏŠ·,inlineŠÖ”
 inline int piece_to_piecetype(const int pc) {
 	return pc & 15;
+}
+
+// è”Ô‚ğØ‘Ö‚¦‚é
+inline int opposite_color(const int c) {
+	return c ^ 1;
 }
