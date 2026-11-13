@@ -318,6 +318,8 @@ void set_board(usi_handler_t* hd, char* sfen);
 void update_bytypebb(usi_handler_t* hd);
 void set_state(usi_handler_t* hd);
 bitboard attacks_to(usi_handler_t* hd, const int sq);
+bitboard checkers(usi_handler_t* hd);
+_Bool is_check(usi_handler_t* hd);
 void print_board(usi_handler_t* hd);
 
 // ‹î”Ô‚ğ‹îí‚É•ÏŠ·,inlineŠÖ”
@@ -329,3 +331,4 @@ inline int piece_to_piecetype(const int pc) {
 inline int opposite_color(const int c) {
 	return c ^ 1;
 }
+

@@ -22,5 +22,7 @@ void test_file_inverse(void);
 void test_rank_inverse(void);
 void test_can_promote_area(void);
 void test_set_board(void);
-void test_attacks_to();
+void test_attacks_to(void);
+void test_checker(void);
+void test_is_check(void);
 void test_print_board(void);

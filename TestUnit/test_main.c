@@ -69,6 +69,8 @@ void test_position() {
 	test_can_promote_area();
 	test_set_board();
 	test_attacks_to();
+	test_checker();
+	test_is_check();
 	test_print_board();
 }
 

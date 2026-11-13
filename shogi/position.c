@@ -308,6 +308,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	return;
 }
 
+//bytype_bbの基本的な駒種でGOLDS,HDK,BISHOP_HORSE,ROOK_DRAGON,SILVER_HDK,GOLDS_HDKを合成する
 void update_bytypebb(usi_handler_t* hd) {
 	board_t* b = hd->bd;
 	bitboard bishop_bb;
@@ -335,9 +336,12 @@ void update_bytypebb(usi_handler_t* hd) {
 	b->bytype_bb[GOLDS_HDK].m = _mm_or_si128(b->bytype_bb[GOLDS].m, b->bytype_bb[HDK].m);
 }
 
+//set_board関数などから呼ばれる、StateInfo_tを初期設定する
 void set_state(usi_handler_t* hd) {
+	board_t* b = hd->bd;
 	StateInfo_t* st = hd->st;
-	int us = hd->bd->turn;
+	int us = b->turn;
+	int them = opposite_color(us);
 	st->board_key = 0;
 	st->hand_key = 0;
 	st->material_key = 0;
@@ -350,7 +354,7 @@ void set_state(usi_handler_t* hd) {
 	st->continuous_check[white] = 0;
 	//自王に王手している敵駒の位置bitboardを設定する
 	int ksq = hd->bd->king_square[us];
-	st->checkersBB = attacks_to(hd,ksq);
+	st->checkersBB.m = _mm_and_si128(attacks_to(hd,ksq).m,b->bycolor_bb[them].m);
 	//st->blockers_for_king[black] = ??
 	//st->blockers_for_king[white] = ??
 	//st->pinners[black] = ??
@@ -367,6 +371,7 @@ void set_state(usi_handler_t* hd) {
 	//st->previous = NULL;
 }
 
+//現局面で指定された座標にある駒（駒がなくてもよい）に利きをかけている駒の位置bitboardを返す
 bitboard attacks_to(usi_handler_t* hd,const int sq) {
 	//white側kingに王手をかけているblack駒の位置bitboardを返す
 	board_t* bd = hd->bd;
@@ -399,7 +404,7 @@ bitboard attacks_to(usi_handler_t* hd,const int sq) {
 	bitboard bwbishop = bishop_attack(sq, bd->bytype_bb[ALL_PIECE]);
 	bitboard bwrook = rook_attack(sq, bd->bytype_bb[ALL_PIECE]);
 	bitboard blance = lance_attack(black, sq, bd->bytype_bb[ALL_PIECE]);
-	bitboard wlance = lance_attack(white, sq, bd->bytype_bb[ALL_PIECE]);
+	bitboard wlance = lance_attack(white, sq, bd->bytype_bb[ALL_PIECE]);	//この香車は見直す必要があるのでは？
 	bitboard bwbishope;
 	bitboard bwrooke;
 	bitboard blancee;
@@ -409,6 +414,21 @@ bitboard attacks_to(usi_handler_t* hd,const int sq) {
 	bitboard result_bb;
 	result_bb.m = _mm_or_si128(_mm_or_si128(_mm_or_si128(_mm_or_si128(blacke.m, whitee.m), bwbishope.m), bwrooke.m), blancee.m);
 	return result_bb;
+}
+
+//StateInfo_tのcheckersBBをbitboard形式で返す。
+bitboard checkers(usi_handler_t* hd) {
+	StateInfo_t* st = hd->st;
+	return st->checkersBB;
+}
+
+//現局面で王手がかかっていればtrue
+_Bool is_check(usi_handler_t* hd) {
+	StateInfo_t* st = hd->st;
+	if (_mm_testz_si128(st->checkersBB.m, all_one_mask.m)) {	
+		return false;
+	}
+	return true;
 }
 
 /*bitboard piece_to_bitboard(const int pc, const board_t* b) {

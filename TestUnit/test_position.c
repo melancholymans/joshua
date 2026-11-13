@@ -1289,7 +1289,7 @@ void test_set_board(void) {
 //h  .  .  .  K  .  .  .  .  .
 //i  c  .  c  .  G  .  i  .  .
 
-void test_attacks_to() {
+void test_attacks_to(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	sfen[0] = '\0';
@@ -1607,6 +1607,230 @@ void test_attacks_to() {
 	bb = attacks_to(&hd, sq);
 	TEST_ASSERT_TRUE(is_biton(sq6h, bb));
 	//print_bitboard(bb, "test_set_state 5i");
+}
+
+// test–â‘è1
+// position sfen ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1
+//   9  8  7  6  5  4  3  2  1
+//a  l  n  .  .  .  .  s  n  l
+//b  .  r  s  .  g  k  g  b  .
+//c  .  p  p  .  p  p  .  p  p
+//d  .  .  .  .  .  .  p  .  .
+//e  p  .  .  .  .  .  .  .  .
+//f  .  .  .  .  P  .  .  .  .
+//g  P  P  P  .  .  P  P  P  P
+//h  L  .  S  p  .  g  K  S  R
+//i  .  N  B  .  .  a  .  N  L
+
+// test–â‘è2
+// position sfen +Ln1+S2snl/1r2gkg2/p1pppp1p+R/6p2/2NP5/2P1PBP2/+nP+b2PGP1/3K5/+l1+l1G1+s2 b - 1
+//   9  8  7  6  5  4  3  2  1
+//a  C  n  .  I  .  .  s  n  l
+//b  .  r  .  .  g  k  g  .  .
+//c  p  .  p  p  p  p  .  p  D
+//d  .  .  .  .  .  .  p  .  .
+//e  .  .  N  P  .  .  .  .  .
+//f  .  .  P  .  P  B  P  .  .
+//g  v  P  h  .  .  P  G  P  .
+//h  .  .  .  K  .  .  .  .  .
+//i  c  .  c  .  G  .  i  .  .
+
+// test–â‘è3
+// position sfen +Ln1+S2snl/1r2gkg2/p1pppp1p+R/6p2/2NP5/2P1PBP2/+nP+b2PGP1/3K5/+l1+l1G1+s2 b - 1
+//   9  8  7  6  5  4  3  2  1
+//a  l  n  s  .  .  .  s  n  l
+//b  .  r  .  .  .  k  g  .  .
+//c  p  p  p  p  p  g  .  p  p
+//d  .  .  .  .  .  .  p  .  .
+//e  P  N  .  .  .  p  .  N  .
+//f  .  P  .  P  .  .  P  .  P
+//g  .  .  P  .  P  P  b  P  .
+//h  .  .  .  .  .  .  .  r  h
+//i  i  .  S  G  K  G  .  .  .
+
+// test–â‘è4
+//   9  8  7  6  5  4  3  2  1
+//a  l  n  s  .  .  .  s  n  l
+//b  .  r  .  .  .  k  g  b  .
+//c  p  .  p  p  p  g  p  .  p
+//d  .  .  .  .  .  p  .  p  .
+//e  .  .  P  .  .  .  .  .  .
+//f  P  .  .  .  P  .  .  P  .
+//g  .  .  .  P  .  P  P  .  P
+//h  L  .  a  .  K  .  G  R  .
+//i  .  .  .  s  .  .  S  N  L
+
+// test–â‘è5
+//   9  8  7  6  5  4  3  2  1
+//a  l  n  .  .  .  .  s  n  l
+//b  .  r  .  .  g  k  g  .  .
+//c  p  p  .  .  p  p  .  p  p
+//d  .  s  .  .  .  .  p  .  P
+//e  .  .  .  .  .  .  .  .  .
+//f  .  P  .  .  .  .  .  .  .
+//g  P  .  a  .  h  P  P  P  N
+//h  .  .  .  .  .  K  S  .  R
+//i  v  .  P  .  .  G  .  .  L
+// test–â‘è6
+//   9  8  7  6  5  4  3  2  1
+//a  H  n  k  g  . R   .  .  l
+//b  .  .  s  S  G  p  c  .  .
+//c  p  p  p  p  p  .  .  .  p
+//d  .  .  .  .  .  .  .  p  .
+//e  .  .  .  .  .  .  p  .  .
+//f  .  .  P  .  .  .  .  .  .
+//g  P  P  .  P  P  P  S  P  P
+//h  .  .  G  K  .  .  .  R  b
+//i  L  N  S  .  .  G  .  N  L
+// test–â‘è7
+//   9  8  7  6  5  4  3  2  1
+//a  C  n  I  .  k  .  R  .  .
+//b  .  .  .  s  g  .  .  I  .
+//c  A  p  p  g  .  .  p  .  V
+//d  .  .  .  p  p  .  .  .  .
+//e  .  .  .  .  .  p  .  .  p
+//f  .  .  P  .  .  .  P  .  .
+//g  .  P  S  P  P  P  .  P  P
+//h  .  B  G  K  G  .  .  R  .
+//i  L  N  .  .  .  .  .  N  L
+// test–â‘è8
+// –Y‚ê‚Ä‚¢‚é
+// test–â‘è9
+//   9  8  7  6  5  4  3  2  1
+//a  .  H  s  g  .  k  .  C  .
+//b  .  .  r  .  g  s  .  .  l
+//c  p  .  .  p  .  p  p  B  .
+//d  .  p  .  .  p  .  .  .  p
+//e  .  .  p  .  .  .  .  .  .
+//f  .  .  P  .  .  .  .  .  .
+//g  P  P  .  P  P  P  P  P  P
+//h  .  .  G  S  G  .  S  R  .
+//i  L  N  .  .  K  .  .  N  L
+void test_checker(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	sfen[0] = '\0';
+	// test–â‘è1(black)
+	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bitboard bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	// test–â‘è2(black)
+	strcpy_s(sfen, sizeof(sfen), "+Ln1+S2snl/1r2gkg2/p1pppp1p+R/6p2/2NP5/2P1PBP2/+nP+b2PGP1/3K5/+l1+l1G1+s2 b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq7g, bb));
+	// test–â‘è3(black)
+	strcpy_s(sfen, sizeof(sfen), "lns3snl/1r3kg2/pppppg1pp/6p2/PN3p1N1/1P1P2P1P/2P1PPbP1/7r+b/+s1SGKG3 b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq3g, bb));
+	// test–â‘è4(black)
+	strcpy_s(sfen, sizeof(sfen), "lns3snl/1r3kgb1/p1pppgp1p/5p1p1/2P6/P3P2P1/3P1PP1P/L1+p1K1GR1/3s2SNL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq6i, bb));
+	// test–â‘è5(black)
+	strcpy_s(sfen, sizeof(sfen), "ln4snl/1r2gkg2/pp2pp1pp/1s4p1P/9/1P7/P1+p1+bPPPN/5KS1R/+n1P2G2L b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq5g, bb));
+	// test–â‘è6(white)
+	strcpy_s(sfen, sizeof(sfen), "+Bnkg1R2l/2sSGp+l2/ppppp3p/7p1/6p2/2P6/PP1PPPSPP/2GK3Rb/LNS2G1NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));	
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq6b, bb));
+	// test–â‘è7(white)
+	strcpy_s(sfen, sizeof(sfen), "+Ln+S1k1R2/3sg2+S1/+Pppg2p1+N/3pp4/5p2p/2P3P2/1PSPPP1PP/1BGKG2R1/LN5NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));	
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	// test–â‘è8(white)
+	strcpy_s(sfen, sizeof(sfen), "1n3k1n1/l1gsrg+P2/pppp2p2/4pp2l/P1PP4p/9/1PS1PPP1P/1BGKG1SR1/LN5NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));
+	bb = checkers(&hd);
+	//print_board(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	// test–â‘è9(white)
+	strcpy_s(sfen, sizeof(sfen), "1+Bsg1k1+L1/2r1gs2l/p2p1ppB1/1p2p3p/2p6/2P6/PP1PPPPPP/2GSG1SR1/LN2K2NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	// test–â‘è10(white)
+	strcpy_s(sfen, sizeof(sfen), "lGsk1R+P2/3sg2+P+R/p1pp1p2p/1p2p4/2PP2p1P/5P3/PPS1P1P2/1KG1G1S2/LNB4NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));
+	bb = checkers(&hd);
+	//print_board(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_biton(sq4a, bb));
+
+}
+
+void test_is_check(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	sfen[0] = '\0';
+	// test–â‘è1(black)
+	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bitboard bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_check(&hd));
+	// test–â‘è2(black) no check
+	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Spg1KSR/1NB2+p1NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_FALSE(is_check(&hd));
+	// test–â‘è3(white)
+	strcpy_s(sfen, sizeof(sfen), "+Bnkg1R2l/2sSGp+l2/ppppp3p/7p1/6p2/2P6/PP1PPPSPP/2GK3Rb/LNS2G1NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_TRUE(is_check(&hd));
+	// test–â‘è4(white) no check
+	strcpy_s(sfen, sizeof(sfen), "+Bnkg1R2l/2s1Gp+l2/ppppp3p/7p1/6p2/2P6/PP1PPPSPP/2GK3Rb/LNS2G1NL w - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	(&hd)->bd->turn = white;	//‚±‚±‚Å–³—‚â‚ètrue‚ğwhite‚É‚µ‚Ä,white‘¤king‚Ìcheckers‚ğŒvZ‚³‚¹‚Ä‚¢‚é
+	set_state((&hd));
+	bb = checkers(&hd);
+	//print_bitboard(bb, __func__);
+	TEST_ASSERT_FALSE(is_check(&hd));
 }
 
 void test_print_board(void) {
