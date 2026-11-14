@@ -19,6 +19,7 @@ void test_thinking() {
 	test_can_promote();
 	test_possible_moves();
 	test_is_double_pawn();
+	test_do_thinking();
 }
 
 void test_stb_ds() {

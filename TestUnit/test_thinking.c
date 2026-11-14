@@ -337,3 +337,12 @@ void test_is_double_pawn(void) {
 	TEST_ASSERT_FALSE(is_double_pawn(&hd, sq2e, wpawn));
 }
 
+void test_do_thinking(void) {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	new_board(&hd);
+	strcpy_s(sfen, 128, "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1");
+	set_board(&hd, sfen);
+	//go(&hd);
+	TEST_ASSERT_EQUAL_INT(1, go(&hd));
+}

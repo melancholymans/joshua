@@ -1799,21 +1799,21 @@ void test_is_check(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	sfen[0] = '\0';
-	// test–â‘è1(black)
+	// test–â‘è?(black)
 	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1");
 	new_board(&hd);
 	set_board(&hd, sfen);
 	bitboard bb = checkers(&hd);
 	//print_bitboard(bb, __func__);
 	TEST_ASSERT_TRUE(is_check(&hd));
-	// test–â‘è2(black) no check
+	// test–â‘è?(black) no check
 	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Spg1KSR/1NB2+p1NL b - 1");
 	new_board(&hd);
 	set_board(&hd, sfen);
 	bb = checkers(&hd);
 	//print_bitboard(bb, __func__);
 	TEST_ASSERT_FALSE(is_check(&hd));
-	// test–â‘è3(white)
+	// test–â‘è?(white)
 	strcpy_s(sfen, sizeof(sfen), "+Bnkg1R2l/2sSGp+l2/ppppp3p/7p1/6p2/2P6/PP1PPPSPP/2GK3Rb/LNS2G1NL w - 1");
 	new_board(&hd);
 	set_board(&hd, sfen);
@@ -1822,7 +1822,7 @@ void test_is_check(void) {
 	bb = checkers(&hd);
 	//print_bitboard(bb, __func__);
 	TEST_ASSERT_TRUE(is_check(&hd));
-	// test–â‘è4(white) no check
+	// test–â‘è?(white) no check
 	strcpy_s(sfen, sizeof(sfen), "+Bnkg1R2l/2s1Gp+l2/ppppp3p/7p1/6p2/2P6/PP1PPPSPP/2GK3Rb/LNS2G1NL w - 1");
 	new_board(&hd);
 	set_board(&hd, sfen);
