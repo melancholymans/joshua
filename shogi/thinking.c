@@ -11,12 +11,19 @@
 int do_thinking(usi_handler_t* hd) {
 	int best_move = 0;
 	int* pml = NULL;
+	if (is_check(hd)) {	//‰¤Žè‚ª‚©‚©‚Á‚Ä‚¢‚ê‚ÎŽè‚È‚µ‚Æ‚µ‚Ä•Ô‚·iŠÈ—ª”Åj
+		return best_move;	
+	}
+	printf("current pos turn = %s\n", hd->bd->turn ? "white" : "black");
+	int us = hd->bd->turn;
+	int ksq = hd->bd->king_square[us];
+	bitboard bb = attacks_to(hd, ksq);
+	StateInfo_t* st = hd->st;
+	bitboard chk;
+	chk.m = _mm_and_si128(bb.m, hd->bd->bycolor_bb[opposite_color(us)].m);
+	print_bitboard(bb, "do_thinking");
+	printf("function = %s : is_check = %d : best_move = %d us king square = %d\n",__func__,is_check(hd), best_move,ksq);
 	pml = possible_moves(hd, pml);
-	/*for (int i = 0; i < arrlen(pml); i++) {
-		if (Is_suicide_or_check_by_dropping_pawn(hd,pml[i])) {
-			arrput(ml, pml[i]);
-		}
-	}*/
 	srand((unsigned)time(NULL));
 	int len = arrlen(pml);
 	best_move = pml[rand() % len];
