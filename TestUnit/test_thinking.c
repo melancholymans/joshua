@@ -341,8 +341,8 @@ void test_do_thinking(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	new_board(&hd);
+	//–â‘è1 do_move‚ªŠ®¬‚µ‚Ä‚¢‚È‚¢‚Ì‚Å‚·‚Å‚É‰¤è‚ª‚©‚©‚Á‚Ä‚¢‚é‹Ç–Ê‚Å”»’èAŸ‚Ído_moveÀ‘•Œã‚É–â‘è’Ç‰Á‚Ì‚±‚Æ
 	strcpy_s(sfen, 128, "ln4snl/1rs1gkgb1/1pp1pp1pp/6p2/p8/4P4/PPP2PPPP/L1Sp1gKSR/1NB2+p1NL b - 1");
 	set_board(&hd, sfen);
-	//go(&hd);
-	TEST_ASSERT_EQUAL_INT(1, go(&hd));
+	TEST_ASSERT_EQUAL_INT(0, go(&hd));
 }
