@@ -315,6 +315,8 @@ int rank_inverse(const int r);
 _Bool can_promote_area(const int c, const int from_or_to_rank);
 void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);
+void do_move(usi_handler_t* hd, const int move);
+void undo_move(usi_handler_t* hd, const int move);
 void update_bytypebb(usi_handler_t* hd);
 void set_state(usi_handler_t* hd);
 bitboard attacks_to(usi_handler_t* hd, const int sq);

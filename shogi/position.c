@@ -308,6 +308,64 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	return;
 }
 
+void do_move(usi_handler_t* hd, const int move) {
+	board_t* bd = hd->bd;
+	bd->move_number++;
+	int us = bd->turn;
+	int to, from, pmoto, morh, piece, cap;
+	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	if (morh) {
+		bd->hb[from]--;		//打つ手の時は駒番はfromに入る
+		bd->mb[to] = from;
+		//ここに駒打ちの時、詰めがかかるかのフラグ(moveIsCheck)による処理が入る(TODO:)
+
+	}
+	else {
+		if (cap != empty) {
+			cap = strip_pmoto(cap) ^ 0x10;	//取った駒のカラー切替え、不成への切替
+			bd->hb[cap]++;
+		}
+		//ここにkingSquare配列に関する処理が入るが今はパス(TODO:)
+		//ここに詰めが掛かってくる場合の処理がはいるがいまはパス(TODO:)
+		if (pmoto) {
+			piece = piece + 8;
+		}
+		bd->mb[from] = empty;
+		bd->mb[to] = piece;
+	}
+	bd->turn = opposite_color(us);
+	return;
+}
+
+void undo_move(usi_handler_t* hd, const int move) {
+	board_t* bd = hd->bd;
+	int us = bd->turn;
+	bd->turn = opposite_color(us);
+	int to, from, pmoto, morh, piece, cap;
+	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	if (morh) {	//打ち手
+		//bitboard関係の操作が入るが今はパス(TODO:)
+		bd->mb[to] = empty;
+		bd->hb[from]++;			//打つ手の時は駒番はfromに入る
+	}
+	else {
+		//king専用の配列の操作がある、今はパス(TODO:)
+		if (cap) {
+			//bitboard関係の操作が入るが今はパス(TODO:)
+			bd->mb[to] = cap;	//capには取られた駒の情報がそのまま入っている（color,pmoto情報がそのまま）
+			cap = strip_pmoto(cap) ^ 0x10;	//ここで成情報を除去、カラーを敵側に合わせて駒台に載せる
+			bd->hb[cap]--;
+		}
+		else {
+			bd->mb[to] = empty;
+		}
+		bd->mb[from] = piece;
+	}
+	//ここでbitboardの操作かある、今はパス(TODO:)
+	bd->move_number--;
+}
+
+
 //bytype_bbの基本的な駒種でGOLDS,HDK,BISHOP_HORSE,ROOK_DRAGON,SILVER_HDK,GOLDS_HDKを合成する
 void update_bytypebb(usi_handler_t* hd) {
 	board_t* b = hd->bd;
