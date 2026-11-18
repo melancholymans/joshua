@@ -16,7 +16,5 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count);
 errno_t handle_go(usi_handler_t* hd);
 errno_t handle_stop(void);
 errno_t handle_ponder_hit(void);
-errno_t handle_gameover(usi_handler_t* hd);
 void put_send(usi_handler_t* hd, char* msg);
-void put_debug(usi_handler_t* hd, char* msg);
 void shorten_space(char* buf);
