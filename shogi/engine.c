@@ -142,7 +142,7 @@ int initial_to_piecetype(char p) {
 }
 
 //usimove形式の文字列を受け取って局面を更新する。ここでは文字列をmve形式に変換して実際に局面を更新するのはdo_move関数
-void do_usi_move(usi_handler_t* hd, char* usi_move) {
+int do_usi_move(usi_handler_t* hd, char* usi_move) {
 	board_t* bd = hd->bd;
 	int move = 0;
 	if (strlen(usi_move) == 4) {
@@ -165,7 +165,8 @@ void do_usi_move(usi_handler_t* hd, char* usi_move) {
 		int to = usisq_to_movesq(usi_move+2);
 		move = (bd->mb[to]) << 24 | bd->mb[from] << 16 | 1 << 14 | from << 7 | to;	//cap:<<24,piece:<<16,pmoto:1<<14,from:<<7,to
 	}
-	do_move(hd, move);
+	return move;
+	//do_move(hd, move);
 }
 
 /*void do_move(usi_handler_t* hd, const int move) {

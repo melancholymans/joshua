@@ -19,7 +19,7 @@
 
 int go(usi_handler_t* hd);
 int initial_to_piecetype(char p);
-void do_usi_move(usi_handler_t* hd, char* usi_move);
+int do_usi_move(usi_handler_t* hd, char* usi_move);
 //void do_move(usi_handler_t* hd, const int move);
 //void undo_move(usi_handler_t* hd, const int move);
 void move_chop(const int move, int* to, int* from, int* ispmoto, int* morh, int* piece, int* cap);
