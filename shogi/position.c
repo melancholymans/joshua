@@ -233,6 +233,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	parts[2] = "-"
 	parts[4] = "1"
 	*/
+	hd->st = calloc(1, sizeof(StateInfo_t));
 	char* parts[4];	
 	int count = 0;
 	char* ptr = NULL;
@@ -305,6 +306,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	b->turn = black;
 	update_bytypebb(hd);	//bytype_bb を更新する
 	set_state(hd);
+	set_check_info(hd);
 	return;
 }
 
@@ -417,16 +419,36 @@ void set_state(usi_handler_t* hd) {
 	//st->blockers_for_king[white] = ??
 	//st->pinners[black] = ??
 	//st->pinners[white] = ??
-	//for (int i = 0; i < 16; i++) {
-	//	st->check_squares[i] = ? ? ;
-	//}
 	st->captured_piece = 0;
 	st->repetition = 0;
 	st->repetition_times = 0;
 	st->repetition_type = 0;
 	st->hand = 0;
 	st->material_value = 0;
-	//st->previous = NULL;
+	st->previous = NULL;
+}
+
+//敵王に王手をかける駒の位置bitboard(その位置にいれば敵王に王手をかけることができる)
+void set_check_info(usi_handler_t* hd) {
+	board_t* bd = hd->bd;
+	StateInfo_t* st = hd->st;
+	int them = opposite_color(bd->turn);
+	int ksq = bd->king_square[them];
+	bitboard occ = bd->bytype_bb[ALL_PIECE];
+	st->check_squares[pawn] = pawn_attack_mask[them][ksq];
+	st->check_squares[knight] = knight_attack_mask[them][ksq];
+	st->check_squares[silver] = silver_attack_mask[them][ksq];
+	st->check_squares[bishop] = bishop_attack(ksq, occ);
+	st->check_squares[rook] = rook_attack(ksq, occ);
+	st->check_squares[gold] = gold_attack_mask[them][ksq];
+	st->check_squares[lance] = lance_attack(them, ksq, occ);
+	st->check_squares[king] = all_zero_mask;
+	st->check_squares[propawn] = gold_attack_mask[them][ksq];
+	st->check_squares[prolance] = gold_attack_mask[them][ksq];
+	st->check_squares[proknight] = gold_attack_mask[them][ksq];
+	st->check_squares[prosilver] = gold_attack_mask[them][ksq];
+	st->check_squares[horse].m = _mm_or_si128(st->check_squares[bishop].m, king_attack_mask[ksq].m);
+	st->check_squares[dragon].m = _mm_or_si128(st->check_squares[rook].m, king_attack_mask[ksq].m);
 }
 
 //現局面で指定された座標にある駒（駒がなくてもよい）に利きをかけている駒の位置bitboardを返す

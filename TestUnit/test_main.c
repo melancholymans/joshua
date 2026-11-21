@@ -72,6 +72,7 @@ void test_position() {
 	test_attacks_to();
 	test_checker();
 	test_is_check();
+	test_set_check_info();
 	test_print_board();
 }
 

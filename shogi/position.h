@@ -317,6 +317,7 @@ void do_move(usi_handler_t* hd, const int move);
 void undo_move(usi_handler_t* hd, const int move);
 void update_bytypebb(usi_handler_t* hd);
 void set_state(usi_handler_t* hd);
+void set_check_info(usi_handler_t* hd);
 bitboard attacks_to(usi_handler_t* hd, const int sq);
 bitboard checkers(usi_handler_t* hd);
 _Bool is_check(usi_handler_t* hd);

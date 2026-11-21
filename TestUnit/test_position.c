@@ -1833,6 +1833,118 @@ void test_is_check(void) {
 	TEST_ASSERT_FALSE(is_check(&hd));
 }
 
+void test_set_check_info(void) {
+// test–â‘è1
+//   9  8  7  6  5  4  3  2  1
+//a  l  n  .  .  .  .  s  n  l
+//b  .  r  s  .  g  k  g  b  .
+//c  .  p  p  .  p  p  .  p  p
+//d  .  .  .  .  .  .  .  .  .
+//e  p  .  .  .  .  P  .  .  .
+//f  .  .  .  .  P  n  .  P  .
+//g  P  P  P  .  .  s  p  i  P
+//h  L  .  S  p  .  g  K  S  R
+//i  .  N  B  .  .  .  a  N  L	
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[128];
+	sfen[0] = '\0';
+	strcpy_s(sfen, sizeof(sfen), "ln4snl/1rs1gkgb1/1pp1pp1pp/9/p4P3/4Pn1P1/PPP2sp+sP/L1Sp1gKSR/1NB3+pNL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	hd.bd->turn = white;
+	set_check_info(&hd);
+	StateInfo_t* si = hd.st;
+	bitboard bb = si->check_squares[pawn];
+	TEST_ASSERT_TRUE(is_biton(sq3g, bb));
+	bb = si->check_squares[knight];
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = si->check_squares[silver];
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	bb = si->check_squares[gold];
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	bb = si->check_squares[propawn];
+	TEST_ASSERT_TRUE(is_biton(sq3i, bb));
+	bb = si->check_squares[prosilver];
+	TEST_ASSERT_TRUE(is_biton(sq2g, bb));
+// test–â‘è2
+//	 9  8  7  6  5  4  3  2  1
+//a  .  .  .  .  .  .  .  n  l
+//b  .  .  .  .  g  k  g  .  .
+//c  .  p  p  .  p  p  l  p  p
+//d  .  .  .  .  .  .  .  .  .
+//e  p  .  .  b  P  P  .  .  .
+//f  .  .  .  .  .  .  .  P  .
+//g  P  P  P  .  .  .  .  v  P
+//h  L  .  S  p  R  .  K  S  R
+//i  .  N  B  .  .  .  v  N  L
+	strcpy_s(sfen, sizeof(sfen), "7nl/4gkg2/1pp1pplpp/9/p2bPP3/7P1/PPP4+nP/L1SpR1KSR/1NB3+nNL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	//print_board(&hd);
+	hd.bd->turn = white;
+	set_check_info(&hd);
+	si = hd.st;
+	bb = si->check_squares[proknight];
+	TEST_ASSERT_TRUE(is_biton(sq2g, bb));
+	bb = si->check_squares[prolance];
+	TEST_ASSERT_TRUE(is_biton(sq3i, bb));
+	bb = si->check_squares[lance];
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	bb = si->check_squares[bishop];
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	bb = si->check_squares[rook];
+	TEST_ASSERT_TRUE(is_biton(sq5h, bb));
+	// test–â‘è3
+//	 9  8  7  6  5  4  3  2  1
+//a  R  .  .  k  G  .  g  n  l
+//b  .  .  .  .  S  r  s  .  .
+//c  p  .  N  .  g  p  p  p  p
+//d  B  p  p  .  p  .  .  .  .
+//e  .  .  .  .  .  .  .  .  .
+//f  P  .  .  L  .  .  P  .  .
+//g  .  P  P  P  P  P  .  P  P
+//h  .  .  .  K  G  .  .  .  .
+//i  L  N  .  .  .  .  .  N  L
+	strcpy_s(sfen, sizeof(sfen), "R2kG1gnl/4Srs2/p1N1gpppp/Bpp1p4/9/P2L2P2/1PPPPP1PP/3KG4/LN5NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	//print_board(&hd);
+	set_check_info(&hd);
+	si = hd.st;
+	bb = si->check_squares[lance];
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	bb = si->check_squares[knight];
+	TEST_ASSERT_TRUE(is_biton(sq7c, bb));
+	bb = si->check_squares[silver];
+	TEST_ASSERT_TRUE(is_biton(sq5b, bb));
+	bb = si->check_squares[gold];
+	TEST_ASSERT_TRUE(is_biton(sq5a, bb));
+	bb = si->check_squares[bishop];
+	TEST_ASSERT_TRUE(is_biton(sq9d, bb));
+	bb = si->check_squares[rook];
+	TEST_ASSERT_TRUE(is_biton(sq9a, bb));
+	// test–â‘è4
+//	 9  8  7  6  5  4  3  2  1
+//a  .  .  .  A  .  .  g  n  l
+//b  .  .  D  k  C  r  s  .  .
+//c  p  .  H  P  I  p  p  p  p
+//d  .  p  p  .  p  .  .  .  .
+//e  .  .  .  .  .  .  .  .  .
+//f  .  .  .  .  .  .  P  .  .
+//g  .  P  P  .  P  P  .  P  P
+//h  .  .  .  K  G  .  .  .  .
+//i  L  N  .  .  .  .  .  N  L
+	strcpy_s(sfen, sizeof(sfen), "3+P2gnl/2+Rk+Lrs2/p1+BP+Spppp/1pp1p4/9/6P2/1PP1PP1PP/3KG4/LN5NL b - 1");
+	new_board(&hd);
+	set_board(&hd, sfen);
+	print_board(&hd);
+	set_check_info(&hd);
+	si = hd.st;
+	bb = si->check_squares[lance];
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+}
+
+
 void test_print_board(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	new_board(&hd);
