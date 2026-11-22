@@ -310,8 +310,11 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	return;
 }
 
-void do_move(usi_handler_t* hd, const int move) {
+void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt) {
 	board_t* bd = hd->bd;
+	//memcpy(newSt, hd->st, offsetof(StateInfo_t, board_key));	将来用
+	newSt->previous = hd->st;	//StateInfo_tのリンクリスト
+	hd->st = newSt;	//このnewStもメモリはhandle_position関数ではcallocで与えているがseach関数内ではローカル変数stで確保して与えている
 	bd->move_number++;
 	int us = bd->turn;
 	int to, from, pmoto, morh, piece, cap;
@@ -320,7 +323,6 @@ void do_move(usi_handler_t* hd, const int move) {
 		bd->hb[from]--;		//打つ手の時は駒番はfromに入る
 		bd->mb[to] = from;
 		//ここに駒打ちの時、詰めがかかるかのフラグ(moveIsCheck)による処理が入る(TODO:)
-
 	}
 	else {
 		if (cap != empty) {

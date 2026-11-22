@@ -326,7 +326,8 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	int size = count - mark - 1;
 	for (int i = 0; i < size; i++) {
 		int m = do_usi_move(hd, cmds[mark + 1 + i]);
-		do_move(hd, m);
+		StateInfo_t* si = calloc(1, sizeof(StateInfo_t));
+		do_move(hd, m,si);
 	}
 	//print_board(hd);
 	//printf("debug trun %s move_number %d\n", hd->bd->turn ? "white" : "black",hd->bd->move_number+1);
