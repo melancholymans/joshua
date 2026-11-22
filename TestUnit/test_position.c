@@ -1940,8 +1940,18 @@ void test_set_check_info(void) {
 	print_board(&hd);
 	set_check_info(&hd);
 	si = hd.st;
-	bb = si->check_squares[lance];
-	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	bb = si->check_squares[pawn];
+	TEST_ASSERT_TRUE(is_biton(sq6c, bb));
+	bb = si->check_squares[propawn];
+	TEST_ASSERT_TRUE(is_biton(sq6a, bb));
+	bb = si->check_squares[prolance];
+	TEST_ASSERT_TRUE(is_biton(sq5b, bb));
+	bb = si->check_squares[prosilver];
+	TEST_ASSERT_TRUE(is_biton(sq5c, bb));
+	bb = si->check_squares[horse];
+	TEST_ASSERT_TRUE(is_biton(sq7c, bb));
+	bb = si->check_squares[dragon];
+	TEST_ASSERT_TRUE(is_biton(sq7b, bb));
 }
 
 
