@@ -137,11 +137,6 @@ int inverse(const int pc) {
 	return pc ^ 0x10;
 }
 
-// 駒番から手番（color）を判定する.blackかwhiteが返る
-int piece_to_color(const int pc) {
-	return pc >> 4;
-}
-
 // colorと駒種を指定して駒番を作る
 int piecetype_to_piece(const int c, const int pt) { 
 	return (c << 4) | pt; 
@@ -310,34 +305,70 @@ void set_board(usi_handler_t* hd, char* sfen) {
 	return;
 }
 
-void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt) {
+void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 	board_t* bd = hd->bd;
+	StateInfo_t* st = hd->st;
 	//memcpy(newSt, hd->st, offsetof(StateInfo_t, board_key));	将来用
 	newSt->previous = hd->st;	//StateInfo_tのリンクリスト
 	hd->st = newSt;	//このnewStもメモリはhandle_position関数ではcallocで与えているがseach関数内ではローカル変数stで確保して与えている
 	bd->move_number++;
 	int us = bd->turn;
+	int them = opposite_color(us);
 	int to, from, pmoto, morh, piece, cap;
 	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
-	if (morh) {
+	if (morh) {	//打手
 		bd->hb[from]--;		//打つ手の時は駒番はfromに入る
 		bd->mb[to] = from;
-		//ここに駒打ちの時、詰めがかかるかのフラグ(moveIsCheck)による処理が入る(TODO:)
-	}
-	else {
-		if (cap != empty) {
-			cap = strip_pmoto(cap) ^ 0x10;	//取った駒のカラー切替え、不成への切替
-			bd->hb[cap]++;
+		bd->bytype_bb[piece_to_piecetype(from)].m = _mm_or_si128(bd->bytype_bb[piece_to_piecetype(from)].m, sq_mask[to].m);
+		bd->bytype_bb[ALL_PIECE].m = _mm_or_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
+		bd->bycolor_bb[us].m = _mm_or_si128(bd->bycolor_bb[us].m, sq_mask[to].m);
+		if (gc) {	//この駒打ちで王手がかかっている、checkersBBを更新する
+			st->checkersBB = sq_mask[to];
 		}
-		//ここにkingSquare配列に関する処理が入るが今はパス(TODO:)
-		//ここに詰めが掛かってくる場合の処理がはいるがいまはパス(TODO:)
-		if (pmoto) {
+		else {
+			st->checkersBB = all_zero_mask;
+		}
+		st->captured_piece = empty;
+		update_bytypebb(hd);
+	}
+	else {	//駒の移動
+		if (pmoto) {	//成駒に設定
 			piece = piece + 8;
 		}
+		if (cap != empty) {	//駒を取る手
+			int hand_to_cap = strip_pmoto(cap) ^ 0x10;	//取った駒のカラー切替え、不成への切替,駒番のまま
+			bd->bytype_bb[ALL_PIECE].m = _mm_xor_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
+			bd->bytype_bb[piece_to_piecetype(cap)].m = _mm_xor_si128(bd->bytype_bb[piece_to_piecetype(cap)].m, sq_mask[to].m);
+			bd->bycolor_bb[them].m = _mm_xor_si128(bd->bycolor_bb[them].m, sq_mask[to].m);
+			st->captured_piece = cap;
+			bd->hb[hand_to_cap]++;
+		}
+		else {	//駒を取らない手
+			st->captured_piece = empty;
+		}
+		bd->bytype_bb[ALL_PIECE].m = _mm_xor_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[from].m);
+		bd->bytype_bb[piece_to_piecetype(piece)].m = _mm_xor_si128(bd->bytype_bb[piece_to_piecetype(piece)].m, sq_mask[from].m);
+		bd->bycolor_bb[us].m = _mm_xor_si128(bd->bycolor_bb[us].m, sq_mask[from].m);
 		bd->mb[from] = empty;
+		bd->bytype_bb[ALL_PIECE].m = _mm_or_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
+		bd->bytype_bb[piece_to_piecetype(piece)].m = _mm_or_si128(bd->bytype_bb[piece_to_piecetype(piece)].m, sq_mask[to].m);
+		bd->bycolor_bb[us].m = _mm_or_si128(bd->bycolor_bb[us].m, sq_mask[to].m);
 		bd->mb[to] = piece;
+		if (piece_to_piecetype(piece) == king) {
+			bd->king_square[us] = to;
+		}
+		update_bytypebb(hd);
+		if (gc) {
+			//簡易版
+			int ksq = bd->king_square[them];
+			st->checkersBB = attacks_to(hd, ksq);
+		}
+		else {
+			st->checkersBB = all_zero_mask;
+		}
 	}
-	bd->turn = opposite_color(us);
+	bd->turn = them;
+	set_check_info(hd);
 	return;
 }
 
@@ -452,6 +483,25 @@ void set_check_info(usi_handler_t* hd) {
 	st->check_squares[horse].m = _mm_or_si128(st->check_squares[bishop].m, king_attack_mask[ksq].m);
 	st->check_squares[dragon].m = _mm_or_si128(st->check_squares[rook].m, king_attack_mask[ksq].m);
 }
+
+//指手が敵王に王手をかけることができるか確認する
+_Bool gives_check(usi_handler_t* hd,int move) {
+	StateInfo_t* st = hd->st;
+	int to, from, pmoto, morh, piece, cap,pt;
+	move_chop(move, &to, &from, &pmoto, &morh, &piece, &cap);
+	if (morh) {
+		pt = piece_to_piecetype(from);
+	}
+	else {
+		pt = piece_to_piecetype(piece);
+	}
+	if (!_mm_testz_si128(_mm_and_si128(st->check_squares[pt].m, sq_mask[to].m),all_one_mask.m)) {
+		return true;
+	}
+	//開き王手は別の変数が必要なのでパス(TODO)
+	return false;
+}
+
 
 //現局面で指定された座標にある駒（駒がなくてもよい）に利きをかけている駒の位置bitboardを返す
 bitboard attacks_to(usi_handler_t* hd,const int sq) {

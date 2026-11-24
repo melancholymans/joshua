@@ -172,10 +172,6 @@ enum BY_TYPE_BB {
 	GOLDS_HDK = 20
 };
 
-/*
-(piece & 0x10) == 0 black
-(piece & 0x10) != 0 white
-*/
 enum piece {	//‹î”Ô piece_type‚Écolor‚ð‰Á‚¦‚½‚à‚Ì
 	bpawn = 1,
 	blance = 2,
@@ -313,23 +309,28 @@ int rank_inverse(const int r);
 _Bool can_promote_area(const int c, const int from_or_to_rank);
 void new_board(usi_handler_t* hd);
 void set_board(usi_handler_t* hd, char* sfen);
-void do_move(usi_handler_t* hd, const int move);
+void do_move(usi_handler_t* hd, const int move,StateInfo_t* newSt, _Bool gives_check);
 void undo_move(usi_handler_t* hd, const int move);
 void update_bytypebb(usi_handler_t* hd);
 void set_state(usi_handler_t* hd);
 void set_check_info(usi_handler_t* hd);
+_Bool gives_check(usi_handler_t* hd,int move);
 bitboard attacks_to(usi_handler_t* hd, const int sq);
 bitboard checkers(usi_handler_t* hd);
 _Bool is_check(usi_handler_t* hd);
 void print_board(usi_handler_t* hd);
 
-// ‹î”Ô‚ð‹îŽí‚É•ÏŠ·,inlineŠÖ”
+//‹î”Ô‚ð‹îŽí‚É•ÏŠ·,inlineŠÖ”
 inline int piece_to_piecetype(const int pc) {
 	return pc & 15;
 }
 
-// Žè”Ô‚ðØ‘Ö‚¦‚é,inlineŠÖ”
+//Žè”Ô‚ðØ‘Ö‚¦‚é,inlineŠÖ”
 inline int opposite_color(const int c) {
 	return c ^ 1;
 }
 
+//‹î”Ô‚©‚çŽè”Ôicolorj‚ð”»’è‚·‚é.black‚©white‚ª•Ô‚é
+inline int piece_to_color(const int pc) {
+	return pc >> 4;
+}

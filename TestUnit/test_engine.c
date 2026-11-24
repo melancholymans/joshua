@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "unity.h"
 
@@ -136,103 +137,104 @@ void test_do_usi_move() {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
 	char moves[8];
+	StateInfo_t st;
 	new_board(&hd);
 	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 	strcpy_s(&moves,8, "2g2f");
 	int m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m,&st,false);
 	TEST_ASSERT_EQUAL_INT(empty,hd.bd->mb[sq2g]);
 	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2f]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->move_number);
 	strcpy_s(&moves,8, "4a3b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4a]);
 	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq3b]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(2, hd.bd->move_number);
 	strcpy_s(&moves,8, "2f2e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2f]);
 	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(3, hd.bd->move_number);
 	strcpy_s(&moves, 8, "6a5b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6a]);
 	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq5b]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(4, hd.bd->move_number);
 	strcpy_s(&moves, 8, "7g7f");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7g]);
 	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq7f]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(5, hd.bd->move_number);
 	strcpy_s(&moves, 8, "5a4b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5a]);
 	TEST_ASSERT_EQUAL_INT(wking, hd.bd->mb[sq4b]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(6, hd.bd->move_number);
 	strcpy_s(&moves, 8, "6i7h");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6i]);
 	TEST_ASSERT_EQUAL_INT(bgold, hd.bd->mb[sq7h]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(7, hd.bd->move_number);
 	strcpy_s(&moves, 8, "7a6b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7a]);
 	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq6b]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(8, hd.bd->move_number);
 	strcpy_s(&moves, 8, "7i6h");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7i]);
 	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq6h]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(9, hd.bd->move_number);
 	strcpy_s(&moves, 8, "9c9d");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9c]);
 	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq9d]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(10, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8h7g");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8h]);
 	TEST_ASSERT_EQUAL_INT(bbishop, hd.bd->mb[sq7g]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(11, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8a9c");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8a]);
 	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq9c]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(12, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2e2d");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2d]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(13, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2c2d");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2c]);
 	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2d]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wpawn]);	
@@ -240,7 +242,7 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(14, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2h2d");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2h]);
 	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq2d]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bpawn]);
@@ -248,21 +250,21 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(15, hd.bd->move_number);
 	strcpy_s(&moves, 8, "9c8e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9c]);
 	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq8e]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(16, hd.bd->move_number);
 	strcpy_s(&moves, 8, "P*2c");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2c]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bpawn]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(17, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8e7g+");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8e]);
 	TEST_ASSERT_EQUAL_INT(wproknight, hd.bd->mb[sq7g]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wbishop]);
@@ -270,7 +272,7 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(18, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8i7g");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8i]);
 	TEST_ASSERT_EQUAL_INT(bknight, hd.bd->mb[sq7g]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bknight]);
@@ -278,28 +280,28 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(19, hd.bd->move_number);
 	strcpy_s(&moves, 8, "9d9e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9d]);
 	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq9e]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(20, hd.bd->move_number);
 	strcpy_s(&moves, 8, "3i3h");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3i]);
 	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq3h]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(21, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8b9b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8b]);
 	TEST_ASSERT_EQUAL_INT(wrook, hd.bd->mb[sq9b]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(22, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2c2b+");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2c]);
 	TEST_ASSERT_EQUAL_INT(bpropawn, hd.bd->mb[sq2b]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bbishop]);
@@ -307,7 +309,7 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(23, hd.bd->move_number);
 	strcpy_s(&moves, 8, "3a2b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3a]);
 	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq2b]);
 	TEST_ASSERT_EQUAL_INT(2, hd.bd->hb[wpawn]);
@@ -315,35 +317,35 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(24, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2d2f");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2d]);
 	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq2f]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(25, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2b2c");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2b]);
 	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq2c]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(26, hd.bd->move_number);
 	strcpy_s(&moves, 8, "B*5f");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(bbishop, hd.bd->mb[sq5f]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bbishop]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(27, hd.bd->move_number);
 	strcpy_s(&moves, 8, "P*2e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wpawn]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(28, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2f2e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2f]);
 	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bpawn]);
@@ -351,35 +353,35 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(29, hd.bd->move_number);
 	strcpy_s(&moves, 8, "P*2d");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2d]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wpawn]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(30, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2e8e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq8e]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(31, hd.bd->move_number);
 	strcpy_s(&moves, 8, "B*2h");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(wbishop, hd.bd->mb[sq2h]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wbishop]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(32, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8e8c+");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8e]);
 	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq8c]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(33, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2h1i+");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2h]);
 	TEST_ASSERT_EQUAL_INT(whorse, hd.bd->mb[sq1i]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wlance]);
@@ -387,21 +389,21 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(34, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8c8a");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8c]);
 	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq8a]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(35, hd.bd->move_number);
 	strcpy_s(&moves, 8, "L*2e");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(wlance, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wlance]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(36, hd.bd->move_number);
 	strcpy_s(&moves, 8, "8a2a");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8a]);
 	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq2a]);
 	TEST_ASSERT_EQUAL_INT(2, hd.bd->hb[bknight]);
@@ -409,7 +411,7 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(37, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2e2i+");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
 	TEST_ASSERT_EQUAL_INT(wprolance, hd.bd->mb[sq2i]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wknight]);
@@ -417,7 +419,7 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(38, hd.bd->move_number);
 	strcpy_s(&moves, 8, "5f2c+");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5f]);
 	TEST_ASSERT_EQUAL_INT(bhorse, hd.bd->mb[sq2c]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[bsilver]);
@@ -425,7 +427,7 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(39, hd.bd->move_number);
 	strcpy_s(&moves, 8, "3b2c");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3b]);
 	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq2c]);
 	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wbishop]);
@@ -433,35 +435,35 @@ void test_do_usi_move() {
 	TEST_ASSERT_EQUAL_INT(40, hd.bd->move_number);
 	strcpy_s(&moves, 8, "S*4a");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq4a]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bsilver]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(41, hd.bd->move_number);
 	strcpy_s(&moves, 8, "N*3a");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq3a]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wknight]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(42, hd.bd->move_number);
 	strcpy_s(&moves, 8, "2a3b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2a]);
 	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq3b]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(43, hd.bd->move_number);
 	strcpy_s(&moves, 8, "4b5a");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4b]);
 	TEST_ASSERT_EQUAL_INT(wking, hd.bd->mb[sq5a]);
 	TEST_ASSERT_EQUAL_INT(black, hd.bd->turn);
 	TEST_ASSERT_EQUAL_INT(44, hd.bd->move_number);
 	strcpy_s(&moves, 8, "3b5b");
 	m = do_usi_move(&hd, &moves);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3b]);
 	TEST_ASSERT_EQUAL_INT(bdragon, hd.bd->mb[sq5b]);
 	TEST_ASSERT_EQUAL_INT(white, hd.bd->turn);
@@ -499,233 +501,234 @@ void test_undo_move(void) {
 	int* ms = NULL;
 	char sfen[128];
 	char moves[8];
+	StateInfo_t st;
 	new_board(&hd);
 	strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 	set_board(&hd, sfen);
 	//1
 	strcpy_s(&moves, 8, "2g2f");
 	int mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//2
 	strcpy_s(&moves, 8, "4a3b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//3
 	strcpy_s(&moves, 8, "2f2e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//4
 	strcpy_s(&moves, 8, "6a5b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//5
 	strcpy_s(&moves, 8, "7g7f");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//6
 	strcpy_s(&moves, 8, "5a4b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//7
 	strcpy_s(&moves, 8, "6i7h");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//8
 	strcpy_s(&moves, 8, "7a6b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//9
 	strcpy_s(&moves, 8, "7i6h");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//10
 	strcpy_s(&moves, 8, "9c9d");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//11
 	strcpy_s(&moves, 8, "8h7g");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//12
 	strcpy_s(&moves, 8, "8a9c");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//13
 	strcpy_s(&moves, 8, "2e2d");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//14
 	strcpy_s(&moves, 8, "2c2d");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//15
 	strcpy_s(&moves, 8, "2h2d");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//16
 	strcpy_s(&moves, 8, "9c8e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//17
 	strcpy_s(&moves, 8, "P*2c");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//18
 	strcpy_s(&moves, 8, "8e7g+");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//19
 	strcpy_s(&moves, 8, "8i7g");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//20
 	strcpy_s(&moves, 8, "9d9e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//21
 	strcpy_s(&moves, 8, "3i3h");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//22
 	strcpy_s(&moves, 8, "8b9b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//23
 	strcpy_s(&moves, 8, "2c2b+");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//24
 	strcpy_s(&moves, 8, "3a2b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//25
 	strcpy_s(&moves, 8, "2d2f");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//26
 	strcpy_s(&moves, 8, "2b2c");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//27
 	strcpy_s(&moves, 8, "B*5f");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//28
 	strcpy_s(&moves, 8, "P*2e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//29
 	strcpy_s(&moves, 8, "2f2e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//30
 	strcpy_s(&moves, 8, "P*2d");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//31
 	strcpy_s(&moves, 8, "2e8e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//32
 	strcpy_s(&moves, 8, "B*2h");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//33
 	strcpy_s(&moves, 8, "8e8c+");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//34
 	strcpy_s(&moves, 8, "2h1i+");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//35
 	strcpy_s(&moves, 8, "8c8a");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//36
 	strcpy_s(&moves, 8, "L*2e");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//37
 	strcpy_s(&moves, 8, "8a2a");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//38
 	strcpy_s(&moves, 8, "2e2i+");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//39
 	strcpy_s(&moves, 8, "5f2c+");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//40
 	strcpy_s(&moves, 8, "3b2c");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//41
 	strcpy_s(&moves, 8, "S*4a");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//42
 	strcpy_s(&moves, 8, "N*3a");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//43
 	strcpy_s(&moves, 8, "2a3b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//44
 	strcpy_s(&moves, 8, "4b5a");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//45
 	strcpy_s(&moves, 8, "3b5b");
 	mv = make_usi_move(&hd, &moves);
-	do_move(&hd, mv);
+	do_move(&hd, mv, &st, false);
 	arrput(ms, mv);
 	//‚±‚±‚©‚çundo_move‚ÌƒeƒXƒg
 	//45 52—³‚ð–ß‚·
@@ -1213,6 +1216,7 @@ void test_piece_color(void) {
 void test_go(void) {
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[128];
+	StateInfo_t st;
 	int from, to, pmoto, morh, piece, cap;
 	char usi_move[8];
 	new_board(&hd);
@@ -1223,7 +1227,7 @@ void test_go(void) {
 	move_chop(m, &to, &from, &pmoto, &morh, &piece, &cap);
 	move_to_usi(m, usi_move);
 	//printf("%s with:%c\n", usi_move, piece_symbol[piece]);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	//print_board(&hd);
 
 	do_usi_move(&hd, "8c8d");
@@ -1233,7 +1237,7 @@ void test_go(void) {
 	move_chop(m, &to, &from, &pmoto, &morh, &piece, &cap);
 	move_to_usi(m, usi_move);
 	//printf("%s with:%c\n", usi_move, piece_symbol[piece]);
-	do_move(&hd, m);
+	do_move(&hd, m, &st, false);
 	//print_board(&hd);
 }
 

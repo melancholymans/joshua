@@ -27,6 +27,7 @@ usi_handler_t new_usi_handler(FILE* out) {
 	return hd;
 }
 
+//usi_handler‚Ìƒƒ‚ƒŠ‚ðŠJ•ú‚·‚é
 void rm_usi_handler(usi_handler_t* hd) {
 	if(hd->bd != NULL){
 		free(hd->bd);
@@ -327,10 +328,9 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	for (int i = 0; i < size; i++) {
 		int m = do_usi_move(hd, cmds[mark + 1 + i]);
 		StateInfo_t* si = calloc(1, sizeof(StateInfo_t));
-		do_move(hd, m,si);
+		_Bool gc = gives_check(hd,m);
+		do_move(hd, m,si,gc);
 	}
-	//print_board(hd);
-	//printf("debug trun %s move_number %d\n", hd->bd->turn ? "white" : "black",hd->bd->move_number+1);
 	return 200;
 }
 
@@ -344,7 +344,6 @@ errno_t handle_go(usi_handler_t* hd) {
 	else {
 		char usi_move[8];
 		char str[16];
-		do_move(hd, move);
 		move_to_usi(move, usi_move);
 		snprintf(str,sizeof(str), "bestmove %s", usi_move);
 		put_send(hd, str);
