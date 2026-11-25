@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <ctype.h>
+
 #include "unity.h"
 #include "../shogi/usi.h"
 #include "../shogi/position.h"
@@ -315,4 +318,35 @@ void test_handle(void) {
 	TEST_ASSERT_EQUAL_INT(whorse, hd.bd->mb[sq1i]);
 }
 
+//test_handle_position関数のヘルプ関数、文字列の中のスペースを数えてワードの数を数える
+int count_words(const char* str) {
+	int count = 0;
+	int in_word = 0; /* 0: 空白中, 1: ワードの中 */
 
+	if (str == NULL) {
+		return 0;
+	}
+	for (const char* p = str; *p != '\0'; p++) {
+		if (isspace((unsigned char)*p)) {
+			in_word = 0;
+		}
+		else {
+			if (!in_word) {
+				count++;
+				in_word = 1;
+			}
+		}
+	}
+	return count;
+}
+
+void test_handle_position() {
+	usi_handler_t hd = new_usi_handler(stdout);
+	char sfen[sfen_str_max];
+	new_board(&hd);
+	sfen[0] = '\0';
+	//平手、先手開始、36手まで
+	strcpy_s(sfen, sizeof(sfen), "position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2h1h 3a4b 3i2h 7a7b 9g9f 6a5b 5g5f 3c3d 5i4h 4b3c 7i7h 5a4b 9i9h 4b3b 2g2f 2b3a 9h9g 3b2b 9f9e 4a3b 4h5h 1c1d 5h4h 1d1e 5f5e 3d3e 5e5d 5c5d 4i3h 5d5e 7g7f 5e5f 8h4d 4c4d 2h3i B*8d");
+	
+	handle(&hd,sfen);
+}

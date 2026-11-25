@@ -43,6 +43,7 @@ void test_usi() {
 	test_shorten_space();
 	test_command_queue();
 	test_handle();
+	test_handle_position();
 }
 
 void test_position() {

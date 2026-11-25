@@ -458,6 +458,7 @@ void set_state(usi_handler_t* hd) {
 	st->repetition_type = 0;
 	st->hand = 0;
 	st->material_value = 0;
+	strcpy_s(st->debug, sizeof(st->debug), "root");
 	st->previous = NULL;
 }
 

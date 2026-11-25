@@ -87,6 +87,7 @@ typedef struct StateInfo {
 	int hand;
 	//この局面での評価関数の駒割
 	int material_value;
+	char debug[8];
 	//前の局面に遡るためのポインタ。
 	struct StateInfo* previous;
 }StateInfo_t;

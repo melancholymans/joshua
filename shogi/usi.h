@@ -2,6 +2,10 @@
 
 #include "init.h"
 
+enum {
+	sfen_str_max = 1664,
+};
+
 usi_handler_t new_usi_handler(FILE* out);
 int init_queue(usi_handler_t* hd, int capacity);
 void free_queue(comman_queue_t* q);

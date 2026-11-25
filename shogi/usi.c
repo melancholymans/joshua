@@ -244,37 +244,37 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		position sfen lnsgkgsnl/1b5r1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h
 	ここにくるコマンド文字列ははreceive_usi関数のキューから渡ってくる
 	*/
-	char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
-	int count = 0;
-	shorten_space(buf);	
-	char* ptr = NULL;
-	char* token = strtok_s(buf, " ",&ptr);
-	for (; token != NULL && count < 512;) {
-		cmds[count++] = token;
-		token = strtok_s(NULL, " ",&ptr);
-	}
-	if (!strcmp("stop", cmds[0])) {
-		return handle_stop();
-	}
-	else if (!strcmp("go", cmds[0])) {
-		return handle_go(usi_hd);
-	}
-	else if (!strcmp("position", cmds[0])) {
-		return handle_position(usi_hd,cmds,count);
-	}
-	else if (!strcmp("ponderhit", cmds[0])) {
-		return handle_ponder_hit();
-	}
-	else {
-		char msg[32];
-		sprintf_s(msg,sizeof(msg), "unknow cmd %s", cmds[0]);
-		put_send(usi_hd,msg);
-		return 202;
-	}
+char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
+int count = 0;
+shorten_space(buf);
+char* ptr = NULL;
+char* token = strtok_s(buf, " ", &ptr);
+for (; token != NULL && count < 512;) {
+	cmds[count++] = token;
+	token = strtok_s(NULL, " ", &ptr);
+}
+if (!strcmp("stop", cmds[0])) {
+	return handle_stop();
+}
+else if (!strcmp("go", cmds[0])) {
+	return handle_go(usi_hd);
+}
+else if (!strcmp("position", cmds[0])) {
+	return handle_position(usi_hd, cmds, count);
+}
+else if (!strcmp("ponderhit", cmds[0])) {
+	return handle_ponder_hit();
+}
+else {
+	char msg[32];
+	sprintf_s(msg, sizeof(msg), "unknow cmd %s", cmds[0]);
+	put_send(usi_hd, msg);
+	return 202;
+}
 }
 
 //positionコマンド対応、送られてきたsfen文字列をパースして局面を設定している
-errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
+errno_t handle_position(usi_handler_t* hd, char* cmds[], int count) {
 	// 入力されるcmds[]
 	//	cmds[0] = position
 	//  cmds[1] = startpos <- sfen 
@@ -298,12 +298,12 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	//  cmds[8] = 7g7f 
 	//  cmds[9] = 3a3b
 	//  ...
-	char sfen[128];
+	char sfen[sfen_str_max];
 	int mark = 0;
 	sfen[0] = '\0';
 	if (!strcmp("sfen", cmds[1])) {
 		for (int i = 2; i < 6; i++) {
-			strcat_s(sfen, strlen(cmds[2])+6+1, cmds[i]);
+			strcat_s(sfen, strlen(cmds[2]) + 6 + 1, cmds[i]);
 			if (i < 5) {
 				strcat_s(sfen, strlen(cmds[2]) + 6 + 1, " ");
 			}
@@ -317,7 +317,7 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 		mark = 6;	//次に見る配列のindex
 	}
 	else if (!strcmp("startpos", cmds[1])) {
-		strcpy_s(sfen,128,"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
+		strcpy_s(sfen, 128, "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1");
 		set_board(hd, sfen);
 		if (count == 2) {	//文字列movesがないのでここで局面構成は終了
 			return 200;
@@ -328,10 +328,21 @@ errno_t handle_position(usi_handler_t* hd,char* cmds[],int count) {
 	for (int i = 0; i < size; i++) {
 		int m = do_usi_move(hd, cmds[mark + 1 + i]);
 		StateInfo_t* si = calloc(1, sizeof(StateInfo_t));
-		_Bool gc = gives_check(hd,m);
-		do_move(hd, m,si,gc);
+		strcpy_s(si->debug, sizeof(si->debug), cmds[mark + 1 + i]);	//debug
+		_Bool gc = gives_check(hd, m);
+		do_move(hd, m, si, gc);
 	}
 	return 200;
+}
+
+//goコマンドから返ってきた後のStateInfoのメモリを廃棄する
+void free_stateInfo(usi_handler_t* hd) {
+	StateInfo_t* st = hd->st;
+	for (; st != NULL;){
+		StateInfo_t* prev = st->previous;
+		free(st);
+		st = prev;
+	}
 }
 
 //goコマンドに対応する。思考を開始し、その結果moveを受取り局面を更新してGUIに手を返す
@@ -348,6 +359,7 @@ errno_t handle_go(usi_handler_t* hd) {
 		snprintf(str,sizeof(str), "bestmove %s", usi_move);
 		put_send(hd, str);
 	}
+	free_stateInfo(hd);
 	return 200;
 }
 
