@@ -341,12 +341,154 @@ int count_words(const char* str) {
 }
 
 void test_handle_position() {
+	/*
+	[0] position
+	[1] sfen
+	[2] lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL
+	[3] b
+	[4] -
+	[5] 1
+	[6] moves
+	[7] 2h1h 
+	[8] 3a4b 
+	[9] 3i2h 
+	[10] 7a7b 
+	[11] 9g9f 
+	[12] 6a5b 
+	[13] 5g5f 
+	[14] 3c3d 
+	[15] 5i4h 
+	[16] 4b3c 
+	[17] 7i7h 
+	[18] 5a4b 
+	[19] 9i9h 
+	[20] 4b3b 
+	[21] 2g2f 
+	[22] 2b3a 
+	[23] 9h9g 
+	[24] 3b2b 
+	[25] 9f9e 
+	[26] 4a3b 
+	[27] 4h5h 
+	[28] 1c1d 
+	[29] 5h4h 
+	[30] 1d1e 
+	[31] 5f5e 
+	[32] 3d3e 
+	[33] 5e5d 
+	[34] 5c5d 
+	[35] 4i3h 
+	[36] 5d5e 
+	[37] 7g7f 
+	[38] 5e5f 
+	[39] 8h4d 
+	[40] 4c4d 
+	[41] 2h3i 
+	[42] B*8d
+	*/
 	usi_handler_t hd = new_usi_handler(stdout);
 	char sfen[sfen_str_max];
 	new_board(&hd);
 	sfen[0] = '\0';
 	//平手、先手開始、36手まで
-	strcpy_s(sfen, sizeof(sfen), "position sfen lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2h1h 3a4b 3i2h 7a7b 9g9f 6a5b 5g5f 3c3d 5i4h 4b3c 7i7h 5a4b 9i9h 4b3b 2g2f 2b3a 9h9g 3b2b 9f9e 4a3b 4h5h 1c1d 5h4h 1d1e 5f5e 3d3e 5e5d 5c5d 4i3h 5d5e 7g7f 5e5f 8h4d 4c4d 2h3i B*8d");
-	
+	strcpy_s(sfen, sizeof(sfen), "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 2h1h 3a4b 3i2h 7a7b 9g9f 6a5b 5g5f 3c3d 5i4h 4b3c 7i7h 5a4b 9i9h 4b3b 2g2f 2b3a 9h9g 3b2b 9f9e 4a3b 4h5h 1c1d 5h4h 1d1e 5f5e 3d3e 5e5d 5c5d 4i3h 5d5e 7g7f 5e5f 8h4d 4c4d 2h3i B*8d");
 	handle(&hd,sfen);
+	TEST_ASSERT_EQUAL_INT(wlance, hd.bd->mb[sq9a]);
+	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq8a]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7a]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6a]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5a]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4a]);
+	TEST_ASSERT_EQUAL_INT(wbishop, hd.bd->mb[sq3a]);
+	TEST_ASSERT_EQUAL_INT(wknight, hd.bd->mb[sq2a]);
+	TEST_ASSERT_EQUAL_INT(wlance, hd.bd->mb[sq1a]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9b]);
+	TEST_ASSERT_EQUAL_INT(wrook, hd.bd->mb[sq8b]);
+	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq7b]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6b]);
+	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq5b]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4b]);
+	TEST_ASSERT_EQUAL_INT(wgold, hd.bd->mb[sq3b]);
+	TEST_ASSERT_EQUAL_INT(wking, hd.bd->mb[sq2b]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq1b]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq9c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq8c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq7c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq6c]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5c]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4c]);
+	TEST_ASSERT_EQUAL_INT(wsilver, hd.bd->mb[sq3c]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq2c]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq1c]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9d]);
+	TEST_ASSERT_EQUAL_INT(wbishop, hd.bd->mb[sq8d]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7d]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6d]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5d]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq4d]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3d]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2d]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq1d]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq9e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4e]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq3e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2e]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq1e]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9f]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8f]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq7f]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6f]);
+	TEST_ASSERT_EQUAL_INT(wpawn, hd.bd->mb[sq5f]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4f]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq3f]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq2f]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq1f]);
+	TEST_ASSERT_EQUAL_INT(blance, hd.bd->mb[sq9g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq8g]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq6g]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq4g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq3g]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2g]);
+	TEST_ASSERT_EQUAL_INT(bpawn, hd.bd->mb[sq1g]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9h]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq8h]);
+	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq7h]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq6h]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5h]);
+	TEST_ASSERT_EQUAL_INT(bking, hd.bd->mb[sq4h]);
+	TEST_ASSERT_EQUAL_INT(bgold, hd.bd->mb[sq3h]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq2h]);
+	TEST_ASSERT_EQUAL_INT(brook, hd.bd->mb[sq1h]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq9i]);
+	TEST_ASSERT_EQUAL_INT(bknight, hd.bd->mb[sq8i]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq7i]);
+	TEST_ASSERT_EQUAL_INT(bgold, hd.bd->mb[sq6i]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq5i]);
+	TEST_ASSERT_EQUAL_INT(empty, hd.bd->mb[sq4i]);
+	TEST_ASSERT_EQUAL_INT(bsilver, hd.bd->mb[sq3i]);
+	TEST_ASSERT_EQUAL_INT(bknight, hd.bd->mb[sq2i]);
+	TEST_ASSERT_EQUAL_INT(blance, hd.bd->mb[sq1i]);
+
+	TEST_ASSERT_EQUAL_INT(1, hd.bd->hb[wpawn]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wlance]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wknight]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wsilver]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wgold]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wbishop]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[wrook]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bpawn]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[blance]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bknight]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bsilver]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bgold]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bbishop]);
+	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[brook]);
+
+	free_stateInfo(&hd);
 }
