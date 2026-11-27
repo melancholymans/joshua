@@ -244,33 +244,33 @@ errno_t handle(usi_handler_t* usi_hd, char* buf){
 		position sfen lnsgkgsnl/1b5r1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1 moves 2g2f 4a3b 2f2e 6a5b 7g7f 5a4b 6i7h
 	ここにくるコマンド文字列ははreceive_usi関数のキューから渡ってくる
 	*/
-char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
-int count = 0;
-shorten_space(buf);
-char* ptr = NULL;
-char* token = strtok_s(buf, " ", &ptr);
-for (; token != NULL && count < 512;) {
-	cmds[count++] = token;
-	token = strtok_s(NULL, " ", &ptr);
-}
-if (!strcmp("stop", cmds[0])) {
-	return handle_stop();
-}
-else if (!strcmp("go", cmds[0])) {
-	return handle_go(usi_hd);
-}
-else if (!strcmp("position", cmds[0])) {
-	return handle_position(usi_hd, cmds, count);
-}
-else if (!strcmp("ponderhit", cmds[0])) {
-	return handle_ponder_hit();
-}
-else {
-	char msg[32];
-	sprintf_s(msg, sizeof(msg), "unknow cmd %s", cmds[0]);
-	put_send(usi_hd, msg);
-	return 202;
-}
+	char* cmds[512];	//ポインタの配列、300手ぐらいを想定して512まで用意
+	int count = 0;
+	shorten_space(buf);
+	char* ptr = NULL;
+	char* token = strtok_s(buf, " ", &ptr);
+	for (; token != NULL && count < 512;) {
+		cmds[count++] = token;
+		token = strtok_s(NULL, " ", &ptr);
+	}
+	if (!strcmp("stop", cmds[0])) {
+		return handle_stop();
+	}
+	else if (!strcmp("go", cmds[0])) {
+		return handle_go(usi_hd);
+	}
+	else if (!strcmp("position", cmds[0])) {
+		return handle_position(usi_hd, cmds, count);
+	}
+	else if (!strcmp("ponderhit", cmds[0])) {
+		return handle_ponder_hit();
+	}
+	else {
+		char msg[32];
+		sprintf_s(msg, sizeof(msg), "unknow cmd %s", cmds[0]);
+		put_send(usi_hd, msg);
+		return 202;
+	}
 }
 
 //positionコマンド対応、送られてきたsfen文字列をパースして局面を設定している
