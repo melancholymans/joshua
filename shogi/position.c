@@ -307,8 +307,7 @@ void set_board(usi_handler_t* hd, char* sfen) {
 
 void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 	board_t* bd = hd->bd;
-	StateInfo_t* st = hd->st;
-	//memcpy(newSt, hd->st, offsetof(StateInfo_t, board_key));	将来用
+	//memcpy(newSt, hd->st, offsetof(StateInfo_t, board_key));	将来用 TODO
 	newSt->previous = hd->st;	//StateInfo_tのリンクリスト
 	hd->st = newSt;	//このnewStもメモリはhandle_position関数ではcallocで与えているがseach関数内ではローカル変数stで確保して与えている
 	bd->move_number++;
@@ -323,12 +322,12 @@ void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 		bd->bytype_bb[ALL_PIECE].m = _mm_or_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
 		bd->bycolor_bb[us].m = _mm_or_si128(bd->bycolor_bb[us].m, sq_mask[to].m);
 		if (gc) {	//この駒打ちで王手がかかっている、checkersBBを更新する
-			st->checkersBB = sq_mask[to];
+			hd->st->checkersBB = sq_mask[to];
 		}
 		else {
-			st->checkersBB = all_zero_mask;
+			hd->st->checkersBB = all_zero_mask;
 		}
-		st->captured_piece = empty;
+		hd->st->captured_piece = empty;
 		update_bytypebb(hd);
 	}
 	else {	//駒の移動
@@ -340,11 +339,11 @@ void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 			bd->bytype_bb[ALL_PIECE].m = _mm_xor_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
 			bd->bytype_bb[piece_to_piecetype(cap)].m = _mm_xor_si128(bd->bytype_bb[piece_to_piecetype(cap)].m, sq_mask[to].m);
 			bd->bycolor_bb[them].m = _mm_xor_si128(bd->bycolor_bb[them].m, sq_mask[to].m);
-			st->captured_piece = cap;
+			hd->st->captured_piece = cap;
 			bd->hb[hand_to_cap]++;
 		}
 		else {	//駒を取らない手
-			st->captured_piece = empty;
+			hd->st->captured_piece = empty;
 		}
 		bd->bytype_bb[ALL_PIECE].m = _mm_xor_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[from].m);
 		bd->bytype_bb[piece_to_piecetype(piece)].m = _mm_xor_si128(bd->bytype_bb[piece_to_piecetype(piece)].m, sq_mask[from].m);
@@ -361,10 +360,10 @@ void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 		if (gc) {
 			//簡易版
 			int ksq = bd->king_square[them];
-			st->checkersBB = attacks_to(hd, ksq);
+			hd->st->checkersBB = attacks_to(hd, ksq);
 		}
 		else {
-			st->checkersBB = all_zero_mask;
+			hd->st->checkersBB = all_zero_mask;
 		}
 	}
 	bd->turn = them;
@@ -458,7 +457,6 @@ void set_state(usi_handler_t* hd) {
 	st->repetition_type = 0;
 	st->hand = 0;
 	st->material_value = 0;
-	strcpy_s(st->debug, sizeof(st->debug), "root");
 	st->previous = NULL;
 }
 

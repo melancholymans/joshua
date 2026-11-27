@@ -26,4 +26,5 @@ void test_attacks_to(void);
 void test_checker(void);
 void test_is_check(void);
 void test_set_check_info(void);
+void test_do_move(void);
 void test_print_board(void);

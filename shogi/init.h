@@ -67,7 +67,7 @@ typedef struct StateInfo {
 	int continuous_check[2];
 	uint64_t board_key;
 	uint64_t hand_key;
-	//Œ»‹Ç–Ê‚Åè”Ô‘¤‚É‘Î‚µ‚Ä‰¤è‚ğ‚µ‚Ä‚¢‚é‹î‚Ìbitboard
+	//Œ»‹Ç–Ê‚ÅAè”Ô‘¤‚É‘Î‚µ‚Ä‰¤è‚ğ‚µ‚Ä‚¢‚é‹î‚Ìbitboard
 	bitboard checkersBB;
 	//©‹Ê‚É‘Î‚µ‚Ä(“G‹î‚É‚æ‚Á‚Ä)pin‚³‚ê‚Ä‚¢‚é‹î
 	bitboard blockers_for_king[2];

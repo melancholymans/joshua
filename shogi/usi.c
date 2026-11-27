@@ -328,7 +328,6 @@ errno_t handle_position(usi_handler_t* hd, char* cmds[], int count) {
 	for (int i = 0; i < size; i++) {
 		int m = do_usi_move(hd, cmds[mark + 1 + i]);
 		StateInfo_t* si = calloc(1, sizeof(StateInfo_t));
-		strcpy_s(si->debug, sizeof(si->debug), cmds[mark + 1 + i]);	//debug
 		_Bool gc = gives_check(hd, m);
 		do_move(hd, m, si, gc);
 	}

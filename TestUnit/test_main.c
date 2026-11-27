@@ -74,6 +74,7 @@ void test_position() {
 	test_checker();
 	test_is_check();
 	test_set_check_info();
+	test_do_move();
 	test_print_board();
 }
 

@@ -489,6 +489,7 @@ void test_handle_position() {
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bgold]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[bbishop]);
 	TEST_ASSERT_EQUAL_INT(0, hd.bd->hb[brook]);
-
 	free_stateInfo(&hd);
 }
+
+
