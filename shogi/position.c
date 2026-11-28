@@ -380,7 +380,11 @@ void undo_move(usi_handler_t* hd, const int move) {
 	if (morh) {	//打ち手
 		//bitboard関係の操作が入るが今はパス(TODO:)
 		bd->mb[to] = empty;
+		bd->bytype_bb[ALL_PIECE].m = _mm_xor_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
+		bd->bytype_bb[piece_to_piecetype(from)].m = _mm_xor_si128(bd->bytype_bb[piece_to_piecetype(from)].m, sq_mask[to].m);
+		bd->bycolor_bb[us].m = _mm_xor_si128(bd->bycolor_bb[us].m, sq_mask[to].m);
 		bd->hb[from]++;			//打つ手の時は駒番はfromに入る
+		//update_bytypebbはいらないの？
 	}
 	else {
 		//king専用の配列の操作がある、今はパス(TODO:)
