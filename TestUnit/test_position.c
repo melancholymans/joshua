@@ -2127,12 +2127,397 @@ void test_do_move(void) {
 	TEST_ASSERT_EQUAL_INT(sq2b, hd.bd->king_square[white]);
 	TEST_ASSERT_EQUAL_INT(sq4h, hd.bd->king_square[black]);
 	//checkersBB
+	StateInfo_t* st = hd.st;
+	bb = st->checkersBB;
 	TEST_ASSERT_TRUE(is_biton(sq8d, bb));
 	//check_squares
-	StateInfo_t* st = hd.st;
-	print_bitboard(st->check_squares[bishop],"check_squares");
-	hd.bd->turn = white;
-	print_bitboard(st->check_squares[bishop], "check_squares");
+	bb = st->check_squares[pawn];
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	bb = st->check_squares[lance];
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	bb = st->check_squares[knight];
+	TEST_ASSERT_TRUE(is_biton(sq3d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1d, bb));
+	bb = st->check_squares[silver];
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[bishop];
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[rook];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	bb = st->check_squares[gold];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[propawn];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[prolance];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[proknight];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[prosilver];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	bb = st->check_squares[horse];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	bb = st->check_squares[dragon];
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	//問題2
+	/*
+	[0] position 
+	[1] sfen 
+	[2] lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL 
+	[3] b 
+	[4] - 
+	[5] 1 
+	[6] moves 
+	[7] 6i7h 
+	[8] 3c3d 
+	[9] 5i6h 
+	[10] 8c8d 
+	[11] 8g8f 
+	[12] 8d8e 
+	[13] 8f8e 
+	[14] 8b8e 
+	[15] 7g7f 
+	[16] P*8f 
+	[17] 8h2b+ 
+	[18] 3a2b 
+	[19] 8i7g 
+	[20] 8e8b 
+	[21] P*8c 
+	[22] 8b8c 
+	[23] B*6e 
+	[24] 8c8b 
+	[25] 6e4c+ 
+	[26] 8f8g+ 
+	[27] 4c2a 
+	[28] 8g7h 
+	[29] 7i7h 
+	[30] G*3b 
+	[31] P*8c 
+	[32] 8b8c 
+	[33] N*7e 
+	[34] 8c8h+ 
+	[35] 7e6c 
+	[36] 5a4b 
+	[37] 6c7a+ 
+	[38] 6a7a 
+	[39] P*8b 
+	[40] N*8f 
+	[41] 2a3b 
+	[42] 4b3b 
+	[43] 8b8a+ 
+	[44] 8f7h+ 
+	[45] 6h5i 
+	[46] P*4f 
+	[47] N*4d 
+	[48] 3b4c 
+	[49] S*3b 
+	[50] 4c4d 
+	[51] G*4c 
+	[52] 4d5e 
+	[53] 8a7a 
+	[54] 8h7i 
+	[55] 5i4h 
+	[56] 4f4g+ 
+	[57] 4h4g 
+	[58] 7i4i 
+	[59] G*4h 
+	[60] B*5h
+	*/
+	new_board(&hd);
+	sfen[0] = '\0';
+	//平手、先手開始、54手まで
+	strcpy_s(sfen, sizeof(sfen), "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 6i7h 3c3d 5i6h 8c8d 8g8f 8d8e 8f8e 8b8e 7g7f P*8f 8h2b+ 3a2b 8i7g 8e8b P*8c 8b8c B*6e 8c8b 6e4c+ 8f8g+ 4c2a 8g7h 7i7h G*3b P*8c 8b8c N*7e 8c8h+ 7e6c 5a4b 6c7a+ 6a7a P*8b N*8f 2a3b 4b3b 8b8a+ 8f7h+ 6h5i P*4f N*4d 3b4c S*3b 4c4d G*4c 4d5e 8a7a 8h7i 5i4h 4f4g+ 4h4g 7i4i G*4h B*5h");
+	handle(&hd, sfen);
+	//この時点で初期局面から54手までさされている
+	//bytype_bb
+	bb = hd.bd->bytype_bb[pawn];
+	TEST_ASSERT_TRUE(is_biton(sq9c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1g, bb));
+	bb = hd.bd->bytype_bb[lance];
+	TEST_ASSERT_TRUE(is_biton(sq9a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1i, bb));
+	bb = hd.bd->bytype_bb[knight];
+	TEST_ASSERT_TRUE(is_biton(sq7g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2i, bb));
+	bb = hd.bd->bytype_bb[silver];
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3i, bb));
+	bb = hd.bd->bytype_bb[gold];
+	TEST_ASSERT_TRUE(is_biton(sq4a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	bb = hd.bd->bytype_bb[bishop];
+	TEST_ASSERT_TRUE(is_biton(sq5h, bb));
+	bb = hd.bd->bytype_bb[rook];
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	bb = hd.bd->bytype_bb[king];
+	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	bb = hd.bd->bytype_bb[propawn];
+	TEST_ASSERT_TRUE(is_biton(sq7a, bb));
+	bb = hd.bd->bytype_bb[proknight];
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	bb = hd.bd->bytype_bb[ALL_PIECE];
+	TEST_ASSERT_TRUE(is_biton(sq9a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	bb = hd.bd->bycolor_bb[black];
+	TEST_ASSERT_TRUE(is_biton(sq7a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1i, bb));
+	bb = hd.bd->bytype_bb[GOLDS];
+	TEST_ASSERT_TRUE(is_biton(sq7a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	bb = hd.bd->bytype_bb[HDK];
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	bb = hd.bd->bytype_bb[BISHOP_HORSE];
+	TEST_ASSERT_TRUE(is_biton(sq5h, bb));
+	bb = hd.bd->bytype_bb[ROOK_DRAGON];
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	bb = hd.bd->bytype_bb[SILVER_HDK];
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	bb = hd.bd->bytype_bb[GOLDS_HDK];
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	//bycolor_bb
+	bb = hd.bd->bycolor_bb[white];
+	TEST_ASSERT_TRUE(is_biton(sq9a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4i, bb));
+	bb = hd.bd->bycolor_bb[black];
+	TEST_ASSERT_TRUE(is_biton(sq7a, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3b, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2h, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2i, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1i, bb));
+	//king_square
+	TEST_ASSERT_EQUAL_INT(sq5e, hd.bd->king_square[white]);
+	TEST_ASSERT_EQUAL_INT(sq4g, hd.bd->king_square[black]);
+	//checkersBB
+	st = hd.st;
+	bb = st->checkersBB;
+	TEST_ASSERT_TRUE(is_biton(sq5h, bb));
+	//check_squares
+	bb = st->check_squares[pawn];
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	bb = st->check_squares[lance];
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	bb = st->check_squares[knight];
+	TEST_ASSERT_TRUE(is_biton(sq6g, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4g, bb));
+	bb = st->check_squares[silver];
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4d, bb));
+	bb = st->check_squares[bishop];
+	TEST_ASSERT_TRUE(is_biton(sq6d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = st->check_squares[rook];
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq8e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	bb = st->check_squares[gold];
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = st->check_squares[propawn];
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = st->check_squares[prolance];
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = st->check_squares[proknight];
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = st->check_squares[prosilver];
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	bb = st->check_squares[horse];
+	TEST_ASSERT_TRUE(is_biton(sq6d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3c, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	bb = st->check_squares[dragon];
+	TEST_ASSERT_TRUE(is_biton(sq6d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq9e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq8e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq7e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq3e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq2e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq1e, bb));
+	TEST_ASSERT_TRUE(is_biton(sq5f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4d, bb));
+	TEST_ASSERT_TRUE(is_biton(sq6f, bb));
+	TEST_ASSERT_TRUE(is_biton(sq4f, bb));
 }
 
 void test_print_board(void) {

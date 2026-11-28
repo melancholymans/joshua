@@ -331,9 +331,6 @@ void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 		update_bytypebb(hd);
 	}
 	else {	//駒の移動
-		if (pmoto) {	//成駒に設定
-			piece = piece + 8;
-		}
 		if (cap != empty) {	//駒を取る手
 			int hand_to_cap = strip_pmoto(cap) ^ 0x10;	//取った駒のカラー切替え、不成への切替,駒番のまま
 			bd->bytype_bb[ALL_PIECE].m = _mm_xor_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
@@ -349,6 +346,9 @@ void do_move(usi_handler_t* hd, const int move, StateInfo_t* newSt,_Bool gc) {
 		bd->bytype_bb[piece_to_piecetype(piece)].m = _mm_xor_si128(bd->bytype_bb[piece_to_piecetype(piece)].m, sq_mask[from].m);
 		bd->bycolor_bb[us].m = _mm_xor_si128(bd->bycolor_bb[us].m, sq_mask[from].m);
 		bd->mb[from] = empty;
+		if (pmoto) {	//成駒に設定
+			piece = piece + 8;
+		}
 		bd->bytype_bb[ALL_PIECE].m = _mm_or_si128(bd->bytype_bb[ALL_PIECE].m, sq_mask[to].m);
 		bd->bytype_bb[piece_to_piecetype(piece)].m = _mm_or_si128(bd->bytype_bb[piece_to_piecetype(piece)].m, sq_mask[to].m);
 		bd->bycolor_bb[us].m = _mm_or_si128(bd->bycolor_bb[us].m, sq_mask[to].m);
@@ -411,14 +411,14 @@ void update_bytypebb(usi_handler_t* hd) {
 	bitboard prolance_bb;
 	bitboard proknight_bb;
 	bitboard prosilver_bb;
-	bishop_bb.m = b->bytype_bb[bishop].m;
-	horse_bb.m = b->bytype_bb[horse].m;
-	rook_bb.m = b->bytype_bb[rook].m;
-	dragon_bb.m = b->bytype_bb[dragon].m;
-	propawn_bb.m = b->bytype_bb[propawn].m;
-	prolance_bb.m = b->bytype_bb[prolance].m;
-	proknight_bb.m = b->bytype_bb[proknight].m;
-	prosilver_bb.m = b->bytype_bb[prosilver].m;
+	bishop_bb = b->bytype_bb[bishop];
+	horse_bb = b->bytype_bb[horse];
+	rook_bb = b->bytype_bb[rook];
+	dragon_bb = b->bytype_bb[dragon];
+	propawn_bb = b->bytype_bb[propawn];
+	prolance_bb = b->bytype_bb[prolance];
+	proknight_bb = b->bytype_bb[proknight];
+	prosilver_bb = b->bytype_bb[prosilver];
 
 	b->bytype_bb[GOLDS].m = _mm_or_si128(_mm_or_si128(_mm_or_si128(_mm_or_si128(b->bytype_bb[gold].m, propawn_bb.m),prolance_bb.m),proknight_bb.m),prosilver_bb.m);
 	b->bytype_bb[HDK].m = _mm_or_si128(_mm_or_si128(b->bytype_bb[king].m, horse_bb.m), dragon_bb.m);
@@ -535,7 +535,7 @@ bitboard attacks_to(usi_handler_t* hd,const int sq) {
 	bitboard bwbishop = bishop_attack(sq, bd->bytype_bb[ALL_PIECE]);
 	bitboard bwrook = rook_attack(sq, bd->bytype_bb[ALL_PIECE]);
 	bitboard blance = lance_attack(black, sq, bd->bytype_bb[ALL_PIECE]);
-	bitboard wlance = lance_attack(white, sq, bd->bytype_bb[ALL_PIECE]);	//この香車は見直す必要があるのでは？
+	bitboard wlance = lance_attack(white, sq, bd->bytype_bb[ALL_PIECE]);	//この香車は見直す必要があるのでは？TODO
 	bitboard bwbishope;
 	bitboard bwrooke;
 	bitboard blancee;
